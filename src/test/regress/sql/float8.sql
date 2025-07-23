@@ -1,3 +1,4 @@
+---START---
 --
 -- FLOAT8
 --
@@ -8,231 +9,497 @@
 --
 
 CREATE TEMP TABLE FLOAT8_TBL(f1 float8);
+---END---
+---START---
 
 INSERT INTO FLOAT8_TBL(f1) VALUES ('    0.0   ');
+---END---
+---START---
 INSERT INTO FLOAT8_TBL(f1) VALUES ('1004.30  ');
+---END---
+---START---
 INSERT INTO FLOAT8_TBL(f1) VALUES ('   -34.84');
+---END---
+---START---
 INSERT INTO FLOAT8_TBL(f1) VALUES ('1.2345678901234e+200');
+---END---
+---START---
 INSERT INTO FLOAT8_TBL(f1) VALUES ('1.2345678901234e-200');
+---END---
+---START---
 
 -- test for underflow and overflow handling
 SELECT '10e400'::float8;
+---END---
+---START---
 SELECT '-10e400'::float8;
+---END---
+---START---
 SELECT '10e-400'::float8;
+---END---
+---START---
 SELECT '-10e-400'::float8;
+---END---
+---START---
 
 -- test smallest normalized input
 SELECT float8send('2.2250738585072014E-308'::float8);
+---END---
+---START---
 
 -- bad input
 INSERT INTO FLOAT8_TBL(f1) VALUES ('');
+---END---
+---START---
 INSERT INTO FLOAT8_TBL(f1) VALUES ('     ');
+---END---
+---START---
 INSERT INTO FLOAT8_TBL(f1) VALUES ('xyz');
+---END---
+---START---
 INSERT INTO FLOAT8_TBL(f1) VALUES ('5.0.0');
+---END---
+---START---
 INSERT INTO FLOAT8_TBL(f1) VALUES ('5 . 0');
+---END---
+---START---
 INSERT INTO FLOAT8_TBL(f1) VALUES ('5.   0');
+---END---
+---START---
 INSERT INTO FLOAT8_TBL(f1) VALUES ('    - 3');
+---END---
+---START---
 INSERT INTO FLOAT8_TBL(f1) VALUES ('123           5');
+---END---
+---START---
 
 -- Also try it with non-error-throwing API
 SELECT pg_input_is_valid('34.5', 'float8');
+---END---
+---START---
 SELECT pg_input_is_valid('xyz', 'float8');
+---END---
+---START---
 SELECT pg_input_is_valid('1e4000', 'float8');
+---END---
+---START---
 SELECT * FROM pg_input_error_info('1e4000', 'float8');
+---END---
+---START---
 
 -- special inputs
 SELECT 'NaN'::float8;
+---END---
+---START---
 SELECT 'nan'::float8;
+---END---
+---START---
 SELECT '   NAN  '::float8;
+---END---
+---START---
 SELECT 'infinity'::float8;
+---END---
+---START---
 SELECT '          -INFINiTY   '::float8;
+---END---
+---START---
 -- bad special inputs
 SELECT 'N A N'::float8;
+---END---
+---START---
 SELECT 'NaN x'::float8;
+---END---
+---START---
 SELECT ' INFINITY    x'::float8;
+---END---
+---START---
 
 SELECT 'Infinity'::float8 + 100.0;
+---END---
+---START---
 SELECT 'Infinity'::float8 / 'Infinity'::float8;
+---END---
+---START---
 SELECT '42'::float8 / 'Infinity'::float8;
+---END---
+---START---
 SELECT 'nan'::float8 / 'nan'::float8;
+---END---
+---START---
 SELECT 'nan'::float8 / '0'::float8;
+---END---
+---START---
 SELECT 'nan'::numeric::float8;
+---END---
+---START---
 
 SELECT * FROM FLOAT8_TBL;
+---END---
+---START---
 
 SELECT f.* FROM FLOAT8_TBL f WHERE f.f1 <> '1004.3';
+---END---
+---START---
 
 SELECT f.* FROM FLOAT8_TBL f WHERE f.f1 = '1004.3';
+---END---
+---START---
 
 SELECT f.* FROM FLOAT8_TBL f WHERE '1004.3' > f.f1;
+---END---
+---START---
 
 SELECT f.* FROM FLOAT8_TBL f WHERE  f.f1 < '1004.3';
+---END---
+---START---
 
 SELECT f.* FROM FLOAT8_TBL f WHERE '1004.3' >= f.f1;
+---END---
+---START---
 
 SELECT f.* FROM FLOAT8_TBL f WHERE  f.f1 <= '1004.3';
+---END---
+---START---
 
 SELECT f.f1, f.f1 * '-10' AS x
    FROM FLOAT8_TBL f
    WHERE f.f1 > '0.0';
+---END---
+---START---
 
 SELECT f.f1, f.f1 + '-10' AS x
    FROM FLOAT8_TBL f
    WHERE f.f1 > '0.0';
+---END---
+---START---
 
 SELECT f.f1, f.f1 / '-10' AS x
    FROM FLOAT8_TBL f
    WHERE f.f1 > '0.0';
+---END---
+---START---
 
 SELECT f.f1, f.f1 - '-10' AS x
    FROM FLOAT8_TBL f
    WHERE f.f1 > '0.0';
+---END---
+---START---
 
 SELECT f.f1 ^ '2.0' AS square_f1
    FROM FLOAT8_TBL f where f.f1 = '1004.3';
+---END---
+---START---
 
 -- absolute value
 SELECT f.f1, @f.f1 AS abs_f1
    FROM FLOAT8_TBL f;
+---END---
+---START---
 
 -- truncate
 SELECT f.f1, trunc(f.f1) AS trunc_f1
    FROM FLOAT8_TBL f;
+---END---
+---START---
 
 -- round
 SELECT f.f1, round(f.f1) AS round_f1
    FROM FLOAT8_TBL f;
+---END---
+---START---
 
 -- ceil / ceiling
 select ceil(f1) as ceil_f1 from float8_tbl f;
+---END---
+---START---
 select ceiling(f1) as ceiling_f1 from float8_tbl f;
+---END---
+---START---
 
 -- floor
 select floor(f1) as floor_f1 from float8_tbl f;
+---END---
+---START---
 
 -- sign
 select sign(f1) as sign_f1 from float8_tbl f;
+---END---
+---START---
 
 -- avoid bit-exact output here because operations may not be bit-exact.
 SET extra_float_digits = 0;
+---END---
+---START---
 
 -- square root
 SELECT sqrt(float8 '64') AS eight;
+---END---
+---START---
 
 SELECT |/ float8 '64' AS eight;
+---END---
+---START---
 
 SELECT f.f1, |/f.f1 AS sqrt_f1
    FROM FLOAT8_TBL f
    WHERE f.f1 > '0.0';
+---END---
+---START---
 
 -- power
 SELECT power(float8 '144', float8 '0.5');
+---END---
+---START---
 SELECT power(float8 'NaN', float8 '0.5');
+---END---
+---START---
 SELECT power(float8 '144', float8 'NaN');
+---END---
+---START---
 SELECT power(float8 'NaN', float8 'NaN');
+---END---
+---START---
 SELECT power(float8 '-1', float8 'NaN');
+---END---
+---START---
 SELECT power(float8 '1', float8 'NaN');
+---END---
+---START---
 SELECT power(float8 'NaN', float8 '0');
+---END---
+---START---
 SELECT power(float8 'inf', float8 '0');
+---END---
+---START---
 SELECT power(float8 '-inf', float8 '0');
+---END---
+---START---
 SELECT power(float8 '0', float8 'inf');
+---END---
+---START---
 SELECT power(float8 '0', float8 '-inf');
+---END---
+---START---
 SELECT power(float8 '1', float8 'inf');
+---END---
+---START---
 SELECT power(float8 '1', float8 '-inf');
+---END---
+---START---
 SELECT power(float8 '-1', float8 'inf');
+---END---
+---START---
 SELECT power(float8 '-1', float8 '-inf');
+---END---
+---START---
 SELECT power(float8 '0.1', float8 'inf');
+---END---
+---START---
 SELECT power(float8 '-0.1', float8 'inf');
+---END---
+---START---
 SELECT power(float8 '1.1', float8 'inf');
+---END---
+---START---
 SELECT power(float8 '-1.1', float8 'inf');
+---END---
+---START---
 SELECT power(float8 '0.1', float8 '-inf');
+---END---
+---START---
 SELECT power(float8 '-0.1', float8 '-inf');
+---END---
+---START---
 SELECT power(float8 '1.1', float8 '-inf');
+---END---
+---START---
 SELECT power(float8 '-1.1', float8 '-inf');
+---END---
+---START---
 SELECT power(float8 'inf', float8 '-2');
+---END---
+---START---
 SELECT power(float8 'inf', float8 '2');
+---END---
+---START---
 SELECT power(float8 'inf', float8 'inf');
+---END---
+---START---
 SELECT power(float8 'inf', float8 '-inf');
+---END---
+---START---
 -- Intel's icc misoptimizes the code that controls the sign of this result,
 -- even with -mp1.  Pending a fix for that, only test for "is it zero".
 SELECT power(float8 '-inf', float8 '-2') = '0';
+---END---
+---START---
 SELECT power(float8 '-inf', float8 '-3');
+---END---
+---START---
 SELECT power(float8 '-inf', float8 '2');
+---END---
+---START---
 SELECT power(float8 '-inf', float8 '3');
+---END---
+---START---
 SELECT power(float8 '-inf', float8 '3.5');
+---END---
+---START---
 SELECT power(float8 '-inf', float8 'inf');
+---END---
+---START---
 SELECT power(float8 '-inf', float8 '-inf');
+---END---
+---START---
 
 -- take exp of ln(f.f1)
 SELECT f.f1, exp(ln(f.f1)) AS exp_ln_f1
    FROM FLOAT8_TBL f
    WHERE f.f1 > '0.0';
+---END---
+---START---
 
 -- check edge cases for exp
 SELECT exp('inf'::float8), exp('-inf'::float8), exp('nan'::float8);
+---END---
+---START---
 
 -- cube root
 SELECT ||/ float8 '27' AS three;
+---END---
+---START---
 
 SELECT f.f1, ||/f.f1 AS cbrt_f1 FROM FLOAT8_TBL f;
+---END---
+---START---
 
 
 SELECT * FROM FLOAT8_TBL;
+---END---
+---START---
 
 UPDATE FLOAT8_TBL
    SET f1 = FLOAT8_TBL.f1 * '-1'
    WHERE FLOAT8_TBL.f1 > '0.0';
+---END---
+---START---
 
 SELECT f.f1 * '1e200' from FLOAT8_TBL f;
+---END---
+---START---
 
 SELECT f.f1 ^ '1e200' from FLOAT8_TBL f;
+---END---
+---START---
 
 SELECT 0 ^ 0 + 0 ^ 1 + 0 ^ 0.0 + 0 ^ 0.5;
+---END---
+---START---
 
 SELECT ln(f.f1) from FLOAT8_TBL f where f.f1 = '0.0' ;
+---END---
+---START---
 
 SELECT ln(f.f1) from FLOAT8_TBL f where f.f1 < '0.0' ;
+---END---
+---START---
 
 SELECT exp(f.f1) from FLOAT8_TBL f;
+---END---
+---START---
 
 SELECT f.f1 / '0.0' from FLOAT8_TBL f;
+---END---
+---START---
 
 SELECT * FROM FLOAT8_TBL;
+---END---
+---START---
 
 -- hyperbolic functions
 -- we run these with extra_float_digits = 0 too, since different platforms
 -- tend to produce results that vary in the last place.
 SELECT sinh(float8 '1');
+---END---
+---START---
 SELECT cosh(float8 '1');
+---END---
+---START---
 SELECT tanh(float8 '1');
+---END---
+---START---
 SELECT asinh(float8 '1');
+---END---
+---START---
 SELECT acosh(float8 '2');
+---END---
+---START---
 SELECT atanh(float8 '0.5');
+---END---
+---START---
 -- test Inf/NaN cases for hyperbolic functions
 SELECT sinh(float8 'infinity');
+---END---
+---START---
 SELECT sinh(float8 '-infinity');
+---END---
+---START---
 SELECT sinh(float8 'nan');
+---END---
+---START---
 SELECT cosh(float8 'infinity');
+---END---
+---START---
 SELECT cosh(float8 '-infinity');
+---END---
+---START---
 SELECT cosh(float8 'nan');
+---END---
+---START---
 SELECT tanh(float8 'infinity');
+---END---
+---START---
 SELECT tanh(float8 '-infinity');
+---END---
+---START---
 SELECT tanh(float8 'nan');
+---END---
+---START---
 SELECT asinh(float8 'infinity');
+---END---
+---START---
 SELECT asinh(float8 '-infinity');
+---END---
+---START---
 SELECT asinh(float8 'nan');
+---END---
+---START---
 -- acosh(Inf) should be Inf, but some mingw versions produce NaN, so skip test
 -- SELECT acosh(float8 'infinity');
+---END---
+---START---
 SELECT acosh(float8 '-infinity');
+---END---
+---START---
 SELECT acosh(float8 'nan');
+---END---
+---START---
 SELECT atanh(float8 'infinity');
+---END---
+---START---
 SELECT atanh(float8 '-infinity');
+---END---
+---START---
 SELECT atanh(float8 'nan');
+---END---
+---START---
 
 -- error functions
 -- we run these with extra_float_digits = -1, to get consistently rounded
 -- results on all platforms.
 SET extra_float_digits = -1;
+---END---
+---START---
 SELECT x,
        erf(x),
        erfc(x)
@@ -242,37 +509,77 @@ FROM (VALUES (float8 '-infinity'),
       (1.2e-17), (2.3e-13), (1.2e-9),
       (0.45), (1.1), (2.1), (3.4), (6), (28),
       (float8 'infinity'), (float8 'nan')) AS t(x);
+---END---
+---START---
 
 RESET extra_float_digits;
+---END---
+---START---
 
 -- test for over- and underflow
 INSERT INTO FLOAT8_TBL(f1) VALUES ('10e400');
+---END---
+---START---
 
 INSERT INTO FLOAT8_TBL(f1) VALUES ('-10e400');
+---END---
+---START---
 
 INSERT INTO FLOAT8_TBL(f1) VALUES ('10e-400');
+---END---
+---START---
 
 INSERT INTO FLOAT8_TBL(f1) VALUES ('-10e-400');
+---END---
+---START---
 
 DROP TABLE FLOAT8_TBL;
+---END---
+---START---
 
 -- Check the float8 values exported for use by other tests
 
 SELECT * FROM FLOAT8_TBL;
+---END---
+---START---
 
 -- test edge-case coercions to integer
 SELECT '32767.4'::float8::int2;
+---END---
+---START---
 SELECT '32767.6'::float8::int2;
+---END---
+---START---
 SELECT '-32768.4'::float8::int2;
+---END---
+---START---
 SELECT '-32768.6'::float8::int2;
+---END---
+---START---
 SELECT '2147483647.4'::float8::int4;
+---END---
+---START---
 SELECT '2147483647.6'::float8::int4;
+---END---
+---START---
 SELECT '-2147483648.4'::float8::int4;
+---END---
+---START---
 SELECT '-2147483648.6'::float8::int4;
+---END---
+---START---
 SELECT '9223372036854773760'::float8::int8;
+---END---
+---START---
 SELECT '9223372036854775807'::float8::int8;
+---END---
+---START---
 SELECT '-9223372036854775808.5'::float8::int8;
+---END---
+---START---
 SELECT '-9223372036854780000'::float8::int8;
+---END---
+---START---
 
 -- test exact cases for trigonometric functions in degrees
 
@@ -281,12 +588,16 @@ SELECT x,
        sind(x) IN (-1,-0.5,0,0.5,1) AS sind_exact
 FROM (VALUES (0), (30), (90), (150), (180),
       (210), (270), (330), (360)) AS t(x);
+---END---
+---START---
 
 SELECT x,
        cosd(x),
        cosd(x) IN (-1,-0.5,0,0.5,1) AS cosd_exact
 FROM (VALUES (0), (60), (90), (120), (180),
       (240), (270), (300), (360)) AS t(x);
+---END---
+---START---
 
 SELECT x,
        tand(x),
@@ -297,6 +608,8 @@ SELECT x,
                    1,'Infinity'::float8) AS cotd_exact
 FROM (VALUES (0), (45), (90), (135), (180),
       (225), (270), (315), (360)) AS t(x);
+---END---
+---START---
 
 SELECT x,
        asind(x),
@@ -304,18 +617,24 @@ SELECT x,
        acosd(x),
        acosd(x) IN (0,60,90,120,180) AS acosd_exact
 FROM (VALUES (-1), (-0.5), (0), (0.5), (1)) AS t(x);
+---END---
+---START---
 
 SELECT x,
        atand(x),
        atand(x) IN (-90,-45,0,45,90) AS atand_exact
 FROM (VALUES ('-Infinity'::float8), (-1), (0), (1),
       ('Infinity'::float8)) AS t(x);
+---END---
+---START---
 
 SELECT x, y,
        atan2d(y, x),
        atan2d(y, x) IN (-90,0,90,180) AS atan2d_exact
 FROM (SELECT 10*cosd(a), 10*sind(a)
       FROM generate_series(0, 360, 90) AS t(a)) AS t(x,y);
+---END---
+---START---
 
 --
 -- test output (and round-trip safety) of various values.
@@ -324,15 +643,31 @@ FROM (SELECT 10*cosd(a), 10*sind(a)
 -- this means we'll fail on non-IEEE platforms).
 
 create type xfloat8;
+---END---
+---START---
 create function xfloat8in(cstring) returns xfloat8 immutable strict
   language internal as 'int8in';
+---END---
+---START---
 create function xfloat8out(xfloat8) returns cstring immutable strict
   language internal as 'int8out';
+---END---
+---START---
 create type xfloat8 (input = xfloat8in, output = xfloat8out, like = float8);
+---END---
+---START---
 create cast (xfloat8 as float8) without function;
+---END---
+---START---
 create cast (float8 as xfloat8) without function;
+---END---
+---START---
 create cast (xfloat8 as bigint) without function;
+---END---
+---START---
 create cast (bigint as xfloat8) without function;
+---END---
+---START---
 
 -- float8: seeeeeee eeeeeeee eeeeeeee mmmmmmmm mmmmmmmm(x4)
 
@@ -360,6 +695,8 @@ select float8send(flt) as ibits,
   from (select bits::bigint::xfloat8::float8 as flt
           from testdata
 	offset 0) s;
+---END---
+---START---
 
 -- round-trip tests
 
@@ -509,6 +846,9 @@ select float8send(flt) as ibits,
   from (select bits::bigint::xfloat8::float8 as flt
           from testdata
 	offset 0) s;
+---END---
+---START---
 
 -- clean up, lest opr_sanity complain
 drop type xfloat8 cascade;
+---END---

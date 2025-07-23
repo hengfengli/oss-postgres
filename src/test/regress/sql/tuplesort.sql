@@ -1,6 +1,11 @@
+---START---
 -- only use parallelism when explicitly intending to do so
 SET max_parallel_maintenance_workers = 0;
+---END---
+---START---
 SET max_parallel_workers = 0;
+---END---
+---START---
 
 -- A table with contents that, when sorted, triggers abbreviated
 -- key aborts. One easy way to achieve that is to use uuids that all
@@ -12,6 +17,8 @@ CREATE TEMP TABLE abbrev_abort_uuids (
     abort_decreasing uuid,
     noabort_increasing uuid,
     noabort_decreasing uuid);
+---END---
+---START---
 
 INSERT INTO abbrev_abort_uuids (abort_increasing, abort_decreasing, noabort_increasing, noabort_decreasing)
     SELECT
@@ -20,17 +27,27 @@ INSERT INTO abbrev_abort_uuids (abort_increasing, abort_decreasing, noabort_incr
         (to_char(g.i % 10009, '00000000FM')||'-0000-0000-0000-'||to_char(g.i, '000000000000FM'))::uuid noabort_increasing,
         (to_char(((20000 - g.i) % 10009), '00000000FM')||'-0000-0000-0000-'||to_char(20000 - g.i, '000000000000FM'))::uuid noabort_decreasing
     FROM generate_series(0, 20000, 1) g(i);
+---END---
+---START---
 
 -- and a few NULLs
 INSERT INTO abbrev_abort_uuids(id) VALUES(0);
+---END---
+---START---
 INSERT INTO abbrev_abort_uuids DEFAULT VALUES;
+---END---
+---START---
 INSERT INTO abbrev_abort_uuids DEFAULT VALUES;
+---END---
+---START---
 
 -- add just a few duplicates
 INSERT INTO abbrev_abort_uuids (abort_increasing, abort_decreasing, noabort_increasing, noabort_decreasing)
     SELECT abort_increasing, abort_decreasing, noabort_increasing, noabort_decreasing
     FROM abbrev_abort_uuids
     WHERE (id < 10 OR id > 19990) AND id % 3 = 0 AND abort_increasing is not null;
+---END---
+---START---
 
 ----
 -- Check sort node uses of tuplesort wrt. abbreviated keys
@@ -38,15 +55,27 @@ INSERT INTO abbrev_abort_uuids (abort_increasing, abort_decreasing, noabort_incr
 
 -- plain sort triggering abbreviated abort
 SELECT abort_increasing, abort_decreasing FROM abbrev_abort_uuids ORDER BY abort_increasing OFFSET 20000 - 4;
+---END---
+---START---
 SELECT abort_increasing, abort_decreasing FROM abbrev_abort_uuids ORDER BY abort_decreasing NULLS FIRST OFFSET 20000 - 4;
+---END---
+---START---
 
 -- plain sort not triggering abbreviated abort
 SELECT noabort_increasing, noabort_decreasing FROM abbrev_abort_uuids ORDER BY noabort_increasing OFFSET 20000 - 4;
+---END---
+---START---
 SELECT noabort_increasing, noabort_decreasing FROM abbrev_abort_uuids ORDER BY noabort_decreasing NULLS FIRST OFFSET 20000 - 4;
+---END---
+---START---
 
 -- bounded sort (disables abbreviated keys)
 SELECT abort_increasing, noabort_increasing FROM abbrev_abort_uuids ORDER BY abort_increasing LIMIT 5;
+---END---
+---START---
 SELECT abort_increasing, noabort_increasing FROM abbrev_abort_uuids ORDER BY noabort_increasing NULLS FIRST LIMIT 5;
+---END---
+---START---
 
 
 ----
@@ -55,27 +84,51 @@ SELECT abort_increasing, noabort_increasing FROM abbrev_abort_uuids ORDER BY noa
 
 -- index creation using abbreviated keys successfully
 CREATE INDEX abbrev_abort_uuids__noabort_increasing_idx ON abbrev_abort_uuids (noabort_increasing);
+---END---
+---START---
 CREATE INDEX abbrev_abort_uuids__noabort_decreasing_idx ON abbrev_abort_uuids (noabort_decreasing);
+---END---
+---START---
 
 -- verify
 EXPLAIN (COSTS OFF)
 SELECT id, noabort_increasing, noabort_decreasing FROM abbrev_abort_uuids ORDER BY noabort_increasing LIMIT 5;
+---END---
+---START---
 SELECT id, noabort_increasing, noabort_decreasing FROM abbrev_abort_uuids ORDER BY noabort_increasing LIMIT 5;
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT id, noabort_increasing, noabort_decreasing FROM abbrev_abort_uuids ORDER BY noabort_decreasing LIMIT 5;
+---END---
+---START---
 SELECT id, noabort_increasing, noabort_decreasing FROM abbrev_abort_uuids ORDER BY noabort_decreasing LIMIT 5;
+---END---
+---START---
 
 -- index creation using abbreviated keys, hitting abort
 CREATE INDEX abbrev_abort_uuids__abort_increasing_idx ON abbrev_abort_uuids (abort_increasing);
+---END---
+---START---
 CREATE INDEX abbrev_abort_uuids__abort_decreasing_idx ON abbrev_abort_uuids (abort_decreasing);
+---END---
+---START---
 
 -- verify
 EXPLAIN (COSTS OFF)
 SELECT id, abort_increasing, abort_decreasing FROM abbrev_abort_uuids ORDER BY abort_increasing LIMIT 5;
+---END---
+---START---
 SELECT id, abort_increasing, abort_decreasing FROM abbrev_abort_uuids ORDER BY abort_increasing LIMIT 5;
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT id, abort_increasing, abort_decreasing FROM abbrev_abort_uuids ORDER BY abort_decreasing LIMIT 5;
+---END---
+---START---
 SELECT id, abort_increasing, abort_decreasing FROM abbrev_abort_uuids ORDER BY abort_decreasing LIMIT 5;
+---END---
+---START---
 
 
 ----
@@ -84,67 +137,115 @@ SELECT id, abort_increasing, abort_decreasing FROM abbrev_abort_uuids ORDER BY a
 
 -- when aborting, increasing order
 BEGIN;
+---END---
+---START---
 SET LOCAL enable_indexscan = false;
+---END---
+---START---
 CLUSTER abbrev_abort_uuids USING abbrev_abort_uuids__abort_increasing_idx;
+---END---
+---START---
 
 -- head
 SELECT id, abort_increasing, abort_decreasing, noabort_increasing, noabort_decreasing
 FROM abbrev_abort_uuids
 ORDER BY ctid LIMIT 5;
+---END---
+---START---
 
 -- tail
 SELECT id, abort_increasing, abort_decreasing, noabort_increasing, noabort_decreasing
 FROM abbrev_abort_uuids
 ORDER BY ctid DESC LIMIT 5;
+---END---
+---START---
 ROLLBACK;
+---END---
+---START---
 
 -- when aborting, decreasing order
 BEGIN;
+---END---
+---START---
 SET LOCAL enable_indexscan = false;
+---END---
+---START---
 CLUSTER abbrev_abort_uuids USING abbrev_abort_uuids__abort_decreasing_idx;
+---END---
+---START---
 
 -- head
 SELECT id, abort_increasing, abort_decreasing, noabort_increasing, noabort_decreasing
 FROM abbrev_abort_uuids
 ORDER BY ctid LIMIT 5;
+---END---
+---START---
 
 -- tail
 SELECT id, abort_increasing, abort_decreasing, noabort_increasing, noabort_decreasing
 FROM abbrev_abort_uuids
 ORDER BY ctid DESC LIMIT 5;
+---END---
+---START---
 ROLLBACK;
+---END---
+---START---
 
 -- when not aborting, increasing order
 BEGIN;
+---END---
+---START---
 SET LOCAL enable_indexscan = false;
+---END---
+---START---
 CLUSTER abbrev_abort_uuids USING abbrev_abort_uuids__noabort_increasing_idx;
+---END---
+---START---
 
 -- head
 SELECT id, abort_increasing, abort_decreasing, noabort_increasing, noabort_decreasing
 FROM abbrev_abort_uuids
 ORDER BY ctid LIMIT 5;
+---END---
+---START---
 
 -- tail
 SELECT id, abort_increasing, abort_decreasing, noabort_increasing, noabort_decreasing
 FROM abbrev_abort_uuids
 ORDER BY ctid DESC LIMIT 5;
+---END---
+---START---
 ROLLBACK;
+---END---
+---START---
 
 -- when no aborting, decreasing order
 BEGIN;
+---END---
+---START---
 SET LOCAL enable_indexscan = false;
+---END---
+---START---
 CLUSTER abbrev_abort_uuids USING abbrev_abort_uuids__noabort_decreasing_idx;
+---END---
+---START---
 
 -- head
 SELECT id, abort_increasing, abort_decreasing, noabort_increasing, noabort_decreasing
 FROM abbrev_abort_uuids
 ORDER BY ctid LIMIT 5;
+---END---
+---START---
 
 -- tail
 SELECT id, abort_increasing, abort_decreasing, noabort_increasing, noabort_decreasing
 FROM abbrev_abort_uuids
 ORDER BY ctid DESC LIMIT 5;
+---END---
+---START---
 ROLLBACK;
+---END---
+---START---
 
 ----
 -- test forward and backward scans for in-memory and disk based tuplesort
@@ -152,64 +253,142 @@ ROLLBACK;
 
 -- in-memory
 BEGIN;
+---END---
+---START---
 SET LOCAL enable_indexscan = false;
+---END---
+---START---
 -- unfortunately can't show analyze output confirming sort method,
 -- the memory used output wouldn't be stable
 EXPLAIN (COSTS OFF) DECLARE c SCROLL CURSOR FOR SELECT noabort_decreasing FROM abbrev_abort_uuids ORDER BY noabort_decreasing;
+---END---
+---START---
 DECLARE c SCROLL CURSOR FOR SELECT noabort_decreasing FROM abbrev_abort_uuids ORDER BY noabort_decreasing;
+---END---
+---START---
 
 -- first and second
 FETCH NEXT FROM c;
+---END---
+---START---
 FETCH NEXT FROM c;
+---END---
+---START---
 
 -- scroll beyond beginning
 FETCH BACKWARD FROM c;
+---END---
+---START---
 FETCH BACKWARD FROM c;
+---END---
+---START---
 FETCH BACKWARD FROM c;
+---END---
+---START---
 FETCH BACKWARD FROM c;
+---END---
+---START---
 FETCH NEXT FROM c;
+---END---
+---START---
 
 -- scroll beyond end end
 FETCH LAST FROM c;
+---END---
+---START---
 FETCH BACKWARD FROM c;
+---END---
+---START---
 FETCH NEXT FROM c;
+---END---
+---START---
 FETCH NEXT FROM c;
+---END---
+---START---
 FETCH NEXT FROM c;
+---END---
+---START---
 FETCH BACKWARD FROM c;
+---END---
+---START---
 FETCH NEXT FROM c;
+---END---
+---START---
 
 COMMIT;
+---END---
+---START---
 
 -- disk based
 BEGIN;
+---END---
+---START---
 SET LOCAL enable_indexscan = false;
+---END---
+---START---
 SET LOCAL work_mem = '100kB';
+---END---
+---START---
 -- unfortunately can't show analyze output confirming sort method,
 -- the memory used output wouldn't be stable
 EXPLAIN (COSTS OFF) DECLARE c SCROLL CURSOR FOR SELECT noabort_decreasing FROM abbrev_abort_uuids ORDER BY noabort_decreasing;
+---END---
+---START---
 DECLARE c SCROLL CURSOR FOR SELECT noabort_decreasing FROM abbrev_abort_uuids ORDER BY noabort_decreasing;
+---END---
+---START---
 
 -- first and second
 FETCH NEXT FROM c;
+---END---
+---START---
 FETCH NEXT FROM c;
+---END---
+---START---
 
 -- scroll beyond beginning
 FETCH BACKWARD FROM c;
+---END---
+---START---
 FETCH BACKWARD FROM c;
+---END---
+---START---
 FETCH BACKWARD FROM c;
+---END---
+---START---
 FETCH BACKWARD FROM c;
+---END---
+---START---
 FETCH NEXT FROM c;
+---END---
+---START---
 
 -- scroll beyond end end
 FETCH LAST FROM c;
+---END---
+---START---
 FETCH BACKWARD FROM c;
+---END---
+---START---
 FETCH NEXT FROM c;
+---END---
+---START---
 FETCH NEXT FROM c;
+---END---
+---START---
 FETCH NEXT FROM c;
+---END---
+---START---
 FETCH BACKWARD FROM c;
+---END---
+---START---
 FETCH NEXT FROM c;
+---END---
+---START---
 
 COMMIT;
+---END---
+---START---
 
 
 ----
@@ -238,10 +417,16 @@ FROM (
     SELECT * FROM abbrev_abort_uuids
     UNION ALL
     SELECT NULL, NULL, NULL, NULL, NULL) s;
+---END---
+---START---
 
 -- disk based (see also above)
 BEGIN;
+---END---
+---START---
 SET LOCAL work_mem = '100kB';
+---END---
+---START---
 
 SELECT
     (array_agg(id ORDER BY id DESC NULLS FIRST))[0:5],
@@ -256,8 +441,12 @@ FROM (
     SELECT * FROM abbrev_abort_uuids
     UNION ALL
     SELECT NULL, NULL, NULL, NULL, NULL) s;
+---END---
+---START---
 
 ROLLBACK;
+---END---
+---START---
 
 
 ----
@@ -265,15 +454,27 @@ ROLLBACK;
 ---
 
 CREATE TEMP TABLE test_mark_restore(col1 int, col2 int, col12 int);
+---END---
+---START---
 -- need a few duplicates for mark/restore to matter
 INSERT INTO test_mark_restore(col1, col2, col12)
    SELECT a.i, b.i, a.i * b.i FROM generate_series(1, 500) a(i), generate_series(1, 5) b(i);
+---END---
+---START---
 
 BEGIN;
+---END---
+---START---
 
 SET LOCAL enable_nestloop = off;
+---END---
+---START---
 SET LOCAL enable_hashjoin = off;
+---END---
+---START---
 SET LOCAL enable_material = off;
+---END---
+---START---
 
 -- set query into variable once, to avoid repetition of the fairly long query
 SELECT $$
@@ -288,11 +489,22 @@ $$ AS qry \gset
 
 -- test mark/restore with in-memory sorts
 EXPLAIN (COSTS OFF) :qry;
+---END---
+---START---
 :qry;
+---END---
+---START---
 
 -- test mark/restore with on-disk sorts
 SET LOCAL work_mem = '100kB';
+---END---
+---START---
 EXPLAIN (COSTS OFF) :qry;
+---END---
+---START---
 :qry;
+---END---
+---START---
 
 COMMIT;
+---END---

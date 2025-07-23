@@ -1,3 +1,4 @@
+---START---
 --
 -- encoding-sensitive tests for jsonpath
 --
@@ -23,6 +24,8 @@ SELECT '"\uaBcD"'::jsonpath;	-- OK, uppercase and lower case both OK
 
 -- handling of unicode surrogate pairs
 select '"\ud83d\ude04\ud83d\udc36"'::jsonpath as correct_in_utf8;
+---END---
+---START---
 select '"\ud83d\ud83d"'::jsonpath; -- 2 high surrogates in a row
 select '"\ude04\ud83d"'::jsonpath; -- surrogates in wrong order
 select '"\ud83dX"'::jsonpath; -- orphan high surrogate
@@ -30,10 +33,20 @@ select '"\ude04X"'::jsonpath; -- orphan low surrogate
 
 --handling of simple unicode escapes
 select '"the Copyright \u00a9 sign"'::jsonpath as correct_in_utf8;
+---END---
+---START---
 select '"dollar \u0024 character"'::jsonpath as correct_everywhere;
+---END---
+---START---
 select '"dollar \\u0024 character"'::jsonpath as not_an_escape;
+---END---
+---START---
 select '"null \u0000 escape"'::jsonpath as not_unescaped;
+---END---
+---START---
 select '"null \\u0000 escape"'::jsonpath as not_an_escape;
+---END---
+---START---
 
 -- checks for quoted key names
 
@@ -46,6 +59,8 @@ SELECT '$."\uaBcD"'::jsonpath;	-- OK, uppercase and lower case both OK
 
 -- handling of unicode surrogate pairs
 select '$."\ud83d\ude04\ud83d\udc36"'::jsonpath as correct_in_utf8;
+---END---
+---START---
 select '$."\ud83d\ud83d"'::jsonpath; -- 2 high surrogates in a row
 select '$."\ude04\ud83d"'::jsonpath; -- surrogates in wrong order
 select '$."\ud83dX"'::jsonpath; -- orphan high surrogate
@@ -53,7 +68,16 @@ select '$."\ude04X"'::jsonpath; -- orphan low surrogate
 
 --handling of simple unicode escapes
 select '$."the Copyright \u00a9 sign"'::jsonpath as correct_in_utf8;
+---END---
+---START---
 select '$."dollar \u0024 character"'::jsonpath as correct_everywhere;
+---END---
+---START---
 select '$."dollar \\u0024 character"'::jsonpath as not_an_escape;
+---END---
+---START---
 select '$."null \u0000 escape"'::jsonpath as not_unescaped;
+---END---
+---START---
 select '$."null \\u0000 escape"'::jsonpath as not_an_escape;
+---END---

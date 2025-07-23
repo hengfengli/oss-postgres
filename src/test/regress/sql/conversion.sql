@@ -1,3 +1,4 @@
+---START---
 --
 -- create user defined conversion
 --
@@ -11,31 +12,55 @@
 CREATE FUNCTION test_enc_conversion(bytea, name, name, bool, validlen OUT int, result OUT bytea)
     AS :'regresslib', 'test_enc_conversion'
     LANGUAGE C STRICT;
+---END---
+---START---
 
 CREATE USER regress_conversion_user WITH NOCREATEDB NOCREATEROLE;
+---END---
+---START---
 SET SESSION AUTHORIZATION regress_conversion_user;
+---END---
+---START---
 CREATE CONVERSION myconv FOR 'LATIN1' TO 'UTF8' FROM iso8859_1_to_utf8;
+---END---
+---START---
 --
 -- cannot make same name conversion in same schema
 --
 CREATE CONVERSION myconv FOR 'LATIN1' TO 'UTF8' FROM iso8859_1_to_utf8;
+---END---
+---START---
 --
 -- create default conversion with qualified name
 --
 CREATE DEFAULT CONVERSION public.mydef FOR 'LATIN1' TO 'UTF8' FROM iso8859_1_to_utf8;
+---END---
+---START---
 --
 -- cannot make default conversion with same schema/for_encoding/to_encoding
 --
 CREATE DEFAULT CONVERSION public.mydef2 FOR 'LATIN1' TO 'UTF8' FROM iso8859_1_to_utf8;
+---END---
+---START---
 -- test comments
 COMMENT ON CONVERSION myconv_bad IS 'foo';
+---END---
+---START---
 COMMENT ON CONVERSION myconv IS 'bar';
+---END---
+---START---
 COMMENT ON CONVERSION myconv IS NULL;
+---END---
+---START---
 --
 -- drop user defined conversion
 --
 DROP CONVERSION myconv;
+---END---
+---START---
 DROP CONVERSION mydef;
+---END---
+---START---
 --
 -- Note: the built-in conversions are exercised in opr_sanity.sql,
 -- so there's no need to do that here.
@@ -44,7 +69,11 @@ DROP CONVERSION mydef;
 -- return to the superuser
 --
 RESET SESSION AUTHORIZATION;
+---END---
+---START---
 DROP USER regress_conversion_user;
+---END---
+---START---
 
 --
 -- Test built-in conversion functions.
@@ -64,22 +93,44 @@ language plpgsql as
 $$
 declare
   validlen int;
+---END---
+---START---
 begin
   -- First try to perform the conversion with noError = false. If that errors out,
   -- capture the error message, and try again with noError = true. The second call
   -- should succeed and return the position of the error, return that too.
   begin
     select * into validlen, result from test_enc_conversion(input, src_encoding, dst_encoding, false);
+---END---
+---START---
     errorat = NULL;
+---END---
+---START---
     error := NULL;
+---END---
+---START---
   exception when others then
     error := sqlerrm;
+---END---
+---START---
     select * into validlen, result from test_enc_conversion(input, src_encoding, dst_encoding, true);
+---END---
+---START---
     errorat = substr(input, validlen + 1);
+---END---
+---START---
   end;
+---END---
+---START---
   return;
+---END---
+---START---
 end;
+---END---
+---START---
 $$;
+---END---
+---START---
 
 
 --
@@ -87,6 +138,8 @@ $$;
 --
 -- The description column must be unique.
 CREATE TABLE utf8_verification_inputs (inbytes bytea, description text PRIMARY KEY);
+---END---
+---START---
 insert into utf8_verification_inputs  values
   ('\x66006f',	'NUL byte'),
   ('\xaf',		'bare continuation'),
@@ -111,9 +164,13 @@ insert into utf8_verification_inputs  values
   ('\xf48fbfbf',	'largest 4-byte'),
   ('\xf4908080',	'smallest too large'),
   ('\xfa9a9a8a8a',	'5-byte');
+---END---
+---START---
 
 -- Test UTF-8 verification slow path
 select description, (test_conv(inbytes, 'utf8', 'utf8')).* from utf8_verification_inputs;
+---END---
+---START---
 
 -- Test UTF-8 verification with ASCII padding appended to provide
 -- coverage for algorithms that work on multiple bytes at a time.
@@ -145,6 +202,8 @@ join test_bytes b
 using (description)
 where p.error is distinct from b.error
 order by description;
+---END---
+---START---
 
 -- Test ASCII verification in fast path where incomplete
 -- UTF-8 sequences fall at the end of the preceding chunk.
@@ -169,6 +228,8 @@ join test_bytes b
 using (description)
 where p.error is distinct from b.error
 order by description;
+---END---
+---START---
 
 -- Test cases where UTF-8 sequences within short text
 -- come after the fast path returns.
@@ -193,6 +254,8 @@ join test_bytes b
 using (description)
 where p.error is distinct from b.error
 order by description;
+---END---
+---START---
 
 -- Test cases where incomplete UTF-8 sequences fall at the
 -- end of the part checked by the fast path.
@@ -217,8 +280,12 @@ join test_bytes b
 using (description)
 where p.error is distinct from b.error
 order by description;
+---END---
+---START---
 
 CREATE TABLE utf8_inputs (inbytes bytea, description text);
+---END---
+---START---
 insert into utf8_inputs  values
   ('\x666f6f',		'valid, pure ASCII'),
   ('\xc3a4c3b6',	'valid, extra latin chars'),
@@ -233,21 +300,39 @@ insert into utf8_inputs  values
   ('\x66006f',		'invalid, NUL byte'),
   ('\x666f6fe8b100',	'invalid, NUL byte'),
   ('\x666f6fe8b1',	'incomplete character at end');
+---END---
+---START---
 
 -- Test UTF-8 verification
 select description, (test_conv(inbytes, 'utf8', 'utf8')).* from utf8_inputs;
+---END---
+---START---
 -- Test conversions from UTF-8
 select description, inbytes, (test_conv(inbytes, 'utf8', 'euc_jis_2004')).* from utf8_inputs;
+---END---
+---START---
 select description, inbytes, (test_conv(inbytes, 'utf8', 'latin1')).* from utf8_inputs;
+---END---
+---START---
 select description, inbytes, (test_conv(inbytes, 'utf8', 'latin2')).* from utf8_inputs;
+---END---
+---START---
 select description, inbytes, (test_conv(inbytes, 'utf8', 'latin5')).* from utf8_inputs;
+---END---
+---START---
 select description, inbytes, (test_conv(inbytes, 'utf8', 'koi8r')).* from utf8_inputs;
+---END---
+---START---
 select description, inbytes, (test_conv(inbytes, 'utf8', 'gb18030')).* from utf8_inputs;
+---END---
+---START---
 
 --
 -- EUC_JIS_2004
 --
 CREATE TABLE euc_jis_2004_inputs (inbytes bytea, description text);
+---END---
+---START---
 insert into euc_jis_2004_inputs  values
   ('\x666f6f',		'valid, pure ASCII'),
   ('\x666f6fbedd',	'valid'),
@@ -257,16 +342,24 @@ insert into euc_jis_2004_inputs  values
   ('\x666f6fbe00dd',	'invalid, NUL byte'),
   ('\x666f6fbedd00',	'invalid, NUL byte'),
   ('\xbe04',		'invalid byte sequence');
+---END---
+---START---
 
 -- Test EUC_JIS_2004 verification
 select description, inbytes, (test_conv(inbytes, 'euc_jis_2004', 'euc_jis_2004')).* from euc_jis_2004_inputs;
+---END---
+---START---
 -- Test conversions from EUC_JIS_2004
 select description, inbytes, (test_conv(inbytes, 'euc_jis_2004', 'utf8')).* from euc_jis_2004_inputs;
+---END---
+---START---
 
 --
 -- SHIFT-JIS-2004
 --
 CREATE TABLE shiftjis2004_inputs (inbytes bytea, description text);
+---END---
+---START---
 insert into shiftjis2004_inputs  values
   ('\x666f6f',		'valid, pure ASCII'),
   ('\x666f6f8fdb',	'valid'),
@@ -277,17 +370,27 @@ insert into shiftjis2004_inputs  values
   ('\x666f6f008fdb',	'invalid, NUL byte'),
   ('\x666f6f8f00db',	'invalid, NUL byte'),
   ('\x666f6f8fdb00',	'invalid, NUL byte');
+---END---
+---START---
 
 -- Test SHIFT-JIS-2004 verification
 select description, inbytes, (test_conv(inbytes, 'shiftjis2004', 'shiftjis2004')).* from shiftjis2004_inputs;
+---END---
+---START---
 -- Test conversions from SHIFT-JIS-2004
 select description, inbytes, (test_conv(inbytes, 'shiftjis2004', 'utf8')).* from shiftjis2004_inputs;
+---END---
+---START---
 select description, inbytes, (test_conv(inbytes, 'shiftjis2004', 'euc_jis_2004')).* from shiftjis2004_inputs;
+---END---
+---START---
 
 --
 -- GB18030
 --
 CREATE TABLE gb18030_inputs (inbytes bytea, description text);
+---END---
+---START---
 insert into gb18030_inputs  values
   ('\x666f6f',		'valid, pure ASCII'),
   ('\x666f6fcff3',	'valid'),
@@ -297,52 +400,82 @@ insert into gb18030_inputs  values
   ('\x666f6f84309c0a',	'incomplete char, followed by newline '),
   ('\x666f6f84309c3800', 'invalid, NUL byte'),
   ('\x666f6f84309c0038', 'invalid, NUL byte');
+---END---
+---START---
 
 -- Test GB18030 verification
 select description, inbytes, (test_conv(inbytes, 'gb18030', 'gb18030')).* from gb18030_inputs;
+---END---
+---START---
 -- Test conversions from GB18030
 select description, inbytes, (test_conv(inbytes, 'gb18030', 'utf8')).* from gb18030_inputs;
+---END---
+---START---
 
 
 --
 -- ISO-8859-5
 --
 CREATE TABLE iso8859_5_inputs (inbytes bytea, description text);
+---END---
+---START---
 insert into iso8859_5_inputs  values
   ('\x666f6f',		'valid, pure ASCII'),
   ('\xe4dede',		'valid'),
   ('\x00',		'invalid, NUL byte'),
   ('\xe400dede',	'invalid, NUL byte'),
   ('\xe4dede00',	'invalid, NUL byte');
+---END---
+---START---
 
 -- Test ISO-8859-5 verification
 select description, inbytes, (test_conv(inbytes, 'iso8859-5', 'iso8859-5')).* from iso8859_5_inputs;
+---END---
+---START---
 -- Test conversions from ISO-8859-5
 select description, inbytes, (test_conv(inbytes, 'iso8859-5', 'utf8')).* from iso8859_5_inputs;
+---END---
+---START---
 select description, inbytes, (test_conv(inbytes, 'iso8859-5', 'koi8r')).* from iso8859_5_inputs;
+---END---
+---START---
 select description, inbytes, (test_conv(inbytes, 'iso8859_5', 'mule_internal')).* from iso8859_5_inputs;
+---END---
+---START---
 
 --
 -- Big5
 --
 CREATE TABLE big5_inputs (inbytes bytea, description text);
+---END---
+---START---
 insert into big5_inputs  values
   ('\x666f6f',		'valid, pure ASCII'),
   ('\x666f6fb648',	'valid'),
   ('\x666f6fa27f',	'valid, no translation to UTF-8'),
   ('\x666f6fb60048',	'invalid, NUL byte'),
   ('\x666f6fb64800',	'invalid, NUL byte');
+---END---
+---START---
 
 -- Test Big5 verification
 select description, inbytes, (test_conv(inbytes, 'big5', 'big5')).* from big5_inputs;
+---END---
+---START---
 -- Test conversions from Big5
 select description, inbytes, (test_conv(inbytes, 'big5', 'utf8')).* from big5_inputs;
+---END---
+---START---
 select description, inbytes, (test_conv(inbytes, 'big5', 'mule_internal')).* from big5_inputs;
+---END---
+---START---
 
 --
 -- MULE_INTERNAL
 --
 CREATE TABLE mic_inputs (inbytes bytea, description text);
+---END---
+---START---
 insert into mic_inputs  values
   ('\x666f6f',		'valid, pure ASCII'),
   ('\x8bc68bcf8bcf',	'valid (in KOI8R)'),
@@ -354,12 +487,25 @@ insert into mic_inputs  values
   ('\x9200bedd',	'invalid, NUL byte'),
   ('\x92bedd00',	'invalid, NUL byte'),
   ('\x8b00c68bcf8bcf',	'invalid, NUL byte');
+---END---
+---START---
 
 -- Test MULE_INTERNAL verification
 select description, inbytes, (test_conv(inbytes, 'mule_internal', 'mule_internal')).* from mic_inputs;
+---END---
+---START---
 -- Test conversions from MULE_INTERNAL
 select description, inbytes, (test_conv(inbytes, 'mule_internal', 'koi8r')).* from mic_inputs;
+---END---
+---START---
 select description, inbytes, (test_conv(inbytes, 'mule_internal', 'iso8859-5')).* from mic_inputs;
+---END---
+---START---
 select description, inbytes, (test_conv(inbytes, 'mule_internal', 'sjis')).* from mic_inputs;
+---END---
+---START---
 select description, inbytes, (test_conv(inbytes, 'mule_internal', 'big5')).* from mic_inputs;
+---END---
+---START---
 select description, inbytes, (test_conv(inbytes, 'mule_internal', 'euc_jp')).* from mic_inputs;
+---END---

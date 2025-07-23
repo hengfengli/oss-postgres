@@ -1,139 +1,314 @@
+---START---
 --
 -- FLOAT4
 --
 
 CREATE TABLE FLOAT4_TBL (f1  float4);
+---END---
+---START---
 
 INSERT INTO FLOAT4_TBL(f1) VALUES ('    0.0');
+---END---
+---START---
 INSERT INTO FLOAT4_TBL(f1) VALUES ('1004.30   ');
+---END---
+---START---
 INSERT INTO FLOAT4_TBL(f1) VALUES ('     -34.84    ');
+---END---
+---START---
 INSERT INTO FLOAT4_TBL(f1) VALUES ('1.2345678901234e+20');
+---END---
+---START---
 INSERT INTO FLOAT4_TBL(f1) VALUES ('1.2345678901234e-20');
+---END---
+---START---
 
 -- test for over and under flow
 INSERT INTO FLOAT4_TBL(f1) VALUES ('10e70');
+---END---
+---START---
 INSERT INTO FLOAT4_TBL(f1) VALUES ('-10e70');
+---END---
+---START---
 INSERT INTO FLOAT4_TBL(f1) VALUES ('10e-70');
+---END---
+---START---
 INSERT INTO FLOAT4_TBL(f1) VALUES ('-10e-70');
+---END---
+---START---
 
 INSERT INTO FLOAT4_TBL(f1) VALUES ('10e70'::float8);
+---END---
+---START---
 INSERT INTO FLOAT4_TBL(f1) VALUES ('-10e70'::float8);
+---END---
+---START---
 INSERT INTO FLOAT4_TBL(f1) VALUES ('10e-70'::float8);
+---END---
+---START---
 INSERT INTO FLOAT4_TBL(f1) VALUES ('-10e-70'::float8);
+---END---
+---START---
 
 INSERT INTO FLOAT4_TBL(f1) VALUES ('10e400');
+---END---
+---START---
 INSERT INTO FLOAT4_TBL(f1) VALUES ('-10e400');
+---END---
+---START---
 INSERT INTO FLOAT4_TBL(f1) VALUES ('10e-400');
+---END---
+---START---
 INSERT INTO FLOAT4_TBL(f1) VALUES ('-10e-400');
+---END---
+---START---
 
 -- bad input
 INSERT INTO FLOAT4_TBL(f1) VALUES ('');
+---END---
+---START---
 INSERT INTO FLOAT4_TBL(f1) VALUES ('       ');
+---END---
+---START---
 INSERT INTO FLOAT4_TBL(f1) VALUES ('xyz');
+---END---
+---START---
 INSERT INTO FLOAT4_TBL(f1) VALUES ('5.0.0');
+---END---
+---START---
 INSERT INTO FLOAT4_TBL(f1) VALUES ('5 . 0');
+---END---
+---START---
 INSERT INTO FLOAT4_TBL(f1) VALUES ('5.   0');
+---END---
+---START---
 INSERT INTO FLOAT4_TBL(f1) VALUES ('     - 3.0');
+---END---
+---START---
 INSERT INTO FLOAT4_TBL(f1) VALUES ('123            5');
+---END---
+---START---
 
 -- Also try it with non-error-throwing API
 SELECT pg_input_is_valid('34.5', 'float4');
+---END---
+---START---
 SELECT pg_input_is_valid('xyz', 'float4');
+---END---
+---START---
 SELECT pg_input_is_valid('1e400', 'float4');
+---END---
+---START---
 SELECT * FROM pg_input_error_info('1e400', 'float4');
+---END---
+---START---
 
 -- special inputs
 SELECT 'NaN'::float4;
+---END---
+---START---
 SELECT 'nan'::float4;
+---END---
+---START---
 SELECT '   NAN  '::float4;
+---END---
+---START---
 SELECT 'infinity'::float4;
+---END---
+---START---
 SELECT '          -INFINiTY   '::float4;
+---END---
+---START---
 -- bad special inputs
 SELECT 'N A N'::float4;
+---END---
+---START---
 SELECT 'NaN x'::float4;
+---END---
+---START---
 SELECT ' INFINITY    x'::float4;
+---END---
+---START---
 
 SELECT 'Infinity'::float4 + 100.0;
+---END---
+---START---
 SELECT 'Infinity'::float4 / 'Infinity'::float4;
+---END---
+---START---
 SELECT '42'::float4 / 'Infinity'::float4;
+---END---
+---START---
 SELECT 'nan'::float4 / 'nan'::float4;
+---END---
+---START---
 SELECT 'nan'::float4 / '0'::float4;
+---END---
+---START---
 SELECT 'nan'::numeric::float4;
+---END---
+---START---
 
 SELECT * FROM FLOAT4_TBL;
+---END---
+---START---
 
 SELECT f.* FROM FLOAT4_TBL f WHERE f.f1 <> '1004.3';
+---END---
+---START---
 
 SELECT f.* FROM FLOAT4_TBL f WHERE f.f1 = '1004.3';
+---END---
+---START---
 
 SELECT f.* FROM FLOAT4_TBL f WHERE '1004.3' > f.f1;
+---END---
+---START---
 
 SELECT f.* FROM FLOAT4_TBL f WHERE  f.f1 < '1004.3';
+---END---
+---START---
 
 SELECT f.* FROM FLOAT4_TBL f WHERE '1004.3' >= f.f1;
+---END---
+---START---
 
 SELECT f.* FROM FLOAT4_TBL f WHERE  f.f1 <= '1004.3';
+---END---
+---START---
 
 SELECT f.f1, f.f1 * '-10' AS x FROM FLOAT4_TBL f
    WHERE f.f1 > '0.0';
+---END---
+---START---
 
 SELECT f.f1, f.f1 + '-10' AS x FROM FLOAT4_TBL f
    WHERE f.f1 > '0.0';
+---END---
+---START---
 
 SELECT f.f1, f.f1 / '-10' AS x FROM FLOAT4_TBL f
    WHERE f.f1 > '0.0';
+---END---
+---START---
 
 SELECT f.f1, f.f1 - '-10' AS x FROM FLOAT4_TBL f
    WHERE f.f1 > '0.0';
+---END---
+---START---
 
 -- test divide by zero
 SELECT f.f1 / '0.0' from FLOAT4_TBL f;
+---END---
+---START---
 
 SELECT * FROM FLOAT4_TBL;
+---END---
+---START---
 
 -- test the unary float4abs operator
 SELECT f.f1, @f.f1 AS abs_f1 FROM FLOAT4_TBL f;
+---END---
+---START---
 
 UPDATE FLOAT4_TBL
    SET f1 = FLOAT4_TBL.f1 * '-1'
    WHERE FLOAT4_TBL.f1 > '0.0';
+---END---
+---START---
 
 SELECT * FROM FLOAT4_TBL;
+---END---
+---START---
 
 -- test edge-case coercions to integer
 SELECT '32767.4'::float4::int2;
+---END---
+---START---
 SELECT '32767.6'::float4::int2;
+---END---
+---START---
 SELECT '-32768.4'::float4::int2;
+---END---
+---START---
 SELECT '-32768.6'::float4::int2;
+---END---
+---START---
 SELECT '2147483520'::float4::int4;
+---END---
+---START---
 SELECT '2147483647'::float4::int4;
+---END---
+---START---
 SELECT '-2147483648.5'::float4::int4;
+---END---
+---START---
 SELECT '-2147483900'::float4::int4;
+---END---
+---START---
 SELECT '9223369837831520256'::float4::int8;
+---END---
+---START---
 SELECT '9223372036854775807'::float4::int8;
+---END---
+---START---
 SELECT '-9223372036854775808.5'::float4::int8;
+---END---
+---START---
 SELECT '-9223380000000000000'::float4::int8;
+---END---
+---START---
 
 -- Test for correct input rounding in edge cases.
 -- These lists are from Paxson 1991, excluding subnormals and
 -- inputs of over 9 sig. digits.
 
 SELECT float4send('5e-20'::float4);
+---END---
+---START---
 SELECT float4send('67e14'::float4);
+---END---
+---START---
 SELECT float4send('985e15'::float4);
+---END---
+---START---
 SELECT float4send('55895e-16'::float4);
+---END---
+---START---
 SELECT float4send('7038531e-32'::float4);
+---END---
+---START---
 SELECT float4send('702990899e-20'::float4);
+---END---
+---START---
 
 SELECT float4send('3e-23'::float4);
+---END---
+---START---
 SELECT float4send('57e18'::float4);
+---END---
+---START---
 SELECT float4send('789e-35'::float4);
+---END---
+---START---
 SELECT float4send('2539e-18'::float4);
+---END---
+---START---
 SELECT float4send('76173e28'::float4);
+---END---
+---START---
 SELECT float4send('887745e-11'::float4);
+---END---
+---START---
 SELECT float4send('5382571e-37'::float4);
+---END---
+---START---
 SELECT float4send('82381273e-35'::float4);
+---END---
+---START---
 SELECT float4send('750486563e-38'::float4);
+---END---
+---START---
 
 -- Test that the smallest possible normalized input value inputs
 -- correctly, either in 9-significant-digit or shortest-decimal
@@ -144,7 +319,11 @@ SELECT float4send('750486563e-38'::float4);
 -- midpoint to next val is  1.1754944208...
 
 SELECT float4send('1.17549435e-38'::float4);
+---END---
+---START---
 SELECT float4send('1.1754944e-38'::float4);
+---END---
+---START---
 
 -- test output (and round-trip safety) of various values.
 -- To ensure we're testing what we think we're testing, start with
@@ -152,15 +331,31 @@ SELECT float4send('1.1754944e-38'::float4);
 -- this means we'll fail on non-IEEE platforms).
 
 create type xfloat4;
+---END---
+---START---
 create function xfloat4in(cstring) returns xfloat4 immutable strict
   language internal as 'int4in';
+---END---
+---START---
 create function xfloat4out(xfloat4) returns cstring immutable strict
   language internal as 'int4out';
+---END---
+---START---
 create type xfloat4 (input = xfloat4in, output = xfloat4out, like = float4);
+---END---
+---START---
 create cast (xfloat4 as float4) without function;
+---END---
+---START---
 create cast (float4 as xfloat4) without function;
+---END---
+---START---
 create cast (xfloat4 as integer) without function;
+---END---
+---START---
 create cast (integer as xfloat4) without function;
+---END---
+---START---
 
 -- float4: seeeeeee emmmmmmm mmmmmmmm mmmmmmmm
 
@@ -189,6 +384,8 @@ select float4send(flt) as ibits,
   from (select bits::integer::xfloat4::float4 as flt
           from testdata
 	offset 0) s;
+---END---
+---START---
 
 with testdata(bits) as (values
   (x'00000000'),
@@ -355,6 +552,9 @@ select float4send(flt) as ibits,
   from (select bits::integer::xfloat4::float4 as flt
           from testdata
 	offset 0) s;
+---END---
+---START---
 
 -- clean up, lest opr_sanity complain
 drop type xfloat4 cascade;
+---END---

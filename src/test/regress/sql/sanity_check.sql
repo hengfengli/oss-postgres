@@ -1,4 +1,7 @@
+---START---
 VACUUM;
+---END---
+---START---
 
 --
 -- Sanity check: every system catalog that has OIDs should have
@@ -13,12 +16,16 @@ SELECT relname, nspname
      AND NOT EXISTS (SELECT 1 FROM pg_index i WHERE indrelid = c.oid
                      AND indkey[0] = a.attnum AND indnatts = 1
                      AND indisunique AND indimmediate);
+---END---
+---START---
 
 -- check that relations without storage don't have relfilenode
 SELECT relname, relkind
   FROM pg_class
  WHERE relkind IN ('v', 'c', 'f', 'p', 'I')
        AND relfilenode <> 0;
+---END---
+---START---
 
 --
 -- When ALIGNOF_DOUBLE==4 (e.g. AIX), the C ABI may impose 8-byte alignment on
@@ -45,3 +52,4 @@ SELECT relname, attname, coltypes, get_columns_length(coltypes)
  FROM check_columns
  WHERE get_columns_length(coltypes) % 8 != 0 OR
        'name'::regtype::oid = ANY(coltypes);
+---END---
