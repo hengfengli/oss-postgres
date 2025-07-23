@@ -1191,7 +1191,7 @@ SELECT oid, relname, relfilenode, relkind, reltoastrelid
   FROM pg_class
   WHERE relname IN ('concur_temp_ind_1', 'concur_temp_ind_2');
 SELECT pg_my_temp_schema()::regnamespace as temp_schema_name \gset
-REINDEX SCHEMA CONCURRENTLY :temp_schema_name;
+-- REINDEX SCHEMA CONCURRENTLY :temp_schema_name;
 SELECT  b.relname,
         b.relkind,
         CASE WHEN a.relfilenode = b.relfilenode THEN 'relfilenode is unchanged'

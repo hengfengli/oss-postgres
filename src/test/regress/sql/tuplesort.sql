@@ -6,8 +6,9 @@ SET max_parallel_workers = 0;
 -- key aborts. One easy way to achieve that is to use uuids that all
 -- have the same prefix, as abbreviated keys for uuids just use the
 -- first sizeof(Datum) bytes.
+CREATE TEMP SEQUENCE id_seq;
 CREATE TEMP TABLE abbrev_abort_uuids (
-    id serial not null,
+    id int not null default nextval('id_seq'),
     abort_increasing uuid,
     abort_decreasing uuid,
     noabort_increasing uuid,

@@ -762,25 +762,6 @@ initialize_environment(void)
 	 * Set timezone and datestyle for datetime-related tests
 	 */
 	setenv("PGTZ", "PST8PDT", 1);
-	setenv("PGDATESTYLE", "Postgres, MDY", 1);
-
-	/*
-	 * Likewise set intervalstyle to ensure consistent results.  This is a bit
-	 * more painful because we must use PGOPTIONS, and we want to preserve the
-	 * user's ability to set other variables through that.
-	 */
-	{
-		const char *my_pgoptions = "-c intervalstyle=postgres_verbose";
-		const char *old_pgoptions = getenv("PGOPTIONS");
-		char	   *new_pgoptions;
-
-		if (!old_pgoptions)
-			old_pgoptions = "";
-		new_pgoptions = psprintf("%s %s",
-								 old_pgoptions, my_pgoptions);
-		setenv("PGOPTIONS", new_pgoptions, 1);
-		free(new_pgoptions);
-	}
 
 	if (temp_instance)
 	{
@@ -1520,15 +1501,15 @@ results_differ(const char *testname, const char *resultsfile, const char *defaul
 	if (difffile)
 	{
 		fprintf(difffile,
-				"diff %s %s %s\n",
-				pretty_diff_opts, best_expect_file, resultsfile);
+                        "diff %s --label=%s --label=%s %s %s\n",
+                        pretty_diff_opts,best_expect_file, resultsfile, best_expect_file, resultsfile);
 		fclose(difffile);
 	}
 
 	/* Run diff */
 	snprintf(cmd, sizeof(cmd),
-			 "diff %s \"%s\" \"%s\" >> \"%s\"",
-			 pretty_diff_opts, best_expect_file, resultsfile, difffilename);
+             "diff %s --label=%s --label=%s  \"%s\" \"%s\" >> \"%s\"",
+             pretty_diff_opts,best_expect_file, resultsfile, best_expect_file, resultsfile, difffilename);
 	run_diff(cmd, difffilename);
 
 	unlink(diff);
@@ -1976,14 +1957,6 @@ create_database(const char *dbname)
 	else
 		psql_add_command(buf, "CREATE DATABASE \"%s\" TEMPLATE=template0%s", dbname,
 						 (nolocale) ? " LOCALE='C'" : "");
-	psql_add_command(buf,
-					 "ALTER DATABASE \"%s\" SET lc_messages TO 'C';"
-					 "ALTER DATABASE \"%s\" SET lc_monetary TO 'C';"
-					 "ALTER DATABASE \"%s\" SET lc_numeric TO 'C';"
-					 "ALTER DATABASE \"%s\" SET lc_time TO 'C';"
-					 "ALTER DATABASE \"%s\" SET bytea_output TO 'hex';"
-					 "ALTER DATABASE \"%s\" SET timezone_abbreviations TO 'Default';",
-					 dbname, dbname, dbname, dbname, dbname, dbname);
 	psql_end_command(buf, "postgres");
 
 	/*

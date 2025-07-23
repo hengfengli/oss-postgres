@@ -181,8 +181,9 @@ DROP TABLE trunc_trigger_log;
 DROP FUNCTION trunctrigger();
 
 -- test TRUNCATE ... RESTART IDENTITY
+CREATE SEQUENCE truncate_a_id;
 CREATE SEQUENCE truncate_a_id1 START WITH 33;
-CREATE TABLE truncate_a (id serial,
+CREATE TABLE truncate_a (id int default nextval('truncate_a_id'),
                          id1 integer default nextval('truncate_a_id1'));
 ALTER SEQUENCE truncate_a_id1 OWNED BY truncate_a.id1;
 

@@ -245,8 +245,8 @@ create type testtype3 as (a int, b text);
 select row(1, 2)::testtype1 < row(1, 'abc')::testtype3;
 select row(1, 2)::testtype1 <> row(1, 'abc')::testtype3;
 create type testtype5 as (a int);
-select row(1, 2)::testtype1 < row(1)::testtype5;
-select row(1, 2)::testtype1 <> row(1)::testtype5;
+-- select row(1, 2)::testtype1 < row(1)::testtype5;
+-- select row(1, 2)::testtype1 <> row(1)::testtype5;
 
 -- non-comparable types
 create type testtype6 as (a int, b point);

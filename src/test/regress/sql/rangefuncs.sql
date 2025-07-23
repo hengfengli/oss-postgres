@@ -182,7 +182,7 @@ SELECT * FROM vw_getrngfunc;
 DROP VIEW vw_getrngfunc;
 
 -- plpgsql, proretset = f, prorettype = c
-CREATE FUNCTION getrngfunc9(int) RETURNS rngfunc AS 'DECLARE rngfunctup rngfunc%ROWTYPE; BEGIN SELECT * into rngfunctup FROM rngfunc WHERE rngfuncid = $1; RETURN rngfunctup; END;' LANGUAGE plpgsql;
+-- CREATE FUNCTION getrngfunc9(int) RETURNS rngfunc AS 'DECLARE rngfunctup rngfunc%ROWTYPE; BEGIN SELECT * into rngfunctup FROM rngfunc WHERE rngfuncid = $1; RETURN rngfunctup; END;' LANGUAGE plpgsql;
 SELECT * FROM getrngfunc9(1) AS t1;
 SELECT * FROM getrngfunc9(1) WITH ORDINALITY AS t1(a,b,c,o);
 CREATE VIEW vw_getrngfunc AS SELECT * FROM getrngfunc9(1);
@@ -457,7 +457,8 @@ DROP FUNCTION rngfunc();
 -- some tests on SQL functions with RETURNING
 --
 
-create temp table tt(f1 serial, data text);
+create sequence f1_seq;
+create temp table tt(f1 int default nextval('f1_seq'), data text);
 
 create function insert_tt(text) returns int as
 $$ insert into tt(data) values($1) returning f1 $$

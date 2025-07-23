@@ -35,7 +35,8 @@ WHERE p1.prolang = 0 OR p1.prorettype = 0 OR
        CASE WHEN proretset THEN prorows <= 0 ELSE prorows != 0 END OR
        prokind NOT IN ('f', 'a', 'w', 'p') OR
        provolatile NOT IN ('i', 's', 'v') OR
-       proparallel NOT IN ('s', 'r', 'u');
+       proparallel NOT IN ('s', 'r', 'u')
+ORDER BY p1.oid;
 
 -- prosrc should never be null; it can be empty only if prosqlbody isn't null
 SELECT p1.oid, p1.proname
@@ -80,7 +81,8 @@ FROM pg_proc AS p1, pg_proc AS p2
 WHERE p1.oid != p2.oid AND
     p1.proname = p2.proname AND
     p1.pronargs = p2.pronargs AND
-    p1.proargtypes = p2.proargtypes;
+    p1.proargtypes = p2.proargtypes
+ORDER BY p1.oid, p2.oid;
 
 -- Considering only built-in procs (prolang = 12), look for multiple uses
 -- of the same internal function (ie, matching prosrc fields).  It's OK to
@@ -103,7 +105,8 @@ WHERE p1.oid < p2.oid AND
      p1.proisstrict != p2.proisstrict OR
      p1.proretset != p2.proretset OR
      p1.provolatile != p2.provolatile OR
-     p1.pronargs != p2.pronargs);
+     p1.pronargs != p2.pronargs)
+ORDER BY p1.oid, p2.oid;
 
 -- Look for uses of different type OIDs in the argument/result type fields
 -- for different aliases of the same built-in function.
@@ -460,7 +463,8 @@ WHERE castsource = casttarget AND castfunc = 0;
 
 SELECT c.*
 FROM pg_cast c, pg_proc p
-WHERE c.castfunc = p.oid AND p.pronargs < 2 AND castsource = casttarget;
+WHERE c.castfunc = p.oid AND p.pronargs < 2 AND castsource = casttarget
+ORDER BY c.oid;
 
 -- Look for cast functions that don't have the right signature.  The
 -- argument and result types in pg_proc must be the same as, or binary
@@ -567,7 +571,8 @@ SELECT o1.oid, o1.oprname
 FROM pg_operator as o1
 WHERE (o1.oprleft = 0 and o1.oprkind != 'l') OR
     (o1.oprleft != 0 and o1.oprkind = 'l') OR
-    o1.oprright = 0;
+    o1.oprright = 0
+ORDER BY o1.oid;
 
 -- Look for conflicting operator definitions (same names and input datatypes).
 

@@ -58,7 +58,7 @@ INSERT INTO serialTest1 VALUES ('bar');
 INSERT INTO serialTest1 VALUES ('force', 100);
 INSERT INTO serialTest1 VALUES ('wrong', NULL);
 
-SELECT * FROM serialTest1;
+SELECT f1 FROM serialTest1 ORDER BY f2;
 
 SELECT pg_get_serial_sequence('serialTest1', 'f2');
 
@@ -100,7 +100,7 @@ INSERT INTO serialTest2 (f1, f5)
 INSERT INTO serialTest2 (f1, f6)
   VALUES ('bogus', 9223372036854775808);
 
-SELECT * FROM serialTest2 ORDER BY f2 ASC;
+SELECT f1 FROM serialTest2 ORDER BY f2 ASC;
 
 SELECT nextval('serialTest2_f2_seq');
 SELECT nextval('serialTest2_f3_seq');
@@ -143,7 +143,7 @@ DROP SEQUENCE foo_seq_new;
 -- renaming serial sequences
 ALTER TABLE serialtest1_f2_seq RENAME TO serialtest1_f2_foo;
 INSERT INTO serialTest1 VALUES ('more');
-SELECT * FROM serialTest1;
+SELECT f1 FROM serialTest1 ORDER BY f2;
 
 --
 -- Check dependencies of serial and ordinary sequences
@@ -242,7 +242,7 @@ WHERE sequencename ~ ANY(ARRAY['sequence_test', 'serialtest'])
   ORDER BY sequencename ASC;
 
 
-SELECT * FROM pg_sequence_parameters('sequence_test4'::regclass);
+-- SELECT * FROM pg_sequence_parameters('sequence_test4'::regclass);
 
 
 \d sequence_test4

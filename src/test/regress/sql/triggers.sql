@@ -480,7 +480,8 @@ rollback;
 
 -- Test enable/disable triggers
 
-create table trigtest (i serial primary key);
+create sequence trigtestseq;
+create table trigtest (i int primary key default nextval('trigtestseq'));
 -- test that disabling RI triggers works
 create table trigtest2 (i int references trigtest(i) on delete cascade);
 
@@ -865,8 +866,9 @@ DROP VIEW main_view;
 --
 -- Test triggers on a join view
 --
+CREATE SEQUENCE country_id_seq;
 CREATE TABLE country_table (
-    country_id        serial primary key,
+    country_id        int primary key default nextval('country_id_seq'),
     country_name    text unique not null,
     continent        text not null
 );

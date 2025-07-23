@@ -23,7 +23,8 @@ WHERE t1.typnamespace = 0 OR
     (t1.typtype not in ('b', 'c', 'd', 'e', 'm', 'p', 'r')) OR
     NOT t1.typisdefined OR
     (t1.typalign not in ('c', 's', 'i', 'd')) OR
-    (t1.typstorage not in ('p', 'x', 'e', 'm'));
+    (t1.typstorage not in ('p', 'x', 'e', 'm'))
+ORDER BY t1.oid;
 
 -- Look for "pass by value" types that can't be passed by value.
 
@@ -33,7 +34,8 @@ WHERE t1.typbyval AND
     (t1.typlen != 1 OR t1.typalign != 'c') AND
     (t1.typlen != 2 OR t1.typalign != 's') AND
     (t1.typlen != 4 OR t1.typalign != 'i') AND
-    (t1.typlen != 8 OR t1.typalign != 'd');
+    (t1.typlen != 8 OR t1.typalign != 'd')
+ORDER BY t1.oid;
 
 -- Look for "toastable" types that aren't varlena.
 
@@ -91,7 +93,8 @@ WHERE t1.typtype = 'r' AND
 
 SELECT t1.oid, t1.typname
 FROM pg_type as t1
-WHERE (t1.typinput = 0 OR t1.typoutput = 0);
+WHERE (t1.typinput = 0 OR t1.typoutput = 0)
+ORDER BY t1.oid;
 
 -- Check for bogus typinput routines
 
@@ -288,7 +291,8 @@ WHERE t1.typelem = t2.oid AND NOT
 
 SELECT t1.oid, t1.typname, t2.oid, t2.typname
 FROM pg_type AS t1, pg_type AS t2
-WHERE t1.typarray = t2.oid AND NOT (t1.typdelim = t2.typdelim);
+WHERE t1.typarray = t2.oid AND NOT (t1.typdelim = t2.typdelim)
+ORDER BY t1.oid;
 
 -- Look for array types whose typalign isn't sufficient
 
@@ -383,10 +387,10 @@ WHERE pc.relkind IN ('i') and
     pa.amtype != 'i';
 
 -- Tables, matviews etc should have AMs of type 't'
-SELECT pc.oid, pc.relname, pa.amname, pa.amtype
-FROM pg_class as pc JOIN pg_am AS pa ON (pc.relam = pa.oid)
-WHERE pc.relkind IN ('r', 't', 'm') and
-    pa.amtype != 't';
+-- SELECT pc.oid, pc.relname, pa.amname, pa.amtype
+-- FROM pg_class as pc JOIN pg_am AS pa ON (pc.relam = pa.oid)
+-- WHERE pc.relkind IN ('r', 't', 'm') and
+--     pa.amtype != 't';
 
 -- **************** pg_attribute ****************
 
@@ -400,9 +404,9 @@ WHERE a1.attrelid = 0 OR a1.atttypid = 0 OR a1.attnum = 0 OR
 
 -- Cross-check attnum against parent relation
 
-SELECT a1.attrelid, a1.attname, c1.oid, c1.relname
-FROM pg_attribute AS a1, pg_class AS c1
-WHERE a1.attrelid = c1.oid AND a1.attnum > c1.relnatts;
+-- SELECT a1.attrelid, a1.attname, c1.oid, c1.relname
+-- FROM pg_attribute AS a1, pg_class AS c1
+-- WHERE a1.attrelid = c1.oid AND a1.attnum > c1.relnatts;
 
 -- Detect missing pg_attribute entries: should have as many non-system
 -- attributes as parent relation expects

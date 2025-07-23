@@ -754,7 +754,8 @@ DROP USER regress_view_user3;
 
 -- column defaults
 
-CREATE TABLE base_tbl (a int PRIMARY KEY, b text DEFAULT 'Unspecified', c serial);
+CREATE SEQUENCE c_seq;
+CREATE TABLE base_tbl (a int PRIMARY KEY, b text DEFAULT 'Unspecified', c int default nextval('c_seq'));
 INSERT INTO base_tbl VALUES (1, 'Row 1');
 INSERT INTO base_tbl VALUES (2, 'Row 2');
 INSERT INTO base_tbl VALUES (3);

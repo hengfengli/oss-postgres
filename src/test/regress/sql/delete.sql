@@ -1,5 +1,6 @@
+CREATE SEQUENCE id_seq;
 CREATE TABLE delete_test (
-    id SERIAL PRIMARY KEY,
+    id INT PRIMARY KEY DEFAULT nextval('id_seq'),
     a INT,
     b text
 );

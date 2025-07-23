@@ -3,11 +3,11 @@
 --
 
 -- directory paths and dlsuffix are passed to us in environment variables
-\getenv abs_srcdir PG_ABS_SRCDIR
-\getenv libdir PG_LIBDIR
-\getenv dlsuffix PG_DLSUFFIX
+-- \getenv abs_srcdir PG_ABS_SRCDIR
+-- \getenv libdir PG_LIBDIR
+-- \getenv dlsuffix PG_DLSUFFIX
 
-\set regresslib :libdir '/regress' :dlsuffix
+-- \set regresslib :libdir '/regress' :dlsuffix
 
 --
 -- synchronous_commit=off delays when hint bits may be set. Some plans change
@@ -15,7 +15,10 @@
 -- influenced by the delayed hint bits. Force synchronous_commit=on to avoid
 -- that source of variability.
 --
-SET synchronous_commit = on;
+-- SET synchronous_commit = on;
+
+-- Many tests use temp tables.
+SET experimental_enable_temp_tables = on;
 
 --
 -- Postgres formerly made the public schema read/write by default,
@@ -24,8 +27,8 @@ SET synchronous_commit = on;
 GRANT ALL ON SCHEMA public TO public;
 
 -- Create a tablespace we can use in tests.
-SET allow_in_place_tablespaces = true;
-CREATE TABLESPACE regress_tblspace LOCATION '';
+-- SET allow_in_place_tablespaces = true;
+-- CREATE TABLESPACE regress_tblspace LOCATION '';
 
 --
 -- These tables have traditionally been referenced by many tests,
@@ -42,7 +45,7 @@ INSERT INTO CHAR_TBL (f1) VALUES
   ('ab'),
   ('abcd'),
   ('abcd    ');
-VACUUM CHAR_TBL;
+-- VACUUM CHAR_TBL;
 
 CREATE TABLE FLOAT8_TBL(f1 float8);
 
@@ -52,7 +55,7 @@ INSERT INTO FLOAT8_TBL(f1) VALUES
   ('-1004.30'),
   ('-1.2345678901234e+200'),
   ('-1.2345678901234e-200');
-VACUUM FLOAT8_TBL;
+-- VACUUM FLOAT8_TBL;
 
 CREATE TABLE INT2_TBL(f1 int2);
 
@@ -62,7 +65,7 @@ INSERT INTO INT2_TBL(f1) VALUES
   ('    -1234'),
   ('32767'),  -- largest and smallest values
   ('-32767');
-VACUUM INT2_TBL;
+-- VACUUM INT2_TBL;
 
 CREATE TABLE INT4_TBL(f1 int4);
 
@@ -72,7 +75,7 @@ INSERT INTO INT4_TBL(f1) VALUES
   ('    -123456'),
   ('2147483647'),  -- largest and smallest values
   ('-2147483647');
-VACUUM INT4_TBL;
+-- VACUUM INT4_TBL;
 
 CREATE TABLE INT8_TBL(q1 int8, q2 int8);
 
@@ -82,7 +85,7 @@ INSERT INTO INT8_TBL VALUES
   ('4567890123456789','123'),
   (+4567890123456789,'4567890123456789'),
   ('+4567890123456789','-4567890123456789');
-VACUUM INT8_TBL;
+-- VACUUM INT8_TBL;
 
 CREATE TABLE POINT_TBL(f1 point);
 
@@ -104,7 +107,7 @@ CREATE TABLE TEXT_TBL (f1 text);
 INSERT INTO TEXT_TBL VALUES
   ('doh!'),
   ('hi de ho neighbor');
-VACUUM TEXT_TBL;
+-- VACUUM TEXT_TBL;
 
 CREATE TABLE VARCHAR_TBL(f1 varchar(4));
 
@@ -113,7 +116,7 @@ INSERT INTO VARCHAR_TBL (f1) VALUES
   ('ab'),
   ('abcd'),
   ('abcd    ');
-VACUUM VARCHAR_TBL;
+-- VACUUM VARCHAR_TBL;
 
 CREATE TABLE onek (
 	unique1		int4,
@@ -134,12 +137,12 @@ CREATE TABLE onek (
 	string4		name
 );
 
-\set filename :abs_srcdir '/data/onek.data'
-COPY onek FROM :'filename';
-VACUUM ANALYZE onek;
+-- \set filename :abs_srcdir '/data/onek.data'
+-- COPY onek FROM :'filename';
+-- VACUUM ANALYZE onek;
 
 CREATE TABLE onek2 AS SELECT * FROM onek;
-VACUUM ANALYZE onek2;
+-- VACUUM ANALYZE onek2;
 
 CREATE TABLE tenk1 (
 	unique1		int4,
@@ -160,12 +163,12 @@ CREATE TABLE tenk1 (
 	string4		name
 );
 
-\set filename :abs_srcdir '/data/tenk.data'
-COPY tenk1 FROM :'filename';
-VACUUM ANALYZE tenk1;
+-- \set filename :abs_srcdir '/data/tenk.data'
+-- COPY tenk1 FROM :'filename';
+-- VACUUM ANALYZE tenk1;
 
 CREATE TABLE tenk2 AS SELECT * FROM tenk1;
-VACUUM ANALYZE tenk2;
+-- VACUUM ANALYZE tenk2;
 
 CREATE TABLE person (
 	name 		text,
@@ -173,43 +176,43 @@ CREATE TABLE person (
 	location 	point
 );
 
-\set filename :abs_srcdir '/data/person.data'
-COPY person FROM :'filename';
-VACUUM ANALYZE person;
+-- \set filename :abs_srcdir '/data/person.data'
+-- COPY person FROM :'filename';
+-- VACUUM ANALYZE person;
 
 CREATE TABLE emp (
 	salary 		int4,
 	manager 	name
 ) INHERITS (person);
 
-\set filename :abs_srcdir '/data/emp.data'
-COPY emp FROM :'filename';
-VACUUM ANALYZE emp;
+-- \set filename :abs_srcdir '/data/emp.data'
+-- COPY emp FROM :'filename';
+-- VACUUM ANALYZE emp;
 
 CREATE TABLE student (
 	gpa 		float8
 ) INHERITS (person);
 
-\set filename :abs_srcdir '/data/student.data'
-COPY student FROM :'filename';
-VACUUM ANALYZE student;
+-- \set filename :abs_srcdir '/data/student.data'
+-- COPY student FROM :'filename';
+-- VACUUM ANALYZE student;
 
 CREATE TABLE stud_emp (
 	percent 	int4
 ) INHERITS (emp, student);
 
-\set filename :abs_srcdir '/data/stud_emp.data'
-COPY stud_emp FROM :'filename';
-VACUUM ANALYZE stud_emp;
+-- \set filename :abs_srcdir '/data/stud_emp.data'
+-- COPY stud_emp FROM :'filename';
+-- VACUUM ANALYZE stud_emp;
 
 CREATE TABLE road (
 	name		text,
 	thepath 	path
 );
 
-\set filename :abs_srcdir '/data/streets.data'
-COPY road FROM :'filename';
-VACUUM ANALYZE road;
+-- \set filename :abs_srcdir '/data/streets.data'
+-- COPY road FROM :'filename';
+-- VACUUM ANALYZE road;
 
 CREATE TABLE ihighway () INHERITS (road);
 
@@ -217,7 +220,7 @@ INSERT INTO ihighway
    SELECT *
    FROM ONLY road
    WHERE name ~ 'I- .*';
-VACUUM ANALYZE ihighway;
+-- VACUUM ANALYZE ihighway;
 
 CREATE TABLE shighway (
 	surface		text
@@ -227,7 +230,7 @@ INSERT INTO shighway
    SELECT *, 'asphalt'
    FROM ONLY road
    WHERE name ~ 'State Hwy.*';
-VACUUM ANALYZE shighway;
+-- VACUUM ANALYZE shighway;
 
 --
 -- We must have some enum type in the database for opr_sanity and type_sanity.
@@ -270,7 +273,7 @@ CREATE FUNCTION get_columns_length(oid[])
 create function part_hashint4_noop(value int4, seed int8)
     returns int8 as $$
     select value + seed;
-    $$ language sql strict immutable parallel safe;
+    $$ language sql strict immutable;
 
 create operator class part_test_int4_ops for type int4 using hash as
     operator 1 =,
@@ -279,7 +282,7 @@ create operator class part_test_int4_ops for type int4 using hash as
 create function part_hashtext_length(value text, seed int8)
     returns int8 as $$
     select length(coalesce(value, ''))::int8
-    $$ language sql strict immutable parallel safe;
+    $$ language sql strict immutable;
 
 create operator class part_test_text_ops for type text using hash as
     operator 1 =,
@@ -290,12 +293,12 @@ create operator class part_test_text_ops for type text using hash as
 -- mostly avoid so that the tests will pass in FIPS mode.
 --
 
-create function fipshash(bytea)
-    returns text
-    strict immutable parallel safe leakproof
-    return substr(encode(sha256($1), 'hex'), 1, 32);
+-- create function fipshash(bytea)
+--     returns text
+--     strict immutable leakproof
+--     return substr(encode(sha256($1), 'hex'), 1, 32);
 
-create function fipshash(text)
-    returns text
-    strict immutable parallel safe leakproof
-    return substr(encode(sha256($1::bytea), 'hex'), 1, 32);
+-- create function fipshash(text)
+--     returns text
+--     strict immutable leakproof
+--     return substr(encode(sha256($1::bytea), 'hex'), 1, 32);

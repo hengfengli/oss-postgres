@@ -386,7 +386,7 @@ explain (costs off)
   select f1, (select min(unique1) from tenk1 where unique1 > f1) AS gt
     from int4_tbl;
 select f1, (select min(unique1) from tenk1 where unique1 > f1) AS gt
-  from int4_tbl;
+  from int4_tbl order by f1;
 
 -- check some cases that were handled incorrectly in 8.3.0
 explain (costs off)
@@ -809,10 +809,10 @@ select min(unique1) filter (where unique1 > 100) from tenk1;
 select sum(1/ten) filter (where ten > 0) from tenk1;
 
 select ten, sum(distinct four) filter (where four::text ~ '123') from onek a
-group by ten;
+group by ten order by ten;
 
 select ten, sum(distinct four) filter (where four > 10) from onek a
-group by ten
+group by ten order by ten
 having exists (select 1 from onek b where sum(distinct a.four) = b.four);
 
 select max(foo COLLATE "C") filter (where (bar collate "POSIX") > '0')

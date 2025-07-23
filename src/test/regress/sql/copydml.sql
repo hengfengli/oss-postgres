@@ -1,7 +1,8 @@
 --
 -- Test cases for COPY (INSERT/UPDATE/DELETE) TO
 --
-create table copydml_test (id serial, t text);
+create sequence id_seq;
+create table copydml_test (id int default nextval('id_seq'), t text);
 insert into copydml_test (t) values ('a');
 insert into copydml_test (t) values ('b');
 insert into copydml_test (t) values ('c');

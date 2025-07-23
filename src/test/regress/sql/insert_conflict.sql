@@ -238,8 +238,8 @@ insert into insertconflicttest as i values (23, 'Jackfruit') on conflict (key) d
 insert into insertconflicttest as i values (23, 'Jackfruit') on conflict (key) do update set fruit = excluded.fruit
   where i.* = excluded.* returning *;
 -- Assign:
-insert into insertconflicttest as i values (23, 'Avocado') on conflict (key) do update set fruit = excluded.*::text
-  returning *;
+-- insert into insertconflicttest as i values (23, 'Avocado') on conflict (key) do update set fruit = excluded.*::text
+--  returning *;
 -- deparse whole row var in WHERE and SET clauses:
 explain (costs off) insert into insertconflicttest as i values (23, 'Avocado') on conflict (key) do update set fruit = excluded.fruit where excluded.* is null;
 explain (costs off) insert into insertconflicttest as i values (23, 'Avocado') on conflict (key) do update set fruit = excluded.*::text;

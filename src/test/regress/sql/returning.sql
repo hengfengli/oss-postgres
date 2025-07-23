@@ -4,7 +4,8 @@
 
 -- Simple cases
 
-CREATE TEMP TABLE foo (f1 serial, f2 text, f3 int default 42);
+CREATE SEQUENCE f1_seq;
+CREATE TEMP TABLE foo (f1 int default nextval('f1_seq'), f2 text, f3 int default 42);
 
 INSERT INTO foo (f2,f3)
   VALUES ('test', DEFAULT), ('More', 11), (upper('more'), 7+9)

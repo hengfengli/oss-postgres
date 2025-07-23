@@ -1,7 +1,8 @@
 --
 -- Test cases for COPY (select) TO
 --
-create table test1 (id serial, t text);
+create sequence id_seq;
+create table test1 (id int default nextval('id_seq'), t text);
 insert into test1 (t) values ('a');
 insert into test1 (t) values ('b');
 insert into test1 (t) values ('c');

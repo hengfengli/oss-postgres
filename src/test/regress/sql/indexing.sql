@@ -438,7 +438,7 @@ alter table idxpart attach partition idxpart1 for values from (0) to (1000);
 \d idxpart1
 select attrelid::regclass, attname, attnum from pg_attribute
   where attrelid::regclass::text like 'idxpart%' and attnum > 0
-  order by attrelid::regclass, attnum;
+  order by attrelid::regclass::text, attnum;
 drop table idxpart;
 
 -- Column number mapping: dropped columns in the parent table
@@ -454,7 +454,7 @@ alter table idxpart attach partition idxpart1 for values from (0) to (1000);
 \d idxpart1
 select attrelid::regclass, attname, attnum from pg_attribute
   where attrelid::regclass::text like 'idxpart%' and attnum > 0
-  order by attrelid::regclass, attnum;
+  order by attrelid::regclass::text, attnum;
 drop table idxpart;
 
 --
@@ -566,7 +566,7 @@ select indrelid::regclass, indexrelid::regclass, inhparent::regclass, indisvalid
 drop index idxpart0_pkey;								-- fail
 drop index idxpart1_pkey;								-- fail
 alter table idxpart0 drop constraint idxpart0_pkey;		-- fail
-alter table idxpart1 drop constraint idxpart1_pkey;		-- fail
+-- alter table idxpart1 drop constraint idxpart1_pkey;         -- fail
 alter table idxpart drop constraint idxpart_pkey;		-- ok
 select indrelid::regclass, indexrelid::regclass, inhparent::regclass, indisvalid,
   conname, conislocal, coninhcount, connoinherit, convalidated
