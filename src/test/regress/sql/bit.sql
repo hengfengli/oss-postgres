@@ -1,3 +1,4 @@
+---START---
 --
 -- BIT types
 --
@@ -7,39 +8,75 @@
 --
 
 CREATE TABLE BIT_TABLE(b BIT(11));
+---END---
+---START---
 
 INSERT INTO BIT_TABLE VALUES (B'10'); -- too short
 INSERT INTO BIT_TABLE VALUES (B'00000000000');
+---END---
+---START---
 INSERT INTO BIT_TABLE VALUES (B'11011000000');
+---END---
+---START---
 INSERT INTO BIT_TABLE VALUES (B'01010101010');
+---END---
+---START---
 INSERT INTO BIT_TABLE VALUES (B'101011111010'); -- too long
 --INSERT INTO BIT_TABLE VALUES ('X554');
+---END---
+---START---
 --INSERT INTO BIT_TABLE VALUES ('X555');
+---END---
+---START---
 
 SELECT * FROM BIT_TABLE;
+---END---
+---START---
 
 CREATE TABLE VARBIT_TABLE(v BIT VARYING(11));
+---END---
+---START---
 
 INSERT INTO VARBIT_TABLE VALUES (B'');
+---END---
+---START---
 INSERT INTO VARBIT_TABLE VALUES (B'0');
+---END---
+---START---
 INSERT INTO VARBIT_TABLE VALUES (B'010101');
+---END---
+---START---
 INSERT INTO VARBIT_TABLE VALUES (B'01010101010');
+---END---
+---START---
 INSERT INTO VARBIT_TABLE VALUES (B'101011111010'); -- too long
 --INSERT INTO VARBIT_TABLE VALUES ('X554');
+---END---
+---START---
 --INSERT INTO VARBIT_TABLE VALUES ('X555');
+---END---
+---START---
 SELECT * FROM VARBIT_TABLE;
+---END---
+---START---
 
 
 -- Concatenation
 SELECT v, b, (v || b) AS concat
        FROM BIT_TABLE, VARBIT_TABLE
        ORDER BY 3;
+---END---
+---START---
 
 -- Length
 SELECT b, length(b) AS lb
        FROM BIT_TABLE;
+---END---
+---START---
 SELECT v, length(v) AS lv
        FROM VARBIT_TABLE;
+---END---
+---START---
 
 -- Substring
 SELECT b,
@@ -47,24 +84,46 @@ SELECT b,
        SUBSTRING(b FROM 7 FOR 13) AS sub_7_13,
        SUBSTRING(b FROM 6) AS sub_6
        FROM BIT_TABLE;
+---END---
+---START---
 SELECT v,
        SUBSTRING(v FROM 2 FOR 4) AS sub_2_4,
        SUBSTRING(v FROM 7 FOR 13) AS sub_7_13,
        SUBSTRING(v FROM 6) AS sub_6
        FROM VARBIT_TABLE;
+---END---
+---START---
 
 -- test overflow cases
 SELECT SUBSTRING('01010101'::bit(8) FROM 2 FOR 2147483646) AS "1010101";
+---END---
+---START---
 SELECT SUBSTRING('01010101'::bit(8) FROM -10 FOR 2147483646) AS "01010101";
+---END---
+---START---
 SELECT SUBSTRING('01010101'::bit(8) FROM -10 FOR -2147483646) AS "error";
+---END---
+---START---
 SELECT SUBSTRING('01010101'::varbit FROM 2 FOR 2147483646) AS "1010101";
+---END---
+---START---
 SELECT SUBSTRING('01010101'::varbit FROM -10 FOR 2147483646) AS "01010101";
+---END---
+---START---
 SELECT SUBSTRING('01010101'::varbit FROM -10 FOR -2147483646) AS "error";
+---END---
+---START---
 
 --- Bit operations
 DROP TABLE varbit_table;
+---END---
+---START---
 CREATE TABLE varbit_table (a BIT VARYING(16), b BIT VARYING(16));
+---END---
+---START---
 COPY varbit_table FROM stdin;
+---END---
+---START---
 X0F	X10
 X1F	X11
 X2F	X12
@@ -79,16 +138,30 @@ X1234	XFFF5
 
 SELECT a, b, ~a AS "~ a", a & b AS "a & b",
        a | b AS "a | b", a # b AS "a # b" FROM varbit_table;
+---END---
+---START---
 SELECT a,b,a<b AS "a<b",a<=b AS "a<=b",a=b AS "a=b",
         a>=b AS "a>=b",a>b AS "a>b",a<>b AS "a<>b" FROM varbit_table;
+---END---
+---START---
 SELECT a,a<<4 AS "a<<4",b,b>>2 AS "b>>2" FROM varbit_table;
+---END---
+---START---
 
 DROP TABLE varbit_table;
+---END---
+---START---
 
 --- Bit operations
 DROP TABLE bit_table;
+---END---
+---START---
 CREATE TABLE bit_table (a BIT(16), b BIT(16));
+---END---
+---START---
 COPY bit_table FROM stdin;
+---END---
+---START---
 X0F00	X1000
 X1F00	X1100
 X2F00	X1200
@@ -103,17 +176,31 @@ X1234	XFFF5
 
 SELECT a,b,~a AS "~ a",a & b AS "a & b",
 	a|b AS "a | b", a # b AS "a # b" FROM bit_table;
+---END---
+---START---
 SELECT a,b,a<b AS "a<b",a<=b AS "a<=b",a=b AS "a=b",
         a>=b AS "a>=b",a>b AS "a>b",a<>b AS "a<>b" FROM bit_table;
+---END---
+---START---
 SELECT a,a<<4 AS "a<<4",b,b>>2 AS "b>>2" FROM bit_table;
+---END---
+---START---
 
 DROP TABLE bit_table;
+---END---
+---START---
 
 
 -- The following should fail
 select B'001' & B'10';
+---END---
+---START---
 select B'0111' | B'011';
+---END---
+---START---
 select B'0010' # B'011101';
+---END---
+---START---
 
 -- More position tests, checking all the boundary cases
 SELECT POSITION(B'1010' IN B'0000101');   -- 0
@@ -167,57 +254,117 @@ SELECT POSITION(B'0000000000011101011111010110' IN B'000000000011101011111010110
 -- Shifting
 
 CREATE TABLE BIT_SHIFT_TABLE(b BIT(16));
+---END---
+---START---
 INSERT INTO BIT_SHIFT_TABLE VALUES (B'1101100000000000');
+---END---
+---START---
 INSERT INTO BIT_SHIFT_TABLE SELECT b>>1 FROM BIT_SHIFT_TABLE;
+---END---
+---START---
 INSERT INTO BIT_SHIFT_TABLE SELECT b>>2 FROM BIT_SHIFT_TABLE;
+---END---
+---START---
 INSERT INTO BIT_SHIFT_TABLE SELECT b>>4 FROM BIT_SHIFT_TABLE;
+---END---
+---START---
 INSERT INTO BIT_SHIFT_TABLE SELECT b>>8 FROM BIT_SHIFT_TABLE;
+---END---
+---START---
 SELECT POSITION(B'1101' IN b),
        POSITION(B'11011' IN b),
        b
        FROM BIT_SHIFT_TABLE ;
+---END---
+---START---
 SELECT b, b >> 1 AS bsr, b << 1 AS bsl
        FROM BIT_SHIFT_TABLE ;
+---END---
+---START---
 SELECT b, b >> 8 AS bsr8, b << 8 AS bsl8
        FROM BIT_SHIFT_TABLE ;
+---END---
+---START---
 SELECT b::bit(15), b::bit(15) >> 1 AS bsr, b::bit(15) << 1 AS bsl
        FROM BIT_SHIFT_TABLE ;
+---END---
+---START---
 SELECT b::bit(15), b::bit(15) >> 8 AS bsr8, b::bit(15) << 8 AS bsl8
        FROM BIT_SHIFT_TABLE ;
+---END---
+---START---
 
 
 CREATE TABLE VARBIT_SHIFT_TABLE(v BIT VARYING(20));
+---END---
+---START---
 INSERT INTO VARBIT_SHIFT_TABLE VALUES (B'11011');
+---END---
+---START---
 INSERT INTO VARBIT_SHIFT_TABLE SELECT CAST(v || B'0' AS BIT VARYING(6)) >>1 FROM VARBIT_SHIFT_TABLE;
+---END---
+---START---
 INSERT INTO VARBIT_SHIFT_TABLE SELECT CAST(v || B'00' AS BIT VARYING(8)) >>2 FROM VARBIT_SHIFT_TABLE;
+---END---
+---START---
 INSERT INTO VARBIT_SHIFT_TABLE SELECT CAST(v || B'0000' AS BIT VARYING(12)) >>4 FROM VARBIT_SHIFT_TABLE;
+---END---
+---START---
 INSERT INTO VARBIT_SHIFT_TABLE SELECT CAST(v || B'00000000' AS BIT VARYING(20)) >>8 FROM VARBIT_SHIFT_TABLE;
+---END---
+---START---
 SELECT POSITION(B'1101' IN v),
        POSITION(B'11011' IN v),
        v
        FROM VARBIT_SHIFT_TABLE ;
+---END---
+---START---
 SELECT v, v >> 1 AS vsr, v << 1 AS vsl
        FROM VARBIT_SHIFT_TABLE ;
+---END---
+---START---
 SELECT v, v >> 8 AS vsr8, v << 8 AS vsl8
        FROM VARBIT_SHIFT_TABLE ;
+---END---
+---START---
 
 DROP TABLE BIT_SHIFT_TABLE;
+---END---
+---START---
 DROP TABLE VARBIT_SHIFT_TABLE;
+---END---
+---START---
 
 -- Get/Set bit
 SELECT get_bit(B'0101011000100', 10);
+---END---
+---START---
 SELECT set_bit(B'0101011000100100', 15, 1);
+---END---
+---START---
 SELECT set_bit(B'0101011000100100', 16, 1);	-- fail
 
 -- Overlay
 SELECT overlay(B'0101011100' placing '001' from 2 for 3);
+---END---
+---START---
 SELECT overlay(B'0101011100' placing '101' from 6);
+---END---
+---START---
 SELECT overlay(B'0101011100' placing '001' from 11);
+---END---
+---START---
 SELECT overlay(B'0101011100' placing '001' from 20);
+---END---
+---START---
 
 -- bit_count
 SELECT bit_count(B'0101011100'::bit(10));
+---END---
+---START---
 SELECT bit_count(B'1111111111'::bit(10));
+---END---
+---START---
 
 -- This table is intentionally left around to exercise pg_dump/pg_upgrade
 CREATE TABLE bit_defaults(
@@ -226,19 +373,44 @@ CREATE TABLE bit_defaults(
   b3 bit varying(5) DEFAULT '1001',
   b4 bit varying(5) DEFAULT B'0101'
 );
+---END---
+---START---
 \d bit_defaults
 INSERT INTO bit_defaults DEFAULT VALUES;
+---END---
+---START---
 TABLE bit_defaults;
+---END---
+---START---
 
 -- test non-error-throwing API for some core types
 SELECT pg_input_is_valid('01010001', 'bit(10)');
+---END---
+---START---
 SELECT * FROM pg_input_error_info('01010001', 'bit(10)');
+---END---
+---START---
 SELECT pg_input_is_valid('01010Z01', 'bit(8)');
+---END---
+---START---
 SELECT * FROM pg_input_error_info('01010Z01', 'bit(8)');
+---END---
+---START---
 SELECT pg_input_is_valid('x01010Z01', 'bit(32)');
+---END---
+---START---
 SELECT * FROM pg_input_error_info('x01010Z01', 'bit(32)');
+---END---
+---START---
 
 SELECT pg_input_is_valid('01010Z01', 'varbit');
+---END---
+---START---
 SELECT * FROM pg_input_error_info('01010Z01', 'varbit');
+---END---
+---START---
 SELECT pg_input_is_valid('x01010Z01', 'varbit');
+---END---
+---START---
 SELECT * FROM pg_input_error_info('x01010Z01', 'varbit');
+---END---

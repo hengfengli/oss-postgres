@@ -1,3 +1,4 @@
+---START---
 --
 -- MISC_SANITY
 -- Sanity checks for common errors in making system tables that don't fit
@@ -20,6 +21,8 @@ FROM pg_depend as d1
 WHERE refclassid = 0 OR refobjid = 0 OR
       classid = 0 OR objid = 0 OR
       deptype NOT IN ('a', 'e', 'i', 'n', 'x', 'P', 'S');
+---END---
+---START---
 
 
 -- **************** pg_shdepend ****************
@@ -32,6 +35,8 @@ WHERE refclassid = 0 OR refobjid = 0 OR
 -- WHERE refclassid = 0 OR refobjid = 0 OR
 --       classid = 0 OR objid = 0 OR
 --       deptype NOT IN ('a', 'o', 'r', 't');
+---END---
+---START---
 
 
 -- **************** pg_class ****************
@@ -52,6 +57,8 @@ WHERE c.oid < 16384 AND
       relkind = 'r' AND
       attstorage != 'p'
 ORDER BY 1, 2;
+---END---
+---START---
 
 
 -- system catalogs without primary keys
@@ -63,6 +70,8 @@ FROM pg_class
 WHERE relnamespace = 'pg_catalog'::regnamespace AND relkind = 'r'
       AND pg_class.oid NOT IN (SELECT indrelid FROM pg_index WHERE indisprimary)
 ORDER BY 1;
+---END---
+---START---
 
 
 -- system catalog unique indexes not wrapped in a constraint
@@ -73,3 +82,4 @@ WHERE relnamespace = 'pg_catalog'::regnamespace AND relkind = 'i'
       AND i.indisunique
       AND c.oid NOT IN (SELECT conindid FROM pg_constraint)
 ORDER BY 1;
+---END---

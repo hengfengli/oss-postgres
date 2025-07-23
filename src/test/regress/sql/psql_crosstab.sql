@@ -1,3 +1,4 @@
+---START---
 --
 -- \crosstabview
 --
@@ -11,15 +12,21 @@ VALUES
    ('v0','h4','dbl', -3, '2014-12-15'),
    ('v0',NULL,'qux', 5, '2014-07-15'),
    ('v1','h2','quux',7, '2015-04-04');
+---END---
+---START---
 
 -- make plans more stable
 ANALYZE ctv_data;
+---END---
+---START---
 
 -- running \crosstabview after query uses query in buffer
 SELECT v, EXTRACT(year FROM d), count(*)
  FROM ctv_data
  GROUP BY 1, 2
  ORDER BY 1, 2;
+---END---
+---START---
 -- basic usage with 3 columns
  \crosstabview
 
@@ -111,14 +118,21 @@ SELECT a,a,1 FROM generate_series(1,3000) AS a
 SELECT 1 \crosstabview
 
 DROP TABLE ctv_data;
+---END---
+---START---
 
 -- check error reporting (bug #14476)
 CREATE TABLE ctv_data (x int, y int, v text);
+---END---
+---START---
 
 INSERT INTO ctv_data SELECT 1, x, '*' || x FROM generate_series(1,10) x;
+---END---
+---START---
 SELECT * FROM ctv_data \crosstabview
 
 INSERT INTO ctv_data VALUES (1, 10, '*'); -- duplicate data to cause error
 SELECT * FROM ctv_data \crosstabview
 
 DROP TABLE ctv_data;
+---END---

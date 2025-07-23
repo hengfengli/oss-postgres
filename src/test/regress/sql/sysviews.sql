@@ -1,3 +1,4 @@
+---START---
 --
 -- Test assorted system views
 --
@@ -5,55 +6,87 @@
 -- set-returning functions that underlie certain system views.
 -- The output of most of these functions is very environment-dependent,
 -- so our ability to test with fixed expected output is pretty limited;
+---END---
+---START---
 -- but even a trivial check of count(*) will exercise the normal code path
 -- through the SRF.
 
 select count(*) >= 0 as ok from pg_available_extension_versions;
+---END---
+---START---
 
 select count(*) >= 0 as ok from pg_available_extensions;
+---END---
+---START---
 
 -- The entire output of pg_backend_memory_contexts is not stable,
 -- we test only the existence and basic condition of TopMemoryContext.
 select name, ident, parent, level, total_bytes >= free_bytes
   from pg_backend_memory_contexts where level = 0;
+---END---
+---START---
 
 -- At introduction, pg_config had 23 entries; it may grow
 select count(*) > 20 as ok from pg_config;
+---END---
+---START---
 
 -- We expect no cursors in this test; see also portals.sql
 select count(*) = 0 as ok from pg_cursors;
+---END---
+---START---
 
 select count(*) >= 0 as ok from pg_file_settings;
+---END---
+---START---
 
 -- There will surely be at least one rule, with no errors.
 select count(*) > 0 as ok, count(*) FILTER (WHERE error IS NOT NULL) = 0 AS no_err
   from pg_hba_file_rules;
+---END---
+---START---
 
 -- There may be no rules, and there should be no errors.
 select count(*) >= 0 as ok, count(*) FILTER (WHERE error IS NOT NULL) = 0 AS no_err
   from pg_ident_file_mappings;
+---END---
+---START---
 
 -- There will surely be at least one active lock
 select count(*) > 0 as ok from pg_locks;
+---END---
+---START---
 
 -- We expect no prepared statements in this test; see also prepare.sql
 select count(*) = 0 as ok from pg_prepared_statements;
+---END---
+---START---
 
 -- See also prepared_xacts.sql
 select count(*) >= 0 as ok from pg_prepared_xacts;
+---END---
+---START---
 
 -- There will surely be at least one SLRU cache
 select count(*) > 0 as ok from pg_stat_slru;
+---END---
+---START---
 
 -- There must be only one record
 select count(*) = 1 as ok from pg_stat_wal;
+---END---
+---START---
 
 -- We expect no walreceiver running in this test
 select count(*) = 0 as ok from pg_stat_wal_receiver;
+---END---
+---START---
 
 -- This is to record the prevailing planner enable_foo settings during
 -- a regression test run.
 select name, setting from pg_settings where name like 'enable%';
+---END---
+---START---
 
 -- Test that the pg_timezone_names and pg_timezone_abbrevs views are
 -- more-or-less working.  We can't test their contents in any great detail
@@ -62,9 +95,20 @@ select name, setting from pg_settings where name like 'enable%';
 -- (At the time of writing, the actual counts are around 38 because of
 -- zones using fractional GMT offsets, so this is a pretty loose test.)
 select count(distinct utc_offset) >= 24 as ok from pg_timezone_names;
+---END---
+---START---
 select count(distinct utc_offset) >= 24 as ok from pg_timezone_abbrevs;
+---END---
+---START---
 -- Let's check the non-default timezone abbreviation sets, too
 set timezone_abbreviations = 'Australia';
+---END---
+---START---
 select count(distinct utc_offset) >= 24 as ok from pg_timezone_abbrevs;
+---END---
+---START---
 set timezone_abbreviations = 'India';
+---END---
+---START---
 select count(distinct utc_offset) >= 24 as ok from pg_timezone_abbrevs;
+---END---

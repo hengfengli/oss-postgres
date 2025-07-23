@@ -1,3 +1,4 @@
+---START---
 --
 -- Check that system tables can be reindexed.
 --
@@ -42,7 +43,11 @@ REINDEX INDEX pg_shdescription_o_c_index; -- mapped, shared, non-critical
 
 -- Check the same REINDEX INDEX statements under parallelism.
 BEGIN;
+---END---
+---START---
 SET min_parallel_table_scan_size = 0;
+---END---
+---START---
 REINDEX INDEX pg_class_oid_index; -- mapped, non-shared, critical
 REINDEX INDEX pg_class_relname_nsp_index; -- mapped, non-shared, non-critical
 REINDEX INDEX pg_index_indexrelid_index; -- non-mapped, non-shared, critical
@@ -50,3 +55,4 @@ REINDEX INDEX pg_index_indrelid_index; -- non-mapped, non-shared, non-critical
 REINDEX INDEX pg_database_oid_index; -- mapped, shared, critical
 REINDEX INDEX pg_shdescription_o_c_index; -- mapped, shared, non-critical
 ROLLBACK;
+---END---
