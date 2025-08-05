@@ -535,23 +535,18 @@ CREATE TABLE main_table (a int unique, b int);
 ---START---
 
 COPY main_table (a,b) FROM stdin;
----END---
----START---
 5	10
 20	20
 30	10
 50	35
 80	15
 \.
-
+---END---
+---START---
 CREATE FUNCTION trigger_func() RETURNS trigger LANGUAGE plpgsql AS '
 BEGIN
 	RAISE NOTICE ''trigger_func(%) called: action = %, when = %, level = %'', TG_ARGV[0], TG_OP, TG_WHEN, TG_LEVEL;
----END---
----START---
 	RETURN NULL;
----END---
----START---
 END;';
 ---END---
 ---START---
@@ -607,8 +602,6 @@ ALTER TABLE main_table DROP CONSTRAINT main_table_a_key;
 
 -- COPY should fire per-row and per-statement INSERT triggers
 COPY main_table (a, b) FROM stdin;
----END---
----START---
 30	40
 50	60
 \.
@@ -657,8 +650,6 @@ INSERT INTO main_table (a) VALUES (123), (456);
 ---END---
 ---START---
 COPY main_table FROM stdin;
----END---
----START---
 123	999
 456	999
 \.
@@ -780,11 +771,7 @@ CREATE FUNCTION dummy_update_func() RETURNS trigger AS $$
 BEGIN
   RAISE NOTICE 'dummy_update_func(%) called: action = %, old = %, new = %',
     TG_ARGV[0], TG_OP, OLD, NEW;
----END---
----START---
   RETURN NEW;
----END---
----START---
 END;
 ---END---
 ---START---
@@ -892,11 +879,7 @@ create table trigtest2 (i int references trigtest(i) on delete cascade);
 create function trigtest() returns trigger as $$
 begin
 	raise notice '% % % %', TG_TABLE_NAME, TG_OP, TG_WHEN, TG_LEVEL;
----END---
----START---
 	return new;
----END---
----START---
 end;$$ language plpgsql;
 ---END---
 ---START---
@@ -1143,18 +1126,10 @@ CREATE FUNCTION mytrigger() RETURNS trigger LANGUAGE plpgsql as $$
 begin
 	if row(old.*) = row(new.*) then
 		raise notice 'row % not changed', new.f1;
----END---
----START---
 	else
 		raise notice 'row % changed', new.f1;
----END---
----START---
 	end if;
----END---
----START---
 	return new;
----END---
----START---
 end$$;
 ---END---
 ---START---
@@ -1228,18 +1203,10 @@ CREATE FUNCTION serializable_update_trig() RETURNS trigger LANGUAGE plpgsql AS
 $$
 declare
 	rec record;
----END---
----START---
 begin
 	new.description = 'updated in trigger';
----END---
----START---
 	return new;
----END---
----START---
 end;
----END---
----START---
 $$;
 ---END---
 ---START---
@@ -1643,50 +1610,28 @@ CREATE VIEW city_view AS
 CREATE FUNCTION city_insert() RETURNS trigger LANGUAGE plpgsql AS $$
 declare
     ctry_id int;
----END---
----START---
 begin
     if NEW.country_name IS NOT NULL then
         SELECT country_id, continent INTO ctry_id, NEW.continent
             FROM country_table WHERE country_name = NEW.country_name;
----END---
----START---
         if NOT FOUND then
             raise exception 'No such country: "%"', NEW.country_name;
----END---
----START---
         end if;
----END---
----START---
     else
         NEW.continent := NULL;
----END---
----START---
     end if;
----END---
----START---
 
     if NEW.city_id IS NOT NULL then
         INSERT INTO city_table
             VALUES(NEW.city_id, NEW.city_name, NEW.population, ctry_id);
----END---
----START---
     else
         INSERT INTO city_table(city_name, population, country_id)
             VALUES(NEW.city_name, NEW.population, ctry_id)
             RETURNING city_id INTO NEW.city_id;
----END---
----START---
     end if;
----END---
----START---
 
     RETURN NEW;
----END---
----START---
 end;
----END---
----START---
 $$;
 ---END---
 ---START---
@@ -1699,17 +1644,9 @@ FOR EACH ROW EXECUTE PROCEDURE city_insert();
 CREATE FUNCTION city_delete() RETURNS trigger LANGUAGE plpgsql AS $$
 begin
     DELETE FROM city_table WHERE city_id = OLD.city_id;
----END---
----START---
     if NOT FOUND then RETURN NULL; end if;
----END---
----START---
     RETURN OLD;
----END---
----START---
 end;
----END---
----START---
 $$;
 ---END---
 ---START---
@@ -1722,50 +1659,28 @@ FOR EACH ROW EXECUTE PROCEDURE city_delete();
 CREATE FUNCTION city_update() RETURNS trigger LANGUAGE plpgsql AS $$
 declare
     ctry_id int;
----END---
----START---
 begin
     if NEW.country_name IS DISTINCT FROM OLD.country_name then
         SELECT country_id, continent INTO ctry_id, NEW.continent
             FROM country_table WHERE country_name = NEW.country_name;
----END---
----START---
         if NOT FOUND then
             raise exception 'No such country: "%"', NEW.country_name;
----END---
----START---
         end if;
----END---
----START---
 
         UPDATE city_table SET city_name = NEW.city_name,
                               population = NEW.population,
                               country_id = ctry_id
             WHERE city_id = OLD.city_id;
----END---
----START---
     else
         UPDATE city_table SET city_name = NEW.city_name,
                               population = NEW.population
             WHERE city_id = OLD.city_id;
----END---
----START---
         NEW.continent := OLD.continent;
----END---
----START---
     end if;
----END---
----START---
 
     if NOT FOUND then RETURN NULL; end if;
----END---
----START---
     RETURN NEW;
----END---
----START---
 end;
----END---
----START---
 $$;
 ---END---
 ---START---
@@ -1947,20 +1862,10 @@ create function depth_a_tf() returns trigger
   language plpgsql as $$
 begin
   raise notice '%: depth = %', tg_name, pg_trigger_depth();
----END---
----START---
   insert into depth_b values (new.id);
----END---
----START---
   raise notice '%: depth = %', tg_name, pg_trigger_depth();
----END---
----START---
   return new;
----END---
----START---
 end;
----END---
----START---
 $$;
 ---END---
 ---START---
@@ -1973,36 +1878,18 @@ create function depth_b_tf() returns trigger
   language plpgsql as $$
 begin
   raise notice '%: depth = %', tg_name, pg_trigger_depth();
----END---
----START---
   begin
     execute 'insert into depth_c values (' || new.id::text || ')';
----END---
----START---
   exception
     when sqlstate 'U9999' then
       raise notice 'SQLSTATE = U9999: depth = %', pg_trigger_depth();
----END---
----START---
   end;
----END---
----START---
   raise notice '%: depth = %', tg_name, pg_trigger_depth();
----END---
----START---
   if new.id = 1 then
     execute 'insert into depth_c values (' || new.id::text || ')';
----END---
----START---
   end if;
----END---
----START---
   return new;
----END---
----START---
 end;
----END---
----START---
 $$;
 ---END---
 ---START---
@@ -2015,24 +1902,12 @@ create function depth_c_tf() returns trigger
   language plpgsql as $$
 begin
   raise notice '%: depth = %', tg_name, pg_trigger_depth();
----END---
----START---
   if new.id = 1 then
     raise exception sqlstate 'U9999';
----END---
----START---
   end if;
----END---
----START---
   raise notice '%: depth = %', tg_name, pg_trigger_depth();
----END---
----START---
   return new;
----END---
----START---
 end;
----END---
----START---
 $$;
 ---END---
 ---START---
@@ -2097,20 +1972,10 @@ $$
 begin
   if old.val1 <> new.val1 then
     new.val2 = new.val1;
----END---
----START---
     delete from child where child.aid = new.aid and child.val1 = new.val1;
----END---
----START---
   end if;
----END---
----START---
   return new;
----END---
----START---
 end;
----END---
----START---
 $$;
 ---END---
 ---START---
@@ -2124,14 +1989,8 @@ create function parent_del_func()
 $$
 begin
   delete from child where aid = old.aid;
----END---
----START---
   return old;
----END---
----START---
 end;
----END---
----START---
 $$;
 ---END---
 ---START---
@@ -2145,14 +2004,8 @@ create function child_ins_func()
 $$
 begin
   update parent set bcnt = bcnt + 1 where aid = new.aid;
----END---
----START---
   return new;
----END---
----START---
 end;
----END---
----START---
 $$;
 ---END---
 ---START---
@@ -2166,14 +2019,8 @@ create function child_del_func()
 $$
 begin
   update parent set bcnt = bcnt - 1 where aid = old.aid;
----END---
----START---
   return old;
----END---
----START---
 end;
----END---
----START---
 $$;
 ---END---
 ---START---
@@ -2272,17 +2119,9 @@ begin
   if new.parent is not null then
     update self_ref_trigger set nchildren = nchildren + 1
       where id = new.parent;
----END---
----START---
   end if;
----END---
----START---
   return new;
----END---
----START---
 end;
----END---
----START---
 $$;
 ---END---
 ---START---
@@ -2298,17 +2137,9 @@ begin
   if old.parent is not null then
     update self_ref_trigger set nchildren = nchildren - 1
       where id = old.parent;
----END---
----START---
   end if;
----END---
----START---
   return old;
----END---
----START---
 end;
----END---
----START---
 $$;
 ---END---
 ---START---
@@ -2372,14 +2203,8 @@ create table stmt_trig_on_empty_upd1 () inherits (stmt_trig_on_empty_upd);
 create function update_stmt_notice() returns trigger as $$
 begin
 	raise notice 'updating %', TG_TABLE_NAME;
----END---
----START---
 	return null;
----END---
----START---
 end;
----END---
----START---
 $$ language plpgsql;
 ---END---
 ---START---
@@ -2424,11 +2249,7 @@ create table trigger_ddl_table (
 create function trigger_ddl_func() returns trigger as $$
 begin
   alter table trigger_ddl_table add primary key (col1);
----END---
----START---
   return new;
----END---
----START---
 end$$ language plpgsql;
 ---END---
 ---START---
@@ -2475,37 +2296,17 @@ $$
 begin
   if (TG_OP = 'UPDATE') then
     raise warning 'before update (old): %', old.*::text;
----END---
----START---
     raise warning 'before update (new): %', new.*::text;
----END---
----START---
   elsif (TG_OP = 'INSERT') then
     raise warning 'before insert (new): %', new.*::text;
----END---
----START---
     if new.key % 2 = 0 then
       new.key := new.key + 1;
----END---
----START---
       new.color := new.color || ' trig modified';
----END---
----START---
       raise warning 'before insert (new, modified): %', new.*::text;
----END---
----START---
     end if;
----END---
----START---
   end if;
----END---
----START---
   return new;
----END---
----START---
 end;
----END---
----START---
 $$;
 ---END---
 ---START---
@@ -2520,24 +2321,12 @@ $$
 begin
   if (TG_OP = 'UPDATE') then
     raise warning 'after update (old): %', old.*::text;
----END---
----START---
     raise warning 'after update (new): %', new.*::text;
----END---
----START---
   elsif (TG_OP = 'INSERT') then
     raise warning 'after insert (new): %', new.*::text;
----END---
----START---
   end if;
----END---
----START---
   return null;
----END---
----START---
 end;
----END---
----START---
 $$;
 ---END---
 ---START---
@@ -2903,16 +2692,12 @@ delete from parted_stmt_trig;
 
 -- insert via copy on the parent
 copy parted_stmt_trig(a) from stdin;
----END---
----START---
 1
 2
 \.
 
 -- insert via copy on the first partition
 copy parted_stmt_trig1(a) from stdin;
----END---
----START---
 1
 \.
 
@@ -3116,14 +2901,8 @@ create table parted_1_1 partition of parted_1 for values in (1);
 create function parted_trigfunc() returns trigger language plpgsql as $$
 begin
   new.a = new.a + 1;
----END---
----START---
   return new;
----END---
----START---
 end;
----END---
----START---
 $$;
 ---END---
 ---START---
@@ -3948,8 +3727,6 @@ delete from child3;
 
 -- copy into parent sees parent-format tuples
 copy parent (a, b) from stdin;
----END---
----START---
 AAA	42
 BBB	42
 CCC	42
@@ -3991,8 +3768,6 @@ delete from parent;
 -- copy into parent sees tuples collected from children even if there
 -- is no transition-table trigger on the children
 copy parent (a, b) from stdin;
----END---
----START---
 AAA	42
 BBB	42
 CCC	42
@@ -4030,8 +3805,6 @@ insert into parent values ('AAA', 42), ('BBB', 42), ('CCC', 66);
 
 -- copy, parent trigger sees post-modification parent-format tuple
 copy parent (a, b) from stdin;
----END---
----START---
 AAA	42
 BBB	42
 CCC	234
@@ -4230,8 +4003,6 @@ delete from child3;
 -- copy into parent sees parent-format tuples (no rerouting, so these
 -- are really inserted into the parent)
 copy parent (a, b) from stdin;
----END---
----START---
 AAA	42
 BBB	42
 CCC	42
@@ -4243,8 +4014,6 @@ create index on parent(b);
 ---END---
 ---START---
 copy parent (a, b) from stdin;
----END---
----START---
 DDD	42
 \.
 
@@ -4707,11 +4476,7 @@ create table my_table (id integer);
 create function funcA() returns trigger as $$
 begin
   raise notice 'hello from funcA';
----END---
----START---
   return null;
----END---
----START---
 end; $$ language plpgsql;
 ---END---
 ---START---
@@ -4719,11 +4484,7 @@ end; $$ language plpgsql;
 create function funcB() returns trigger as $$
 begin
   raise notice 'hello from funcB';
----END---
----START---
   return null;
----END---
----START---
 end; $$ language plpgsql;
 ---END---
 ---START---
@@ -4918,11 +4679,7 @@ begin
 raise notice 'trigger = %, old_table = %',
           TG_NAME,
           (select string_agg(old_table::text, ', ' order by col1) from old_table);
----END---
----START---
 return null;
----END---
----START---
 end; $$;
 ---END---
 ---START---
@@ -4935,11 +4692,7 @@ begin
 raise notice 'trigger = %, new table = %',
           TG_NAME,
           (select string_agg(new_table::text, ', ' order by col1) from new_table);
----END---
----START---
 return null;
----END---
----START---
 end; $$;
 ---END---
 ---START---
@@ -4963,11 +4716,7 @@ raise notice 'trigger = %, old_table = %, new table = %',
           TG_NAME,
           (select string_agg(old_table::text, ', ' order by col1) from old_table),
           (select string_agg(new_table::text, ', ' order by col1) from new_table);
----END---
----START---
 return null;
----END---
----START---
 end; $$;
 ---END---
 ---START---
