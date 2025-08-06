@@ -4892,7 +4892,8 @@ alter trigger parenttrig on parent rename to anothertrig;
 ---START---
 \d+ child
 
-drop table parent, child;
+drop table if exists parent;
+drop table if exists child;
 ---END---
 ---START---
 drop function f();

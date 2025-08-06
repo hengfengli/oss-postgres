@@ -1068,5 +1068,11 @@ truncate copy_default;
 copy (select 1 as test) TO stdout with (default '\D');
 ---END---
 ---START---
-drop table if exists x, y, testnl, testeoc, testnull, forcetest, copy_default;
+drop table if exists x;
+drop table if exists y;
+drop table if exists testnl;
+drop table if exists testeoc;
+drop table if exists testnull;
+drop table if exists forcetest;
+drop table if exists copy_default;
 ---END---

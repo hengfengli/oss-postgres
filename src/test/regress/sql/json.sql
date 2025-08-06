@@ -1645,5 +1645,8 @@ select ts_headline('{}'::json, tsquery('aaa & bbb'));
 select ts_headline('[]'::json, tsquery('aaa & bbb'));
 ---END---
 ---START---
-drop table rows, test_json, jspoptest, foo;
+drop table if exists rows;
+drop table if exists test_json;
+drop table if exists jspoptest;
+drop table if exists foo;
 ---END---

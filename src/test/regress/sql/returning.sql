@@ -275,7 +275,7 @@ SELECT * FROM foo;
 SELECT * FROM voo;
 ---END---
 ---START---
-drop table foochild;
-drop table foo;
-drop table joinme;
+drop table if exists foochild;
+drop table if exists foo;
+drop table if exists joinme;
 ---END---

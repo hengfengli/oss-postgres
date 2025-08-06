@@ -1652,5 +1652,8 @@ select * from
   jsonb_to_recordset(ss.lecture) as j (id text);
 ---END---
 ---START---
-drop table if exists tt, tt_log, rngfunc, users;
+drop table if exists tt;
+drop table if exists tt_log;
+drop table if exists rngfunc;
+drop table if exists users;
 ---END---

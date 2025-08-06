@@ -9223,5 +9223,8 @@ BEGIN
 END; $$ LANGUAGE plpgsql;
 ---END---
 ---START---
-drop table users, foo, rtype, forc_test;
+drop table if exists users;
+drop table if exists foo;
+drop table if exists rtype;
+drop table if exists forc_test;
 ---END---

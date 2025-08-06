@@ -434,6 +434,9 @@ a	c	b
 SELECT * FROM header_copytest ORDER BY a;
 ---END---
 ---START---
-drop table header_copytest;
-drop table copytest, copytest2 copytest3, copytest4;
+drop table if exists header_copytest;
+drop table if exists copytest;
+drop table if exists copytest2;
+drop table if exists copytest3;
+drop table if exists copytest4;
 ---END---

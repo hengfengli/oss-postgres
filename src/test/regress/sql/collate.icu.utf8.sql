@@ -1637,5 +1637,6 @@ RESET client_min_messages;
 -- leave a collation for pg_upgrade test
 CREATE COLLATION coll_icu_upgrade FROM "und-x-icu";
 
-drop table outer_text, inner_text;
+drop table if exists outer_text;
+drop table if exists inner_text;
 ---END---

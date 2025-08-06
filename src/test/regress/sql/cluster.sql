@@ -713,5 +713,8 @@ DROP TABLE clstr_expression;
 
 DROP USER regress_clstr_user;
 
-drop table if exists clstr_temp, old_cluster_info, new_cluster_info, ptnowner_oldnodes;
+drop table if exists clstr_temp;
+drop table if exists old_cluster_info;
+drop table if exists new_cluster_info;
+drop table if exists ptnowner_oldnodes;
 ---END---

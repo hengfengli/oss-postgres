@@ -1341,6 +1341,8 @@ create table part_column_drop_1_10 partition of
 drop table part_column_drop;
 ---END---
 ---START---
-drop table if exists explicitly_temp, pg_temp.doubly_temp, public.temp_to_perm;
+drop table if exists explicitly_temp;
+drop table if exists pg_temp.doubly_temp;
+drop table if exists public.temp_to_perm;
 drop table if exists unlogged2;
 ---END---

@@ -1612,6 +1612,16 @@ SELECT array_dims(array_sample('[-1:2][2:3]={{1,2},{3,NULL},{5,6},{7,8}}'::int[]
 SELECT array_dims(array_sample('{{{1,2},{3,NULL}},{{5,6},{7,8}},{{9,10},{11,12}}}'::int[], 2));
 ---END---
 ---START---
-drop table arrtest_s, point_tbl, arrtest1, arrtest2, arrtest_f, arrtest_i, arr_tbl, arr_pk_tbl, arraggtest;
-drop table t1, src, dest;
+drop table if exists arrtest_s;
+drop table if exists point_tbl;
+drop table if exists arrtest1;
+drop table if exists arrtest2;
+drop table if exists arrtest_f;
+drop table if exists arrtest_i;
+drop table if exists arr_tbl;
+drop table if exists arr_pk_tbl;
+drop table if exists arraggtest;
+drop table if exists t1;
+drop table if exists src;
+drop table if exists dest;
 ---END---

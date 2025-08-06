@@ -2392,5 +2392,12 @@ DROP ROLE regress_reindexuser;
 DROP SCHEMA schema_to_reindex CASCADE;
 ---END---
 ---START---
-drop table if exists point_tbl, gpolygon_tbl, concur_temp, boolindex, gcircle_tbl, concur_temp_tab_1, concur_temp_tab_2, concur_temp_tab_3;
+drop table if exists point_tbl;
+drop table if exists gpolygon_tbl;
+drop table if exists concur_temp;
+drop table if exists boolindex;
+drop table if exists gcircle_tbl;
+drop table if exists concur_temp_tab_1;
+drop table if exists concur_temp_tab_2;
+drop table if exists concur_temp_tab_3;
 ---END---

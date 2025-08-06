@@ -437,5 +437,7 @@ select name, generic_plans, custom_plans from pg_prepared_statements
 
 drop table test_mode;
 
-drop table if exists pcachetest, t1, temptable;
+drop table if exists pcachetest;
+drop table if exists t1;
+drop table if exists temptable;
 ---END---

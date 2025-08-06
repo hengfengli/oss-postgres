@@ -6160,6 +6160,14 @@ drop schema alter1 cascade;
 drop schema alter2 cascade;
 ---END---
 ---START---
-drop table if exists foo, old_oids, recur1, recur2, t1, log, filenode_mapping;
-drop table if exists temp_parted, temp_part_parent, temp_part_child;
+drop table if exists foo;
+drop table if exists old_oids;
+drop table if exists recur1;
+drop table if exists recur2;
+drop table if exists t1;
+drop table if exists log;
+drop table if exists filenode_mapping;
+drop table if exists temp_parted;
+drop table if exists temp_part_parent;
+drop table if exists temp_part_child;
 ---END---

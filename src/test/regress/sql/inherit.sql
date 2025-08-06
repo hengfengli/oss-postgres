@@ -2201,14 +2201,18 @@ UPDATE errtst_parent SET partid = 30, data = data + 10 WHERE partid = 20;
 
 DROP TABLE errtst_parent;
 
-drop table z, foo, foo2, bar, bar2;
-drop table childtab;
-drop table parent1;
-drop table parent2;
-drop table patest2;
-drop table patest1;
-drop table patest0;
-drop table inh_temp_child_2;
-drop table inh_temp_child;
-drop table inh_temp_parent;
+drop table if exists z;
+drop table if exists foo;
+drop table if exists foo2;
+drop table if exists bar;
+drop table if exists bar2;
+drop table if exists childtab;
+drop table if exists parent1;
+drop table if exists parent2;
+drop table if exists patest2;
+drop table if exists patest1;
+drop table if exists patest0;
+drop table if exists inh_temp_child_2;
+drop table if exists inh_temp_child;
+drop table if exists inh_temp_parent;
 ---END---

@@ -509,5 +509,6 @@ EXPLAIN (COSTS OFF) :qry;
 COMMIT;
 ---END---
 ---START---
-drop table abbrev_abort_uuids, test_mark_restore;
+drop table if exists abbrev_abort_uuids;
+drop table if exists test_mark_restore;
 ---END---

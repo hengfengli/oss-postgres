@@ -2580,5 +2580,6 @@ DROP ROLE regress_du_role2;
 DROP ROLE regress_du_admin;
 ---END---
 ---START---
-drop table if exists gexec_test, reload_output;
+drop table if exists gexec_test;
+drop table if exists reload_output;
 ---END---

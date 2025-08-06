@@ -2622,6 +2622,7 @@ DROP TABLE ruletest_t1;
 
 DROP USER regress_rule_user1;
 
-drop table t1_1, t1_2;
-drop table t1;
+drop table if exists t1_1;
+drop table if exists t1_2;
+drop table if exists t1;
 ---END---

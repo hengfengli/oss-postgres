@@ -840,7 +840,13 @@ RESET enable_indexscan;
 RESET enable_bitmapscan;
 ---END---
 ---START---
-drop table if exists quad_point_tbl_ord_seq1, quad_point_tbl_ord_seq2, quad_point_tbl_ord_seq3;
-drop table if exists quad_point_tbl_ord_idx1, quad_point_tbl_ord_idx2, quad_point_tbl_ord_idx3;
-drop table if exists kd_point_tbl_ord_idx1, kd_point_tbl_ord_idx2, kd_point_tbl_ord_idx3;
+drop table if exists quad_point_tbl_ord_seq1;
+drop table if exists quad_point_tbl_ord_seq2;
+drop table if exists quad_point_tbl_ord_seq3;
+drop table if exists quad_point_tbl_ord_idx1;
+drop table if exists quad_point_tbl_ord_idx2;
+drop table if exists quad_point_tbl_ord_idx3;
+drop table if exists kd_point_tbl_ord_idx1;
+drop table if exists kd_point_tbl_ord_idx2;
+drop table if exists kd_point_tbl_ord_idx3;
 ---END---

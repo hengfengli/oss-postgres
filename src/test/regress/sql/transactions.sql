@@ -1293,7 +1293,8 @@ SELECT * FROM trans_abc ORDER BY 1;
 DROP TABLE trans_abc;
 
 drop table if exists new_table;
-drop table if exists i_table, temptest;
+drop table if exists i_table;
+drop table if exists temptest;
 ---END---
 ---START---
 

@@ -277,7 +277,10 @@ EXECUTE foo;
 ALTER TABLE articles DROP CONSTRAINT articles_pkey RESTRICT;
 ---END---
 ---START---
-drop table articles;
-drop table articles_in_category, products, sales;
-drop table node, users;
+drop table if exists articles;
+drop table if exists articles_in_category;
+drop table if exists products;
+drop table if exists sales;
+drop table if exists node;
+drop table if exists users;
 ---END---

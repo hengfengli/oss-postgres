@@ -2191,8 +2191,18 @@ with with_test as (select 42) insert into with_test select * from with_test;
 select * from with_test;
 ---END---
 ---START---
-drop table with_test;
-drop table department, graph0, graph, bug6051, bug6051_2, bug6051_3;
-drop table parent, child1, child2;
-drop table tree, x, y, yy;
+drop table if exists with_test;
+drop table if exists department;
+drop table if exists graph0;
+drop table if exists graph;
+drop table if exists bug6051;
+drop table if exists bug6051_2;
+drop table if exists bug6051_3;
+drop table if exists parent;
+drop table if exists child1;
+drop table if exists child2;
+drop table if exists tree;
+drop table if exists x;
+drop table if exists y;
+drop table if exists yy;
 ---END---

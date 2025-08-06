@@ -151,5 +151,6 @@ SELECT name, statement, parameter_types FROM pg_prepared_statements
     ORDER BY name;
 ---END---
 ---START---
-drop table q5_prep_results, q5_prep_nodata;
+drop table if exists q5_prep_results;
+drop table if exists q5_prep_nodata;
 ---END---

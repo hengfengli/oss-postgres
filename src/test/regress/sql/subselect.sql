@@ -1467,12 +1467,26 @@ with x as (select * from subselect_tbl)
 select * from x for update;
 ---END---
 ---START---
-drop table foo, bar, parts, shipped;
-drop table numeric_table, float_table;
-drop table ta, tb, tc;
-drop table t1, table_a, upsert;
-drop table outer_7597, inner_7597, outer_text, inner_text;
-drop table exists_tbl, exists_null, exists_def;
-drop table notinouter, notininner;
-drop table nocolumns;
+drop table if exists foo;
+drop table if exists bar;
+drop table if exists parts;
+drop table if exists shipped;
+drop table if exists numeric_table;
+drop table if exists float_table;
+drop table if exists ta;
+drop table if exists tb;
+drop table if exists tc;
+drop table if exists t1;
+drop table if exists table_a;
+drop table if exists upsert;
+drop table if exists outer_7597;
+drop table if exists inner_7597;
+drop table if exists outer_text;
+drop table if exists inner_text;
+drop table if exists exists_tbl;
+drop table if exists exists_null;
+drop table if exists exists_def;
+drop table if exists notinouter;
+drop table if exists notininner;
+drop table if exists nocolumns;
 ---END---

@@ -931,5 +931,8 @@ select (select grouping(v1)) from (values ((select 1))) v(v1) group by v1;
 select (select grouping(v1)) from (values ((select 1))) v(v1) group by v1;
 ---END---
 ---START---
-drop table gstest2, gstest3, gstest4, gstest_empty;
+drop table if exists gstest2;
+drop table if exists gstest3;
+drop table if exists gstest4;
+drop table if exists gstest_empty;
 ---END---

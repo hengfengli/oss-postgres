@@ -332,5 +332,5 @@ SELECT test_future_xid_status((:inprogress + 10000)::text::xid8);
 ROLLBACK;
 ---END---
 ---START---
-drop table snapshot_test;
+drop table if exists snapshot_test;
 ---END---

@@ -879,6 +879,6 @@ DROP TABLE vacowned_parted;
 ---START---
 DROP ROLE regress_vacuum;
 
-drop table tmp;
-drop table vac_truncate_test;
+drop table if exists tmp;
+drop table if exists vac_truncate_test;
 ---END---
