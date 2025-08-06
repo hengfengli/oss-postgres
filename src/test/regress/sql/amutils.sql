@@ -86,7 +86,7 @@ select amname, prop, pg_indexam_has_property(a.oid, prop) as p
 --
 -- additional checks for pg_index_column_has_property
 --
-CREATE TEMP TABLE foo (f1 int, f2 int, f3 int, f4 int);
+CREATE TABLE foo (f1 int, f2 int, f3 int, f4 int);
 ---END---
 ---START---
 
@@ -116,4 +116,8 @@ select col, prop, pg_index_column_has_property(o, col, prop)
                (8, 'bogus')) v2(idx,prop),
        generate_series(1,3) col
  order by col, idx;
+---END---
+---START---
+
+drop table foo;
 ---END---

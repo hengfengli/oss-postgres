@@ -3,7 +3,7 @@
 -- Tests to exercise the plan caching/invalidation mechanism
 --
 
-CREATE TEMP TABLE pcachetest AS SELECT * FROM int8_tbl;
+CREATE TABLE pcachetest AS SELECT * FROM int8_tbl;
 ---END---
 ---START---
 
@@ -39,7 +39,7 @@ EXECUTE prepstmt2(123);
 
 -- recreate the temp table (this demonstrates that the raw plan is
 -- purely textual and doesn't depend on OIDs, for instance)
-CREATE TEMP TABLE pcachetest AS SELECT * FROM int8_tbl ORDER BY 2;
+CREATE TABLE pcachetest AS SELECT * FROM int8_tbl ORDER BY 2;
 ---END---
 ---START---
 
@@ -106,7 +106,7 @@ declare total int;
 ---END---
 ---START---
 begin
-	create temp table t1(f1 int);
+	create table t1(f1 int);
 ---END---
 ---START---
 	insert into t1 values($1);
@@ -278,7 +278,7 @@ begin
   drop table if exists temptable cascade;
 ---END---
 ---START---
-  create temp table temptable as select * from generate_series(1,3) as f1;
+  create table temptable as select * from generate_series(1,3) as f1;
 ---END---
 ---START---
   create temp view vv as select * from temptable;
@@ -436,4 +436,6 @@ select name, generic_plans, custom_plans from pg_prepared_statements
 ---START---
 
 drop table test_mode;
+
+drop table if exists pcachetest, t1, temptable;
 ---END---

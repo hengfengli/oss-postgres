@@ -83,7 +83,7 @@ INSERT INTO J2_TBL VALUES (NULL, 0);
 ---START---
 
 -- useful in some tests below
-create temp table onerow();
+create table onerow();
 ---END---
 ---START---
 insert into onerow default values;
@@ -491,7 +491,7 @@ ON (s1_n = s2_n);
 
 -- Test for propagation of nullability constraints into sub-joins
 
-create temp table x (x1 int, x2 int);
+create table x (x1 int, x2 int);
 ---END---
 ---START---
 insert into x values (1,11);
@@ -510,7 +510,7 @@ insert into x values (5,null);
 ---END---
 ---START---
 
-create temp table y (y1 int, y2 int);
+create table y (y1 int, y2 int);
 ---END---
 ---START---
 insert into y values (1,111);
@@ -917,13 +917,13 @@ DROP TABLE J2_TBL;
 -- Both DELETE and UPDATE allow the specification of additional tables
 -- to "join" against to determine which rows should be modified.
 
-CREATE TEMP TABLE t1 (a int, b int);
+CREATE TABLE t1 (a int, b int);
 ---END---
 ---START---
-CREATE TEMP TABLE t2 (a int, b int);
+CREATE TABLE t2 (a int, b int);
 ---END---
 ---START---
-CREATE TEMP TABLE t3 (x int, y int);
+CREATE TABLE t3 (x int, y int);
 ---END---
 ---START---
 
@@ -976,7 +976,7 @@ SELECT * FROM t3;
 
 -- Test join against inheritance tree
 
-create temp table t2a () inherits (t2);
+create table t2a () inherits (t2);
 ---END---
 ---START---
 
@@ -1030,7 +1030,7 @@ select bar.*, unnamed_join.* from
 -- regression test for 8.1 merge right join bug
 --
 
-CREATE TEMP TABLE tt1 ( tt1_id int4, joincol int4 );
+CREATE TABLE tt1 ( tt1_id int4, joincol int4 );
 ---END---
 ---START---
 INSERT INTO tt1 VALUES (1, 11);
@@ -1040,7 +1040,7 @@ INSERT INTO tt1 VALUES (2, NULL);
 ---END---
 ---START---
 
-CREATE TEMP TABLE tt2 ( tt2_id int4, joincol int4 );
+CREATE TABLE tt2 ( tt2_id int4, joincol int4 );
 ---END---
 ---START---
 INSERT INTO tt2 VALUES (21, 11);
@@ -1112,7 +1112,7 @@ reset enable_memoize;
 -- regression test for 8.2 bug with improper re-ordering of left joins
 --
 
-create temp table tt3(f1 int, f2 text);
+create table tt3(f1 int, f2 text);
 ---END---
 ---START---
 insert into tt3 select x, repeat('xyzzy', 100) from generate_series(1,10000) x;
@@ -1122,7 +1122,7 @@ analyze tt3;
 ---END---
 ---START---
 
-create temp table tt4(f1 int);
+create table tt4(f1 int);
 ---END---
 ---START---
 insert into tt4 values (0),(1),(9999);
@@ -1204,7 +1204,7 @@ where b.unique2 is null;
 -- regression test for proper handling of outer joins within antijoins
 --
 
-create temp table tt4x(c1 int, c2 int, c3 int);
+create table tt4x(c1 int, c2 int, c3 int);
 ---END---
 ---START---
 
@@ -1225,10 +1225,10 @@ where not exists (
 -- regression test for problems of the sort depicted in bug #3494
 --
 
-create temp table tt5(f1 int, f2 int);
+create table tt5(f1 int, f2 int);
 ---END---
 ---START---
-create temp table tt6(f1 int, f2 int);
+create table tt6(f1 int, f2 int);
 ---END---
 ---START---
 
@@ -1257,10 +1257,10 @@ select * from tt5,tt6 where tt5.f1 = tt6.f1 and tt5.f1 = tt5.f2 - tt6.f2;
 -- regression test for problems of the sort depicted in bug #3588
 --
 
-create temp table xx (pkxx int);
+create table xx (pkxx int);
 ---END---
 ---START---
-create temp table yy (pkyy int, pkxx int);
+create table yy (pkyy int, pkxx int);
 ---END---
 ---START---
 
@@ -1298,13 +1298,13 @@ from yy
 -- (as seen in early 8.2.x releases)
 --
 
-create temp table zt1 (f1 int primary key);
+create table zt1 (f1 int primary key);
 ---END---
 ---START---
-create temp table zt2 (f2 int primary key);
+create table zt2 (f2 int primary key);
 ---END---
 ---START---
-create temp table zt3 (f3 int primary key);
+create table zt3 (f3 int primary key);
 ---END---
 ---START---
 insert into zt1 values(53);
@@ -1378,10 +1378,10 @@ set enable_nestloop = 0;
 ---END---
 ---START---
 
-create temp table a (i integer);
+create table a (i integer);
 ---END---
 ---START---
-create temp table b (x integer, y integer);
+create table b (x integer, y integer);
 ---END---
 ---START---
 
@@ -1404,7 +1404,7 @@ create type mycomptype as (id int, v bigint);
 ---END---
 ---START---
 
-create temp table tidv (idv mycomptype);
+create table tidv (idv mycomptype);
 ---END---
 ---START---
 create index on tidv (idv);
@@ -1468,20 +1468,20 @@ begin;
 ---END---
 ---START---
 
-create temp table a (
+create table a (
      code char not null,
      constraint a_pk primary key (code)
 );
 ---END---
 ---START---
-create temp table b (
+create table b (
      a char not null,
      num integer not null,
      constraint b_pk primary key (a, num)
 );
 ---END---
 ---START---
-create temp table c (
+create table c (
      name char not null,
      a char,
      constraint c_pk primary key (name)
@@ -1597,14 +1597,14 @@ SELECT qq, unique1
 -- nested nestloops can require nested PlaceHolderVars
 --
 
-create temp table nt1 (
+create table nt1 (
   id int primary key,
   a1 boolean,
   a2 boolean
 );
 ---END---
 ---START---
-create temp table nt2 (
+create table nt2 (
   id int primary key,
   nt1_id int,
   b1 boolean,
@@ -1613,7 +1613,7 @@ create temp table nt2 (
 );
 ---END---
 ---START---
-create temp table nt3 (
+create table nt3 (
   id int primary key,
   nt2_id int,
   c1 boolean,
@@ -1749,10 +1749,10 @@ select * from int4_tbl a full join int4_tbl b on false;
 -- test for ability to use a cartesian join when necessary
 --
 
-create temp table q1 as select 1 as q1;
+create table q1 as select 1 as q1;
 ---END---
 ---START---
-create temp table q2 as select 0 as q2;
+create table q2 as select 0 as q2;
 ---END---
 ---START---
 analyze q1;
@@ -2532,7 +2532,7 @@ begin;
 ---END---
 ---START---
 
-create temp table t (a int unique);
+create table t (a int unique);
 ---END---
 ---START---
 
@@ -2741,16 +2741,16 @@ begin;
 ---END---
 ---START---
 
-CREATE TEMP TABLE a (id int PRIMARY KEY, b_id int);
+CREATE TABLE a (id int PRIMARY KEY, b_id int);
 ---END---
 ---START---
-CREATE TEMP TABLE b (id int PRIMARY KEY, c_id int);
+CREATE TABLE b (id int PRIMARY KEY, c_id int);
 ---END---
 ---START---
-CREATE TEMP TABLE c (id int PRIMARY KEY);
+CREATE TABLE c (id int PRIMARY KEY);
 ---END---
 ---START---
-CREATE TEMP TABLE d (a int, b int);
+CREATE TABLE d (a int, b int);
 ---END---
 ---START---
 INSERT INTO a VALUES (0, 0), (1, NULL);
@@ -2966,10 +2966,10 @@ select c.id, ss.a from c
 ---END---
 ---START---
 
-CREATE TEMP TABLE parted_b (id int PRIMARY KEY) partition by range(id);
+CREATE TABLE parted_b (id int PRIMARY KEY) partition by range(id);
 ---END---
 ---START---
-CREATE TEMP TABLE parted_b1 partition of parted_b for values from (0) to (10);
+CREATE TABLE parted_b1 partition of parted_b for values from (0) to (10);
 ---END---
 ---START---
 
@@ -2983,10 +2983,10 @@ rollback;
 ---END---
 ---START---
 
-create temp table parent (k int primary key, pd int);
+create table parent (k int primary key, pd int);
 ---END---
 ---START---
-create temp table child (k int unique, cd int);
+create table child (k int unique, cd int);
 ---END---
 ---START---
 insert into parent values (1, 10), (2, 20), (3, 30);
@@ -3048,10 +3048,10 @@ begin;
 ---END---
 ---START---
 
-CREATE TEMP TABLE a (id int PRIMARY KEY);
+CREATE TABLE a (id int PRIMARY KEY);
 ---END---
 ---START---
-CREATE TEMP TABLE b (id int PRIMARY KEY, a_id int);
+CREATE TABLE b (id int PRIMARY KEY, a_id int);
 ---END---
 ---START---
 INSERT INTO a VALUES (0), (1);
@@ -3077,7 +3077,7 @@ begin;
 ---END---
 ---START---
 
-create temp table innertab (id int8 primary key, dat1 int8);
+create table innertab (id int8 primary key, dat1 int8);
 ---END---
 ---START---
 insert into innertab values(123, 42);
@@ -3131,7 +3131,7 @@ begin;
 ---END---
 ---START---
 
-create temp table uniquetbl (f1 text unique);
+create table uniquetbl (f1 text unique);
 ---END---
 ---START---
 
@@ -3183,7 +3183,7 @@ begin;
 ---END---
 ---START---
 
-create temp table t (a int unique);
+create table t (a int unique);
 ---END---
 ---START---
 insert into t values (1);
@@ -3218,7 +3218,7 @@ begin;
 ---END---
 ---START---
 
-create temp table t (a int unique, b int);
+create table t (a int unique, b int);
 ---END---
 ---START---
 insert into t values (1,1), (2,2);
@@ -3283,10 +3283,10 @@ where q2 = 456;
 
 -- and check a related issue where we miscompute required relids for
 -- a PHV that's been translated to a child rel
-create temp table parttbl (a integer primary key) partition by range (a);
+create table parttbl (a integer primary key) partition by range (a);
 ---END---
 ---START---
-create temp table parttbl1 partition of parttbl for values from (1) to (100);
+create table parttbl1 partition of parttbl for values from (1) to (100);
 ---END---
 ---START---
 insert into parttbl values (11), (12);
@@ -3751,7 +3751,7 @@ select 1 from tenk1 a, lateral (select max(a.unique1) from int4_tbl b) ss;
 
 -- check behavior of LATERAL in UPDATE/DELETE
 
-create temp table xx1 as select f1 as x1, -f1 as x2 from int4_tbl;
+create table xx1 as select f1 as x1, -f1 as x2 from int4_tbl;
 ---END---
 ---START---
 
@@ -4223,4 +4223,13 @@ where exists (select 1 from j3
 ---START---
 
 drop table j3;
+
+drop table if exists onerow, x, y, t1, t2, t3, t2a;
+drop table if exists tt1, tt2, tt3, tt4, tt4x, tt5, tt6;
+drop table if exists xx, yy, zt1, zt2, zt3, a, b, c, d;
+drop table if exists tidv, nt1, nt2, nt3, q1, q2, t;
+drop table if exists parted_b, parted_b1;
+drop table if exists parent, child, innertab, uniquetbl;
+drop table if exists parttbl, parttbl1;
+drop table if exists xx1;
 ---END---

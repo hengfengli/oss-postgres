@@ -308,7 +308,7 @@ CREATE SCHEMA schema_two authorization regress_evt_user;
 CREATE SCHEMA audit_tbls authorization regress_evt_user;
 ---END---
 ---START---
-CREATE TEMP TABLE a_temp_tbl ();
+CREATE TABLE a_temp_tbl ();
 ---END---
 ---START---
 SET SESSION AUTHORIZATION regress_evt_user;

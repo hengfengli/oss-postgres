@@ -3,7 +3,7 @@
 -- WINDOW FUNCTIONS
 --
 
-CREATE TEMPORARY TABLE empsalary (
+CREATE TABLE empsalary (
     depname varchar,
     empno bigint,
     salary int,
@@ -856,7 +856,7 @@ from generate_series(-9223372036854775806, -9223372036854775804) x;
 
 -- Test in_range for other numeric datatypes
 
-create temp table numerics(
+create table numerics(
     id int,
     f_float4 float4,
     f_float8 float8,
@@ -990,7 +990,7 @@ window w as (order by f_numeric range between
 
 -- Test in_range for other datetime datatypes
 
-create temp table datetimes(
+create table datetimes(
     id int,
     f_time time,
     f_timetz timetz,
@@ -1317,7 +1317,7 @@ SELECT count(*) OVER (PARTITION BY four) FROM (SELECT * FROM tenk1 UNION ALL SEL
 ---START---
 
 -- check some degenerate cases
-create temp table t1 (f1 int, f2 int8);
+create table t1 (f1 int, f2 int8);
 ---END---
 ---START---
 insert into t1 values (1,1),(1,2),(2,2);
@@ -1923,6 +1923,9 @@ WHERE first_emp = 1 OR last_emp = 1;
 
 -- cleanup
 DROP TABLE empsalary;
+drop table numerics;
+drop table datetimes;
+drop table t1;
 ---END---
 ---START---
 

@@ -939,30 +939,30 @@ SELECT t1.a, t1.c, t2.b, t2.c FROM prt1_n t1 FULL JOIN prt1 t2 ON (t1.c = t2.c);
 -- Test some other plan types in a partitionwise join (unfortunately,
 -- we need larger tables to get the planner to choose these plan types)
 --
-create temp table prtx1 (a integer, b integer, c integer)
+create table prtx1 (a integer, b integer, c integer)
   partition by range (a);
 ---END---
 ---START---
-create temp table prtx1_1 partition of prtx1 for values from (1) to (11);
+create table prtx1_1 partition of prtx1 for values from (1) to (11);
 ---END---
 ---START---
-create temp table prtx1_2 partition of prtx1 for values from (11) to (21);
+create table prtx1_2 partition of prtx1 for values from (11) to (21);
 ---END---
 ---START---
-create temp table prtx1_3 partition of prtx1 for values from (21) to (31);
+create table prtx1_3 partition of prtx1 for values from (21) to (31);
 ---END---
 ---START---
-create temp table prtx2 (a integer, b integer, c integer)
+create table prtx2 (a integer, b integer, c integer)
   partition by range (a);
 ---END---
 ---START---
-create temp table prtx2_1 partition of prtx2 for values from (1) to (11);
+create table prtx2_1 partition of prtx2 for values from (1) to (11);
 ---END---
 ---START---
-create temp table prtx2_2 partition of prtx2 for values from (11) to (21);
+create table prtx2_2 partition of prtx2 for values from (11) to (21);
 ---END---
 ---START---
-create temp table prtx2_3 partition of prtx2 for values from (21) to (31);
+create table prtx2_3 partition of prtx2 for values from (21) to (31);
 ---END---
 ---START---
 insert into prtx1 select 1 + i%30, i, i
@@ -2361,4 +2361,7 @@ RESET max_parallel_workers_per_gather;
 ---END---
 ---START---
 RESET enable_partitionwise_join;
+---END---
+---START---
+drop table prtx1, prtx2;
 ---END---

@@ -375,7 +375,7 @@ ALTER SEQUENCE INSERT_SEQ RESTART WITH 4;
 ---END---
 ---START---
 
-CREATE TEMP TABLE tmp (xd INT, yd TEXT, zd INT);
+CREATE TABLE tmp (xd INT, yd TEXT, zd INT);
 ---END---
 ---START---
 

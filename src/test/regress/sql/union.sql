@@ -625,13 +625,13 @@ SELECT '3.4'::numeric UNION SELECT 'foo';
 -- UNION or UNION ALL
 --
 
-CREATE TEMP TABLE t1 (a text, b text);
+CREATE TABLE t1 (a text, b text);
 ---END---
 ---START---
 CREATE INDEX t1_ab_idx on t1 ((a || b));
 ---END---
 ---START---
-CREATE TEMP TABLE t2 (ab text primary key);
+CREATE TABLE t2 (ab text primary key);
 ---END---
 ---START---
 INSERT INTO t1 VALUES ('a', 'b'), ('x', 'y');
@@ -674,13 +674,13 @@ explain (costs off)
 -- children.
 --
 
-CREATE TEMP TABLE t1c (b text, a text);
+CREATE TABLE t1c (b text, a text);
 ---END---
 ---START---
 ALTER TABLE t1c INHERIT t1;
 ---END---
 ---START---
-CREATE TEMP TABLE t2c (primary key (ab)) INHERITS (t2);
+CREATE TABLE t2c (primary key (ab)) INHERITS (t2);
 ---END---
 ---START---
 INSERT INTO t1c VALUES ('v', 'w'), ('c', 'd'), ('m', 'n'), ('e', 'f');
@@ -868,7 +868,7 @@ as $$begin return $1; end$$;
 ---END---
 ---START---
 
-create temp table t3 as select generate_series(-1000,1000) as x;
+create table t3 as select generate_series(-1000,1000) as x;
 ---END---
 ---START---
 create index t3i on t3 (expensivefunc(x));
@@ -890,6 +890,10 @@ select * from
 ---END---
 ---START---
 
+drop table t1c;
+drop table t2c;
+drop table t1;
+drop table t2;
 drop table t3;
 ---END---
 ---START---

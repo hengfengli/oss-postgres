@@ -187,7 +187,7 @@ SET search_path TO temp_view_test, public;
 ---END---
 ---START---
 
-CREATE TEMPORARY TABLE temp_table (a int, id int);
+CREATE TABLE temp_table (a int, id int);
 ---END---
 ---START---
 
@@ -323,7 +323,7 @@ CREATE TABLE t1 (num int, name text);
 CREATE TABLE t2 (num2 int, value text);
 ---END---
 ---START---
-CREATE TEMP TABLE tt (num2 int, value text);
+CREATE TABLE tt (num2 int, value text);
 ---END---
 ---START---
 
@@ -377,7 +377,7 @@ CREATE TABLE tbl3 (e int, f int);
 CREATE TABLE tbl4 (g int, h int);
 ---END---
 ---START---
-CREATE TEMP TABLE tmptbl (i int, j int);
+CREATE TABLE tmptbl (i int, j int);
 ---END---
 ---START---
 
@@ -1407,4 +1407,9 @@ DROP SCHEMA temp_view_test CASCADE;
 ---END---
 ---START---
 DROP SCHEMA testviewschm2 CASCADE;
+---END---
+---START---
+drop table tt;
+drop table tmptbl;
+drop table temp_table;
 ---END---

@@ -247,7 +247,7 @@ rollback;
 ---START---
 
 -- Test display of temporary objects
-create temp table t1(f1 float8);
+create table t1(f1 float8);
 ---END---
 ---START---
 
@@ -265,4 +265,7 @@ set compute_query_id = on;
 ---END---
 ---START---
 select explain_filter('explain (verbose) select * from int8_tbl i8');
+---END---
+---START---
+drop table t1;
 ---END---

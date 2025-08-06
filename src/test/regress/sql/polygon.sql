@@ -105,7 +105,7 @@ SET enable_bitmapscan = OFF;
 ---END---
 ---START---
 
-CREATE TEMP TABLE quad_poly_tbl_ord_seq2 AS
+CREATE TABLE quad_poly_tbl_ord_seq2 AS
 SELECT rank() OVER (ORDER BY p <-> point '123,456') n, p <-> point '123,456' dist, id
 FROM quad_poly_tbl WHERE p <@ polygon '((300,300),(400,600),(600,500),(700,200))';
 ---END---
@@ -232,7 +232,7 @@ FROM quad_poly_tbl WHERE p <@ polygon '((300,300),(400,600),(600,500),(700,200))
 ---END---
 ---START---
 
-CREATE TEMP TABLE quad_poly_tbl_ord_idx2 AS
+CREATE TABLE quad_poly_tbl_ord_idx2 AS
 SELECT rank() OVER (ORDER BY p <-> point '123,456') n, p <-> point '123,456' dist, id
 FROM quad_poly_tbl WHERE p <@ polygon '((300,300),(400,600),(600,500),(700,200))';
 ---END---
@@ -267,4 +267,8 @@ SELECT pg_input_is_valid('(2.0,xyz)', 'polygon');
 ---END---
 ---START---
 SELECT * FROM pg_input_error_info('(2.0,xyz)', 'polygon');
+---END---
+---START---
+drop table quad_poly_tbl_ord_seq2;
+drop table quad_poly_tbl_ord_idx2;
 ---END---

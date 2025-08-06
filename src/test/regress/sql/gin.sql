@@ -89,7 +89,7 @@ reset gin_fuzzy_search_limit;
 ---START---
 
 -- Test optimization of empty queries
-create temp table t_gin_test_tbl(i int4[], j int4[]);
+create table t_gin_test_tbl(i int4[], j int4[]);
 ---END---
 ---START---
 create index on t_gin_test_tbl using gin (i, j);

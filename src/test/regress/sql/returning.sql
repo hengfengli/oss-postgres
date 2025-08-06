@@ -5,7 +5,7 @@
 
 -- Simple cases
 
-CREATE TEMP TABLE foo (f1 serial, f2 text, f3 int default 42);
+CREATE TABLE foo (f1 serial, f2 text, f3 int default 42);
 ---END---
 ---START---
 
@@ -83,7 +83,7 @@ SELECT * FROM foo;
 
 -- Check inheritance cases
 
-CREATE TEMP TABLE foochild (fc int) INHERITS (foo);
+CREATE TABLE foochild (fc int) INHERITS (foo);
 ---END---
 ---START---
 
@@ -233,7 +233,7 @@ SELECT * FROM voo;
 
 -- Try a join case
 
-CREATE TEMP TABLE joinme (f2j text, other int);
+CREATE TABLE joinme (f2j text, other int);
 ---END---
 ---START---
 INSERT INTO joinme VALUES('more', 12345);
@@ -273,4 +273,9 @@ SELECT * FROM foo;
 ---END---
 ---START---
 SELECT * FROM voo;
+---END---
+---START---
+drop table foochild;
+drop table foo;
+drop table joinme;
 ---END---

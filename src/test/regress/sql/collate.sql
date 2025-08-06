@@ -458,7 +458,7 @@ CREATE COLLATION case_coll ("Lc_Collate" = "POSIX", "Lc_Ctype" = "POSIX");
 
 -- 9.1 bug with useless COLLATE in an expression subject to length coercion
 
-CREATE TEMP TABLE vctable (f1 varchar(25));
+CREATE TABLE vctable (f1 varchar(25));
 ---END---
 ---START---
 INSERT INTO vctable VALUES ('foo' COLLATE "C");
@@ -531,4 +531,6 @@ CREATE COLLATION coll_dup_chk (FROM = "C", VERSION = "1");
 -- must get rid of them.
 --
 DROP SCHEMA collate_tests CASCADE;
+
+drop table vctable;
 ---END---

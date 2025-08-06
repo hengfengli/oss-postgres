@@ -101,19 +101,19 @@ SELECT count(*) FROM quad_point_tbl WHERE p ~= '(4585, 365)';
 ---END---
 ---START---
 
-CREATE TEMP TABLE quad_point_tbl_ord_seq1 AS
+CREATE TABLE quad_point_tbl_ord_seq1 AS
 SELECT row_number() OVER (ORDER BY p <-> '0,0') n, p <-> '0,0' dist, p
 FROM quad_point_tbl;
 ---END---
 ---START---
 
-CREATE TEMP TABLE quad_point_tbl_ord_seq2 AS
+CREATE TABLE quad_point_tbl_ord_seq2 AS
 SELECT row_number() OVER (ORDER BY p <-> '0,0') n, p <-> '0,0' dist, p
 FROM quad_point_tbl WHERE p <@ box '(200,200,1000,1000)';
 ---END---
 ---START---
 
-CREATE TEMP TABLE quad_point_tbl_ord_seq3 AS
+CREATE TABLE quad_point_tbl_ord_seq3 AS
 SELECT row_number() OVER (ORDER BY p <-> '333,400') n, p <-> '333,400' dist, p
 FROM quad_point_tbl WHERE p IS NOT NULL;
 ---END---
@@ -271,7 +271,7 @@ SELECT row_number() OVER (ORDER BY p <-> '0,0') n, p <-> '0,0' dist, p
 FROM quad_point_tbl;
 ---END---
 ---START---
-CREATE TEMP TABLE quad_point_tbl_ord_idx1 AS
+CREATE TABLE quad_point_tbl_ord_idx1 AS
 SELECT row_number() OVER (ORDER BY p <-> '0,0') n, p <-> '0,0' dist, p
 FROM quad_point_tbl;
 ---END---
@@ -287,7 +287,7 @@ SELECT row_number() OVER (ORDER BY p <-> '0,0') n, p <-> '0,0' dist, p
 FROM quad_point_tbl WHERE p <@ box '(200,200,1000,1000)';
 ---END---
 ---START---
-CREATE TEMP TABLE quad_point_tbl_ord_idx2 AS
+CREATE TABLE quad_point_tbl_ord_idx2 AS
 SELECT row_number() OVER (ORDER BY p <-> '0,0') n, p <-> '0,0' dist, p
 FROM quad_point_tbl WHERE p <@ box '(200,200,1000,1000)';
 ---END---
@@ -303,7 +303,7 @@ SELECT row_number() OVER (ORDER BY p <-> '333,400') n, p <-> '333,400' dist, p
 FROM quad_point_tbl WHERE p IS NOT NULL;
 ---END---
 ---START---
-CREATE TEMP TABLE quad_point_tbl_ord_idx3 AS
+CREATE TABLE quad_point_tbl_ord_idx3 AS
 SELECT row_number() OVER (ORDER BY p <-> '333,400') n, p <-> '333,400' dist, p
 FROM quad_point_tbl WHERE p IS NOT NULL;
 ---END---
@@ -375,7 +375,7 @@ SELECT row_number() OVER (ORDER BY p <-> '0,0') n, p <-> '0,0' dist, p
 FROM kd_point_tbl;
 ---END---
 ---START---
-CREATE TEMP TABLE kd_point_tbl_ord_idx1 AS
+CREATE TABLE kd_point_tbl_ord_idx1 AS
 SELECT row_number() OVER (ORDER BY p <-> '0,0') n, p <-> '0,0' dist, p
 FROM kd_point_tbl;
 ---END---
@@ -391,7 +391,7 @@ SELECT row_number() OVER (ORDER BY p <-> '0,0') n, p <-> '0,0' dist, p
 FROM kd_point_tbl WHERE p <@ box '(200,200,1000,1000)';
 ---END---
 ---START---
-CREATE TEMP TABLE kd_point_tbl_ord_idx2 AS
+CREATE TABLE kd_point_tbl_ord_idx2 AS
 SELECT row_number() OVER (ORDER BY p <-> '0,0') n, p <-> '0,0' dist, p
 FROM kd_point_tbl WHERE p <@ box '(200,200,1000,1000)';
 ---END---
@@ -407,7 +407,7 @@ SELECT row_number() OVER (ORDER BY p <-> '333,400') n, p <-> '333,400' dist, p
 FROM kd_point_tbl WHERE p IS NOT NULL;
 ---END---
 ---START---
-CREATE TEMP TABLE kd_point_tbl_ord_idx3 AS
+CREATE TABLE kd_point_tbl_ord_idx3 AS
 SELECT row_number() OVER (ORDER BY p <-> '333,400') n, p <-> '333,400' dist, p
 FROM kd_point_tbl WHERE p IS NOT NULL;
 ---END---
@@ -838,4 +838,9 @@ RESET enable_indexscan;
 ---END---
 ---START---
 RESET enable_bitmapscan;
+---END---
+---START---
+drop table if exists quad_point_tbl_ord_seq1, quad_point_tbl_ord_seq2, quad_point_tbl_ord_seq3;
+drop table if exists quad_point_tbl_ord_idx1, quad_point_tbl_ord_idx2, quad_point_tbl_ord_idx3;
+drop table if exists kd_point_tbl_ord_idx1, kd_point_tbl_ord_idx2, kd_point_tbl_ord_idx3;
 ---END---

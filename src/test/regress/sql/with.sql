@@ -184,7 +184,7 @@ WITH RECURSIVE outermost(x) AS (
 --      |         +->D-+->F
 --      +->E-+->G
 
-CREATE TEMP TABLE department (
+CREATE TABLE department (
 	id INTEGER PRIMARY KEY,  -- department ID
 	parent_department INTEGER REFERENCES department, -- upper department ID
 	name TEXT -- department name
@@ -380,7 +380,7 @@ WITH RECURSIVE t(i,j) AS (
 --
 -- different tree example
 --
-CREATE TEMPORARY TABLE tree(
+CREATE TABLE tree(
     id INTEGER PRIMARY KEY,
     parent_id INTEGER REFERENCES tree(id)
 );
@@ -440,7 +440,7 @@ SELECT t1.id, t2.path, t2 FROM t AS t1 JOIN t AS t2 ON
 
 -- SEARCH clause
 
-create temp table graph0( f int, t int, label text );
+create table graph0( f int, t int, label text );
 ---END---
 ---START---
 
@@ -660,7 +660,7 @@ select * from v_search;
 --
 -- test cycle detection
 --
-create temp table graph( f int, t int, label text );
+create table graph( f int, t int, label text );
 ---END---
 ---START---
 
@@ -1036,7 +1036,7 @@ WITH RECURSIVE
 -- Test WITH attached to a data-modifying statement
 --
 
-CREATE TEMPORARY TABLE y (a INTEGER);
+CREATE TABLE y (a INTEGER);
 ---END---
 ---START---
 INSERT INTO y SELECT generate_series(1, 10);
@@ -1126,7 +1126,7 @@ WITH RECURSIVE x(n) AS (SELECT n FROM x UNION ALL SELECT 1)
 ---END---
 ---START---
 
-CREATE TEMPORARY TABLE y (a INTEGER);
+CREATE TABLE y (a INTEGER);
 ---END---
 ---START---
 INSERT INTO y SELECT generate_series(1, 10);
@@ -1271,7 +1271,7 @@ SELECT * FROM foo;
 ---START---
 
 -- disallow OLD/NEW reference in CTE
-CREATE TEMPORARY TABLE x (n integer);
+CREATE TABLE x (n integer);
 ---END---
 ---START---
 CREATE RULE r2 AS ON UPDATE TO x DO INSTEAD
@@ -1535,7 +1535,7 @@ DROP RULE y_rule ON y;
 ---START---
 
 -- check merging of outer CTE with CTE in a rule action
-CREATE TEMP TABLE bug6051 AS
+CREATE TABLE bug6051 AS
   select i from generate_series(1,3) as t(i);
 ---END---
 ---START---
@@ -1553,7 +1553,7 @@ SELECT * FROM bug6051;
 ---END---
 ---START---
 
-CREATE TEMP TABLE bug6051_2 (i int);
+CREATE TABLE bug6051_2 (i int);
 ---END---
 ---START---
 
@@ -1589,7 +1589,7 @@ INSERT INTO bug6051 SELECT * FROM t1;
 ---START---
 
 -- silly example to verify that hasModifyingCTE flag is propagated
-CREATE TEMP TABLE bug6051_3 AS
+CREATE TABLE bug6051_3 AS
   SELECT a FROM generate_series(11,13) AS a;
 ---END---
 ---START---
@@ -1870,7 +1870,7 @@ TRUNCATE TABLE y;
 INSERT INTO y SELECT generate_series(1, 3);
 ---END---
 ---START---
-CREATE TEMPORARY TABLE yy (a INTEGER);
+CREATE TABLE yy (a INTEGER);
 ---END---
 ---START---
 
@@ -2025,13 +2025,13 @@ DROP FUNCTION y_trigger();
 
 -- WITH attached to inherited UPDATE or DELETE
 
-CREATE TEMP TABLE parent ( id int, val text );
+CREATE TABLE parent ( id int, val text );
 ---END---
 ---START---
-CREATE TEMP TABLE child1 ( ) INHERITS ( parent );
+CREATE TABLE child1 ( ) INHERITS ( parent );
 ---END---
 ---START---
-CREATE TEMP TABLE child2 ( ) INHERITS ( parent );
+CREATE TABLE child2 ( ) INHERITS ( parent );
 ---END---
 ---START---
 
@@ -2182,7 +2182,7 @@ WITH with_test AS (SELECT 42) INSERT INTO with_test VALUES (1);
 -- check response to attempt to modify table with same name as a CTE (perhaps
 -- surprisingly it works, because CTEs don't hide tables from data-modifying
 -- statements)
-create temp table with_test (i int);
+create table with_test (i int);
 ---END---
 ---START---
 with with_test as (select 42) insert into with_test select * from with_test;
@@ -2192,4 +2192,7 @@ select * from with_test;
 ---END---
 ---START---
 drop table with_test;
+drop table department, graph0, graph, bug6051, bug6051_2, bug6051_3;
+drop table parent, child1, child2;
+drop table tree, x, y, yy;
 ---END---

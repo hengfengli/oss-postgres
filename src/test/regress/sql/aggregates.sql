@@ -445,7 +445,7 @@ select array(select sum(x+y) s
 --
 -- test for bitwise integer aggregates
 --
-CREATE TEMPORARY TABLE bitwise_test(
+CREATE TABLE bitwise_test(
   i2 INT2,
   i4 INT4,
   i8 INT8,
@@ -497,6 +497,9 @@ SELECT
 FROM bitwise_test;
 ---END---
 ---START---
+drop table bitwise_test;
+---END---
+---START---
 
 --
 -- test boolean aggregates
@@ -535,7 +538,7 @@ SELECT
 ---END---
 ---START---
 
-CREATE TEMPORARY TABLE bool_test(
+CREATE TABLE bool_test(
   b1 BOOL,
   b2 BOOL,
   b3 BOOL,
@@ -798,13 +801,13 @@ from tenk1 a2(col2);
 -- Test removal of redundant GROUP BY columns
 --
 
-create temp table t1 (a int, b int, c int, d int, primary key (a, b));
+create table t1 (a int, b int, c int, d int, primary key (a, b));
 ---END---
 ---START---
-create temp table t2 (x int, y int, z int, primary key (x, y));
+create table t2 (x int, y int, z int, primary key (x, y));
 ---END---
 ---START---
-create temp table t3 (a int, b int, c int, primary key(a, b) deferrable);
+create table t3 (a int, b int, c int, primary key(a, b) deferrable);
 ---END---
 ---START---
 
@@ -837,7 +840,7 @@ explain (costs off) select * from t3 group by a,b,c;
 ---END---
 ---START---
 
-create temp table t1c () inherits (t1);
+create table t1c () inherits (t1);
 ---END---
 ---START---
 
@@ -851,7 +854,7 @@ explain (costs off) select * from only t1 group by a,b,c,d;
 ---END---
 ---START---
 
-create temp table p_t1 (
+create table p_t1 (
   a int,
   b int,
   c int,
@@ -860,10 +863,10 @@ create temp table p_t1 (
 ) partition by list(a);
 ---END---
 ---START---
-create temp table p_t1_1 partition of p_t1 for values in(1);
+create table p_t1_1 partition of p_t1 for values in(1);
 ---END---
 ---START---
-create temp table p_t1_2 partition of p_t1 for values in(2);
+create table p_t1_2 partition of p_t1 for values in(2);
 ---END---
 ---START---
 
@@ -889,10 +892,10 @@ drop table p_t1;
 -- Test GROUP BY matching of join columns that are type-coerced due to USING
 --
 
-create temp table t1(f1 int, f2 int);
+create table t1(f1 int, f2 int);
 ---END---
 ---START---
-create temp table t2(f1 bigint, f2 oid);
+create table t2(f1 bigint, f2 oid);
 ---END---
 ---START---
 
@@ -2451,4 +2454,9 @@ drop table agg_hash_3;
 ---END---
 ---START---
 drop table agg_hash_4;
+drop table bool_test;
+drop table t1c;
+drop table p_t1_1;
+drop table p_t1_2;
+drop table p_t1;
 ---END---

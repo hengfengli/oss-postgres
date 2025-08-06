@@ -22,7 +22,7 @@ CREATE TABLE tas_case WITH ("Fillfactor" = 10) AS SELECT 1 a;
 ---START---
 
 CREATE UNLOGGED TABLE unlogged1 (a int primary key);			-- OK
-CREATE TEMPORARY TABLE unlogged2 (a int primary key);			-- OK
+CREATE TABLE unlogged2 (a int primary key);			-- OK
 SELECT relname, relkind, relpersistence FROM pg_class WHERE relname ~ '^unlogged\d' ORDER BY relname;
 ---END---
 ---START---
@@ -44,9 +44,9 @@ INSERT INTO unlogged1 VALUES (42);
 CREATE UNLOGGED TABLE public.unlogged2 (a int primary key);		-- also OK
 CREATE UNLOGGED TABLE pg_temp.unlogged3 (a int primary key);	-- not OK
 CREATE TABLE pg_temp.implicitly_temp (a int primary key);		-- OK
-CREATE TEMP TABLE explicitly_temp (a int primary key);			-- also OK
-CREATE TEMP TABLE pg_temp.doubly_temp (a int primary key);		-- also OK
-CREATE TEMP TABLE public.temp_to_perm (a int primary key);		-- not OK
+CREATE TABLE explicitly_temp (a int primary key);			-- also OK
+CREATE TABLE pg_temp.doubly_temp (a int primary key);		-- also OK
+CREATE TABLE public.temp_to_perm (a int primary key);		-- not OK
 DROP TABLE unlogged1, public.unlogged2;
 ---END---
 ---START---
@@ -112,10 +112,10 @@ CREATE TABLE withoid() WITH (oids = true);
 ---START---
 
 -- but explicitly not adding oids is still supported
-CREATE TEMP TABLE withoutoid() WITHOUT OIDS; DROP TABLE withoutoid;
+CREATE TABLE withoutoid() WITHOUT OIDS; DROP TABLE withoutoid;
 ---END---
 ---START---
-CREATE TEMP TABLE withoutoid() WITH (oids = false); DROP TABLE withoutoid;
+CREATE TABLE withoutoid() WITH (oids = false); DROP TABLE withoutoid;
 ---END---
 ---START---
 
@@ -730,7 +730,7 @@ DROP TABLE unparted;
 ---START---
 
 -- cannot create a permanent rel as partition of a temp rel
-CREATE TEMP TABLE temp_parted (
+CREATE TABLE temp_parted (
 	a int
 ) PARTITION BY LIST (a);
 ---END---
@@ -1203,12 +1203,12 @@ drop table boolspart;
 create table perm_parted (a int) partition by list (a);
 ---END---
 ---START---
-create temporary table temp_parted (a int) partition by list (a);
+create table temp_parted (a int) partition by list (a);
 ---END---
 ---START---
 create table perm_part partition of temp_parted default; -- error
-create temp table temp_part partition of perm_parted default; -- error
-create temp table temp_part partition of temp_parted default; -- ok
+create table temp_part partition of perm_parted default; -- error
+create table temp_part partition of temp_parted default; -- ok
 drop table perm_parted cascade;
 ---END---
 ---START---
@@ -1339,4 +1339,8 @@ create table part_column_drop_1_10 partition of
 \d part_column_drop
 \d part_column_drop_1_10
 drop table part_column_drop;
+---END---
+---START---
+drop table if exists explicitly_temp, pg_temp.doubly_temp, public.temp_to_perm;
+drop table if exists unlogged2;
 ---END---

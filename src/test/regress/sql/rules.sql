@@ -1820,14 +1820,14 @@ drop table id cascade;
 -- constraint exclusion
 --
 
-create temp table t1 (a integer primary key);
+create table t1 (a integer primary key);
 ---END---
 ---START---
 
-create temp table t1_1 (check (a >= 0 and a < 10)) inherits (t1);
+create table t1_1 (check (a >= 0 and a < 10)) inherits (t1);
 ---END---
 ---START---
-create temp table t1_2 (check (a >= 10 and a < 20)) inherits (t1);
+create table t1_2 (check (a >= 10 and a < 20)) inherits (t1);
 ---END---
 ---START---
 
@@ -2621,4 +2621,7 @@ DROP TABLE ruletest_t1;
 ---START---
 
 DROP USER regress_rule_user1;
+
+drop table t1_1, t1_2;
+drop table t1;
 ---END---

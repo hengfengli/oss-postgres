@@ -417,7 +417,7 @@ explain (costs off)
 ---START---
 
 -- check that we recognize equivalence with dummy domains in the way
-create temp table undername (f1 name, f2 int);
+create table undername (f1 name, f2 int);
 ---END---
 ---START---
 create temp view overview as
@@ -426,4 +426,7 @@ create temp view overview as
 ---START---
 explain (costs off)  -- this should not require a sort
   select * from overview where sqli = 'foo' order by sqli;
+---END---
+---START---
+drop table undername;
 ---END---

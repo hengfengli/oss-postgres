@@ -120,7 +120,7 @@ SELECT p1.f1 AS point1, p2.f1 AS point2, (p1.f1 <-> p2.f1) AS distance
 ---START---
 
 -- Test that GiST indexes provide same behavior as sequential scan
-CREATE TEMP TABLE point_gist_tbl(f1 point);
+CREATE TABLE point_gist_tbl(f1 point);
 ---END---
 ---START---
 INSERT INTO point_gist_tbl SELECT '(0,0)' FROM generate_series(0,1000);
@@ -183,4 +183,7 @@ SELECT pg_input_is_valid('1,y', 'point');
 ---END---
 ---START---
 SELECT * FROM pg_input_error_info('1,y', 'point');
+---END---
+---START---
+drop table point_gist_tbl;
 ---END---

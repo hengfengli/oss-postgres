@@ -11,7 +11,7 @@ SET max_parallel_workers = 0;
 -- key aborts. One easy way to achieve that is to use uuids that all
 -- have the same prefix, as abbreviated keys for uuids just use the
 -- first sizeof(Datum) bytes.
-CREATE TEMP TABLE abbrev_abort_uuids (
+CREATE TABLE abbrev_abort_uuids (
     id serial not null,
     abort_increasing uuid,
     abort_decreasing uuid,
@@ -453,7 +453,7 @@ ROLLBACK;
 -- test tuplesort mark/restore
 ---
 
-CREATE TEMP TABLE test_mark_restore(col1 int, col2 int, col12 int);
+CREATE TABLE test_mark_restore(col1 int, col2 int, col12 int);
 ---END---
 ---START---
 -- need a few duplicates for mark/restore to matter
@@ -507,4 +507,7 @@ EXPLAIN (COSTS OFF) :qry;
 ---START---
 
 COMMIT;
+---END---
+---START---
+drop table abbrev_abort_uuids, test_mark_restore;
 ---END---

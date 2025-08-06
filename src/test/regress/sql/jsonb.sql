@@ -124,7 +124,7 @@ SELECT array_to_json(ARRAY [jsonb '{"a":1}', jsonb '{"b":[2,3]}']);
 
 -- anyarray column
 
-CREATE TEMP TABLE rows AS
+CREATE TABLE rows AS
 SELECT x, 'txt' || x as y
 FROM generate_series(1,3) AS x;
 ---END---
@@ -214,9 +214,12 @@ SELECT jsonb_agg(q ORDER BY x NULLS FIRST, y)
   FROM rows q;
 ---END---
 ---START---
+drop table rows;
+---END---
+---START---
 
 -- jsonb extraction functions
-CREATE TEMP TABLE test_jsonb (
+CREATE TABLE test_jsonb (
        json_type text,
        test_json jsonb
 );
@@ -314,6 +317,9 @@ SELECT (test_json->3) IS NULL AS expect_false FROM test_jsonb WHERE json_type = 
 ---END---
 ---START---
 SELECT (test_json->>3) IS NULL AS expect_true FROM test_jsonb WHERE json_type = 'array';
+---END---
+---START---
+drop table test_jsonb;
 ---END---
 ---START---
 
@@ -801,7 +807,7 @@ SELECT jsonb_object_agg(NULL, '{"a":1}');
 ---END---
 ---START---
 
-CREATE TEMP TABLE foo (serial_num int, name text, type text);
+CREATE TABLE foo (serial_num int, name text, type text);
 ---END---
 ---START---
 INSERT INTO foo VALUES (847001,'t15','GE1043');
@@ -827,6 +833,9 @@ INSERT INTO foo VALUES (999999, NULL, 'bar');
 ---END---
 ---START---
 SELECT jsonb_object_agg(name, type) FROM foo;
+---END---
+---START---
+drop table foo;
 ---END---
 ---START---
 
@@ -1607,7 +1616,7 @@ select * from jsonb_to_record('{"out": "{\"key\": 1}"}') as x(out jsonb);
 ---START---
 
 -- test type info caching in jsonb_populate_record()
-CREATE TEMP TABLE jsbpoptest (js jsonb);
+CREATE TABLE jsbpoptest (js jsonb);
 ---END---
 ---START---
 
@@ -1622,6 +1631,9 @@ FROM generate_series(1, 3);
 ---START---
 
 SELECT (jsonb_populate_record(NULL::jsbrec, js)).* FROM jsbpoptest;
+---END---
+---START---
+drop table jsbpoptest;
 ---END---
 ---START---
 
@@ -2151,7 +2163,7 @@ SELECT '{"a":[1,2,{"c":3,"x":4}],"c":"b"}'::jsonb @> '{"a":[{"x":4},1]}';
 ---START---
 
 -- check some corner cases for indexed nested containment (bug #13756)
-create temp table nestjsonb (j jsonb);
+create table nestjsonb (j jsonb);
 ---END---
 ---START---
 insert into nestjsonb (j) values ('{"a":[["b",{"x":1}],["b",{"x":2}]],"c":3}');
@@ -2195,6 +2207,9 @@ select * from nestjsonb where j @> '{"c":3}';
 ---END---
 ---START---
 select * from nestjsonb where j @> '[[14]]';
+---END---
+---START---
+drop table nestjsonb;
 ---END---
 ---START---
 reset enable_seqscan;
@@ -2880,7 +2895,7 @@ select ('[1, "2", null]'::jsonb)[:];
 ---END---
 ---START---
 
-create TEMP TABLE test_jsonb_subscript (
+create TABLE test_jsonb_subscript (
        id int,
        test_json jsonb
 );
@@ -3211,7 +3226,7 @@ update test_jsonb_subscript set test_json[0][0] = '1';
 drop table test_jsonb_subscript;
 ---END---
 ---START---
-create temp table test_jsonb_subscript (
+create table test_jsonb_subscript (
        id text,
        test_json jsonb
 );
@@ -3236,6 +3251,9 @@ select length(id), test_json[id] from test_jsonb_subscript;
 ---START---
 \x
 table test_jsonb_subscript;
+---END---
+---START---
+drop table test_jsonb_subscript;
 ---END---
 ---START---
 \x

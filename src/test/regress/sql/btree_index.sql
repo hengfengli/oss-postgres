@@ -237,7 +237,7 @@ reset enable_bitmapscan;
 
 -- Also check LIKE optimization with binary-compatible cases
 
-create temp table btree_bpchar (f1 text collate "C");
+create table btree_bpchar (f1 text collate "C");
 ---END---
 ---START---
 create index on btree_bpchar(f1 bpchar_ops) WITH (deduplicate_items=on);
@@ -413,4 +413,5 @@ ALTER INDEX btree_part_idx ALTER COLUMN id SET (n_distinct=100);
 ---END---
 ---START---
 DROP TABLE btree_part;
+drop table btree_bpchar;
 ---END---

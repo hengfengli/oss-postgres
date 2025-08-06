@@ -8,23 +8,23 @@
 -- (This temporarily hides the table created in test_setup.sql)
 --
 
-CREATE TEMP TABLE FLOAT8_TBL(f1 float8);
+CREATE TABLE FLOAT8_TBL_5542(f1 float8);
 ---END---
 ---START---
 
-INSERT INTO FLOAT8_TBL(f1) VALUES ('    0.0   ');
+INSERT INTO FLOAT8_TBL_5542(f1) VALUES ('    0.0   ');
 ---END---
 ---START---
-INSERT INTO FLOAT8_TBL(f1) VALUES ('1004.30  ');
+INSERT INTO FLOAT8_TBL_5542(f1) VALUES ('1004.30  ');
 ---END---
 ---START---
-INSERT INTO FLOAT8_TBL(f1) VALUES ('   -34.84');
+INSERT INTO FLOAT8_TBL_5542(f1) VALUES ('   -34.84');
 ---END---
 ---START---
-INSERT INTO FLOAT8_TBL(f1) VALUES ('1.2345678901234e+200');
+INSERT INTO FLOAT8_TBL_5542(f1) VALUES ('1.2345678901234e+200');
 ---END---
 ---START---
-INSERT INTO FLOAT8_TBL(f1) VALUES ('1.2345678901234e-200');
+INSERT INTO FLOAT8_TBL_5542(f1) VALUES ('1.2345678901234e-200');
 ---END---
 ---START---
 
@@ -48,28 +48,28 @@ SELECT float8send('2.2250738585072014E-308'::float8);
 ---START---
 
 -- bad input
-INSERT INTO FLOAT8_TBL(f1) VALUES ('');
+INSERT INTO FLOAT8_TBL_5542(f1) VALUES ('');
 ---END---
 ---START---
-INSERT INTO FLOAT8_TBL(f1) VALUES ('     ');
+INSERT INTO FLOAT8_TBL_5542(f1) VALUES ('     ');
 ---END---
 ---START---
-INSERT INTO FLOAT8_TBL(f1) VALUES ('xyz');
+INSERT INTO FLOAT8_TBL_5542(f1) VALUES ('xyz');
 ---END---
 ---START---
-INSERT INTO FLOAT8_TBL(f1) VALUES ('5.0.0');
+INSERT INTO FLOAT8_TBL_5542(f1) VALUES ('5.0.0');
 ---END---
 ---START---
-INSERT INTO FLOAT8_TBL(f1) VALUES ('5 . 0');
+INSERT INTO FLOAT8_TBL_5542(f1) VALUES ('5 . 0');
 ---END---
 ---START---
-INSERT INTO FLOAT8_TBL(f1) VALUES ('5.   0');
+INSERT INTO FLOAT8_TBL_5542(f1) VALUES ('5.   0');
 ---END---
 ---START---
-INSERT INTO FLOAT8_TBL(f1) VALUES ('    - 3');
+INSERT INTO FLOAT8_TBL_5542(f1) VALUES ('    - 3');
 ---END---
 ---START---
-INSERT INTO FLOAT8_TBL(f1) VALUES ('123           5');
+INSERT INTO FLOAT8_TBL_5542(f1) VALUES ('123           5');
 ---END---
 ---START---
 
@@ -133,96 +133,96 @@ SELECT 'nan'::numeric::float8;
 ---END---
 ---START---
 
-SELECT * FROM FLOAT8_TBL;
+SELECT * FROM FLOAT8_TBL_5542;
 ---END---
 ---START---
 
-SELECT f.* FROM FLOAT8_TBL f WHERE f.f1 <> '1004.3';
+SELECT f.* FROM FLOAT8_TBL_5542 f WHERE f.f1 <> '1004.3';
 ---END---
 ---START---
 
-SELECT f.* FROM FLOAT8_TBL f WHERE f.f1 = '1004.3';
+SELECT f.* FROM FLOAT8_TBL_5542 f WHERE f.f1 = '1004.3';
 ---END---
 ---START---
 
-SELECT f.* FROM FLOAT8_TBL f WHERE '1004.3' > f.f1;
+SELECT f.* FROM FLOAT8_TBL_5542 f WHERE '1004.3' > f.f1;
 ---END---
 ---START---
 
-SELECT f.* FROM FLOAT8_TBL f WHERE  f.f1 < '1004.3';
+SELECT f.* FROM FLOAT8_TBL_5542 f WHERE  f.f1 < '1004.3';
 ---END---
 ---START---
 
-SELECT f.* FROM FLOAT8_TBL f WHERE '1004.3' >= f.f1;
+SELECT f.* FROM FLOAT8_TBL_5542 f WHERE '1004.3' >= f.f1;
 ---END---
 ---START---
 
-SELECT f.* FROM FLOAT8_TBL f WHERE  f.f1 <= '1004.3';
+SELECT f.* FROM FLOAT8_TBL_5542 f WHERE  f.f1 <= '1004.3';
 ---END---
 ---START---
 
 SELECT f.f1, f.f1 * '-10' AS x
-   FROM FLOAT8_TBL f
+   FROM FLOAT8_TBL_5542 f
    WHERE f.f1 > '0.0';
 ---END---
 ---START---
 
 SELECT f.f1, f.f1 + '-10' AS x
-   FROM FLOAT8_TBL f
+   FROM FLOAT8_TBL_5542 f
    WHERE f.f1 > '0.0';
 ---END---
 ---START---
 
 SELECT f.f1, f.f1 / '-10' AS x
-   FROM FLOAT8_TBL f
+   FROM FLOAT8_TBL_5542 f
    WHERE f.f1 > '0.0';
 ---END---
 ---START---
 
 SELECT f.f1, f.f1 - '-10' AS x
-   FROM FLOAT8_TBL f
+   FROM FLOAT8_TBL_5542 f
    WHERE f.f1 > '0.0';
 ---END---
 ---START---
 
 SELECT f.f1 ^ '2.0' AS square_f1
-   FROM FLOAT8_TBL f where f.f1 = '1004.3';
+   FROM FLOAT8_TBL_5542 f where f.f1 = '1004.3';
 ---END---
 ---START---
 
 -- absolute value
 SELECT f.f1, @f.f1 AS abs_f1
-   FROM FLOAT8_TBL f;
+   FROM FLOAT8_TBL_5542 f;
 ---END---
 ---START---
 
 -- truncate
 SELECT f.f1, trunc(f.f1) AS trunc_f1
-   FROM FLOAT8_TBL f;
+   FROM FLOAT8_TBL_5542 f;
 ---END---
 ---START---
 
 -- round
 SELECT f.f1, round(f.f1) AS round_f1
-   FROM FLOAT8_TBL f;
+   FROM FLOAT8_TBL_5542 f;
 ---END---
 ---START---
 
 -- ceil / ceiling
-select ceil(f1) as ceil_f1 from float8_tbl f;
+select ceil(f1) as ceil_f1 from FLOAT8_TBL_5542 f;
 ---END---
 ---START---
-select ceiling(f1) as ceiling_f1 from float8_tbl f;
+select ceiling(f1) as ceiling_f1 from FLOAT8_TBL_5542 f;
 ---END---
 ---START---
 
 -- floor
-select floor(f1) as floor_f1 from float8_tbl f;
+select floor(f1) as floor_f1 from FLOAT8_TBL_5542 f;
 ---END---
 ---START---
 
 -- sign
-select sign(f1) as sign_f1 from float8_tbl f;
+select sign(f1) as sign_f1 from FLOAT8_TBL_5542 f;
 ---END---
 ---START---
 
@@ -241,7 +241,7 @@ SELECT |/ float8 '64' AS eight;
 ---START---
 
 SELECT f.f1, |/f.f1 AS sqrt_f1
-   FROM FLOAT8_TBL f
+   FROM FLOAT8_TBL_5542 f
    WHERE f.f1 > '0.0';
 ---END---
 ---START---
@@ -354,7 +354,7 @@ SELECT power(float8 '-inf', float8 '-inf');
 
 -- take exp of ln(f.f1)
 SELECT f.f1, exp(ln(f.f1)) AS exp_ln_f1
-   FROM FLOAT8_TBL f
+   FROM FLOAT8_TBL_5542 f
    WHERE f.f1 > '0.0';
 ---END---
 ---START---
@@ -369,26 +369,26 @@ SELECT ||/ float8 '27' AS three;
 ---END---
 ---START---
 
-SELECT f.f1, ||/f.f1 AS cbrt_f1 FROM FLOAT8_TBL f;
+SELECT f.f1, ||/f.f1 AS cbrt_f1 FROM FLOAT8_TBL_5542 f;
 ---END---
 ---START---
 
 
-SELECT * FROM FLOAT8_TBL;
+SELECT * FROM FLOAT8_TBL_5542;
 ---END---
 ---START---
 
-UPDATE FLOAT8_TBL
-   SET f1 = FLOAT8_TBL.f1 * '-1'
-   WHERE FLOAT8_TBL.f1 > '0.0';
+UPDATE FLOAT8_TBL_5542
+   SET f1 = FLOAT8_TBL_5542.f1 * '-1'
+   WHERE FLOAT8_TBL_5542.f1 > '0.0';
 ---END---
 ---START---
 
-SELECT f.f1 * '1e200' from FLOAT8_TBL f;
+SELECT f.f1 * '1e200' from FLOAT8_TBL_5542 f;
 ---END---
 ---START---
 
-SELECT f.f1 ^ '1e200' from FLOAT8_TBL f;
+SELECT f.f1 ^ '1e200' from FLOAT8_TBL_5542 f;
 ---END---
 ---START---
 
@@ -396,23 +396,23 @@ SELECT 0 ^ 0 + 0 ^ 1 + 0 ^ 0.0 + 0 ^ 0.5;
 ---END---
 ---START---
 
-SELECT ln(f.f1) from FLOAT8_TBL f where f.f1 = '0.0' ;
+SELECT ln(f.f1) from FLOAT8_TBL_5542 f where f.f1 = '0.0' ;
 ---END---
 ---START---
 
-SELECT ln(f.f1) from FLOAT8_TBL f where f.f1 < '0.0' ;
+SELECT ln(f.f1) from FLOAT8_TBL_5542 f where f.f1 < '0.0' ;
 ---END---
 ---START---
 
-SELECT exp(f.f1) from FLOAT8_TBL f;
+SELECT exp(f.f1) from FLOAT8_TBL_5542 f;
 ---END---
 ---START---
 
-SELECT f.f1 / '0.0' from FLOAT8_TBL f;
+SELECT f.f1 / '0.0' from FLOAT8_TBL_5542 f;
 ---END---
 ---START---
 
-SELECT * FROM FLOAT8_TBL;
+SELECT * FROM FLOAT8_TBL_5542;
 ---END---
 ---START---
 
@@ -517,23 +517,23 @@ RESET extra_float_digits;
 ---START---
 
 -- test for over- and underflow
-INSERT INTO FLOAT8_TBL(f1) VALUES ('10e400');
+INSERT INTO FLOAT8_TBL_5542(f1) VALUES ('10e400');
 ---END---
 ---START---
 
-INSERT INTO FLOAT8_TBL(f1) VALUES ('-10e400');
+INSERT INTO FLOAT8_TBL_5542(f1) VALUES ('-10e400');
 ---END---
 ---START---
 
-INSERT INTO FLOAT8_TBL(f1) VALUES ('10e-400');
+INSERT INTO FLOAT8_TBL_5542(f1) VALUES ('10e-400');
 ---END---
 ---START---
 
-INSERT INTO FLOAT8_TBL(f1) VALUES ('-10e-400');
+INSERT INTO FLOAT8_TBL_5542(f1) VALUES ('-10e-400');
 ---END---
 ---START---
 
-DROP TABLE FLOAT8_TBL;
+DROP TABLE FLOAT8_TBL_5542;
 ---END---
 ---START---
 

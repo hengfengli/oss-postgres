@@ -2,7 +2,7 @@
 --
 -- Tests for some likely failure cases with combo cmin/cmax mechanism
 --
-CREATE TEMP TABLE combocidtest (foobar int);
+CREATE TABLE combocidtest (foobar int);
 ---END---
 ---START---
 
@@ -231,5 +231,6 @@ SELECT * FROM testcase WHERE id = 1 FOR UPDATE;
 ROLLBACK;
 ---END---
 ---START---
+drop table combocidtest;
 DROP TABLE testcase;
 ---END---

@@ -104,7 +104,7 @@ SET transaction_read_only = on; -- error
 CREATE TABLE writetest (a int);
 ---END---
 ---START---
-CREATE TEMPORARY TABLE temptest (a int);
+CREATE TABLE temptest (a int);
 ---END---
 ---START---
 
@@ -905,7 +905,7 @@ $$ begin return 1/x; end $$;
 CREATE FUNCTION create_temp_tab() RETURNS text
 LANGUAGE plpgsql AS $$
 BEGIN
-  CREATE TEMP TABLE new_table (f1 float8);
+  CREATE TABLE new_table (f1 float8);
 ---END---
 ---START---
   -- case of interest is that we fail while holding an open
@@ -1143,7 +1143,7 @@ DROP TABLE trans_abc;
 -- tests rely on the fact that psql will not break SQL commands apart at a
 -- backslash-quoted semicolon, but will send them as one Query.
 
-create temp table i_table (f1 int);
+create table i_table (f1 int);
 ---END---
 ---START---
 
@@ -1291,6 +1291,9 @@ SELECT * FROM trans_abc ORDER BY 1;
 ---START---
 
 DROP TABLE trans_abc;
+
+drop table if exists new_table;
+drop table if exists i_table, temptest;
 ---END---
 ---START---
 

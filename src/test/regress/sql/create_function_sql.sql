@@ -628,7 +628,7 @@ EXPLAIN (verbose, costs off) SELECT voidtest2(11,22);
 ---END---
 ---START---
 
-CREATE TEMP TABLE sometable(f1 int);
+CREATE TABLE sometable(f1 int);
 ---END---
 ---START---
 
@@ -712,4 +712,6 @@ DROP USER regress_unpriv_user;
 ---END---
 ---START---
 RESET search_path;
+
+drop table sometable;
 ---END---

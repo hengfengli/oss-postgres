@@ -1615,7 +1615,7 @@ DROP TABLE fd_pt2;
 
 -- foreign table cannot be part of partition tree made of temporary
 -- relations.
-CREATE TEMP TABLE temp_parted (a int) PARTITION BY LIST (a);
+CREATE TABLE temp_parted (a int) PARTITION BY LIST (a);
 ---END---
 ---START---
 CREATE FOREIGN TABLE foreign_part PARTITION OF temp_parted DEFAULT

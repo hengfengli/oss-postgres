@@ -112,7 +112,7 @@ DROP TABLE reloptions_test;
 ---END---
 ---START---
 
-CREATE TEMP TABLE reloptions_test(i INT NOT NULL, j text)
+CREATE TABLE reloptions_test(i INT NOT NULL, j text)
 	WITH (vacuum_truncate=false,
 	toast.vacuum_truncate=false,
 	autovacuum_enabled=false);
@@ -253,4 +253,7 @@ ALTER INDEX reloptions_test_idx3 SET (fillfactor=40);
 ---END---
 ---START---
 SELECT reloptions FROM pg_class WHERE oid = 'reloptions_test_idx3'::regclass;
+---END---
+---START---
+DROP TABLE reloptions_test;
 ---END---

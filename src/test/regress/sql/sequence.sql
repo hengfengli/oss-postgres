@@ -301,7 +301,7 @@ CREATE TEMP SEQUENCE myseq2;
 CREATE TEMP SEQUENCE myseq3;
 ---END---
 ---START---
-CREATE TEMP TABLE t1 (
+CREATE TABLE t1 (
   f1 serial,
   f2 int DEFAULT nextval('myseq2'),
   f3 int DEFAULT nextval('myseq3'::text)

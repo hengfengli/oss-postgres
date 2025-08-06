@@ -1305,7 +1305,7 @@ SELECT typname FROM pg_type WHERE typname LIKE 'int_' AND 'INT2'::text <> typnam
 ---START---
 
 -- test case adapted from subselect.sql
-CREATE TEMP TABLE outer_text (f1 text COLLATE case_insensitive, f2 text);
+CREATE TABLE outer_text (f1 text COLLATE case_insensitive, f2 text);
 ---END---
 ---START---
 INSERT INTO outer_text VALUES ('a', 'a');
@@ -1321,7 +1321,7 @@ INSERT INTO outer_text VALUES ('B', NULL);
 ---END---
 ---START---
 
-CREATE TEMP TABLE inner_text (c1 text COLLATE case_insensitive, c2 text);
+CREATE TABLE inner_text (c1 text COLLATE case_insensitive, c2 text);
 ---END---
 ---START---
 INSERT INTO inner_text VALUES ('a', NULL);
@@ -1636,4 +1636,6 @@ RESET client_min_messages;
 
 -- leave a collation for pg_upgrade test
 CREATE COLLATION coll_icu_upgrade FROM "und-x-icu";
+
+drop table outer_text, inner_text;
 ---END---

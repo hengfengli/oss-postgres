@@ -199,7 +199,7 @@ TABLE int8_tbl;
 ---START---
 
 -- corner case: VALUES with no columns
-CREATE TEMP TABLE nocols();
+CREATE TABLE nocols();
 ---END---
 ---START---
 INSERT INTO nocols DEFAULT VALUES;
@@ -208,12 +208,15 @@ INSERT INTO nocols DEFAULT VALUES;
 SELECT * FROM nocols n, LATERAL (VALUES(n.*)) v;
 ---END---
 ---START---
+drop table nocols;
+---END---
+---START---
 
 --
 -- Test ORDER BY options
 --
 
-CREATE TEMP TABLE foo (f1 int);
+CREATE TABLE foo (f1 int);
 ---END---
 ---START---
 
@@ -293,6 +296,9 @@ SELECT * FROM foo ORDER BY f1 DESC;
 ---END---
 ---START---
 SELECT * FROM foo ORDER BY f1 DESC NULLS LAST;
+---END---
+---START---
+drop table foo;
 ---END---
 ---START---
 

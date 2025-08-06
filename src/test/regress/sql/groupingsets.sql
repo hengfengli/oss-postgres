@@ -13,13 +13,11 @@ create temp view gstest1(a,b,v)
 ---END---
 ---START---
 
-create temp table gstest2 (a integer, b integer, c integer, d integer,
+create table gstest2 (a integer, b integer, c integer, d integer,
                            e integer, f integer, g integer, h integer);
 ---END---
 ---START---
 copy gstest2 from stdin;
----END---
----START---
 1	1	1	1	1	1	1	1
 1	1	1	1	1	1	1	2
 1	1	1	1	1	1	2	2
@@ -31,12 +29,10 @@ copy gstest2 from stdin;
 2	2	2	2	2	2	2	2
 \.
 
-create temp table gstest3 (a integer, b integer, c integer, d integer);
+create table gstest3 (a integer, b integer, c integer, d integer);
 ---END---
 ---START---
 copy gstest3 from stdin;
----END---
----START---
 1	1	1	1
 2	2	2	2
 \.
@@ -44,7 +40,7 @@ alter table gstest3 add primary key (a);
 ---END---
 ---START---
 
-create temp table gstest4(id integer, v integer,
+create table gstest4(id integer, v integer,
                           unhashable_col bit(4), unsortable_col xid);
 ---END---
 ---START---
@@ -56,7 +52,7 @@ values (1,1,b'0000','1'), (2,2,b'0001','1'),
 ---END---
 ---START---
 
-create temp table gstest_empty (a integer, b integer, v integer);
+create table gstest_empty (a integer, b integer, v integer);
 ---END---
 ---START---
 
@@ -933,4 +929,7 @@ select (select grouping(v1)) from (values ((select 1))) v(v1) group by v1;
 ---END---
 ---START---
 select (select grouping(v1)) from (values ((select 1))) v(v1) group by v1;
+---END---
+---START---
+drop table gstest2, gstest3, gstest4, gstest_empty;
 ---END---

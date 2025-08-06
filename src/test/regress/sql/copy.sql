@@ -10,7 +10,7 @@
 --- test copying in CSV mode with various styles
 --- of embedded line ending characters
 
-create temp table copytest (
+create table copytest (
 	style	text,
 	test 	text,
 	filler	int);
@@ -35,7 +35,7 @@ copy copytest to :'filename' csv;
 ---END---
 ---START---
 
-create temp table copytest2 (like copytest);
+create table copytest2 (like copytest);
 ---END---
 ---START---
 
@@ -68,7 +68,7 @@ select * from copytest except select * from copytest2;
 
 -- test header line feature
 
-create temp table copytest3 (
+create table copytest3 (
 	c1 int,
 	"col with , comma" text,
 	"col with "" quote"  int);
@@ -87,7 +87,7 @@ copy copytest3 to stdout csv header;
 ---END---
 ---START---
 
-create temp table copytest4 (
+create table copytest4 (
 	c1 int,
 	"colname with tab: 	" text);
 ---END---
@@ -435,4 +435,5 @@ SELECT * FROM header_copytest ORDER BY a;
 ---END---
 ---START---
 drop table header_copytest;
+drop table copytest, copytest2 copytest3, copytest4;
 ---END---

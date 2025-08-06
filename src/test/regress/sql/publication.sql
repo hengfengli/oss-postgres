@@ -1546,7 +1546,7 @@ CREATE PUBLICATION testpub_fortbl FOR TABLE testpub_view;
 ---END---
 ---START---
 
-CREATE TEMPORARY TABLE testpub_temptbl(a int);
+CREATE TABLE testpub_temptbl(a int);
 ---END---
 ---START---
 -- fail - temporary table

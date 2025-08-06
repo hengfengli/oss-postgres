@@ -526,13 +526,11 @@ ROLLBACK;
 
 --
 -- Test behavior of both volatile and stable functions inside a cursor;
----END---
----START---
 -- in particular we want to see what happens during commit of a holdable
 -- cursor
 --
 
-create temp table tt1(f1 int);
+create table tt1(f1 int);
 ---END---
 ---START---
 
@@ -591,6 +589,10 @@ commit;
 ---START---
 
 delete from tt1;
+---END---
+---START---
+
+drop table tt1;
 ---END---
 ---START---
 
@@ -671,7 +673,7 @@ COMMIT;
 -- Tests for updatable cursors
 --
 
-CREATE TEMP TABLE uctest(f1 int, f2 text);
+CREATE TABLE uctest(f1 int, f2 text);
 ---END---
 ---START---
 INSERT INTO uctest VALUES (1, 'one'), (2, 'two'), (3, 'three');
@@ -866,7 +868,7 @@ SELECT * FROM uctest;
 DELETE FROM uctest WHERE f1 = 10;  -- restore test table state
 
 -- Check inheritance cases
-CREATE TEMP TABLE ucchild () inherits (uctest);
+CREATE TABLE ucchild () inherits (uctest);
 ---END---
 ---START---
 INSERT INTO ucchild values(100, 'hundred');
@@ -1258,6 +1260,10 @@ commit;
 ---START---
 
 drop table toasted_data;
+---END---
+---START---
+drop table ucchild;
+drop table uctest;
 ---END---
 ---START---
 

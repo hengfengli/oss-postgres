@@ -657,7 +657,7 @@ DROP TABLE prevstats;
 BEGIN;
 ---END---
 ---START---
-CREATE TEMPORARY TABLE test_last_scan(idx_col int primary key, noidx_col int);
+CREATE TABLE test_last_scan(idx_col int primary key, noidx_col int);
 ---END---
 ---START---
 INSERT INTO test_last_scan(idx_col, noidx_col) VALUES(1, 1);
@@ -896,7 +896,9 @@ SELECT checkpoints_req AS rqst_ckpts_before FROM pg_stat_bgwriter \gset
 -- Test pg_stat_wal (and make a temp table so our temp schema exists)
 SELECT wal_bytes AS wal_bytes_before FROM pg_stat_wal \gset
 
-CREATE TEMP TABLE test_stats_temp AS SELECT 17;
+---END---
+---START---
+CREATE TABLE test_stats_temp AS SELECT 17;
 ---END---
 ---START---
 DROP TABLE test_stats_temp;
@@ -1347,7 +1349,7 @@ DROP TABLE test_io_shared;
 SET temp_buffers TO 100;
 ---END---
 ---START---
-CREATE TEMPORARY TABLE test_io_local(a int, b TEXT);
+CREATE TABLE test_io_local(a int, b TEXT);
 ---END---
 ---START---
 SELECT sum(extends) AS extends, sum(evictions) AS evictions, sum(writes) AS writes
@@ -1630,6 +1632,8 @@ SELECT COUNT(*) FROM brin_hot_3 WHERE a = 2;
 ---START---
 
 DROP TABLE brin_hot_3;
+
+drop table if exists test_io_local, test_last_scan;
 ---END---
 ---START---
 

@@ -140,7 +140,7 @@ CREATE INDEX grect2ind ON fast_emp4000 USING gist (home_base);
 ---START---
 
 -- we want to work with a point_tbl that includes a null
-CREATE TEMP TABLE point_tbl AS SELECT * FROM public.point_tbl;
+CREATE TABLE point_tbl AS SELECT * FROM public.point_tbl;
 ---END---
 ---START---
 INSERT INTO POINT_TBL(f1) VALUES (NULL);
@@ -151,7 +151,7 @@ CREATE INDEX gpointind ON point_tbl USING gist (f1);
 ---END---
 ---START---
 
-CREATE TEMP TABLE gpolygon_tbl AS
+CREATE TABLE gpolygon_tbl AS
     SELECT polygon(home_base) AS f1 FROM slow_emp4000;
 ---END---
 ---START---
@@ -162,7 +162,7 @@ INSERT INTO gpolygon_tbl VALUES ( '(0,1000,1000,1000)' );
 ---END---
 ---START---
 
-CREATE TEMP TABLE gcircle_tbl AS
+CREATE TABLE gcircle_tbl AS
     SELECT circle(home_base) AS f1 FROM slow_emp4000;
 ---END---
 ---START---
@@ -1031,7 +1031,7 @@ REINDEX TABLE concur_heap;
 -- Temporary tables with concurrent builds and on-commit actions
 -- CONCURRENTLY used with CREATE INDEX and DROP INDEX is ignored.
 -- PRESERVE ROWS, the default.
-CREATE TEMP TABLE concur_temp (f1 int, f2 text)
+CREATE TABLE concur_temp (f1 int, f2 text)
   ON COMMIT PRESERVE ROWS;
 ---END---
 ---START---
@@ -1051,7 +1051,7 @@ DROP TABLE concur_temp;
 BEGIN;
 ---END---
 ---START---
-CREATE TEMP TABLE concur_temp (f1 int, f2 text)
+CREATE TABLE concur_temp (f1 int, f2 text)
   ON COMMIT DROP;
 ---END---
 ---START---
@@ -1066,7 +1066,7 @@ COMMIT;
 ---END---
 ---START---
 -- ON COMMIT DELETE ROWS
-CREATE TEMP TABLE concur_temp (f1 int, f2 text)
+CREATE TABLE concur_temp (f1 int, f2 text)
   ON COMMIT DELETE ROWS;
 ---END---
 ---START---
@@ -1529,7 +1529,7 @@ explain (costs off)
 -- Check matching of boolean index columns to WHERE conditions and sort keys
 --
 
-create temp table boolindex (b bool, i int, unique(b, i), junk float);
+create table boolindex (b bool, i int, unique(b, i), junk float);
 ---END---
 ---START---
 
@@ -2183,7 +2183,7 @@ DROP TABLE concur_exprs_tab;
 
 -- Temporary tables and on-commit actions, where CONCURRENTLY is ignored.
 -- ON COMMIT PRESERVE ROWS, the default.
-CREATE TEMP TABLE concur_temp_tab_1 (c1 int, c2 text)
+CREATE TABLE concur_temp_tab_1 (c1 int, c2 text)
   ON COMMIT PRESERVE ROWS;
 ---END---
 ---START---
@@ -2210,7 +2210,7 @@ COMMIT;
 ---END---
 ---START---
 -- ON COMMIT DELETE ROWS
-CREATE TEMP TABLE concur_temp_tab_2 (c1 int, c2 text)
+CREATE TABLE concur_temp_tab_2 (c1 int, c2 text)
   ON COMMIT DELETE ROWS;
 ---END---
 ---START---
@@ -2227,7 +2227,7 @@ REINDEX INDEX CONCURRENTLY concur_temp_ind_2;
 BEGIN;
 ---END---
 ---START---
-CREATE TEMP TABLE concur_temp_tab_3 (c1 int, c2 text)
+CREATE TABLE concur_temp_tab_3 (c1 int, c2 text)
   ON COMMIT PRESERVE ROWS;
 ---END---
 ---START---
@@ -2390,4 +2390,7 @@ DROP ROLE regress_reindexuser;
 ---END---
 ---START---
 DROP SCHEMA schema_to_reindex CASCADE;
+---END---
+---START---
+drop table if exists point_tbl, gpolygon_tbl, concur_temp, boolindex, gcircle_tbl, concur_temp_tab_1, concur_temp_tab_2, concur_temp_tab_3;
 ---END---

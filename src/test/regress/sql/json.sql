@@ -157,7 +157,7 @@ FROM (SELECT $$a$$ || x AS b,
 ---END---
 ---START---
 
-CREATE TEMP TABLE rows AS
+CREATE TABLE rows AS
 SELECT x, 'txt' || x as y
 FROM generate_series(1,3) AS x;
 ---END---
@@ -284,7 +284,7 @@ FROM (SELECT '{"a":1,"b": [2,3,4,"d","e","f"],"c":{"p":1,"q":2}}'::json AS "json
 
 -- json extraction functions
 
-CREATE TEMP TABLE test_json (
+CREATE TABLE test_json (
        json_type text,
        test_json json
 );
@@ -1175,7 +1175,7 @@ select * from json_populate_recordset(row(1000000000::int,50::int),'[{"b":"2"},{
 ---START---
 
 -- test type info caching in json_populate_record()
-CREATE TEMP TABLE jspoptest (js json);
+CREATE TABLE jspoptest (js json);
 ---END---
 ---START---
 
@@ -1301,7 +1301,7 @@ SELECT json_build_object('{1,2,3}'::int[], 3);
 ---END---
 ---START---
 
-CREATE TEMP TABLE foo (serial_num int, name text, type text);
+CREATE TABLE foo (serial_num int, name text, type text);
 ---END---
 ---START---
 INSERT INTO foo VALUES (847001,'t15','GE1043');
@@ -1643,4 +1643,7 @@ select ts_headline('{}'::json, tsquery('aaa & bbb'));
 ---END---
 ---START---
 select ts_headline('[]'::json, tsquery('aaa & bbb'));
+---END---
+---START---
+drop table rows, test_json, jspoptest, foo;
 ---END---

@@ -261,8 +261,8 @@ DROP TYPE base_type CASCADE;
 -- Check usage of typmod with a user-defined type
 -- (we have borrowed numeric's typmod functions)
 
-CREATE TEMP TABLE mytab (foo widget(42,13,7));     -- should fail
-CREATE TEMP TABLE mytab (foo widget(42,13));
+CREATE TABLE mytab (foo widget(42,13,7));     -- should fail
+CREATE TABLE mytab (foo widget(42,13));
 ---END---
 ---START---
 
@@ -442,4 +442,6 @@ DROP FUNCTION myvarcharsend(myvarchar);  -- fail
 DROP TYPE myvarchar;  -- fail
 
 DROP TYPE myvarchar CASCADE;
+
+drop table mytab;
 ---END---

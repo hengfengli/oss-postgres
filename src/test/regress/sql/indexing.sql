@@ -212,13 +212,13 @@ drop table idxpart;
 ---START---
 
 -- DROP behavior with temporary partitioned indexes
-create temp table idxpart_temp (a int) partition by range (a);
+create table idxpart_temp (a int) partition by range (a);
 ---END---
 ---START---
 create index on idxpart_temp(a);
 ---END---
 ---START---
-create temp table idxpart1_temp partition of idxpart_temp
+create table idxpart1_temp partition of idxpart_temp
   for values from (0) to (10);
 ---END---
 ---START---

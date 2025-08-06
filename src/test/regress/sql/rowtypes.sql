@@ -9,7 +9,7 @@ create type complex as (r float8, i float8);
 ---END---
 ---START---
 
-create temp table fullname (first text, last text);
+create table fullname (first text, last text);
 ---END---
 ---START---
 
@@ -65,7 +65,7 @@ SELECT * FROM pg_input_error_info('(1,1e400)', 'complex');
 ---END---
 ---START---
 
-create temp table quadtable(f1 int, q quad);
+create table quadtable(f1 int, q quad);
 ---END---
 ---START---
 
@@ -86,7 +86,7 @@ select f1, (q).c1, (qq.q).c1.i from quadtable qq;
 ---END---
 ---START---
 
-create temp table people (fn fullname, bd date);
+create table people (fn fullname, bd date);
 ---END---
 ---START---
 
@@ -139,7 +139,7 @@ select * from quadtable;
 -- composite values don't cause problems.  The large f1 value will
 -- be toasted inside pp, it must still work after being copied to people.
 
-create temp table pp (f1 text);
+create table pp (f1 text);
 ---END---
 ---START---
 insert into pp values (repeat('abcdefghijkl', 100000));
@@ -282,7 +282,7 @@ order by thousand, hundred;
 ---START---
 
 -- Test case for bug #14010: indexed row comparisons fail with nulls
-create temp table test_table (a text, b text);
+create table test_table (a text, b text);
 ---END---
 ---START---
 insert into test_table values ('a', 'b');
@@ -375,7 +375,7 @@ select row(1,1.1) = any (array[ row(7,7.7), row(1,1.0), row(0,0.0) ]);
 create type cantcompare as (p point, r float8);
 ---END---
 ---START---
-create temp table cc (f1 cantcompare);
+create table cc (f1 cantcompare);
 ---END---
 ---START---
 insert into cc values('("(1,2)",3)');
@@ -674,7 +674,7 @@ rollback;
 -- parameters for SQL functions
 --
 
-create temp table compos (f1 int, f2 text);
+create table compos (f1 int, f2 text);
 ---END---
 ---START---
 
@@ -843,10 +843,10 @@ select row_to_json(q) from
 ---END---
 ---START---
 
-create temp table tt1 as select * from int8_tbl limit 2;
+create table tt1 as select * from int8_tbl limit 2;
 ---END---
 ---START---
-create temp table tt2 () inherits(tt1);
+create table tt2 () inherits(tt1);
 ---END---
 ---START---
 insert into tt2 values(0,0);
@@ -857,7 +857,7 @@ select row_to_json(r) from (select q2,q1 from tt1 offset 0) r;
 ---START---
 
 -- check no-op rowtype conversions
-create temp table tt3 () inherits(tt2);
+create table tt3 () inherits(tt2);
 ---END---
 ---START---
 insert into tt3 values(33,44);
@@ -937,4 +937,14 @@ SELECT (NULL::compositetable).oid;
 ---START---
 
 DROP TABLE compositetable;
+drop table fullname;
+drop table quadtable;
+drop table people;
+drop table pp;
+drop table test_table;
+drop table cc;
+drop table compos;
+drop table tt3;
+drop table tt2;
+drop table tt1;
 ---END---

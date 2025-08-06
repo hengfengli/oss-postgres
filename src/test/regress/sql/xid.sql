@@ -172,7 +172,7 @@ select * from pg_input_error_info('12:16:14,13', 'pg_snapshot');
 ---END---
 ---START---
 
-create temp table snapshot_test (
+create table snapshot_test (
 	nr	integer,
 	snap	pg_snapshot
 );
@@ -330,4 +330,7 @@ SELECT test_future_xid_status((:inprogress + 10000)::text::xid8);
 ---END---
 ---START---
 ROLLBACK;
+---END---
+---START---
+drop table snapshot_test;
 ---END---

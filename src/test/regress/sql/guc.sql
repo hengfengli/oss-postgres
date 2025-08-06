@@ -440,7 +440,7 @@ SHOW plpgsql.extra_foo_warnings;
 --
 -- Test DISCARD TEMP
 --
-CREATE TEMP TABLE reset_test ( data text ) ON COMMIT DELETE ROWS;
+CREATE TABLE reset_test ( data text ) ON COMMIT DELETE ROWS;
 ---END---
 ---START---
 SELECT relname FROM pg_class WHERE relname = 'reset_test';
@@ -450,6 +450,9 @@ DISCARD TEMP;
 ---END---
 ---START---
 SELECT relname FROM pg_class WHERE relname = 'reset_test';
+---END---
+---START---
+drop table reset_test;
 ---END---
 ---START---
 
@@ -470,7 +473,7 @@ LISTEN foo_event;
 SET vacuum_cost_delay = 13;
 ---END---
 ---START---
-CREATE TEMP TABLE tmp_foo (data text) ON COMMIT DELETE ROWS;
+CREATE TABLE tmp_foo (data text) ON COMMIT DELETE ROWS;
 ---END---
 ---START---
 CREATE ROLE regress_guc_user;
@@ -776,4 +779,5 @@ SELECT name FROM tab_settings_flags
 ---END---
 ---START---
 DROP TABLE tab_settings_flags;
+drop table tmp_foo;
 ---END---

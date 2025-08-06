@@ -1,5 +1,5 @@
 ---START---
-CREATE TEMP TABLE x (
+CREATE TABLE x (
 	a serial,
 	b int,
 	c text not null default 'stuff',
@@ -268,7 +268,7 @@ COPY x (b, e) TO stdout WITH NULL 'I''m null';
 ---END---
 ---START---
 
-CREATE TEMP TABLE y (
+CREATE TABLE y (
 	col1 text,
 	col2 text
 );
@@ -320,7 +320,7 @@ COPY y TO stdout (FORMAT CSV, FORCE_QUOTE *);
 
 --test that we read consecutive LFs properly
 
-CREATE TEMP TABLE testnl (a int, b text, c int);
+CREATE TABLE testnl (a int, b text, c int);
 ---END---
 ---START---
 
@@ -333,7 +333,7 @@ inside",2
 \.
 
 -- test end of copy marker
-CREATE TEMP TABLE testeoc (a text);
+CREATE TABLE testeoc (a text);
 ---END---
 ---START---
 
@@ -352,7 +352,7 @@ COPY testeoc TO stdout CSV;
 
 -- test handling of nonstandard null marker that violates escaping rules
 
-CREATE TEMP TABLE testnull(a int, b text);
+CREATE TABLE testnull(a int, b text);
 ---END---
 ---START---
 INSERT INTO testnull VALUES (1, E'\\0'), (NULL, NULL);
@@ -577,7 +577,7 @@ SELECT * FROM vistest;
 ---END---
 ---START---
 -- Test FORCE_NOT_NULL and FORCE_NULL options
-CREATE TEMP TABLE forcetest (
+CREATE TABLE forcetest (
     a INT NOT NULL,
     b TEXT NOT NULL,
     c TEXT,
@@ -916,7 +916,7 @@ DROP FUNCTION fun_instead_of_insert_tbl();
 -- COPY FROM ... DEFAULT
 --
 
-create temp table copy_default (
+create table copy_default (
 	id integer primary key,
 	text_value text not null default 'test',
 	ts_value timestamp without time zone not null default '2022-07-05'
@@ -1066,4 +1066,7 @@ truncate copy_default;
 
 -- DEFAULT cannot be used in COPY TO
 copy (select 1 as test) TO stdout with (default '\D');
+---END---
+---START---
+drop table if exists x, y, testnl, testeoc, testnull, forcetest, copy_default;
 ---END---

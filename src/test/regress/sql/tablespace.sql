@@ -241,7 +241,7 @@ SELECT relid, parentrelid, level FROM pg_partition_tree('tbspace_reindex_part_in
 ---START---
 -- Track the original tablespace, relfilenode and OID of each index
 -- in the tree.
-CREATE TEMP TABLE reindex_temp_before AS
+CREATE TABLE reindex_temp_before AS
   SELECT oid, relname, relfilenode, reltablespace
   FROM pg_class
     WHERE relname ~ 'tbspace_reindex_part_index';
@@ -802,4 +802,7 @@ DROP ROLE regress_tablespace_user1;
 ---END---
 ---START---
 DROP ROLE regress_tablespace_user2;
+---END---
+---START---
+drop table reindex_temp_before;
 ---END---

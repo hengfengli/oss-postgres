@@ -1531,7 +1531,7 @@ select * from test_tsquery, to_tsquery('english', 'new') q where txtsample @@ q;
 ---START---
 
 -- test finding items in GIN's pending list
-create temp table pendtest (ts tsvector);
+create table pendtest (ts tsvector);
 ---END---
 ---START---
 create index pendtest_idx on pendtest using gin(ts);
@@ -1558,9 +1558,12 @@ select * from pendtest where 'ipt:*'::tsquery @@ ts;
 select * from pendtest where 'ipi:*'::tsquery @@ ts;
 ---END---
 ---START---
+drop table pendtest;
+---END---
+---START---
 
 --check OP_PHRASE on index
-create temp table phrase_index_test(fts tsvector);
+create table phrase_index_test(fts tsvector);
 ---END---
 ---START---
 insert into phrase_index_test values ('A fat cat has just eaten a rat.');
@@ -1576,6 +1579,9 @@ set enable_seqscan = off;
 ---END---
 ---START---
 select * from phrase_index_test where fts @@ phraseto_tsquery('english', 'fat cat');
+---END---
+---START---
+drop table phrase_index_test;
 ---END---
 ---START---
 set enable_seqscan = on;

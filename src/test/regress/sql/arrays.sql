@@ -239,7 +239,7 @@ SELECT (now())[1];
 ---START---
 
 -- test slices with empty lower and/or upper index
-CREATE TEMP TABLE arrtest_s (
+CREATE TABLE arrtest_s (
   a       int2[],
   b       int2[][]
 );
@@ -292,7 +292,7 @@ INSERT INTO arrtest_s VALUES(NULL, NULL);
 UPDATE arrtest_s SET a[:] = '{11, 12, 13, 14, 15}';  -- fail, no good with null
 
 -- we want to work with a point_tbl that includes a null
-CREATE TEMP TABLE point_tbl AS SELECT * FROM public.point_tbl;
+CREATE TABLE point_tbl AS SELECT * FROM public.point_tbl;
 ---END---
 ---START---
 INSERT INTO POINT_TBL(f1) VALUES (NULL);
@@ -336,7 +336,7 @@ UPDATE point_tbl SET f1[3] = 10 WHERE f1::text = '(-10,-10)'::point::text RETURN
 --
 -- test array extension
 --
-CREATE TEMP TABLE arrtest1 (i int[], t text[]);
+CREATE TABLE arrtest1 (i int[], t text[]);
 ---END---
 ---START---
 insert into arrtest1 values(array[1,2,null,4], array['one','two',null,'four']);
@@ -438,7 +438,7 @@ select * from arrtest1;
 --
 
 -- table creation and INSERTs
-CREATE TEMP TABLE arrtest2 (i integer ARRAY[4], f float8[], n numeric[], t text[], d timestamp[]);
+CREATE TABLE arrtest2 (i integer ARRAY[4], f float8[], n numeric[], t text[], d timestamp[]);
 ---END---
 ---START---
 INSERT INTO arrtest2 VALUES(
@@ -452,7 +452,7 @@ INSERT INTO arrtest2 VALUES(
 ---START---
 
 -- some more test data
-CREATE TEMP TABLE arrtest_f (f0 int, f1 text, f2 float8);
+CREATE TABLE arrtest_f (f0 int, f1 text, f2 float8);
 ---END---
 ---START---
 insert into arrtest_f values(1,'cat1',1.21);
@@ -483,7 +483,7 @@ insert into arrtest_f values(9,'cat2',1.30);
 ---END---
 ---START---
 
-CREATE TEMP TABLE arrtest_i (f0 int, f1 text, f2 int);
+CREATE TABLE arrtest_i (f0 int, f1 text, f2 int);
 ---END---
 ---START---
 insert into arrtest_i values(1,'cat1',21);
@@ -856,7 +856,7 @@ SELECT -1 != ALL(ARRAY(SELECT NULLIF(g.i, 900) FROM generate_series(1,1000) g(i)
 ---START---
 
 -- test indexes on arrays
-create temp table arr_tbl (f1 int[] unique);
+create table arr_tbl (f1 int[] unique);
 ---END---
 ---START---
 insert into arr_tbl values ('{1,2,3}');
@@ -893,7 +893,7 @@ select * from arr_tbl where f1 >= '{1,2,3}' and f1 < '{1,5,3}';
 ---START---
 
 -- test ON CONFLICT DO UPDATE with arrays
-create temp table arr_pk_tbl (pk int4 primary key, f1 int[]);
+create table arr_pk_tbl (pk int4 primary key, f1 int[]);
 ---END---
 ---START---
 insert into arr_pk_tbl values (1, '{1,2,3}');
@@ -990,7 +990,7 @@ select '[0:1]={1.1,2.2}'::float8[];
 -- all of the above should be accepted
 
 -- tests for array aggregates
-CREATE TEMP TABLE arraggtest ( f1 INT[], f2 TEXT[][], f3 FLOAT[]);
+CREATE TABLE arraggtest ( f1 INT[], f2 TEXT[][], f3 FLOAT[]);
 ---END---
 ---START---
 
@@ -1430,7 +1430,7 @@ select array(select array['Hello', i::text] from generate_series(9,11) i);
 
 -- Insert/update on a column that is array of composite
 
-create temp table t1 (f1 int8_tbl[]);
+create table t1 (f1 int8_tbl[]);
 ---END---
 ---START---
 insert into t1 (f1[5].q1) values(42);
@@ -1448,7 +1448,7 @@ select * from t1;
 
 -- Check that arrays of composites are safely detoasted when needed
 
-create temp table src (f1 text);
+create table src (f1 text);
 ---END---
 ---START---
 insert into src
@@ -1458,7 +1458,7 @@ insert into src
 create type textandtext as (c1 text, c2 text);
 ---END---
 ---START---
-create temp table dest (f1 textandtext[]);
+create table dest (f1 textandtext[]);
 ---END---
 ---START---
 insert into dest select array[row(f1,f1)::textandtext] from src;
@@ -1610,4 +1610,8 @@ SELECT array_dims(array_sample('[-1:2][2:3]={{1,2},{3,NULL},{5,6},{7,8}}'::int[]
 ---END---
 ---START---
 SELECT array_dims(array_sample('{{{1,2},{3,NULL}},{{5,6},{7,8}},{{9,10},{11,12}}}'::int[], 2));
+---END---
+---START---
+drop table arrtest_s, point_tbl, arrtest1, arrtest2, arrtest_f, arrtest_i, arr_tbl, arr_pk_tbl, arraggtest;
+drop table t1, src, dest;
 ---END---

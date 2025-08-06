@@ -1010,7 +1010,7 @@ DROP FUNCTION rngfunc();
 -- some tests on SQL functions with RETURNING
 --
 
-create temp table tt(f1 serial, data text);
+create table tt(f1 serial, data text);
 ---END---
 ---START---
 
@@ -1094,7 +1094,7 @@ select * from tt;
 ---START---
 
 -- and rules work
-create temp table tt_log(f1 int, data text);
+create table tt_log(f1 int, data text);
 ---END---
 ---START---
 
@@ -1197,7 +1197,7 @@ explain (verbose, costs off)
 ---END---
 ---START---
 
-create temp table rngfunc(f1 int8, f2 int8);
+create table rngfunc(f1 int8, f2 int8);
 ---END---
 ---START---
 
@@ -1378,7 +1378,7 @@ drop type rngfunc_type cascade;
 -- Check some cases involving added/dropped columns in a rowtype result
 --
 
-create temp table users (userid text, seq int, email text, todrop bool, moredrop int, enabled bool);
+create table users (userid text, seq int, email text, todrop bool, moredrop int, enabled bool);
 ---END---
 ---START---
 insert into users values ('id',1,'email',true,11,true);
@@ -1650,4 +1650,7 @@ select * from
    from unnest(array['{"lectures": [{"id": "1"}]}'::jsonb])
         as unnested_modules(module)) as ss,
   jsonb_to_recordset(ss.lecture) as j (id text);
+---END---
+---START---
+drop table if exists tt, tt_log, rngfunc, users;
 ---END---

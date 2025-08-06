@@ -780,7 +780,7 @@ CREATE AGGREGATE mysum2(anyelement,anyelement) (SFUNC = sum3,
 ---START---
 
 -- create test data for polymorphic aggregates
-create temp table t(f1 int, f2 int[], f3 text);
+create table t(f1 int, f2 int[], f3 text);
 ---END---
 ---START---
 insert into t values(1,array[1],'a');
@@ -1884,4 +1884,7 @@ select x, pg_typeof(x) from anyctest(variadic array[11, 12.2]) x;
 ---START---
 
 drop function anyctest(variadic anycompatiblearray);
+---END---
+---START---
+drop table t;
 ---END---

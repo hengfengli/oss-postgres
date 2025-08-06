@@ -1008,7 +1008,7 @@ select 'y123'::dtop; -- fail
 select 'yz23'::dtop; -- fail
 select 'xz23'::dtop; -- fail
 
-create temp table dtest(f1 dtop);
+create table dtest(f1 dtop);
 ---END---
 ---START---
 
@@ -1351,7 +1351,7 @@ select array[1,2]::orderedpair;
 ---START---
 select array[2,1]::orderedpair;  -- fail
 
-create temp table op (f1 orderedpair);
+create table op (f1 orderedpair);
 ---END---
 ---START---
 insert into op values (array[1,2]);
@@ -1364,6 +1364,9 @@ update op set f1[2] = 3;
 ---START---
 update op set f1[2] = 0;  -- fail
 select * from op;
+---END---
+---START---
+drop table op;
 ---END---
 ---START---
 

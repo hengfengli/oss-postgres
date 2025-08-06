@@ -3549,7 +3549,7 @@ drop table perform_test;
 -- Test proper snapshot handling in simple expressions
 --
 
-create temp table users(login text, id serial);
+create table users(login text, id serial);
 ---END---
 ---START---
 
@@ -4498,7 +4498,7 @@ select multi_datum_use(42);
 -- by default in the planned case, but not in EXECUTE.
 --
 
-create temp table foo (f1 int, f2 int);
+create table foo (f1 int, f2 int);
 ---END---
 ---START---
 
@@ -5842,7 +5842,7 @@ select forc01();
 
 -- try updating the cursor's current row
 
-create temp table forc_test as
+create table forc_test as
   select n as i, n as j from generate_series(1,10) n;
 ---END---
 ---START---
@@ -8017,7 +8017,7 @@ drop type xy_tuple;
 -- Assorted tests for array subscript assignment
 --
 
-create temp table rtype (id int, ar text[]);
+create table rtype (id int, ar text[]);
 ---END---
 ---START---
 
@@ -9221,4 +9221,7 @@ BEGIN
 ---END---
 ---START---
 END; $$ LANGUAGE plpgsql;
+---END---
+---START---
+drop table users, foo, rtype, forc_test;
 ---END---

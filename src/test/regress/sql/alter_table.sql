@@ -932,13 +932,13 @@ alter table nv_parent add check (d between '2001-01-01'::date and '2099-12-31'::
 -- Note: these tables are TEMP to avoid name conflicts when this test
 -- is run in parallel with foreign_key.sql.
 
-CREATE TEMP TABLE PKTABLE (ptest1 int PRIMARY KEY);
+CREATE TABLE PKTABLE (ptest1 int PRIMARY KEY);
 ---END---
 ---START---
 INSERT INTO PKTABLE VALUES(42);
 ---END---
 ---START---
-CREATE TEMP TABLE FKTABLE (ftest1 inet);
+CREATE TABLE FKTABLE (ftest1 inet);
 ---END---
 ---START---
 -- This next should fail, because int=inet does not exist
@@ -955,7 +955,7 @@ DROP TABLE FKTABLE;
 ---START---
 -- This should succeed, even though they are different types,
 -- because int=int8 exists and is a member of the integer opfamily
-CREATE TEMP TABLE FKTABLE (ftest1 int8);
+CREATE TABLE FKTABLE (ftest1 int8);
 ---END---
 ---START---
 ALTER TABLE FKTABLE ADD FOREIGN KEY(ftest1) references pktable;
@@ -970,7 +970,7 @@ DROP TABLE FKTABLE;
 -- This should fail, because we'd have to cast numeric to int which is
 -- not an implicit coercion (or use numeric=numeric, but that's not part
 -- of the integer opfamily)
-CREATE TEMP TABLE FKTABLE (ftest1 numeric);
+CREATE TABLE FKTABLE (ftest1 numeric);
 ---END---
 ---START---
 ALTER TABLE FKTABLE ADD FOREIGN KEY(ftest1) references pktable;
@@ -984,13 +984,13 @@ DROP TABLE PKTABLE;
 ---START---
 -- On the other hand, this should work because int implicitly promotes to
 -- numeric, and we allow promotion on the FK side
-CREATE TEMP TABLE PKTABLE (ptest1 numeric PRIMARY KEY);
+CREATE TABLE PKTABLE (ptest1 numeric PRIMARY KEY);
 ---END---
 ---START---
 INSERT INTO PKTABLE VALUES(42);
 ---END---
 ---START---
-CREATE TEMP TABLE FKTABLE (ftest1 int);
+CREATE TABLE FKTABLE (ftest1 int);
 ---END---
 ---START---
 ALTER TABLE FKTABLE ADD FOREIGN KEY(ftest1) references pktable;
@@ -1006,12 +1006,12 @@ DROP TABLE PKTABLE;
 ---END---
 ---START---
 
-CREATE TEMP TABLE PKTABLE (ptest1 int, ptest2 inet,
+CREATE TABLE PKTABLE (ptest1 int, ptest2 inet,
                            PRIMARY KEY(ptest1, ptest2));
 ---END---
 ---START---
 -- This should fail, because we just chose really odd types
-CREATE TEMP TABLE FKTABLE (ftest1 cidr, ftest2 timestamp);
+CREATE TABLE FKTABLE (ftest1 cidr, ftest2 timestamp);
 ---END---
 ---START---
 ALTER TABLE FKTABLE ADD FOREIGN KEY(ftest1, ftest2) references pktable;
@@ -1021,7 +1021,7 @@ DROP TABLE FKTABLE;
 ---END---
 ---START---
 -- Again, so should this...
-CREATE TEMP TABLE FKTABLE (ftest1 cidr, ftest2 timestamp);
+CREATE TABLE FKTABLE (ftest1 cidr, ftest2 timestamp);
 ---END---
 ---START---
 ALTER TABLE FKTABLE ADD FOREIGN KEY(ftest1, ftest2)
@@ -1032,7 +1032,7 @@ DROP TABLE FKTABLE;
 ---END---
 ---START---
 -- This fails because we mixed up the column ordering
-CREATE TEMP TABLE FKTABLE (ftest1 int, ftest2 inet);
+CREATE TABLE FKTABLE (ftest1 int, ftest2 inet);
 ---END---
 ---START---
 ALTER TABLE FKTABLE ADD FOREIGN KEY(ftest1, ftest2)
@@ -1053,10 +1053,10 @@ DROP TABLE PKTABLE;
 
 -- Test that ALTER CONSTRAINT updates trigger deferrability properly
 
-CREATE TEMP TABLE PKTABLE (ptest1 int primary key);
+CREATE TABLE PKTABLE (ptest1 int primary key);
 ---END---
 ---START---
-CREATE TEMP TABLE FKTABLE (ftest1 int);
+CREATE TABLE FKTABLE (ftest1 int);
 ---END---
 ---START---
 
@@ -2767,7 +2767,7 @@ drop table p1 cascade;
 create domain mytype as text;
 ---END---
 ---START---
-create temp table foo (f1 text, f2 mytype, f3 text);
+create table foo (f1 text, f2 mytype, f3 text);
 ---END---
 ---START---
 
@@ -3081,7 +3081,7 @@ insert into at_partitioned values(3, 'bar');
 ---END---
 ---START---
 
-create temp table old_oids as
+create table old_oids as
   select relname, oid as oldoid, relfilenode as oldfilenode
   from pg_class where relname like 'at_partitioned%';
 ---END---
@@ -3141,7 +3141,7 @@ drop table at_partitioned;
 ---START---
 
 -- disallow recursive containment of row types
-create temp table recur1 (f1 int);
+create table recur1 (f1 int);
 ---END---
 ---START---
 alter table recur1 add column f2 recur1; -- fails
@@ -3150,7 +3150,7 @@ create domain array_of_recur1 as recur1[];
 ---END---
 ---START---
 alter table recur1 add column f2 array_of_recur1; -- fails
-create temp table recur2 (f1 int, f2 recur1);
+create table recur2 (f1 int, f2 recur1);
 ---END---
 ---START---
 alter table recur1 add column f2 recur2; -- fails
@@ -3386,7 +3386,7 @@ drop table at_base_table;
 begin;
 ---END---
 ---START---
-create temp table t1 as select * from int8_tbl;
+create table t1 as select * from int8_tbl;
 ---END---
 ---START---
 create temp view v1 as select 1::int8 as q1;
@@ -3400,7 +3400,7 @@ create or replace temp view v1 with (security_barrier = true)
 ---END---
 ---START---
 
-create temp table log (q1 int8, q2 int8);
+create table log (q1 int8, q2 int8);
 ---END---
 ---START---
 create rule v1_upd_rule as on update to v1
@@ -4450,7 +4450,7 @@ SELECT conname as constraint, obj_description(oid, 'pg_constraint') as comment F
 -- filenode function call can return NULL for a relation dropped concurrently
 -- with the call's surrounding query, so ignore a NULL mapped_oid for
 -- relations that no longer exist after all calls finish.
-CREATE TEMP TABLE filenode_mapping AS
+CREATE TABLE filenode_mapping AS
 SELECT
     oid, mapped_oid, reltablespace, relfilenode, relname
 FROM pg_class,
@@ -4874,7 +4874,7 @@ DROP TABLE parent CASCADE;
 ---START---
 
 -- check any TEMP-ness
-CREATE TEMP TABLE temp_parted (a int) PARTITION BY LIST (a);
+CREATE TABLE temp_parted (a int) PARTITION BY LIST (a);
 ---END---
 ---START---
 CREATE TABLE perm_part (a int);
@@ -5850,13 +5850,13 @@ drop table defpart_attach_test;
 create table perm_part_parent (a int) partition by list (a);
 ---END---
 ---START---
-create temp table temp_part_parent (a int) partition by list (a);
+create table temp_part_parent (a int) partition by list (a);
 ---END---
 ---START---
 create table perm_part_child (a int);
 ---END---
 ---START---
-create temp table temp_part_child (a int);
+create table temp_part_child (a int);
 ---END---
 ---START---
 alter table temp_part_parent attach partition perm_part_child default; -- error
@@ -6158,4 +6158,8 @@ drop schema alter1 cascade;
 ---END---
 ---START---
 drop schema alter2 cascade;
+---END---
+---START---
+drop table if exists foo, old_oids, recur1, recur2, t1, log, filenode_mapping;
+drop table if exists temp_parted, temp_part_parent, temp_part_child;
 ---END---

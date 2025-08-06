@@ -156,7 +156,7 @@ rollback;
 
 -- \gexec
 
-create temporary table gexec_test(a int, b text, c date, d float);
+create table gexec_test(a int, b text, c date, d float);
 ---END---
 ---START---
 select format('create index on gexec_test(%I)', attname)
@@ -2006,7 +2006,7 @@ DROP FUNCTION warn(TEXT);
 \getenv abs_builddir PG_ABS_BUILDDIR
 \set g_out_file :abs_builddir '/results/psql-output1'
 
-CREATE TEMPORARY TABLE reload_output(
+CREATE TABLE reload_output(
   lineno int NOT NULL GENERATED ALWAYS AS IDENTITY,
   line text
 );
@@ -2578,4 +2578,7 @@ DROP ROLE regress_du_role2;
 ---END---
 ---START---
 DROP ROLE regress_du_admin;
+---END---
+---START---
+drop table if exists gexec_test, reload_output;
 ---END---

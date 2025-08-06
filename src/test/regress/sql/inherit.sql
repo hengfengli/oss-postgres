@@ -249,7 +249,7 @@ SELECT relname, d.* FROM ONLY d, pg_class where d.tableoid = pg_class.oid;
 ---START---
 
 -- Confirm PRIMARY KEY adds NOT NULL constraint to child table
-CREATE TEMP TABLE z (b TEXT, PRIMARY KEY(aa, b)) inherits (a);
+CREATE TABLE z (b TEXT, PRIMARY KEY(aa, b)) inherits (a);
 ---END---
 ---START---
 INSERT INTO z VALUES (NULL, 'text'); -- should fail
@@ -288,16 +288,16 @@ drop table some_tab cascade;
 ---START---
 
 -- Check UPDATE with inherited target and an inherited source table
-create temp table foo(f1 int, f2 int);
+create table foo(f1 int, f2 int);
 ---END---
 ---START---
-create temp table foo2(f3 int) inherits (foo);
+create table foo2(f3 int) inherits (foo);
 ---END---
 ---START---
-create temp table bar(f1 int, f2 int);
+create table bar(f1 int, f2 int);
 ---END---
 ---START---
-create temp table bar2(f3 int) inherits (bar);
+create table bar2(f3 int) inherits (bar);
 ---END---
 ---START---
 
@@ -496,13 +496,13 @@ select * from d;
 -- The above verified that we can change the type of a multiply-inherited
 -- column; but we should reject that if any definition was inherited from
 -- an unrelated parent.
-create temp table parent1(f1 int, f2 int);
+create table parent1(f1 int, f2 int);
 ---END---
 ---START---
-create temp table parent2(f1 int, f3 bigint);
+create table parent2(f1 int, f3 bigint);
 ---END---
 ---START---
-create temp table childtab(f4 int) inherits(parent1, parent2);
+create table childtab(f4 int) inherits(parent1, parent2);
 ---END---
 ---START---
 alter table parent1 alter column f1 type bigint;  -- fail, conflict w/parent2
@@ -1037,18 +1037,18 @@ order by 1, 2;
 -- Test parameterized append plans for inheritance trees
 --
 
-create temp table patest0 (id, x) as
+create table patest0 (id, x) as
   select x, x from generate_series(0,1000) x;
 ---END---
 ---START---
-create temp table patest1() inherits (patest0);
+create table patest1() inherits (patest0);
 ---END---
 ---START---
 insert into patest1
   select x, x from generate_series(0,1000) x;
 ---END---
 ---START---
-create temp table patest2() inherits (patest0);
+create table patest2() inherits (patest0);
 ---END---
 ---START---
 insert into patest2
@@ -1434,12 +1434,12 @@ drop table cnullparent cascade;
 create table inh_perm_parent (a1 int);
 ---END---
 ---START---
-create temp table inh_temp_parent (a1 int);
+create table inh_temp_parent (a1 int);
 ---END---
 ---START---
-create temp table inh_temp_child () inherits (inh_perm_parent); -- ok
+create table inh_temp_child () inherits (inh_perm_parent); -- ok
 create table inh_perm_child () inherits (inh_temp_parent); -- error
-create temp table inh_temp_child_2 () inherits (inh_temp_parent); -- ok
+create table inh_temp_child_2 () inherits (inh_temp_parent); -- ok
 insert into inh_perm_parent values (1);
 ---END---
 ---START---
@@ -2200,4 +2200,15 @@ UPDATE errtst_parent SET partid = 30, data = data + 10 WHERE partid = 20;
 ---START---
 
 DROP TABLE errtst_parent;
+
+drop table z, foo, foo2, bar, bar2;
+drop table childtab;
+drop table parent1;
+drop table parent2;
+drop table patest2;
+drop table patest1;
+drop table patest0;
+drop table inh_temp_child_2;
+drop table inh_temp_child;
+drop table inh_temp_parent;
 ---END---

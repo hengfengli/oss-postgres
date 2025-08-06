@@ -245,7 +245,7 @@ VACUUM (PARALLEL 2, FULL TRUE) pvactst; -- error, cannot use both PARALLEL and F
 VACUUM (PARALLEL) pvactst; -- error, cannot use PARALLEL option without parallel degree
 
 -- Test different combinations of parallel and full options for temporary tables
-CREATE TEMPORARY TABLE tmp (a int PRIMARY KEY);
+CREATE TABLE tmp (a int PRIMARY KEY);
 ---END---
 ---START---
 CREATE INDEX tmp_idx1 ON tmp (a);
@@ -340,7 +340,7 @@ VACUUM (INDEX_CLEANUP FALSE, FREEZE TRUE) vaccluster;
 ---START---
 
 -- TRUNCATE option
-CREATE TEMP TABLE vac_truncate_test(i INT NOT NULL, j text)
+CREATE TABLE vac_truncate_test(i INT NOT NULL, j text)
 	WITH (vacuum_truncate=true, autovacuum_enabled=false);
 ---END---
 ---START---
@@ -878,4 +878,7 @@ DROP TABLE vacowned_parted;
 ---END---
 ---START---
 DROP ROLE regress_vacuum;
+
+drop table tmp;
+drop table vac_truncate_test;
 ---END---

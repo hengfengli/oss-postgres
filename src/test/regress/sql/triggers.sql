@@ -1950,7 +1950,7 @@ drop function depth_c_tf();
 -- As of 9.2, such cases should be rejected (see bug #6123).
 --
 
-create temp table parent (
+create table parent (
     aid int not null primary key,
     val1 text,
     val2 text,
@@ -1959,7 +1959,7 @@ create temp table parent (
     bcnt int not null default 0);
 ---END---
 ---START---
-create temp table child (
+create table child (
     bid int not null primary key,
     aid int not null,
     val1 text);
@@ -2103,7 +2103,7 @@ drop function child_del_func();
 -- similar case, but with a self-referencing FK so that parent and child
 -- rows can be affected by a single operation
 
-create temp table self_ref_trigger (
+create table self_ref_trigger (
     id int primary key,
     parent int references self_ref_trigger,
     data text,

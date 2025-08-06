@@ -103,7 +103,7 @@ COPY onek TO :'filename';
 ---END---
 ---START---
 
-CREATE TEMP TABLE onek_copy (LIKE onek);
+CREATE TABLE onek_copy (LIKE onek);
 ---END---
 ---START---
 
@@ -124,7 +124,7 @@ COPY BINARY stud_emp TO :'filename';
 ---END---
 ---START---
 
-CREATE TEMP TABLE stud_emp_copy (LIKE stud_emp);
+CREATE TABLE stud_emp_copy (LIKE stud_emp);
 ---END---
 ---START---
 
@@ -390,4 +390,8 @@ SELECT *, name(equipment(h.*)) FROM hobbies_r h;
 ---START---
 
 SELECT *, (equipment(CAST((h.*) AS hobbies_r))).name FROM hobbies_r h;
+---END---
+---START---
+drop table onek_copy;
+drop table stud_emp_copy;
 ---END---

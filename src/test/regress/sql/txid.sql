@@ -29,7 +29,7 @@ select '12:16:14,13'::txid_snapshot;
 ---END---
 ---START---
 
-create temp table snapshot_test (
+create table snapshot_test (
 	nr	integer,
 	snap	txid_snapshot
 );
@@ -69,6 +69,9 @@ where nr = 2;
 select id, txid_visible_in_snapshot(id, snap)
 from snapshot_test, generate_series(90, 160) id
 where nr = 4;
+---END---
+---START---
+drop table snapshot_test;
 ---END---
 ---START---
 

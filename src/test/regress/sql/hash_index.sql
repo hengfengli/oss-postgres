@@ -387,7 +387,7 @@ DROP TABLE hash_split_heap;
 ---START---
 
 -- Index on temp table.
-CREATE TEMP TABLE hash_temp_heap (x int, y int);
+CREATE TABLE hash_temp_heap (x int, y int);
 ---END---
 ---START---
 INSERT INTO hash_temp_heap VALUES (1,1);

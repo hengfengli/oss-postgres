@@ -1528,7 +1528,7 @@ DROP TABLE pktable, fktable;
 -- test notice about expensive referential integrity checks,
 -- where the index cannot be used because of type incompatibilities.
 
-CREATE TEMP TABLE pktable (
+CREATE TABLE pktable (
         id1     INT4 PRIMARY KEY,
         id2     VARCHAR(4) UNIQUE,
         id3     REAL UNIQUE,
@@ -1537,7 +1537,7 @@ CREATE TEMP TABLE pktable (
 ---END---
 ---START---
 
-CREATE TEMP TABLE fktable (
+CREATE TABLE fktable (
         x1      INT4 REFERENCES pktable(id1),
         x2      VARCHAR(4) REFERENCES pktable(id2),
         x3      REAL REFERENCES pktable(id3),
@@ -1637,14 +1637,14 @@ DROP TABLE pktable, fktable;
 -- will have invalidated the original newly-inserted tuple, and therefore
 -- cause the on-INSERT RI trigger not to be fired.
 
-CREATE TEMP TABLE pktable (
+CREATE TABLE pktable (
     id int primary key,
     other int
 );
 ---END---
 ---START---
 
-CREATE TEMP TABLE fktable (
+CREATE TABLE fktable (
     id int primary key,
     fk int references pktable deferrable initially deferred
 );
@@ -1803,12 +1803,15 @@ ALTER TABLE fktable ALTER CONSTRAINT fktable_fk_fkey NOT DEFERRABLE;
 ALTER TABLE fktable ALTER CONSTRAINT fktable_fk_fkey NOT DEFERRABLE INITIALLY DEFERRED;
 ---END---
 ---START---
+drop table pktable, fktable;
+---END---
+---START---
 
 -- test order of firing of FK triggers when several RI-induced changes need to
 -- be made to the same row.  This was broken by subtransaction-related
 -- changes in 8.0.
 
-CREATE TEMP TABLE users (
+CREATE TABLE users (
   id INT PRIMARY KEY,
   name VARCHAR NOT NULL
 );
@@ -1825,7 +1828,7 @@ INSERT INTO users VALUES (3, 'Samko');
 ---END---
 ---START---
 
-CREATE TEMP TABLE tasks (
+CREATE TABLE tasks (
   id INT PRIMARY KEY,
   owner INT REFERENCES users ON UPDATE CASCADE ON DELETE SET NULL,
   worker INT REFERENCES users ON UPDATE CASCADE ON DELETE SET NULL,
@@ -1883,11 +1886,14 @@ SELECT * FROM tasks;
 COMMIT;
 ---END---
 ---START---
+drop table users, tasks;
+---END---
+---START---
 
 --
 -- Test self-referential FK with CASCADE (bug #6268)
 --
-create temp table selfref (
+create table selfref (
     a int primary key,
     b int,
     foreign key (b) references selfref (a)
@@ -1921,14 +1927,17 @@ begin;
 commit;
 ---END---
 ---START---
+drop table selfref;
+---END---
+---START---
 
 --
 -- Test that SET DEFAULT actions recognize updates to default values
 --
-create temp table defp (f1 int primary key);
+create table defp (f1 int primary key);
 ---END---
 ---START---
-create temp table defc (f1 int default 0
+create table defc (f1 int default 0
                         references defp on delete set default);
 ---END---
 ---START---
@@ -1958,14 +1967,19 @@ select * from defc;
 ---END---
 ---START---
 delete from defp where f1 = 1; -- fail
+---END---
+---START---
+drop table defp, defc;
+---END---
+---START---
 
 --
 -- Test the difference between NO ACTION and RESTRICT
 --
-create temp table pp (f1 int primary key);
+create table pp (f1 int primary key);
 ---END---
 ---START---
-create temp table cc (f1 int references pp on update no action on delete no action);
+create table cc (f1 int references pp on update no action on delete no action);
 ---END---
 ---START---
 insert into pp values(12);
@@ -1989,10 +2003,10 @@ drop table pp, cc;
 ---END---
 ---START---
 
-create temp table pp (f1 int primary key);
+create table pp (f1 int primary key);
 ---END---
 ---START---
-create temp table cc (f1 int references pp on update restrict on delete restrict);
+create table cc (f1 int references pp on update restrict on delete restrict);
 ---END---
 ---START---
 insert into pp values(12);
@@ -2016,10 +2030,10 @@ drop table pp, cc;
 --
 -- Test interaction of foreign-key optimization with rules (bug #14219)
 --
-create temp table t1 (a integer primary key, b text);
+create table t1 (a integer primary key, b text);
 ---END---
 ---START---
-create temp table t2 (a integer primary key, b integer references t1);
+create table t2 (a integer primary key, b integer references t1);
 ---END---
 ---START---
 create rule r1 as on delete to t1 do delete from t2 where t2.b = old.a;
@@ -2030,6 +2044,9 @@ explain (costs off) delete from t1 where a = 1;
 ---END---
 ---START---
 delete from t1 where a = 1;
+---END---
+---START---
+drop table t1, t2;
 ---END---
 ---START---
 

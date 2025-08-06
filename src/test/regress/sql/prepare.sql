@@ -106,13 +106,13 @@ PREPARE q5(int, text) AS
 	ORDER BY unique1;
 ---END---
 ---START---
-CREATE TEMPORARY TABLE q5_prep_results AS EXECUTE q5(200, 'DTAAAA');
+CREATE TABLE q5_prep_results AS EXECUTE q5(200, 'DTAAAA');
 ---END---
 ---START---
 SELECT * FROM q5_prep_results;
 ---END---
 ---START---
-CREATE TEMPORARY TABLE q5_prep_nodata AS EXECUTE q5(200, 'DTAAAA')
+CREATE TABLE q5_prep_nodata AS EXECUTE q5(200, 'DTAAAA')
     WITH NO DATA;
 ---END---
 ---START---
@@ -149,4 +149,7 @@ DEALLOCATE ALL;
 ---START---
 SELECT name, statement, parameter_types FROM pg_prepared_statements
     ORDER BY name;
+---END---
+---START---
+drop table q5_prep_results, q5_prep_nodata;
 ---END---

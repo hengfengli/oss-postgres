@@ -2141,13 +2141,13 @@ reset constraint_exclusion;
 ---START---
 
 -- Check pruning for a partition tree containing only temporary relations
-create temp table pp_temp_parent (a int) partition by list (a);
+create table pp_temp_parent (a int) partition by list (a);
 ---END---
 ---START---
-create temp table pp_temp_part_1 partition of pp_temp_parent for values in (1);
+create table pp_temp_part_1 partition of pp_temp_parent for values in (1);
 ---END---
 ---START---
-create temp table pp_temp_part_def partition of pp_temp_parent default;
+create table pp_temp_part_def partition of pp_temp_parent default;
 ---END---
 ---START---
 explain (costs off) select * from pp_temp_parent where true;
@@ -2161,34 +2161,34 @@ drop table pp_temp_parent;
 ---START---
 
 -- Stress run-time partition pruning a bit more, per bug reports
-create temp table p (a int, b int, c int) partition by list (a);
+create table p (a int, b int, c int) partition by list (a);
 ---END---
 ---START---
-create temp table p1 partition of p for values in (1);
+create table p1 partition of p for values in (1);
 ---END---
 ---START---
-create temp table p2 partition of p for values in (2);
+create table p2 partition of p for values in (2);
 ---END---
 ---START---
-create temp table q (a int, b int, c int) partition by list (a);
+create table q (a int, b int, c int) partition by list (a);
 ---END---
 ---START---
-create temp table q1 partition of q for values in (1) partition by list (b);
+create table q1 partition of q for values in (1) partition by list (b);
 ---END---
 ---START---
-create temp table q11 partition of q1 for values in (1) partition by list (c);
+create table q11 partition of q1 for values in (1) partition by list (c);
 ---END---
 ---START---
-create temp table q111 partition of q11 for values in (1);
+create table q111 partition of q11 for values in (1);
 ---END---
 ---START---
-create temp table q2 partition of q for values in (2) partition by list (b);
+create table q2 partition of q for values in (2) partition by list (b);
 ---END---
 ---START---
-create temp table q21 partition of q2 for values in (1);
+create table q21 partition of q2 for values in (1);
 ---END---
 ---START---
-create temp table q22 partition of q2 for values in (2);
+create table q22 partition of q2 for values in (2);
 ---END---
 ---START---
 
@@ -2536,4 +2536,6 @@ drop operator class part_test_int4_ops2 using hash;
 ---END---
 ---START---
 drop operator ===(int4, int4);
+---END---
+---START---
 ---END---

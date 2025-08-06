@@ -298,7 +298,7 @@ SELECT DISTINCT four,1,2,3 FROM tenk1 WHERE four = 0;
 -- very own regression file.
 --
 
-CREATE TEMP TABLE disttable (f1 integer);
+CREATE TABLE disttable (f1 integer);
 ---END---
 ---START---
 INSERT INTO DISTTABLE VALUES(1);
@@ -353,4 +353,7 @@ SELECT 2 IS NOT DISTINCT FROM null as "no";
 ---END---
 ---START---
 SELECT null IS NOT DISTINCT FROM null as "yes";
+---END---
+---START---
+drop table disttable;
 ---END---

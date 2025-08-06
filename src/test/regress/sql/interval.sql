@@ -140,7 +140,7 @@ SELECT r1.*, r2.*
 ---START---
 
 -- Test intervals that are large enough to overflow 64 bits in comparisons
-CREATE TEMP TABLE INTERVAL_TBL_OF (f1 interval);
+CREATE TABLE INTERVAL_TBL_OF (f1 interval);
 ---END---
 ---START---
 INSERT INTO INTERVAL_TBL_OF (f1) VALUES

@@ -190,7 +190,7 @@ SELECT height(f1), width(f1) FROM BOX_TBL;
 -- Test the SP-GiST index
 --
 
-CREATE TEMPORARY TABLE box_temp (f1 box);
+CREATE TABLE box_temp (f1 box);
 ---END---
 ---START---
 
@@ -432,7 +432,7 @@ FROM quad_box_tbl;
 ---END---
 ---START---
 
-CREATE TEMP TABLE quad_box_tbl_ord_idx1 AS
+CREATE TABLE quad_box_tbl_ord_idx1 AS
 SELECT rank() OVER (ORDER BY b <-> point '123,456') n, b <-> point '123,456' dist, id
 FROM quad_box_tbl;
 ---END---
@@ -453,7 +453,7 @@ FROM quad_box_tbl WHERE b <@ box '((200,300),(500,600))';
 ---END---
 ---START---
 
-CREATE TEMP TABLE quad_box_tbl_ord_idx2 AS
+CREATE TABLE quad_box_tbl_ord_idx2 AS
 SELECT rank() OVER (ORDER BY b <-> point '123,456') n, b <-> point '123,456' dist, id
 FROM quad_box_tbl WHERE b <@ box '((200,300),(500,600))';
 ---END---
@@ -488,4 +488,9 @@ SELECT pg_input_is_valid('((200,300),(500, xyz))', 'box');
 ---END---
 ---START---
 SELECT * FROM pg_input_error_info('((200,300),(500, xyz))', 'box');
+---END---
+---START---
+drop table box_temp;
+drop table quad_box_tbl_ord_idx1;
+drop table quad_box_tbl_ord_idx2;
 ---END---

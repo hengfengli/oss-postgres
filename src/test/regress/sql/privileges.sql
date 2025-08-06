@@ -2007,7 +2007,7 @@ select has_column_privilege(9999,99::int2,'select');
 ---END---
 ---START---
 
-create temp table mytable(f1 int, f2 int, f3 int);
+create table mytable(f1 int, f2 int, f3 int);
 ---END---
 ---START---
 alter table mytable drop column f2;

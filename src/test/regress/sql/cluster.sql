@@ -416,7 +416,7 @@ SELECT * FROM clustertest;
 ---START---
 
 -- check that temp tables can be clustered
-create temp table clstr_temp (col1 int primary key, col2 text);
+create table clstr_temp (col1 int primary key, col2 text);
 ---END---
 ---START---
 insert into clstr_temp values (2, 'two'), (1, 'one');
@@ -483,13 +483,13 @@ CREATE INDEX clstrpart_idx ON clstrpart (a);
 ---END---
 ---START---
 -- Check that clustering sets new relfilenodes:
-CREATE TEMP TABLE old_cluster_info AS SELECT relname, level, relfilenode, relkind FROM pg_partition_tree('clstrpart'::regclass) AS tree JOIN pg_class c ON c.oid=tree.relid ;
+CREATE TABLE old_cluster_info AS SELECT relname, level, relfilenode, relkind FROM pg_partition_tree('clstrpart'::regclass) AS tree JOIN pg_class c ON c.oid=tree.relid ;
 ---END---
 ---START---
 CLUSTER clstrpart USING clstrpart_idx;
 ---END---
 ---START---
-CREATE TEMP TABLE new_cluster_info AS SELECT relname, level, relfilenode, relkind FROM pg_partition_tree('clstrpart'::regclass) AS tree JOIN pg_class c ON c.oid=tree.relid ;
+CREATE TABLE new_cluster_info AS SELECT relname, level, relfilenode, relkind FROM pg_partition_tree('clstrpart'::regclass) AS tree JOIN pg_class c ON c.oid=tree.relid ;
 ---END---
 ---START---
 SELECT relname, old.level, old.relkind, old.relfilenode = new.relfilenode FROM old_cluster_info AS old JOIN new_cluster_info AS new USING (relname) ORDER BY relname COLLATE "C";
@@ -532,7 +532,7 @@ ALTER TABLE ptnowner1 OWNER TO regress_ptnowner;
 ALTER TABLE ptnowner OWNER TO regress_ptnowner;
 ---END---
 ---START---
-CREATE TEMP TABLE ptnowner_oldnodes AS
+CREATE TABLE ptnowner_oldnodes AS
   SELECT oid, relname, relfilenode FROM pg_partition_tree('ptnowner') AS tree
   JOIN pg_class AS c ON c.oid=tree.relid;
 ---END---
@@ -712,4 +712,6 @@ DROP TABLE clstr_expression;
 ---START---
 
 DROP USER regress_clstr_user;
+
+drop table if exists clstr_temp, old_cluster_info, new_cluster_info, ptnowner_oldnodes;
 ---END---
