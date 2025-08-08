@@ -1,32 +1,32 @@
 ---START---
-CREATE TABLE num_data (gemini_pk serial PRIMARY KEY, id int8, val numeric(210, 10));
+CREATE TABLE num_data (gemini_pk serial PRIMARY KEY, id int8, val numeric);
 ---END---
 ---START---
-CREATE TABLE num_exp_add (gemini_pk serial PRIMARY KEY, id1 int8, id2 int8, expected numeric(210, 10));
+CREATE TABLE num_exp_add (gemini_pk serial PRIMARY KEY, id1 int8, id2 int8, expected numeric);
 ---END---
 ---START---
-CREATE TABLE num_exp_sub (gemini_pk serial PRIMARY KEY, id1 int8, id2 int8, expected numeric(210, 10));
+CREATE TABLE num_exp_sub (gemini_pk serial PRIMARY KEY, id1 int8, id2 int8, expected numeric);
 ---END---
 ---START---
-CREATE TABLE num_exp_div (gemini_pk serial PRIMARY KEY, id1 int8, id2 int8, expected numeric(210, 10));
+CREATE TABLE num_exp_div (gemini_pk serial PRIMARY KEY, id1 int8, id2 int8, expected numeric);
 ---END---
 ---START---
-CREATE TABLE num_exp_mul (gemini_pk serial PRIMARY KEY, id1 int8, id2 int8, expected numeric(210, 10));
+CREATE TABLE num_exp_mul (gemini_pk serial PRIMARY KEY, id1 int8, id2 int8, expected numeric);
 ---END---
 ---START---
-CREATE TABLE num_exp_sqrt (gemini_pk serial PRIMARY KEY, id int8, expected numeric(210, 10));
+CREATE TABLE num_exp_sqrt (gemini_pk serial PRIMARY KEY, id int8, expected numeric);
 ---END---
 ---START---
-CREATE TABLE num_exp_ln (gemini_pk serial PRIMARY KEY, id int8, expected numeric(210, 10));
+CREATE TABLE num_exp_ln (gemini_pk serial PRIMARY KEY, id int8, expected numeric);
 ---END---
 ---START---
-CREATE TABLE num_exp_log10 (gemini_pk serial PRIMARY KEY, id int8, expected numeric(210, 10));
+CREATE TABLE num_exp_log10 (gemini_pk serial PRIMARY KEY, id int8, expected numeric);
 ---END---
 ---START---
-CREATE TABLE num_exp_power_10_ln (gemini_pk serial PRIMARY KEY, id int8, expected numeric(210, 10));
+CREATE TABLE num_exp_power_10_ln (gemini_pk serial PRIMARY KEY, id int8, expected numeric);
 ---END---
 ---START---
-CREATE TABLE num_result (gemini_pk serial PRIMARY KEY, id1 int8, id2 int8, result numeric(210, 10));
+CREATE TABLE num_result (gemini_pk serial PRIMARY KEY, id1 int8, id2 int8, result numeric);
 ---END---
 ---START---
 -- ******************************
@@ -1883,7 +1883,7 @@ SELECT STDDEV(val) FROM num_data;
 SELECT VARIANCE(val) FROM num_data;
 ---END---
 ---START---
-CREATE TABLE fract_only (gemini_pk serial PRIMARY KEY, id integer, val numeric(4, 4));
+CREATE TABLE fract_only (gemini_pk serial PRIMARY KEY, id integer, val numeric);
 ---END---
 ---START---
 INSERT INTO fract_only VALUES (1, '0.0');
@@ -2659,7 +2659,7 @@ SELECT * FROM pg_input_error_info('1234.567', 'numeric(7,4)');
 SELECT * FROM pg_input_error_info('0x1234.567', 'numeric');
 ---END---
 ---START---
-CREATE TABLE num_typemod_test (gemini_pk serial PRIMARY KEY, millions numeric(3, -6), thousands numeric(3, -3), units numeric(3, 0), thousandths numeric(3, 3), millionths numeric(3, 6));
+CREATE TABLE num_typemod_test (gemini_pk serial PRIMARY KEY, millions numeric, thousands numeric, units numeric, thousandths numeric, millionths numeric);
 ---END---
 ---START---
 \d num_typemod_test

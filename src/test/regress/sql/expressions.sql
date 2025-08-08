@@ -81,7 +81,7 @@ RESET search_path;
 begin;
 ---END---
 ---START---
-CREATE TABLE numeric_tbl (gemini_pk serial PRIMARY KEY, f1 numeric(18, 3), f2 numeric);
+CREATE TABLE numeric_tbl (gemini_pk serial PRIMARY KEY, f1 numeric, f2 numeric);
 ---END---
 ---START---
 create view numeric_view as

@@ -532,7 +532,7 @@ from tc;
 
 DROP TABLE IF EXISTS t1;
 
-CREATE TABLE t1 (gemini_pk serial PRIMARY KEY, f1 numeric(14, 0), f2 varchar(30));
+CREATE TABLE t1 (gemini_pk serial PRIMARY KEY, f1 numeric, f2 varchar(30));
 ---END---
 ---START---
 select * from

@@ -95,7 +95,7 @@ CREATE VIEW key_dependent_view_no_cols AS
 -- CREATE OR REPLACE VIEW
 --
 
-CREATE TABLE viewtest_tbl (a int, b int, c numeric(10,1), d text COLLATE "C");
+CREATE TABLE viewtest_tbl (a int, b int, c numeric, d text COLLATE "C");
 ---END---
 ---START---
 COPY viewtest_tbl FROM stdin;

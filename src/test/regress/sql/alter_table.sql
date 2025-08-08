@@ -2238,19 +2238,19 @@ drop table child;
 drop table parent;
 ---END---
 ---START---
-CREATE TABLE parent (gemini_pk serial PRIMARY KEY, a float8, b numeric(10, 4), c text COLLATE "C");
+CREATE TABLE parent (gemini_pk serial PRIMARY KEY, a float8, b numeric, c text COLLATE "C");
 ---END---
 ---START---
 CREATE TABLE child (gemini_pk serial PRIMARY KEY, a float8) INHERITS (parent);
 ---END---
 ---START---
-CREATE TABLE child (gemini_pk serial PRIMARY KEY, b numeric(10, 7)) INHERITS (parent);
+CREATE TABLE child (gemini_pk serial PRIMARY KEY, b numeric) INHERITS (parent);
 ---END---
 ---START---
 CREATE TABLE child (gemini_pk serial PRIMARY KEY, c text COLLATE "POSIX") INHERITS (parent);
 ---END---
 ---START---
-CREATE TABLE child (gemini_pk serial PRIMARY KEY, a double precision, b numeric(10, 4)) INHERITS (parent);
+CREATE TABLE child (gemini_pk serial PRIMARY KEY, a double precision, b numeric) INHERITS (parent);
 ---END---
 ---START---
 drop table child;
@@ -3975,34 +3975,34 @@ DROP TYPE test_type_empty;
 -- typed tables: OF / NOT OF
 --
 
-CREATE TYPE tt_t0 AS (z inet, x int, y numeric(8,2));
+CREATE TYPE tt_t0 AS (z inet, x int, y numeric);
 ---END---
 ---START---
 ALTER TYPE tt_t0 DROP ATTRIBUTE z;
 ---END---
 ---START---
-CREATE TABLE tt0 (gemini_pk serial PRIMARY KEY, x integer NOT NULL, y numeric(8, 2));
+CREATE TABLE tt0 (gemini_pk serial PRIMARY KEY, x integer NOT NULL, y numeric);
 ---END---
 ---START---
 CREATE TABLE tt1 (gemini_pk serial PRIMARY KEY, x integer, y bigint);
 ---END---
 ---START---
-CREATE TABLE tt2 (gemini_pk serial PRIMARY KEY, x integer, y numeric(9, 2));
+CREATE TABLE tt2 (gemini_pk serial PRIMARY KEY, x integer, y numeric);
 ---END---
 ---START---
-CREATE TABLE tt3 (gemini_pk serial PRIMARY KEY, y numeric(8, 2), x integer);
+CREATE TABLE tt3 (gemini_pk serial PRIMARY KEY, y numeric, x integer);
 ---END---
 ---START---
 CREATE TABLE tt4 (gemini_pk serial PRIMARY KEY, x integer);
 ---END---
 ---START---
-CREATE TABLE tt5 (gemini_pk serial PRIMARY KEY, x integer, y numeric(8, 2), z integer);
+CREATE TABLE tt5 (gemini_pk serial PRIMARY KEY, x integer, y numeric, z integer);
 ---END---
 ---START---
 CREATE TABLE tt6 (gemini_pk serial PRIMARY KEY) INHERITS (tt0);
 ---END---
 ---START---
-CREATE TABLE tt7 (gemini_pk serial PRIMARY KEY, x integer, q text, y numeric(8, 2));
+CREATE TABLE tt7 (gemini_pk serial PRIMARY KEY, x integer, q text, y numeric);
 ---END---
 ---START---
 ALTER TABLE tt7 DROP q;
@@ -4034,7 +4034,7 @@ ALTER TABLE tt6 OF tt_t0;
 ALTER TABLE tt7 OF tt_t0;
 ---END---
 ---START---
-CREATE TYPE tt_t1 AS (x int, y numeric(8,2));
+CREATE TYPE tt_t1 AS (x int, y numeric);
 ---END---
 ---START---
 ALTER TABLE tt7 OF tt_t1;
