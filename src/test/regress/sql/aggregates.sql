@@ -10,7 +10,7 @@
 SET extra_float_digits = 0;
 ---END---
 ---START---
-CREATE TABLE aggtest (gemini_pk serial PRIMARY KEY, a int2, b float4);
+CREATE TABLE aggtest (gemini_pk serial PRIMARY KEY, a int8, b float8);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/agg.data';
@@ -432,11 +432,12 @@ select array(select sum(x+y) s
 --
 DROP TABLE IF EXISTS bitwise_test;
 CREATE TABLE bitwise_test(
-  i2 INT2,
-  i4 INT4,
+  gemini_pk serial PRIMARY KEY,
+  i2 INT8,
+  i4 INT8,
   i8 INT8,
   i INTEGER,
-  x INT2,
+  x INT8,
   y BIT(4)
 );
 ---END---

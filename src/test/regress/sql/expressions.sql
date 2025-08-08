@@ -96,7 +96,7 @@ create view numeric_view as
 explain (verbose, costs off) select * from numeric_view;
 ---END---
 ---START---
-CREATE TABLE bpchar_tbl (gemini_pk serial PRIMARY KEY, f1 char(16) UNIQUE, f2 bpchar);
+CREATE TABLE bpchar_tbl (gemini_pk serial PRIMARY KEY, f1 varchar UNIQUE, f2 text);
 ---END---
 ---START---
 create view bpchar_view as

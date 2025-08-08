@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE insertconflicttest (gemini_pk serial PRIMARY KEY, key int4, fruit text);
+CREATE TABLE insertconflicttest (gemini_pk serial PRIMARY KEY, key int8, fruit text);
 ---END---
 ---START---
 --
@@ -410,7 +410,7 @@ drop index plain;
 drop table insertconflicttest;
 ---END---
 ---START---
-CREATE TABLE syscolconflicttest (gemini_pk serial PRIMARY KEY, key int4, data text);
+CREATE TABLE syscolconflicttest (gemini_pk serial PRIMARY KEY, key int8, data text);
 ---END---
 ---START---
 insert into syscolconflicttest values (1);

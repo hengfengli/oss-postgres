@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE test_having (gemini_pk serial PRIMARY KEY, a integer, b integer, c char(8), d char);
+CREATE TABLE test_having (gemini_pk serial PRIMARY KEY, a integer, b integer, c varchar, d varchar);
 ---END---
 ---START---
 INSERT INTO test_having VALUES (0, 1, 'XXXX', 'A');

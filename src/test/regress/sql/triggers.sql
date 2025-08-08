@@ -35,19 +35,19 @@ CREATE FUNCTION trigger_return_old ()
         LANGUAGE C;
 ---END---
 ---START---
-CREATE FUNCTION set_ttdummy (int4)
-        RETURNS int4
+CREATE FUNCTION set_ttdummy (int8)
+        RETURNS int8
         AS :'regresslib'
         LANGUAGE C STRICT;
 ---END---
 ---START---
-CREATE TABLE pkeys (gemini_pk serial PRIMARY KEY, pkey1 int4 NOT NULL, pkey2 text NOT NULL);
+CREATE TABLE pkeys (gemini_pk serial PRIMARY KEY, pkey1 int8 NOT NULL, pkey2 text NOT NULL);
 ---END---
 ---START---
-CREATE TABLE fkeys (gemini_pk serial PRIMARY KEY, fkey1 int4, fkey2 text, fkey3 integer);
+CREATE TABLE fkeys (gemini_pk serial PRIMARY KEY, fkey1 int8, fkey2 text, fkey3 integer);
 ---END---
 ---START---
-CREATE TABLE fkeys2 (gemini_pk serial PRIMARY KEY, fkey21 int4, fkey22 text, pkey23 integer NOT NULL);
+CREATE TABLE fkeys2 (gemini_pk serial PRIMARY KEY, fkey21 int8, fkey22 text, pkey23 integer NOT NULL);
 ---END---
 ---START---
 create index fkeys_i on fkeys (fkey1, fkey2);
@@ -353,7 +353,7 @@ drop table trigtest;
 create sequence ttdummy_seq increment 10 start 0 minvalue 0;
 ---END---
 ---START---
-CREATE TABLE tttest (gemini_pk serial PRIMARY KEY, price_id int4, price_val int4, price_on int4, price_off int4 DEFAULT 999999);
+CREATE TABLE tttest (gemini_pk serial PRIMARY KEY, price_id int8, price_val int8, price_on int8, price_off int8 DEFAULT 999999);
 ---END---
 ---START---
 create trigger ttdummy
@@ -1962,7 +1962,7 @@ drop function trigger_ddl_func();
 -- Verify behavior of before and after triggers with INSERT...ON CONFLICT
 -- DO UPDATE
 --
-create table upsert (key int4 primary key, color text);
+create table upsert (key int8 primary key, color text);
 ---END---
 ---START---
 create function upsert_before_func()

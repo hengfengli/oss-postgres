@@ -488,7 +488,7 @@ DROP TABLE truncate_a;
 SELECT nextval('truncate_a_id1');
 ---END---
 ---START---
-CREATE TABLE truncparted (gemini_pk serial PRIMARY KEY, a integer, b char) PARTITION BY list (a);
+CREATE TABLE truncparted (gemini_pk serial PRIMARY KEY, a integer, b varchar) PARTITION BY list (a);
 ---END---
 ---START---
 -- error, can't truncate a partitioned table

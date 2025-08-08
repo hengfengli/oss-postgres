@@ -34,34 +34,34 @@ DROP TABLE num_exp_power_10_ln;
 DROP TABLE num_result;
 ---END---
 ---START---
-CREATE TABLE num_data (gemini_pk serial PRIMARY KEY, id int4, val numeric(1000, 800));
+CREATE TABLE num_data (gemini_pk serial PRIMARY KEY, id int8, val numeric(1000, 800));
 ---END---
 ---START---
-CREATE TABLE num_exp_add (gemini_pk serial PRIMARY KEY, id1 int4, id2 int4, expected numeric(1000, 800));
+CREATE TABLE num_exp_add (gemini_pk serial PRIMARY KEY, id1 int8, id2 int8, expected numeric(1000, 800));
 ---END---
 ---START---
-CREATE TABLE num_exp_sub (gemini_pk serial PRIMARY KEY, id1 int4, id2 int4, expected numeric(1000, 800));
+CREATE TABLE num_exp_sub (gemini_pk serial PRIMARY KEY, id1 int8, id2 int8, expected numeric(1000, 800));
 ---END---
 ---START---
-CREATE TABLE num_exp_div (gemini_pk serial PRIMARY KEY, id1 int4, id2 int4, expected numeric(1000, 800));
+CREATE TABLE num_exp_div (gemini_pk serial PRIMARY KEY, id1 int8, id2 int8, expected numeric(1000, 800));
 ---END---
 ---START---
-CREATE TABLE num_exp_mul (gemini_pk serial PRIMARY KEY, id1 int4, id2 int4, expected numeric(1000, 800));
+CREATE TABLE num_exp_mul (gemini_pk serial PRIMARY KEY, id1 int8, id2 int8, expected numeric(1000, 800));
 ---END---
 ---START---
-CREATE TABLE num_exp_sqrt (gemini_pk serial PRIMARY KEY, id int4, expected numeric(1000, 800));
+CREATE TABLE num_exp_sqrt (gemini_pk serial PRIMARY KEY, id int8, expected numeric(1000, 800));
 ---END---
 ---START---
-CREATE TABLE num_exp_ln (gemini_pk serial PRIMARY KEY, id int4, expected numeric(1000, 800));
+CREATE TABLE num_exp_ln (gemini_pk serial PRIMARY KEY, id int8, expected numeric(1000, 800));
 ---END---
 ---START---
-CREATE TABLE num_exp_log10 (gemini_pk serial PRIMARY KEY, id int4, expected numeric(1000, 800));
+CREATE TABLE num_exp_log10 (gemini_pk serial PRIMARY KEY, id int8, expected numeric(1000, 800));
 ---END---
 ---START---
-CREATE TABLE num_exp_power_10_ln (gemini_pk serial PRIMARY KEY, id int4, expected numeric(1000, 800));
+CREATE TABLE num_exp_power_10_ln (gemini_pk serial PRIMARY KEY, id int8, expected numeric(1000, 800));
 ---END---
 ---START---
-CREATE TABLE num_result (gemini_pk serial PRIMARY KEY, id1 int4, id2 int4, result numeric(1000, 800));
+CREATE TABLE num_result (gemini_pk serial PRIMARY KEY, id1 int8, id2 int8, result numeric(1000, 800));
 ---END---
 ---START---
 -- ******************************

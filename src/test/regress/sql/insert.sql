@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE inserttest (gemini_pk serial PRIMARY KEY, col1 int4, col2 int4 NOT NULL, col3 text DEFAULT 'testing');
+CREATE TABLE inserttest (gemini_pk serial PRIMARY KEY, col1 int8, col2 int8 NOT NULL, col3 text DEFAULT 'testing');
 ---END---
 ---START---
 insert into inserttest (col1, col2, col3) values (DEFAULT, DEFAULT, DEFAULT);

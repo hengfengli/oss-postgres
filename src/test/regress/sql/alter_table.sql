@@ -16,7 +16,7 @@ RESET client_min_messages;
 CREATE USER regress_alter_table_user1;
 ---END---
 ---START---
-CREATE TABLE attmp (gemini_pk serial PRIMARY KEY, initial int4);
+CREATE TABLE attmp (gemini_pk serial PRIMARY KEY, initial int8);
 ---END---
 ---START---
 COMMENT ON TABLE attmp_wrong IS 'table comment';
@@ -116,7 +116,7 @@ SELECT * FROM attmp;
 DROP TABLE attmp;
 ---END---
 ---START---
-CREATE TABLE attmp (gemini_pk serial PRIMARY KEY, initial int4);
+CREATE TABLE attmp (gemini_pk serial PRIMARY KEY, initial int8);
 ---END---
 ---START---
 ALTER TABLE attmp ADD COLUMN a int4;
@@ -1804,7 +1804,7 @@ drop table child;
 drop table parent;
 ---END---
 ---START---
-CREATE TABLE def_test (gemini_pk serial PRIMARY KEY, c1 int4 DEFAULT 5, c2 text DEFAULT 'initial_default');
+CREATE TABLE def_test (gemini_pk serial PRIMARY KEY, c1 int8 DEFAULT 5, c2 text DEFAULT 'initial_default');
 ---END---
 ---START---
 insert into def_test default values;
@@ -1892,7 +1892,7 @@ alter table pg_class drop column relname;
 alter table nosuchtable drop column bar;
 ---END---
 ---START---
-CREATE TABLE atacc1 (gemini_pk serial PRIMARY KEY, a int4 NOT NULL, b int4, c int4 NOT NULL, d int4);
+CREATE TABLE atacc1 (gemini_pk serial PRIMARY KEY, a int8 NOT NULL, b int8, c int8 NOT NULL, d int8);
 ---END---
 ---START---
 insert into atacc1 values (1, 2, 3, 4);
@@ -2118,7 +2118,7 @@ alter table atacc1 add check (a > 3);
 alter table atacc1 add check ("........pg.dropped.1........" > 3);
 ---END---
 ---START---
-CREATE TABLE atacc2 (gemini_pk serial PRIMARY KEY, id int4 UNIQUE);
+CREATE TABLE atacc2 (gemini_pk serial PRIMARY KEY, id int8 UNIQUE);
 ---END---
 ---START---
 alter table atacc1 add foreign key (a) references atacc2(id);
@@ -2241,7 +2241,7 @@ drop table parent;
 CREATE TABLE parent (gemini_pk serial PRIMARY KEY, a float8, b numeric(10, 4), c text COLLATE "C");
 ---END---
 ---START---
-CREATE TABLE child (gemini_pk serial PRIMARY KEY, a float4) INHERITS (parent);
+CREATE TABLE child (gemini_pk serial PRIMARY KEY, a float8) INHERITS (parent);
 ---END---
 ---START---
 CREATE TABLE child (gemini_pk serial PRIMARY KEY, b numeric(10, 7)) INHERITS (parent);
@@ -2259,8 +2259,8 @@ drop table child;
 drop table parent;
 ---END---
 ---START---
-copy in/out
-create table attest (a int4, b int4, c int4);
+-- test copy in/out
+create table attest (gemini_pk serial PRIMARY KEY, a int8, b int8, c int8);
 insert into attest values (1,2,3);
 alter table attest drop a;
 copy attest to stdout;
@@ -3076,7 +3076,7 @@ select relname, conname, coninhcount, conislocal, connoinherit
 CREATE TABLE test_type_diff (gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
-CREATE TABLE test_type_diff_c (gemini_pk serial PRIMARY KEY, extra smallint) INHERITS (test_type_diff);
+CREATE TABLE test_type_diff_c (gemini_pk serial PRIMARY KEY, extra bigint) INHERITS (test_type_diff);
 ---END---
 ---START---
 ALTER TABLE test_type_diff ADD COLUMN f2 int;
@@ -3088,16 +3088,16 @@ INSERT INTO test_type_diff_c VALUES (1, 2, 3);
 ALTER TABLE test_type_diff ALTER COLUMN f2 TYPE bigint USING f2::bigint;
 ---END---
 ---START---
-CREATE TABLE test_type_diff2 (gemini_pk serial PRIMARY KEY, int_two int2, int_four int4, int_eight int8);
+CREATE TABLE test_type_diff2 (gemini_pk serial PRIMARY KEY, int_two int8, int_four int8, int_eight int8);
 ---END---
 ---START---
-CREATE TABLE test_type_diff2_c1 (gemini_pk serial PRIMARY KEY, int_four int4, int_eight int8, int_two int2);
+CREATE TABLE test_type_diff2_c1 (gemini_pk serial PRIMARY KEY, int_four int8, int_eight int8, int_two int8);
 ---END---
 ---START---
-CREATE TABLE test_type_diff2_c2 (gemini_pk serial PRIMARY KEY, int_eight int8, int_two int2, int_four int4);
+CREATE TABLE test_type_diff2_c2 (gemini_pk serial PRIMARY KEY, int_eight int8, int_two int8, int_four int8);
 ---END---
 ---START---
-CREATE TABLE test_type_diff2_c3 (gemini_pk serial PRIMARY KEY, int_two int2, int_four int4, int_eight int8);
+CREATE TABLE test_type_diff2_c3 (gemini_pk serial PRIMARY KEY, int_two int8, int_four int8, int_eight int8);
 ---END---
 ---START---
 ALTER TABLE test_type_diff2_c1 INHERIT test_type_diff2;
@@ -4633,7 +4633,7 @@ ALTER TABLE unparted ATTACH PARTITION fail_part FOR VALUES IN ('a');
 DROP TABLE unparted, fail_part;
 ---END---
 ---START---
-CREATE TABLE list_parted (gemini_pk serial PRIMARY KEY, a integer NOT NULL, b char(2) COLLATE "C", CONSTRAINT check_a CHECK (a > 0)) PARTITION BY list (a);
+CREATE TABLE list_parted (gemini_pk serial PRIMARY KEY, a integer NOT NULL, b varchar COLLATE "C", CONSTRAINT check_a CHECK (a > 0)) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE fail_part (gemini_pk serial PRIMARY KEY, LIKE list_parted);
@@ -4744,7 +4744,7 @@ ALTER TABLE list_parted ATTACH PARTITION fail_part FOR VALUES IN (1);
 DROP TABLE fail_part;
 ---END---
 ---START---
-CREATE TABLE fail_part (gemini_pk serial PRIMARY KEY, b char(3), a integer NOT NULL);
+CREATE TABLE fail_part (gemini_pk serial PRIMARY KEY, b varchar, a integer NOT NULL);
 ---END---
 ---START---
 ALTER TABLE list_parted ATTACH PARTITION fail_part FOR VALUES IN (1);
@@ -4759,7 +4759,7 @@ ALTER TABLE list_parted ATTACH PARTITION fail_part FOR VALUES IN (1);
 DROP TABLE fail_part;
 ---END---
 ---START---
-CREATE TABLE fail_part (gemini_pk serial PRIMARY KEY, b char(2) COLLATE "C", a integer NOT NULL);
+CREATE TABLE fail_part (gemini_pk serial PRIMARY KEY, b varchar COLLATE "C", a integer NOT NULL);
 ---END---
 ---START---
 ALTER TABLE list_parted ATTACH PARTITION fail_part FOR VALUES IN (1);
@@ -4775,7 +4775,7 @@ ALTER TABLE list_parted ATTACH PARTITION fail_part FOR VALUES IN (1);
 DROP TABLE fail_part;
 ---END---
 ---START---
-CREATE TABLE part_1 (gemini_pk serial PRIMARY KEY, a integer NOT NULL, b char(2) COLLATE "C", CONSTRAINT check_a CHECK (a > 0));
+CREATE TABLE part_1 (gemini_pk serial PRIMARY KEY, a integer NOT NULL, b varchar COLLATE "C", CONSTRAINT check_a CHECK (a > 0));
 ---END---
 ---START---
 ALTER TABLE list_parted ATTACH PARTITION part_1 FOR VALUES IN (1);

@@ -943,12 +943,12 @@ DROP TABLE list_parted;
 ---START---
 -- create custom operator class and hash function, for the same reason
 -- explained in alter_table.sql
-create or replace function dummy_hashint4(a int4, seed int8) returns int8 as
+create or replace function dummy_hashint4(a int8, seed int8) returns int8 as
 $$ begin return (a + seed); end; $$ language 'plpgsql' immutable;
 ---END---
 ---START---
 create operator class custom_opclass for type int4 using hash as
-operator 1 = , function 2 dummy_hashint4(int4, int8);
+operator 1 = , function 2 dummy_hashint4(int8, int8);
 ---END---
 ---START---
 CREATE TABLE hash_parted (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY hash (a custom_opclass, b custom_opclass);
@@ -994,5 +994,5 @@ drop table hash_parted;
 drop operator class custom_opclass using hash;
 ---END---
 ---START---
-drop function dummy_hashint4(a int4, seed int8);
+drop function dummy_hashint4(a int8, seed int8);
 ---END---

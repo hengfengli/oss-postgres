@@ -1348,7 +1348,7 @@ begin;
 DROP TABLE IF EXISTS a;
 
 create table a (
-     code char not null,
+     code varchar not null,
      constraint a_pk primary key (code)
 );
 ---END---
@@ -1356,7 +1356,7 @@ create table a (
 DROP TABLE IF EXISTS b;
 
 create table b (
-     a char not null,
+     a varchar not null,
      num integer not null,
      constraint b_pk primary key (a, num)
 );
@@ -1365,8 +1365,8 @@ create table b (
 DROP TABLE IF EXISTS c;
 
 create table c (
-     name char not null,
-     a char,
+     name varchar not null,
+     a varchar,
      constraint c_pk primary key (name)
 );
 ---END---

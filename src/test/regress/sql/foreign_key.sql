@@ -1201,14 +1201,14 @@ drop table pktable_base;
 
 -- deferrable, explicitly deferred
 CREATE TABLE pktable (
-	id		INT4 PRIMARY KEY,
-	other	INT4
+	id		int8 PRIMARY KEY,
+	other	int8
 );
 ---END---
 ---START---
 CREATE TABLE fktable (
-	id		INT4 PRIMARY KEY,
-	fk		INT4 REFERENCES pktable DEFERRABLE
+	id		int8 PRIMARY KEY,
+	fk		int8 REFERENCES pktable DEFERRABLE
 );
 ---END---
 ---START---
@@ -1239,14 +1239,14 @@ DROP TABLE fktable, pktable;
 ---START---
 -- deferrable, initially deferred
 CREATE TABLE pktable (
-	id		INT4 PRIMARY KEY,
-	other	INT4
+	id		int8 PRIMARY KEY,
+	other	int8
 );
 ---END---
 ---START---
 CREATE TABLE fktable (
-	id		INT4 PRIMARY KEY,
-	fk		INT4 REFERENCES pktable DEFERRABLE INITIALLY DEFERRED
+	id		int8 PRIMARY KEY,
+	fk		int8 REFERENCES pktable DEFERRABLE INITIALLY DEFERRED
 );
 ---END---
 ---START---
@@ -1287,14 +1287,14 @@ DROP TABLE fktable, pktable;
 -- not when the current transaction commits (i.e. the mode change applies
 -- retroactively)
 CREATE TABLE pktable (
-	id		INT4 PRIMARY KEY,
-	other	INT4
+	id		int8 PRIMARY KEY,
+	other	int8
 );
 ---END---
 ---START---
 CREATE TABLE fktable (
-	id		INT4 PRIMARY KEY,
-	fk		INT4 REFERENCES pktable DEFERRABLE
+	id		int8 PRIMARY KEY,
+	fk		int8 REFERENCES pktable DEFERRABLE
 );
 ---END---
 ---START---
@@ -1325,14 +1325,14 @@ DROP TABLE fktable, pktable;
 ---START---
 -- deferrable, initially deferred
 CREATE TABLE pktable (
-	id		INT4 PRIMARY KEY,
-	other	INT4
+	id		int8 PRIMARY KEY,
+	other	int8
 );
 ---END---
 ---START---
 CREATE TABLE fktable (
-	id		INT4 PRIMARY KEY,
-	fk		INT4 REFERENCES pktable DEFERRABLE INITIALLY DEFERRED
+	id		int8 PRIMARY KEY,
+	fk		int8 REFERENCES pktable DEFERRABLE INITIALLY DEFERRED
 );
 ---END---
 ---START---
@@ -1356,7 +1356,7 @@ DROP TABLE pktable, fktable;
 DROP TABLE IF EXISTS pktable;
 
 CREATE TABLE pktable (
-        id1     INT4 PRIMARY KEY,
+        id1     int8 PRIMARY KEY,
         id2     VARCHAR(4) UNIQUE,
         id3     REAL UNIQUE,
         UNIQUE(id1, id2, id3)
@@ -1365,7 +1365,7 @@ CREATE TABLE pktable (
 ---START---
 DROP TABLE IF EXISTS fktable;
 
-CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, x1 int4 REFERENCES pktable (id1), x2 varchar(4) REFERENCES pktable (id2), x3 real REFERENCES pktable (id3), x4 text, x5 int2);
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, x1 int8 REFERENCES pktable (id1), x2 varchar(4) REFERENCES pktable (id2), x3 real REFERENCES pktable (id3), x4 text, x5 int8);
 ---END---
 ---START---
 -- check individual constraints with alter table.

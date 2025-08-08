@@ -759,10 +759,10 @@ CREATE ACCESS METHOD heap_psql TYPE TABLE HANDLER heap_tableam_handler;
 SET ROLE TO regress_display_role;
 ---END---
 ---START---
-CREATE TABLE tbl_heap_psql (gemini_pk serial PRIMARY KEY, f1 integer, f2 char(100)) USING heap_psql;
+CREATE TABLE tbl_heap_psql (gemini_pk serial PRIMARY KEY, f1 integer, f2 varchar) USING heap_psql;
 ---END---
 ---START---
-CREATE TABLE tbl_heap (gemini_pk serial PRIMARY KEY, f1 integer, f2 char(100)) USING heap;
+CREATE TABLE tbl_heap (gemini_pk serial PRIMARY KEY, f1 integer, f2 varchar) USING heap;
 ---END---
 ---START---
 CREATE VIEW view_heap_psql AS SELECT f1 from tbl_heap_psql;

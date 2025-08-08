@@ -198,7 +198,7 @@ select * from parted_copytest where b = 2;
 drop table parted_copytest;
 ---END---
 ---START---
-CREATE TABLE tab_progress_reporting (gemini_pk serial PRIMARY KEY, name text, age int4, location point, salary int4, manager name);
+CREATE TABLE tab_progress_reporting (gemini_pk serial PRIMARY KEY, name text, age int8, location point, salary int8, manager varchar);
 ---END---
 ---START---
 -- Add a trigger to catch and print the contents of the catalog view

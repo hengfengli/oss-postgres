@@ -965,7 +965,7 @@ CREATE OPERATOR CLASS test_int4_ops FOR TYPE int4 USING btree AS
   OPERATOR 5 > (int4,int4), FUNCTION 1 my_int4_sort(int4,int4);
 ---END---
 ---START---
-CREATE TABLE partkey_t (gemini_pk serial PRIMARY KEY, a int4) PARTITION BY range (a test_int4_ops);
+CREATE TABLE partkey_t (gemini_pk serial PRIMARY KEY, a int8) PARTITION BY range (a test_int4_ops);
 ---END---
 ---START---
 CREATE TABLE partkey_t_1 PARTITION OF partkey_t FOR VALUES FROM (0) TO (1000);

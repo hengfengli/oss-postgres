@@ -9,7 +9,7 @@
 SELECT char 'c' = char 'c' AS true;
 ---END---
 ---START---
-CREATE TABLE char_tbl_temp (gemini_pk serial PRIMARY KEY, f1 char);
+CREATE TABLE char_tbl_temp (gemini_pk serial PRIMARY KEY, f1 varchar);
 ---END---
 ---START---
 INSERT INTO CHAR_TBL_TEMP (f1) VALUES ('a');

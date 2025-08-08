@@ -26,7 +26,7 @@ CREATE FUNCTION interpt_pp(path, path)
     LANGUAGE C STRICT;
 ---END---
 ---START---
-CREATE TABLE real_city (gemini_pk serial PRIMARY KEY, pop int4, cname text, outline path);
+CREATE TABLE real_city (gemini_pk serial PRIMARY KEY, pop int8, cname text, outline path);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/real_city.data';
@@ -619,7 +619,7 @@ select pg_get_viewdef('view_of_joins_2d', true);
 CREATE TABLE tt2 (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer);
 ---END---
 ---START---
-CREATE TABLE tt3 (gemini_pk serial PRIMARY KEY, ax int8, b int2, c numeric);
+CREATE TABLE tt3 (gemini_pk serial PRIMARY KEY, ax int8, b int8, c numeric);
 ---END---
 ---START---
 CREATE TABLE tt4 (gemini_pk serial PRIMARY KEY, ay integer, b integer, q integer);
@@ -1126,7 +1126,7 @@ select * from
   collation for ('x'::text) col,
   current_date as d,
   localtimestamp(3) as t,
-  cast(1+2 as int4) as i4,
+  cast(1+2 as int8) as i4,
   cast(1+2 as int8) as i8;
 ---END---
 ---START---

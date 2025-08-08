@@ -405,7 +405,7 @@ RESET enable_indexscan;
 RESET enable_bitmapscan;
 ---END---
 ---START---
-CREATE TABLE array_index_op_test (gemini_pk serial PRIMARY KEY, seqno int4, i int4[], t text[]);
+CREATE TABLE array_index_op_test (gemini_pk serial PRIMARY KEY, seqno int8, i int8[], t text[]);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/array.data'

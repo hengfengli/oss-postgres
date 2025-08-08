@@ -387,7 +387,7 @@ CREATE TABLE parts (gemini_pk serial PRIMARY KEY, partnum text, cost float8);
 ---START---
 DROP TABLE IF EXISTS shipped;
 
-CREATE TABLE shipped (gemini_pk serial PRIMARY KEY, ttype char(2), ordnum int4, partnum text, value float8);
+CREATE TABLE shipped (gemini_pk serial PRIMARY KEY, ttype varchar, ordnum int8, partnum text, value float8);
 ---END---
 ---START---
 create temp view shipped_view as
@@ -621,7 +621,7 @@ from
 --
 DROP TABLE IF EXISTS upsert;
 
-create table upsert(key int4 primary key, val text);
+create table upsert(key int8 primary key, val text);
 ---END---
 ---START---
 insert into upsert values(1, 'val') on conflict (key) do update set val = 'not seen';
@@ -645,7 +645,7 @@ returning *;
 
 DROP TABLE IF EXISTS outer_7597;
 
-CREATE TABLE outer_7597 (gemini_pk serial PRIMARY KEY, f1 int4, f2 int4);
+CREATE TABLE outer_7597 (gemini_pk serial PRIMARY KEY, f1 int8, f2 int8);
 ---END---
 ---START---
 insert into outer_7597 values (0, 0);

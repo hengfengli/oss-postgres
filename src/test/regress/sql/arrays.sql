@@ -7,17 +7,17 @@
 \getenv abs_srcdir PG_ABS_SRCDIR
 
 CREATE TABLE arrtest (
-	a 			int2[],
-	b 			int4[][][],
-	c 			name[],
+	a 			int8[],
+	b 			int8[][][],
+	c 			text[],
 	d			text[][],
 	e 			float8[],
-	f			char(5)[],
+	f			varchar(5)[],
 	g			varchar(5)[]
 );
 ---END---
 ---START---
-CREATE TABLE array_op_test (gemini_pk serial PRIMARY KEY, seqno int4, i int4[], t text[]);
+CREATE TABLE array_op_test (gemini_pk serial PRIMARY KEY, seqno int8, i int8[], t text[]);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/array.data'
@@ -217,7 +217,7 @@ SELECT (now())[1];
 -- test slices with empty lower and/or upper index
 DROP TABLE IF EXISTS arrtest_s;
 
-CREATE TABLE arrtest_s (gemini_pk serial PRIMARY KEY, a int2[], b int2[][]);
+CREATE TABLE arrtest_s (gemini_pk serial PRIMARY KEY, a int8[], b int8[][]);
 ---END---
 ---START---
 INSERT INTO arrtest_s VALUES ('{1,2,3,4,5}', '{{1,2,3}, {4,5,6}, {7,8,9}}');

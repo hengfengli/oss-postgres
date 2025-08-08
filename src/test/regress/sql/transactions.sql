@@ -29,7 +29,7 @@ SELECT a FROM xacttest WHERE a > 100;
 BEGIN;
 ---END---
 ---START---
-CREATE TABLE disappear (gemini_pk serial PRIMARY KEY, a int4);
+CREATE TABLE disappear (gemini_pk serial PRIMARY KEY, a int8);
 ---END---
 ---START---
 DELETE FROM xacttest;

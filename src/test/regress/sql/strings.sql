@@ -1138,7 +1138,7 @@ SELECT substr(f1, 99995, 10) from toasttest;
 DROP TABLE toasttest;
 ---END---
 ---START---
-CREATE TABLE toasttest (gemini_pk serial PRIMARY KEY, c char(4096));
+CREATE TABLE toasttest (gemini_pk serial PRIMARY KEY, c varchar);
 ---END---
 ---START---
 INSERT INTO toasttest VALUES('x');
