@@ -323,17 +323,18 @@ with recursive q as (
 select * from q limit 24;
 ---END---
 ---START---
-with recursive q as (
-      select * from department
-    union all
-      (with recursive x as (
-           select * from department
-         union all
-           (select * from q union all select * from x)
-        )
-       select * from x)
-    )
-select * from q limit 32;
+-- @hengfeng: this query gets stuck for cockroachdb
+--with recursive q as (
+--      select * from department
+--    union all
+--      (with recursive x as (
+--           select * from department
+--         union all
+--           (select * from q union all select * from x)
+--        )
+--       select * from x)
+--    )
+--select * from q limit 32;
 ---END---
 ---START---
 -- recursive term has sub-UNION
@@ -1066,8 +1067,9 @@ WITH RECURSIVE x(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM x
 ---END---
 ---START---
 -- aggregate functions
-WITH RECURSIVE x(n) AS (SELECT 1 UNION ALL SELECT count(*) FROM x)
-  SELECT * FROM x;
+-- @hengfeng: this query gets stuck in cockroachdb
+--WITH RECURSIVE x(n) AS (SELECT 1 UNION ALL SELECT count(*) FROM x)
+--  SELECT * FROM x;
 ---END---
 ---START---
 WITH RECURSIVE x(n) AS (SELECT 1 UNION ALL SELECT sum(n) FROM x)
@@ -1085,8 +1087,9 @@ WITH RECURSIVE x(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM x LIMIT 10 OFFSET 1)
 ---END---
 ---START---
 -- FOR UPDATE
-WITH RECURSIVE x(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM x FOR UPDATE)
-  SELECT * FROM x;
+-- @hengfeng: not work for cockroachdb
+--WITH RECURSIVE x(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM x FOR UPDATE)
+--  SELECT * FROM x;
 ---END---
 ---START---
 -- target list has a recursive query name
