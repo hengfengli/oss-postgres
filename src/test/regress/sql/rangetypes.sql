@@ -133,7 +133,7 @@ select pg_input_is_valid('[2000-01-01,5874897-12-31]', 'daterange');
 select * from pg_input_error_info('[2000-01-01,5874897-12-31]', 'daterange');
 ---END---
 ---START---
-CREATE TABLE numrange_test (_gemini_pk serial PRIMARY KEY, nr numrange);
+CREATE TABLE numrange_test (gemini_pk serial PRIMARY KEY, nr numrange);
 ---END---
 ---START---
 create index numrange_test_btree on numrange_test(nr);
@@ -323,7 +323,7 @@ select range_intersect_agg(nr) from numrange_test where nr @> 4.0;
 analyze numrange_test;
 ---END---
 ---START---
-CREATE TABLE numrange_test2 (_gemini_pk serial PRIMARY KEY, nr numrange);
+CREATE TABLE numrange_test2 (gemini_pk serial PRIMARY KEY, nr numrange);
 ---END---
 ---START---
 create index numrange_test2_hash_idx on numrange_test2 using hash (nr);
@@ -402,7 +402,7 @@ set enable_mergejoin to default;
 DROP TABLE numrange_test2;
 ---END---
 ---START---
-CREATE TABLE textrange_test (_gemini_pk serial PRIMARY KEY, tr textrange);
+CREATE TABLE textrange_test (gemini_pk serial PRIMARY KEY, tr textrange);
 ---END---
 ---START---
 create index textrange_test_btree on textrange_test(tr);
@@ -503,7 +503,7 @@ select daterange('2000-01-01'::date, 'infinity'::date, '[)');
 select daterange('2000-01-01'::date, 'infinity'::date, '[]');
 ---END---
 ---START---
-CREATE TABLE test_range_gist (_gemini_pk serial PRIMARY KEY, ir int4range);
+CREATE TABLE test_range_gist (gemini_pk serial PRIMARY KEY, ir int4range);
 ---END---
 ---START---
 create index test_range_gist_idx on test_range_gist using gist (ir);
@@ -744,7 +744,7 @@ select count(*) from test_range_gist where ir &> int4multirange(int4range(100,20
 select count(*) from test_range_gist where ir -|- int4multirange(int4range(100,200), int4range(400,500));
 ---END---
 ---START---
-CREATE TABLE test_range_spgist (_gemini_pk serial PRIMARY KEY, ir int4range);
+CREATE TABLE test_range_spgist (gemini_pk serial PRIMARY KEY, ir int4range);
 ---END---
 ---START---
 create index test_range_spgist_idx on test_range_spgist using spgist (ir);
@@ -914,7 +914,7 @@ RESET enable_indexscan;
 RESET enable_bitmapscan;
 ---END---
 ---START---
-CREATE TABLE test_range_elem (_gemini_pk serial PRIMARY KEY, i int4);
+CREATE TABLE test_range_elem (gemini_pk serial PRIMARY KEY, i int4);
 ---END---
 ---START---
 create index test_range_elem_idx on test_range_elem (i);
@@ -946,7 +946,7 @@ RESET enable_seqscan;
 drop table test_range_elem;
 ---END---
 ---START---
-CREATE TABLE test_range_excl (_gemini_pk serial PRIMARY KEY, room int4range, speaker int4range, during tsrange, EXCLUDE USING gist (room WITH OPERATOR(=), during WITH OPERATOR(&&)), EXCLUDE USING gist (speaker WITH OPERATOR(=), during WITH OPERATOR(&&)));
+CREATE TABLE test_range_excl (gemini_pk serial PRIMARY KEY, room int4range, speaker int4range, during tsrange, EXCLUDE USING gist (room WITH OPERATOR(=), during WITH OPERATOR(&&)), EXCLUDE USING gist (speaker WITH OPERATOR(=), during WITH OPERATOR(&&)));
 ---END---
 ---START---
 insert into test_range_excl
@@ -999,7 +999,7 @@ create type bogus_float8range as range (subtype=float8, subtype_diff=float4mi);
 select '[123.001, 5.e9)'::float8range @> 888.882::float8;
 ---END---
 ---START---
-CREATE TABLE float8range_test (_gemini_pk serial PRIMARY KEY, f8r float8range, i integer);
+CREATE TABLE float8range_test (gemini_pk serial PRIMARY KEY, f8r float8range, i integer);
 ---END---
 ---START---
 insert into float8range_test values(float8range(-100.00007, '1.111113e9'), 42);
@@ -1150,7 +1150,7 @@ create function bogus_func(anycompatible)
 select ARRAY[numrange(1.1, 1.2), numrange(12.3, 155.5)];
 ---END---
 ---START---
-CREATE TABLE i8r_array (_gemini_pk serial PRIMARY KEY, f1 integer, f2 int8range[]);
+CREATE TABLE i8r_array (gemini_pk serial PRIMARY KEY, f1 integer, f2 int8range[]);
 ---END---
 ---START---
 insert into i8r_array values (42, array[int8range(1,10), int8range(2,20)]);

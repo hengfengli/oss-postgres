@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE box_tbl (_gemini_pk serial PRIMARY KEY, f1 box);
+CREATE TABLE box_tbl (gemini_pk serial PRIMARY KEY, f1 box);
 ---END---
 ---START---
 INSERT INTO BOX_TBL (f1) VALUES ('(2.0,2.0,0.0,0.0)');
@@ -140,7 +140,7 @@ SELECT height(f1), width(f1) FROM BOX_TBL;
 
 DROP TABLE IF EXISTS box_temp;
 
-CREATE TABLE box_temp (_gemini_pk serial PRIMARY KEY, f1 box);
+CREATE TABLE box_temp (gemini_pk serial PRIMARY KEY, f1 box);
 ---END---
 ---START---
 INSERT INTO box_temp
@@ -241,7 +241,7 @@ RESET enable_seqscan;
 DROP INDEX box_spgist;
 ---END---
 ---START---
-CREATE TABLE quad_box_tbl (_gemini_pk serial PRIMARY KEY, id integer, b box);
+CREATE TABLE quad_box_tbl (gemini_pk serial PRIMARY KEY, id integer, b box);
 ---END---
 ---START---
 INSERT INTO quad_box_tbl

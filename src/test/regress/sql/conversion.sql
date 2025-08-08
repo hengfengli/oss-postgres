@@ -253,7 +253,7 @@ where p.error is distinct from b.error
 order by description;
 ---END---
 ---START---
-CREATE TABLE utf8_inputs (_gemini_pk serial PRIMARY KEY, inbytes bytea, description text);
+CREATE TABLE utf8_inputs (gemini_pk serial PRIMARY KEY, inbytes bytea, description text);
 ---END---
 ---START---
 insert into utf8_inputs  values
@@ -295,7 +295,7 @@ select description, inbytes, (test_conv(inbytes, 'utf8', 'koi8r')).* from utf8_i
 select description, inbytes, (test_conv(inbytes, 'utf8', 'gb18030')).* from utf8_inputs;
 ---END---
 ---START---
-CREATE TABLE euc_jis_2004_inputs (_gemini_pk serial PRIMARY KEY, inbytes bytea, description text);
+CREATE TABLE euc_jis_2004_inputs (gemini_pk serial PRIMARY KEY, inbytes bytea, description text);
 ---END---
 ---START---
 insert into euc_jis_2004_inputs  values
@@ -317,7 +317,7 @@ select description, inbytes, (test_conv(inbytes, 'euc_jis_2004', 'euc_jis_2004')
 select description, inbytes, (test_conv(inbytes, 'euc_jis_2004', 'utf8')).* from euc_jis_2004_inputs;
 ---END---
 ---START---
-CREATE TABLE shiftjis2004_inputs (_gemini_pk serial PRIMARY KEY, inbytes bytea, description text);
+CREATE TABLE shiftjis2004_inputs (gemini_pk serial PRIMARY KEY, inbytes bytea, description text);
 ---END---
 ---START---
 insert into shiftjis2004_inputs  values
@@ -343,7 +343,7 @@ select description, inbytes, (test_conv(inbytes, 'shiftjis2004', 'utf8')).* from
 select description, inbytes, (test_conv(inbytes, 'shiftjis2004', 'euc_jis_2004')).* from shiftjis2004_inputs;
 ---END---
 ---START---
-CREATE TABLE gb18030_inputs (_gemini_pk serial PRIMARY KEY, inbytes bytea, description text);
+CREATE TABLE gb18030_inputs (gemini_pk serial PRIMARY KEY, inbytes bytea, description text);
 ---END---
 ---START---
 insert into gb18030_inputs  values
@@ -365,7 +365,7 @@ select description, inbytes, (test_conv(inbytes, 'gb18030', 'gb18030')).* from g
 select description, inbytes, (test_conv(inbytes, 'gb18030', 'utf8')).* from gb18030_inputs;
 ---END---
 ---START---
-CREATE TABLE iso8859_5_inputs (_gemini_pk serial PRIMARY KEY, inbytes bytea, description text);
+CREATE TABLE iso8859_5_inputs (gemini_pk serial PRIMARY KEY, inbytes bytea, description text);
 ---END---
 ---START---
 insert into iso8859_5_inputs  values
@@ -390,7 +390,7 @@ select description, inbytes, (test_conv(inbytes, 'iso8859-5', 'koi8r')).* from i
 select description, inbytes, (test_conv(inbytes, 'iso8859_5', 'mule_internal')).* from iso8859_5_inputs;
 ---END---
 ---START---
-CREATE TABLE big5_inputs (_gemini_pk serial PRIMARY KEY, inbytes bytea, description text);
+CREATE TABLE big5_inputs (gemini_pk serial PRIMARY KEY, inbytes bytea, description text);
 ---END---
 ---START---
 insert into big5_inputs  values
@@ -412,7 +412,7 @@ select description, inbytes, (test_conv(inbytes, 'big5', 'utf8')).* from big5_in
 select description, inbytes, (test_conv(inbytes, 'big5', 'mule_internal')).* from big5_inputs;
 ---END---
 ---START---
-CREATE TABLE mic_inputs (_gemini_pk serial PRIMARY KEY, inbytes bytea, description text);
+CREATE TABLE mic_inputs (gemini_pk serial PRIMARY KEY, inbytes bytea, description text);
 ---END---
 ---START---
 insert into mic_inputs  values

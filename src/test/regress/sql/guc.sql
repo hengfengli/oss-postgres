@@ -450,7 +450,7 @@ SHOW plpgsql.extra_foo_warnings;
 --
 DROP TABLE IF EXISTS reset_test;
 
-CREATE TABLE reset_test (_gemini_pk serial PRIMARY KEY, data text) ON COMMIT DELETE ROWS;
+CREATE TABLE reset_test (gemini_pk serial PRIMARY KEY, data text) ON COMMIT DELETE ROWS;
 ---END---
 ---START---
 SELECT relname FROM pg_class WHERE relname = 'reset_test';
@@ -481,7 +481,7 @@ SET vacuum_cost_delay = 13;
 ---START---
 DROP TABLE IF EXISTS tmp_foo;
 
-CREATE TABLE tmp_foo (_gemini_pk serial PRIMARY KEY, data text) ON COMMIT DELETE ROWS;
+CREATE TABLE tmp_foo (gemini_pk serial PRIMARY KEY, data text) ON COMMIT DELETE ROWS;
 ---END---
 ---START---
 CREATE ROLE regress_guc_user;

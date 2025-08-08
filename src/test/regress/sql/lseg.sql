@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE lseg_tbl (_gemini_pk serial PRIMARY KEY, s lseg);
+CREATE TABLE lseg_tbl (gemini_pk serial PRIMARY KEY, s lseg);
 ---END---
 ---START---
 INSERT INTO LSEG_TBL VALUES ('[(1,2),(3,4)]');

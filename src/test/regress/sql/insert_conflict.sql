@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE insertconflicttest (_gemini_pk serial PRIMARY KEY, key int4, fruit text);
+CREATE TABLE insertconflicttest (gemini_pk serial PRIMARY KEY, key int4, fruit text);
 ---END---
 ---START---
 --
@@ -410,7 +410,7 @@ drop index plain;
 drop table insertconflicttest;
 ---END---
 ---START---
-CREATE TABLE syscolconflicttest (_gemini_pk serial PRIMARY KEY, key int4, data text);
+CREATE TABLE syscolconflicttest (gemini_pk serial PRIMARY KEY, key int4, data text);
 ---END---
 ---START---
 insert into syscolconflicttest values (1);
@@ -422,7 +422,7 @@ insert into syscolconflicttest values (1) on conflict (key) do update set data =
 drop table syscolconflicttest;
 ---END---
 ---START---
-CREATE TABLE insertconflict (_gemini_pk serial PRIMARY KEY, a bigint, b bigint);
+CREATE TABLE insertconflict (gemini_pk serial PRIMARY KEY, a bigint, b bigint);
 ---END---
 ---START---
 create unique index insertconflicti1 on insertconflict(coalesce(a, 0));
@@ -478,10 +478,10 @@ drop view insertconflictv;
 drop table insertconflict;
 ---END---
 ---START---
-CREATE TABLE cities (_gemini_pk serial PRIMARY KEY, name text, population float8, altitude integer);
+CREATE TABLE cities (gemini_pk serial PRIMARY KEY, name text, population float8, altitude integer);
 ---END---
 ---START---
-CREATE TABLE capitals (_gemini_pk serial PRIMARY KEY, state char(2)) INHERITS (cities);
+CREATE TABLE capitals (gemini_pk serial PRIMARY KEY, state char(2)) INHERITS (cities);
 ---END---
 ---START---
 -- Create unique indexes.  Due to a general limitation of inheritance,
@@ -627,7 +627,7 @@ insert into dropcol(key, keep1, keep2) values(1, '5', 5) on conflict(key)
 DROP TABLE dropcol;
 ---END---
 ---START---
-CREATE TABLE twoconstraints (_gemini_pk serial PRIMARY KEY, f1 integer UNIQUE, f2 box, EXCLUDE USING gist (f2 WITH OPERATOR(&&)));
+CREATE TABLE twoconstraints (gemini_pk serial PRIMARY KEY, f1 integer UNIQUE, f2 box, EXCLUDE USING gist (f2 WITH OPERATOR(&&)));
 ---END---
 ---START---
 insert into twoconstraints values(1, '((0,0),(1,1))');
@@ -722,7 +722,7 @@ select * from selfconflict;
 drop table selfconflict;
 ---END---
 ---START---
-CREATE TABLE parted_conflict_test (_gemini_pk serial PRIMARY KEY, a integer UNIQUE, b char) PARTITION BY list (a);
+CREATE TABLE parted_conflict_test (gemini_pk serial PRIMARY KEY, a integer UNIQUE, b char) PARTITION BY list (a);
 ---END---
 ---START---
 create table parted_conflict_test_1 partition of parted_conflict_test (b unique) for values in (1, 2);
@@ -758,7 +758,7 @@ insert into parted_conflict_test_1 values (2, 'b') on conflict (b) do update set
 select * from parted_conflict_test order by a;
 ---END---
 ---START---
-CREATE TABLE parted_conflict_test_2 (_gemini_pk serial PRIMARY KEY, b char, a integer UNIQUE);
+CREATE TABLE parted_conflict_test_2 (gemini_pk serial PRIMARY KEY, b char, a integer UNIQUE);
 ---END---
 ---START---
 alter table parted_conflict_test attach partition parted_conflict_test_2 for values in (3);
@@ -855,7 +855,7 @@ insert into parted_conflict_1 values (40, 'cuarenta')
 drop table parted_conflict;
 ---END---
 ---START---
-CREATE TABLE parted_conflict (_gemini_pk serial PRIMARY KEY, a integer, b text) PARTITION BY range (a);
+CREATE TABLE parted_conflict (gemini_pk serial PRIMARY KEY, a integer, b text) PARTITION BY range (a);
 ---END---
 ---START---
 create table parted_conflict_1 partition of parted_conflict for values from (0) to (1000) partition by range (a);
@@ -883,10 +883,10 @@ insert into parted_conflict_1 values (40, 'cuarenta')
 drop table parted_conflict;
 ---END---
 ---START---
-CREATE TABLE parted_conflict (_gemini_pk serial PRIMARY KEY, a integer, b text, c integer) PARTITION BY range (a);
+CREATE TABLE parted_conflict (gemini_pk serial PRIMARY KEY, a integer, b text, c integer) PARTITION BY range (a);
 ---END---
 ---START---
-CREATE TABLE parted_conflict_1 (_gemini_pk serial PRIMARY KEY, drp text, c integer, a integer, b text);
+CREATE TABLE parted_conflict_1 (gemini_pk serial PRIMARY KEY, drp text, c integer, a integer, b text);
 ---END---
 ---START---
 alter table parted_conflict_1 drop column drp;

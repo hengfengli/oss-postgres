@@ -402,7 +402,7 @@ FROM (SELECT '{"a":1,"b": [2,3,4,"d","e","f"],"c":{"p":1,"q":2}}'::json AS "json
 
 DROP TABLE IF EXISTS test_json;
 
-CREATE TABLE test_json (_gemini_pk serial PRIMARY KEY, json_type text, test_json pg_catalog.json);
+CREATE TABLE test_json (gemini_pk serial PRIMARY KEY, json_type text, test_json pg_catalog.json);
 ---END---
 ---START---
 INSERT INTO test_json VALUES
@@ -1221,7 +1221,7 @@ select * from json_populate_recordset(row(1000000000::int,50::int),'[{"b":"2"},{
 -- test type info caching in json_populate_record()
 DROP TABLE IF EXISTS jspoptest;
 
-CREATE TABLE jspoptest (_gemini_pk serial PRIMARY KEY, js pg_catalog.json);
+CREATE TABLE jspoptest (gemini_pk serial PRIMARY KEY, js pg_catalog.json);
 ---END---
 ---START---
 INSERT INTO jspoptest
@@ -1399,7 +1399,7 @@ SELECT json_build_object('{1,2,3}'::int[], 3);
 ---START---
 DROP TABLE IF EXISTS foo;
 
-CREATE TABLE foo (_gemini_pk serial PRIMARY KEY, serial_num integer, name text, type text);
+CREATE TABLE foo (gemini_pk serial PRIMARY KEY, serial_num integer, name text, type text);
 ---END---
 ---START---
 INSERT INTO foo VALUES (847001,'t15','GE1043');

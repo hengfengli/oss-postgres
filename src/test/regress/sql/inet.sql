@@ -8,7 +8,7 @@
 DROP TABLE INET_TBL;
 ---END---
 ---START---
-CREATE TABLE inet_tbl (_gemini_pk serial PRIMARY KEY, c cidr, i inet);
+CREATE TABLE inet_tbl (gemini_pk serial PRIMARY KEY, c cidr, i inet);
 ---END---
 ---START---
 INSERT INTO INET_TBL (c, i) VALUES ('192.168.1', '192.168.1.226/24');

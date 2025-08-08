@@ -123,7 +123,7 @@ reset role;
 alter event trigger regress_event_trigger disable;
 ---END---
 ---START---
-CREATE TABLE event_trigger_fire1 (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE event_trigger_fire1 (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 alter event trigger regress_event_trigger enable;
@@ -132,25 +132,25 @@ alter event trigger regress_event_trigger enable;
 set session_replication_role = replica;
 ---END---
 ---START---
-CREATE TABLE event_trigger_fire2 (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE event_trigger_fire2 (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 alter event trigger regress_event_trigger enable replica;
 ---END---
 ---START---
-CREATE TABLE event_trigger_fire3 (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE event_trigger_fire3 (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 alter event trigger regress_event_trigger enable always;
 ---END---
 ---START---
-CREATE TABLE event_trigger_fire4 (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE event_trigger_fire4 (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 reset session_replication_role;
 ---END---
 ---START---
-CREATE TABLE event_trigger_fire5 (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE event_trigger_fire5 (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 -- non-top-level command
@@ -267,31 +267,31 @@ CREATE SCHEMA audit_tbls authorization regress_evt_user;
 ---START---
 DROP TABLE IF EXISTS a_temp_tbl;
 
-CREATE TABLE a_temp_tbl (_gemini_pk serial PRIMARY KEY);
+CREATE TABLE a_temp_tbl (gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
 SET SESSION AUTHORIZATION regress_evt_user;
 ---END---
 ---START---
-CREATE TABLE schema_one.table_one (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE schema_one.table_one (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
-CREATE TABLE schema_one."table two" (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE schema_one."table two" (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
-CREATE TABLE schema_one.table_three (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE schema_one.table_three (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
-CREATE TABLE audit_tbls.schema_one_table_two (_gemini_pk serial PRIMARY KEY, the_value text);
+CREATE TABLE audit_tbls.schema_one_table_two (gemini_pk serial PRIMARY KEY, the_value text);
 ---END---
 ---START---
-CREATE TABLE schema_two.table_two (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE schema_two.table_two (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
-CREATE TABLE schema_two.table_three (_gemini_pk serial PRIMARY KEY, a integer, b text);
+CREATE TABLE schema_two.table_three (gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
-CREATE TABLE audit_tbls.schema_two_table_three (_gemini_pk serial PRIMARY KEY, the_value text);
+CREATE TABLE audit_tbls.schema_two_table_three (gemini_pk serial PRIMARY KEY, the_value text);
 ---END---
 ---START---
 CREATE OR REPLACE FUNCTION schema_two.add(int, int) RETURNS int LANGUAGE plpgsql
@@ -306,7 +306,7 @@ CREATE AGGREGATE schema_two.newton
 RESET SESSION AUTHORIZATION;
 ---END---
 ---START---
-CREATE TABLE undroppable_objs (_gemini_pk serial PRIMARY KEY, object_type text, object_identity text);
+CREATE TABLE undroppable_objs (gemini_pk serial PRIMARY KEY, object_type text, object_identity text);
 ---END---
 ---START---
 INSERT INTO undroppable_objs VALUES
@@ -314,7 +314,7 @@ INSERT INTO undroppable_objs VALUES
 ('table', 'audit_tbls.schema_two_table_three');
 ---END---
 ---START---
-CREATE TABLE dropped_objects (_gemini_pk serial PRIMARY KEY, type text, schema text, object text);
+CREATE TABLE dropped_objects (gemini_pk serial PRIMARY KEY, type text, schema text, object text);
 ---END---
 ---START---
 -- This tests errors raised within event triggers; the one in audit_tbls
@@ -615,16 +615,16 @@ $$;
 create type rewritetype as (a int);
 ---END---
 ---START---
-CREATE TABLE rewritemetoo1 OF rewritetype (_gemini_pk serial PRIMARY KEY);
+CREATE TABLE rewritemetoo1 OF rewritetype (gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
-CREATE TABLE rewritemetoo2 OF rewritetype (_gemini_pk serial PRIMARY KEY);
+CREATE TABLE rewritemetoo2 OF rewritetype (gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
 alter type rewritetype alter attribute a type text cascade;
 ---END---
 ---START---
-CREATE TABLE rewritemetoo3 (_gemini_pk serial PRIMARY KEY, a rewritetype);
+CREATE TABLE rewritemetoo3 (gemini_pk serial PRIMARY KEY, a rewritetype);
 ---END---
 ---START---
 alter type rewritetype alter attribute a type varchar cascade;
@@ -643,7 +643,7 @@ drop function test_evtrig_no_rewrite();
 RESET SESSION AUTHORIZATION;
 ---END---
 ---START---
-CREATE TABLE event_trigger_test (_gemini_pk serial PRIMARY KEY, a integer, b text);
+CREATE TABLE event_trigger_test (gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 CREATE OR REPLACE FUNCTION start_command()

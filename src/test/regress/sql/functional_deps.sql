@@ -100,12 +100,12 @@ GROUP BY aic.article_id;
 
 DROP TABLE IF EXISTS products;
 
-CREATE TABLE products (_gemini_pk serial PRIMARY KEY, product_id integer, name text, price numeric);
+CREATE TABLE products (gemini_pk serial PRIMARY KEY, product_id integer, name text, price numeric);
 ---END---
 ---START---
 DROP TABLE IF EXISTS sales;
 
-CREATE TABLE sales (_gemini_pk serial PRIMARY KEY, product_id integer, units integer);
+CREATE TABLE sales (gemini_pk serial PRIMARY KEY, product_id integer, units integer);
 ---END---
 ---START---
 -- OK

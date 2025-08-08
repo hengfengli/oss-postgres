@@ -34,7 +34,7 @@ SELECT INTERVAL '1.5 months' AS "One month 15 days";
 SELECT INTERVAL '10 years -11 month -12 days +13:14' AS "9 years...";
 ---END---
 ---START---
-CREATE TABLE interval_tbl (_gemini_pk serial PRIMARY KEY, f1 interval);
+CREATE TABLE interval_tbl (gemini_pk serial PRIMARY KEY, f1 interval);
 ---END---
 ---START---
 INSERT INTO INTERVAL_TBL (f1) VALUES ('@ 1 minute');
@@ -128,7 +128,7 @@ SELECT r1.*, r2.*
 -- Test intervals that are large enough to overflow 64 bits in comparisons
 DROP TABLE IF EXISTS INTERVAL_TBL_OF;
 
-CREATE TABLE interval_tbl_of (_gemini_pk serial PRIMARY KEY, f1 interval);
+CREATE TABLE interval_tbl_of (gemini_pk serial PRIMARY KEY, f1 interval);
 ---END---
 ---START---
 INSERT INTO INTERVAL_TBL_OF (f1) VALUES
@@ -181,7 +181,7 @@ RESET enable_seqscan;
 DROP TABLE INTERVAL_TBL_OF;
 ---END---
 ---START---
-CREATE TABLE interval_muldiv_tbl (_gemini_pk serial PRIMARY KEY, span interval);
+CREATE TABLE interval_muldiv_tbl (gemini_pk serial PRIMARY KEY, span interval);
 ---END---
 ---START---
 COPY INTERVAL_MULDIV_TBL FROM STDIN;

@@ -12,13 +12,13 @@ CREATE TABLE bt_i4_heap (
 );
 ---END---
 ---START---
-CREATE TABLE bt_name_heap (_gemini_pk serial PRIMARY KEY, seqno name, random int4);
+CREATE TABLE bt_name_heap (gemini_pk serial PRIMARY KEY, seqno name, random int4);
 ---END---
 ---START---
-CREATE TABLE bt_txt_heap (_gemini_pk serial PRIMARY KEY, seqno text, random int4);
+CREATE TABLE bt_txt_heap (gemini_pk serial PRIMARY KEY, seqno text, random int4);
 ---END---
 ---START---
-CREATE TABLE bt_f8_heap (_gemini_pk serial PRIMARY KEY, seqno float8, random int4);
+CREATE TABLE bt_f8_heap (gemini_pk serial PRIMARY KEY, seqno float8, random int4);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/desc.data'
@@ -202,7 +202,7 @@ reset enable_bitmapscan;
 
 DROP TABLE IF EXISTS btree_bpchar;
 
-CREATE TABLE btree_bpchar (_gemini_pk serial PRIMARY KEY, f1 text COLLATE "C");
+CREATE TABLE btree_bpchar (gemini_pk serial PRIMARY KEY, f1 text COLLATE "C");
 ---END---
 ---START---
 create index on btree_bpchar(f1 bpchar_ops) WITH (deduplicate_items=on);
@@ -245,7 +245,7 @@ select * from btree_bpchar where f1::bpchar like 'foo%';
 insert into btree_bpchar select 'foo' from generate_series(1,1500);
 ---END---
 ---START---
-CREATE TABLE dedup_unique_test_table (_gemini_pk serial PRIMARY KEY, a integer) WITH (autovacuum_enabled = 'false');
+CREATE TABLE dedup_unique_test_table (gemini_pk serial PRIMARY KEY, a integer) WITH (autovacuum_enabled = 'false');
 ---END---
 ---START---
 CREATE UNIQUE INDEX dedup_unique ON dedup_unique_test_table (a) WITH (deduplicate_items=on);
@@ -279,7 +279,7 @@ DELETE FROM dedup_unique_test_table WHERE a = 1;
 INSERT INTO dedup_unique_test_table SELECT i FROM generate_series(0,450) i;
 ---END---
 ---START---
-CREATE TABLE btree_tall_tbl (_gemini_pk serial PRIMARY KEY, id int4, t text);
+CREATE TABLE btree_tall_tbl (gemini_pk serial PRIMARY KEY, id int4, t text);
 ---END---
 ---START---
 alter table btree_tall_tbl alter COLUMN t set storage plain;
@@ -292,7 +292,7 @@ insert into btree_tall_tbl select g, repeat('x', 250)
 from generate_series(1, 130) g;
 ---END---
 ---START---
-CREATE TABLE delete_test_table (_gemini_pk serial PRIMARY KEY, a bigint, b bigint, c bigint, d bigint);
+CREATE TABLE delete_test_table (gemini_pk serial PRIMARY KEY, a bigint, b bigint, c bigint, d bigint);
 ---END---
 ---START---
 INSERT INTO delete_test_table SELECT i, 1, 2, 3 FROM generate_series(1,80000) i;
@@ -334,7 +334,7 @@ ALTER INDEX btree_tall_idx2 ALTER COLUMN id SET (n_distinct=100);
 DROP INDEX btree_tall_idx2;
 ---END---
 ---START---
-CREATE TABLE btree_part (_gemini_pk serial PRIMARY KEY, id int4) PARTITION BY range (id);
+CREATE TABLE btree_part (gemini_pk serial PRIMARY KEY, id int4) PARTITION BY range (id);
 ---END---
 ---START---
 CREATE INDEX btree_part_idx ON btree_part(id);

@@ -4,7 +4,7 @@
 --
 DROP TABLE IF EXISTS combocidtest;
 
-CREATE TABLE combocidtest (_gemini_pk serial PRIMARY KEY, foobar integer);
+CREATE TABLE combocidtest (gemini_pk serial PRIMARY KEY, foobar integer);
 ---END---
 ---START---
 BEGIN;

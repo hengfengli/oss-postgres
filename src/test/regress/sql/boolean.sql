@@ -145,7 +145,7 @@ SELECT '  tru e '::text::boolean AS invalid;
 SELECT ''::text::boolean AS invalid;
 ---END---
 ---START---
-CREATE TABLE booltbl1 (_gemini_pk serial PRIMARY KEY, f1 bool);
+CREATE TABLE booltbl1 (gemini_pk serial PRIMARY KEY, f1 bool);
 ---END---
 ---START---
 INSERT INTO BOOLTBL1 (f1) VALUES (bool 't');
@@ -184,7 +184,7 @@ SELECT BOOLTBL1.*
    WHERE f1 = bool 'false';
 ---END---
 ---START---
-CREATE TABLE booltbl2 (_gemini_pk serial PRIMARY KEY, f1 bool);
+CREATE TABLE booltbl2 (gemini_pk serial PRIMARY KEY, f1 bool);
 ---END---
 ---START---
 INSERT INTO BOOLTBL2 (f1) VALUES (bool 'f');
@@ -276,7 +276,7 @@ SELECT f1
    WHERE f1 IS NOT TRUE;
 ---END---
 ---START---
-CREATE TABLE booltbl3 (_gemini_pk serial PRIMARY KEY, d text, b bool, o integer);
+CREATE TABLE booltbl3 (gemini_pk serial PRIMARY KEY, d text, b bool, o integer);
 ---END---
 ---START---
 INSERT INTO BOOLTBL3 (d, b, o) VALUES ('true', true, 1);
@@ -299,7 +299,7 @@ SELECT
 FROM booltbl3 ORDER BY o;
 ---END---
 ---START---
-CREATE TABLE booltbl4 (_gemini_pk serial PRIMARY KEY, isfalse bool, istrue bool, isnul bool);
+CREATE TABLE booltbl4 (gemini_pk serial PRIMARY KEY, isfalse bool, istrue bool, isnul bool);
 ---END---
 ---START---
 INSERT INTO booltbl4 VALUES (false, true, null);

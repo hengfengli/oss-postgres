@@ -83,10 +83,10 @@ CREATE INDEX onek2_stu1_prtl ON onek2 USING btree(stringu1 name_ops)
 	where onek2.stringu1 >= 'J' and onek2.stringu1 < 'K';
 ---END---
 ---START---
-CREATE TABLE slow_emp4000 (_gemini_pk serial PRIMARY KEY, home_base box);
+CREATE TABLE slow_emp4000 (gemini_pk serial PRIMARY KEY, home_base box);
 ---END---
 ---START---
-CREATE TABLE fast_emp4000 (_gemini_pk serial PRIMARY KEY, home_base box);
+CREATE TABLE fast_emp4000 (gemini_pk serial PRIMARY KEY, home_base box);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/rect.data'
@@ -405,7 +405,7 @@ RESET enable_indexscan;
 RESET enable_bitmapscan;
 ---END---
 ---START---
-CREATE TABLE array_index_op_test (_gemini_pk serial PRIMARY KEY, seqno int4, i int4[], t text[]);
+CREATE TABLE array_index_op_test (gemini_pk serial PRIMARY KEY, seqno int4, i int4[], t text[]);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/array.data'
@@ -560,7 +560,7 @@ RESET enable_indexscan;
 RESET enable_bitmapscan;
 ---END---
 ---START---
-CREATE TABLE array_gin_test (_gemini_pk serial PRIMARY KEY, a integer[]);
+CREATE TABLE array_gin_test (gemini_pk serial PRIMARY KEY, a integer[]);
 ---END---
 ---START---
 INSERT INTO array_gin_test SELECT ARRAY[1, g%5, g] FROM generate_series(1, 10000) g;
@@ -619,7 +619,7 @@ DROP INDEX hash_tuplesort_idx;
 RESET maintenance_work_mem;
 ---END---
 ---START---
-CREATE TABLE unique_tbl (_gemini_pk serial PRIMARY KEY, i integer, t text);
+CREATE TABLE unique_tbl (gemini_pk serial PRIMARY KEY, i integer, t text);
 ---END---
 ---START---
 CREATE UNIQUE INDEX unique_idx1 ON unique_tbl (i) NULLS DISTINCT;
@@ -687,7 +687,7 @@ SELECT pg_get_indexdef('unique_idx4'::regclass);
 DROP TABLE unique_tbl;
 ---END---
 ---START---
-CREATE TABLE func_index_heap (_gemini_pk serial PRIMARY KEY, f1 text, f2 text);
+CREATE TABLE func_index_heap (gemini_pk serial PRIMARY KEY, f1 text, f2 text);
 ---END---
 ---START---
 CREATE UNIQUE INDEX func_index_index on func_index_heap (textcat(f1,f2));
@@ -721,7 +721,7 @@ INSERT INTO func_index_heap VALUES('QWERTY');
 DROP TABLE func_index_heap;
 ---END---
 ---START---
-CREATE TABLE func_index_heap (_gemini_pk serial PRIMARY KEY, f1 text, f2 text);
+CREATE TABLE func_index_heap (gemini_pk serial PRIMARY KEY, f1 text, f2 text);
 ---END---
 ---START---
 CREATE UNIQUE INDEX func_index_index on func_index_heap ((f1 || f2) text_ops);
@@ -752,7 +752,7 @@ INSERT INTO func_index_heap VALUES('QWERTY');
 create index on func_index_heap ((f1 || f2), (row(f1, f2)));
 ---END---
 ---START---
-CREATE TABLE covering_index_heap (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, f3 text);
+CREATE TABLE covering_index_heap (gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, f3 text);
 ---END---
 ---START---
 CREATE UNIQUE INDEX covering_index_index on covering_index_heap (f1,f2) INCLUDE(f3);
@@ -784,7 +784,7 @@ covering_pkey;
 DROP TABLE covering_index_heap;
 ---END---
 ---START---
-CREATE TABLE concur_heap (_gemini_pk serial PRIMARY KEY, f1 text, f2 text);
+CREATE TABLE concur_heap (gemini_pk serial PRIMARY KEY, f1 text, f2 text);
 ---END---
 ---START---
 -- empty table
@@ -911,7 +911,7 @@ BEGIN;
 ---START---
 DROP TABLE IF EXISTS concur_temp;
 
-CREATE TABLE concur_temp (_gemini_pk serial PRIMARY KEY, f1 integer, f2 text) ON COMMIT DROP;
+CREATE TABLE concur_temp (gemini_pk serial PRIMARY KEY, f1 integer, f2 text) ON COMMIT DROP;
 ---END---
 ---START---
 INSERT INTO concur_temp VALUES (1, 'foo'), (2, 'bar');
@@ -927,7 +927,7 @@ COMMIT;
 -- ON COMMIT DELETE ROWS
 DROP TABLE IF EXISTS concur_temp;
 
-CREATE TABLE concur_temp (_gemini_pk serial PRIMARY KEY, f1 integer, f2 text) ON COMMIT DELETE ROWS;
+CREATE TABLE concur_temp (gemini_pk serial PRIMARY KEY, f1 integer, f2 text) ON COMMIT DELETE ROWS;
 ---END---
 ---START---
 INSERT INTO concur_temp VALUES (1, 'foo'), (2, 'bar');
@@ -988,7 +988,7 @@ DROP INDEX CONCURRENTLY "concur_heap_expr_idx";
 DROP TABLE concur_heap;
 ---END---
 ---START---
-CREATE TABLE cwi_test (_gemini_pk serial PRIMARY KEY, a integer, b varchar(10), c char);
+CREATE TABLE cwi_test (gemini_pk serial PRIMARY KEY, a integer, b varchar(10), c char);
 ---END---
 ---START---
 -- add some data so that all tests have something to work with.
@@ -1040,7 +1040,7 @@ ALTER TABLE cwi_test ADD UNIQUE USING INDEX cwi_uniq4_idx;
 DROP TABLE cwi_test;
 ---END---
 ---START---
-CREATE TABLE cwi_test (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY hash (a);
+CREATE TABLE cwi_test (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY hash (a);
 ---END---
 ---START---
 create unique index on cwi_test (a);
@@ -1052,7 +1052,7 @@ alter table cwi_test add primary key using index cwi_test_a_idx;
 DROP TABLE cwi_test;
 ---END---
 ---START---
-CREATE TABLE cwi_test (_gemini_pk serial PRIMARY KEY, a integer, b integer);
+CREATE TABLE cwi_test (gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 CREATE UNIQUE INDEX cwi_a_nnd ON cwi_test (a) NULLS NOT DISTINCT;
@@ -1064,7 +1064,7 @@ ALTER TABLE cwi_test ADD PRIMARY KEY USING INDEX cwi_a_nnd;
 DROP TABLE cwi_test;
 ---END---
 ---START---
-CREATE TABLE syscol_table (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE syscol_table (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 -- System columns cannot be indexed
@@ -1349,7 +1349,7 @@ explain (costs off)
 
 DROP TABLE IF EXISTS boolindex;
 
-CREATE TABLE boolindex (_gemini_pk serial PRIMARY KEY, b bool, i integer, UNIQUE (b, i), junk double precision);
+CREATE TABLE boolindex (gemini_pk serial PRIMARY KEY, b bool, i integer, UNIQUE (b, i), junk double precision);
 ---END---
 ---START---
 explain (costs off)
@@ -1390,7 +1390,7 @@ REINDEX (VERBOSE) TABLE reindex_verbose;
 DROP TABLE reindex_verbose;
 ---END---
 ---START---
-CREATE TABLE concur_reindex_tab (_gemini_pk serial PRIMARY KEY, c1 integer);
+CREATE TABLE concur_reindex_tab (gemini_pk serial PRIMARY KEY, c1 integer);
 ---END---
 ---START---
 -- REINDEX
@@ -1426,7 +1426,7 @@ CREATE INDEX concur_reindex_ind4 ON concur_reindex_tab(c1, c1, c2);
 ALTER TABLE concur_reindex_tab ADD PRIMARY KEY USING INDEX concur_reindex_ind1;
 ---END---
 ---START---
-CREATE TABLE concur_reindex_tab2 (_gemini_pk serial PRIMARY KEY, c1 integer REFERENCES concur_reindex_tab);
+CREATE TABLE concur_reindex_tab2 (gemini_pk serial PRIMARY KEY, c1 integer REFERENCES concur_reindex_tab);
 ---END---
 ---START---
 INSERT INTO concur_reindex_tab VALUES  (1, 'a');
@@ -1435,7 +1435,7 @@ INSERT INTO concur_reindex_tab VALUES  (1, 'a');
 INSERT INTO concur_reindex_tab VALUES  (2, 'a');
 ---END---
 ---START---
-CREATE TABLE concur_reindex_tab3 (_gemini_pk serial PRIMARY KEY, c1 integer, c2 int4range, EXCLUDE USING gist (c2 WITH OPERATOR(&&)));
+CREATE TABLE concur_reindex_tab3 (gemini_pk serial PRIMARY KEY, c1 integer, c2 int4range, EXCLUDE USING gist (c2 WITH OPERATOR(&&)));
 ---END---
 ---START---
 INSERT INTO concur_reindex_tab3 VALUES  (3, '[1,2]');
@@ -1495,7 +1495,7 @@ WHERE classid = 'pg_class'::regclass AND
   ORDER BY 1, 2;
 ---END---
 ---START---
-CREATE TABLE testcomment (_gemini_pk serial PRIMARY KEY, i integer);
+CREATE TABLE testcomment (gemini_pk serial PRIMARY KEY, i integer);
 ---END---
 ---START---
 CREATE INDEX testcomment_idx1 ON testcomment (i);
@@ -1522,7 +1522,7 @@ SELECT obj_description('testcomment_idx1'::regclass, 'pg_class');
 DROP TABLE testcomment;
 ---END---
 ---START---
-CREATE TABLE concur_clustered (_gemini_pk serial PRIMARY KEY, i integer);
+CREATE TABLE concur_clustered (gemini_pk serial PRIMARY KEY, i integer);
 ---END---
 ---START---
 CREATE INDEX concur_clustered_i_idx ON concur_clustered(i);
@@ -1541,7 +1541,7 @@ SELECT indexrelid::regclass, indisclustered FROM pg_index
 DROP TABLE concur_clustered;
 ---END---
 ---START---
-CREATE TABLE concur_replident (_gemini_pk serial PRIMARY KEY, i integer NOT NULL);
+CREATE TABLE concur_replident (gemini_pk serial PRIMARY KEY, i integer NOT NULL);
 ---END---
 ---START---
 CREATE UNIQUE INDEX concur_replident_i_idx ON concur_replident(i);
@@ -1565,7 +1565,7 @@ SELECT indexrelid::regclass, indisreplident FROM pg_index
 DROP TABLE concur_replident;
 ---END---
 ---START---
-CREATE TABLE concur_appclass_tab (_gemini_pk serial PRIMARY KEY, i tsvector, j tsvector, k tsvector);
+CREATE TABLE concur_appclass_tab (gemini_pk serial PRIMARY KEY, i tsvector, j tsvector, k tsvector);
 ---END---
 ---START---
 CREATE INDEX concur_appclass_ind on concur_appclass_tab
@@ -1583,7 +1583,7 @@ REINDEX TABLE CONCURRENTLY concur_appclass_tab;
 DROP TABLE concur_appclass_tab;
 ---END---
 ---START---
-CREATE TABLE concur_reindex_part (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer) PARTITION BY range (c1);
+CREATE TABLE concur_reindex_part (gemini_pk serial PRIMARY KEY, c1 integer, c2 integer) PARTITION BY range (c1);
 ---END---
 ---START---
 CREATE TABLE concur_reindex_part_0 PARTITION OF concur_reindex_part
@@ -1906,7 +1906,7 @@ DROP MATERIALIZED VIEW concur_reindex_matview;
 DROP TABLE concur_reindex_tab, concur_reindex_tab2, concur_reindex_tab3;
 ---END---
 ---START---
-CREATE TABLE concur_reindex_tab4 (_gemini_pk serial PRIMARY KEY, c1 integer);
+CREATE TABLE concur_reindex_tab4 (gemini_pk serial PRIMARY KEY, c1 integer);
 ---END---
 ---START---
 INSERT INTO concur_reindex_tab4 VALUES (1), (1), (2);
@@ -1942,7 +1942,7 @@ REINDEX INDEX CONCURRENTLY concur_reindex_ind5;
 DROP TABLE concur_reindex_tab4;
 ---END---
 ---START---
-CREATE TABLE concur_exprs_tab (_gemini_pk serial PRIMARY KEY, c1 integer, c2 boolean);
+CREATE TABLE concur_exprs_tab (gemini_pk serial PRIMARY KEY, c1 integer, c2 boolean);
 ---END---
 ---START---
 INSERT INTO concur_exprs_tab (c1, c2) VALUES (1369652450, FALSE),
@@ -2034,7 +2034,7 @@ DROP TABLE concur_exprs_tab;
 -- ON COMMIT PRESERVE ROWS, the default.
 DROP TABLE IF EXISTS concur_temp_tab_1;
 
-CREATE TABLE concur_temp_tab_1 (_gemini_pk serial PRIMARY KEY, c1 integer, c2 text) ON COMMIT PRESERVE ROWS;
+CREATE TABLE concur_temp_tab_1 (gemini_pk serial PRIMARY KEY, c1 integer, c2 text) ON COMMIT PRESERVE ROWS;
 ---END---
 ---START---
 INSERT INTO concur_temp_tab_1 VALUES (1, 'foo'), (2, 'bar');
@@ -2062,7 +2062,7 @@ COMMIT;
 -- ON COMMIT DELETE ROWS
 DROP TABLE IF EXISTS concur_temp_tab_2;
 
-CREATE TABLE concur_temp_tab_2 (_gemini_pk serial PRIMARY KEY, c1 integer, c2 text) ON COMMIT DELETE ROWS;
+CREATE TABLE concur_temp_tab_2 (gemini_pk serial PRIMARY KEY, c1 integer, c2 text) ON COMMIT DELETE ROWS;
 ---END---
 ---START---
 CREATE INDEX concur_temp_ind_2 ON concur_temp_tab_2(c2);
@@ -2080,7 +2080,7 @@ BEGIN;
 ---START---
 DROP TABLE IF EXISTS concur_temp_tab_3;
 
-CREATE TABLE concur_temp_tab_3 (_gemini_pk serial PRIMARY KEY, c1 integer, c2 text) ON COMMIT PRESERVE ROWS;
+CREATE TABLE concur_temp_tab_3 (gemini_pk serial PRIMARY KEY, c1 integer, c2 text) ON COMMIT PRESERVE ROWS;
 ---END---
 ---START---
 INSERT INTO concur_temp_tab_3 VALUES (1, 'foo'), (2, 'bar');

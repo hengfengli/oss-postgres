@@ -5,7 +5,7 @@
 SET default_toast_compression = 'pglz';
 ---END---
 ---START---
-CREATE TABLE cmdata (_gemini_pk serial PRIMARY KEY, f1 text COMPRESSION pglz);
+CREATE TABLE cmdata (gemini_pk serial PRIMARY KEY, f1 text COMPRESSION pglz);
 ---END---
 ---START---
 CREATE INDEX idx ON cmdata(f1);
@@ -45,7 +45,7 @@ SELECT * INTO cmmove1 FROM cmdata;
 SELECT pg_column_compression(f1) FROM cmmove1;
 ---END---
 ---START---
-CREATE TABLE cmmove3 (_gemini_pk serial PRIMARY KEY, f1 text COMPRESSION pglz);
+CREATE TABLE cmmove3 (gemini_pk serial PRIMARY KEY, f1 text COMPRESSION pglz);
 ---END---
 ---START---
 INSERT INTO cmmove3 SELECT * FROM cmdata;
@@ -57,17 +57,17 @@ INSERT INTO cmmove3 SELECT * FROM cmdata1;
 SELECT pg_column_compression(f1) FROM cmmove3;
 ---END---
 ---START---
-CREATE TABLE cmdata2 (_gemini_pk serial PRIMARY KEY, LIKE cmdata1 INCLUDING COMPRESSION);
+CREATE TABLE cmdata2 (gemini_pk serial PRIMARY KEY, LIKE cmdata1 INCLUDING COMPRESSION);
 ---END---
 ---START---
 \d+ cmdata2
 DROP TABLE cmdata2;
 ---END---
 ---START---
-CREATE TABLE cmdata2 (_gemini_pk serial PRIMARY KEY, f1 integer COMPRESSION pglz);
+CREATE TABLE cmdata2 (gemini_pk serial PRIMARY KEY, f1 integer COMPRESSION pglz);
 ---END---
 ---START---
-CREATE TABLE cmmove2 (_gemini_pk serial PRIMARY KEY, f1 text COMPRESSION pglz);
+CREATE TABLE cmmove2 (gemini_pk serial PRIMARY KEY, f1 text COMPRESSION pglz);
 ---END---
 ---START---
 INSERT INTO cmmove2 VALUES (repeat('1234567890', 1004));
@@ -87,7 +87,7 @@ CREATE OR REPLACE FUNCTION large_val() RETURNS TEXT LANGUAGE SQL AS
 'select array_agg(fipshash(g::text))::text from generate_series(1, 256) g';
 ---END---
 ---START---
-CREATE TABLE cmdata2 (_gemini_pk serial PRIMARY KEY, f1 text COMPRESSION pglz);
+CREATE TABLE cmdata2 (gemini_pk serial PRIMARY KEY, f1 text COMPRESSION pglz);
 ---END---
 ---START---
 INSERT INTO cmdata2 SELECT large_val() || repeat('a', 4000);
@@ -111,7 +111,7 @@ SELECT SUBSTR(f1, 200, 5) FROM cmdata2;
 DROP TABLE cmdata2;
 ---END---
 ---START---
-CREATE TABLE cmdata2 (_gemini_pk serial PRIMARY KEY, f1 integer);
+CREATE TABLE cmdata2 (gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
 \d+ cmdata2
@@ -154,13 +154,13 @@ SELECT pg_column_compression(f1) FROM cmdata1;
 SELECT pg_column_compression(x) FROM compressmv;
 ---END---
 ---START---
-CREATE TABLE cmpart (_gemini_pk serial PRIMARY KEY, f1 text COMPRESSION lz4) PARTITION BY hash (f1);
+CREATE TABLE cmpart (gemini_pk serial PRIMARY KEY, f1 text COMPRESSION lz4) PARTITION BY hash (f1);
 ---END---
 ---START---
 CREATE TABLE cmpart1 PARTITION OF cmpart FOR VALUES WITH (MODULUS 2, REMAINDER 0);
 ---END---
 ---START---
-CREATE TABLE cmpart2 (_gemini_pk serial PRIMARY KEY, f1 text COMPRESSION pglz);
+CREATE TABLE cmpart2 (gemini_pk serial PRIMARY KEY, f1 text COMPRESSION pglz);
 ---END---
 ---START---
 ALTER TABLE cmpart ATTACH PARTITION cmpart2 FOR VALUES WITH (MODULUS 2, REMAINDER 1);
@@ -178,10 +178,10 @@ SELECT pg_column_compression(f1) FROM cmpart1;
 SELECT pg_column_compression(f1) FROM cmpart2;
 ---END---
 ---START---
-CREATE TABLE cminh (_gemini_pk serial PRIMARY KEY) INHERITS (cmdata, cmdata1);
+CREATE TABLE cminh (gemini_pk serial PRIMARY KEY) INHERITS (cmdata, cmdata1);
 ---END---
 ---START---
-CREATE TABLE cminh (_gemini_pk serial PRIMARY KEY, f1 text COMPRESSION lz4) INHERITS (cmdata);
+CREATE TABLE cminh (gemini_pk serial PRIMARY KEY, f1 text COMPRESSION lz4) INHERITS (cmdata);
 ---END---
 ---START---
 -- test default_toast_compression GUC
@@ -253,7 +253,7 @@ SELECT pg_column_compression(f1) FROM cmdata;
 DROP TABLE cmdata2;
 ---END---
 ---START---
-CREATE TABLE cmdata2 (_gemini_pk serial PRIMARY KEY, f1 text COMPRESSION pglz, f2 text COMPRESSION lz4);
+CREATE TABLE cmdata2 (gemini_pk serial PRIMARY KEY, f1 text COMPRESSION pglz, f2 text COMPRESSION lz4);
 ---END---
 ---START---
 CREATE UNIQUE INDEX idx1 ON cmdata2 ((f1 || f2));
@@ -279,10 +279,10 @@ SELECT length(f1) FROM cmmove2;
 SELECT length(f1) FROM cmmove3;
 ---END---
 ---START---
-CREATE TABLE badcompresstbl (_gemini_pk serial PRIMARY KEY, a text COMPRESSION i_do_not_exist_compression);
+CREATE TABLE badcompresstbl (gemini_pk serial PRIMARY KEY, a text COMPRESSION i_do_not_exist_compression);
 ---END---
 ---START---
-CREATE TABLE badcompresstbl (_gemini_pk serial PRIMARY KEY, a text);
+CREATE TABLE badcompresstbl (gemini_pk serial PRIMARY KEY, a text);
 ---END---
 ---START---
 ALTER TABLE badcompresstbl ALTER a SET COMPRESSION I_Do_Not_Exist_Compression;

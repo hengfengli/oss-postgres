@@ -132,7 +132,7 @@ ALTER TABLE test_replica_identity REPLICA IDENTITY NOTHING;
 SELECT relreplident FROM pg_class WHERE oid = 'test_replica_identity'::regclass;
 ---END---
 ---START---
-CREATE TABLE test_replica_identity2 (_gemini_pk serial PRIMARY KEY, id integer UNIQUE NOT NULL);
+CREATE TABLE test_replica_identity2 (gemini_pk serial PRIMARY KEY, id integer UNIQUE NOT NULL);
 ---END---
 ---START---
 ALTER TABLE test_replica_identity2 REPLICA IDENTITY USING INDEX test_replica_identity2_id_key;
@@ -165,10 +165,10 @@ ALTER TABLE test_replica_identity3 ALTER COLUMN id TYPE bigint;
 ALTER TABLE test_replica_identity3 ALTER COLUMN id DROP NOT NULL;
 ---END---
 ---START---
-CREATE TABLE test_replica_identity4 (_gemini_pk serial PRIMARY KEY, id integer NOT NULL) PARTITION BY list (id);
+CREATE TABLE test_replica_identity4 (gemini_pk serial PRIMARY KEY, id integer NOT NULL) PARTITION BY list (id);
 ---END---
 ---START---
-CREATE TABLE test_replica_identity4_1 (_gemini_pk serial PRIMARY KEY, id integer NOT NULL);
+CREATE TABLE test_replica_identity4_1 (gemini_pk serial PRIMARY KEY, id integer NOT NULL);
 ---END---
 ---START---
 ALTER TABLE ONLY test_replica_identity4

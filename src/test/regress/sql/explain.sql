@@ -131,7 +131,7 @@ select explain_filter('explain (generic_plan) select unique1 from tenk1 where th
 select explain_filter('explain (analyze, generic_plan) select unique1 from tenk1 where thousand = $1');
 ---END---
 ---START---
-CREATE TABLE gen_part (_gemini_pk serial PRIMARY KEY, key1 integer NOT NULL, key2 integer NOT NULL) PARTITION BY list (key1);
+CREATE TABLE gen_part (gemini_pk serial PRIMARY KEY, key1 integer NOT NULL, key2 integer NOT NULL) PARTITION BY list (key1);
 ---END---
 ---START---
 create table gen_part_1
@@ -201,7 +201,7 @@ rollback;
 -- Test display of temporary objects
 DROP TABLE IF EXISTS t1;
 
-CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, f1 float8);
+CREATE TABLE t1 (gemini_pk serial PRIMARY KEY, f1 float8);
 ---END---
 ---START---
 create function pg_temp.mysin(float8) returns float8 language plpgsql

@@ -220,7 +220,7 @@ WHERE enumtypid = 'insenum'::regtype
 ORDER BY enumsortorder;
 ---END---
 ---START---
-CREATE TABLE enumtest (_gemini_pk serial PRIMARY KEY, col rainbow);
+CREATE TABLE enumtest (gemini_pk serial PRIMARY KEY, col rainbow);
 ---END---
 ---START---
 INSERT INTO enumtest values ('red'), ('orange'), ('yellow'), ('green');
@@ -451,7 +451,7 @@ DROP FUNCTION echo_me(rainbow);
 CREATE TABLE enumtest_parent (id rainbow PRIMARY KEY);
 ---END---
 ---START---
-CREATE TABLE enumtest_child (_gemini_pk serial PRIMARY KEY, parent rainbow REFERENCES enumtest_parent);
+CREATE TABLE enumtest_child (gemini_pk serial PRIMARY KEY, parent rainbow REFERENCES enumtest_parent);
 ---END---
 ---START---
 INSERT INTO enumtest_parent VALUES ('red');
@@ -474,7 +474,7 @@ DELETE FROM enumtest_parent;
 CREATE TYPE bogus AS ENUM('good', 'bad', 'ugly');
 ---END---
 ---START---
-CREATE TABLE enumtest_bogus_child (_gemini_pk serial PRIMARY KEY, parent bogus REFERENCES enumtest_parent);
+CREATE TABLE enumtest_bogus_child (gemini_pk serial PRIMARY KEY, parent bogus REFERENCES enumtest_parent);
 ---END---
 ---START---
 DROP TYPE bogus;

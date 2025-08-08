@@ -1,14 +1,14 @@
 ---START---
-CREATE TABLE a (_gemini_pk serial PRIMARY KEY, aa text);
+CREATE TABLE a (gemini_pk serial PRIMARY KEY, aa text);
 ---END---
 ---START---
-CREATE TABLE b (_gemini_pk serial PRIMARY KEY, bb text) INHERITS (a);
+CREATE TABLE b (gemini_pk serial PRIMARY KEY, bb text) INHERITS (a);
 ---END---
 ---START---
-CREATE TABLE c (_gemini_pk serial PRIMARY KEY, cc text) INHERITS (a);
+CREATE TABLE c (gemini_pk serial PRIMARY KEY, cc text) INHERITS (a);
 ---END---
 ---START---
-CREATE TABLE d (_gemini_pk serial PRIMARY KEY, dd text) INHERITS (b, c, a);
+CREATE TABLE d (gemini_pk serial PRIMARY KEY, dd text) INHERITS (b, c, a);
 ---END---
 ---START---
 INSERT INTO a(aa) VALUES('aaa');
@@ -239,10 +239,10 @@ CREATE TABLE z (b TEXT, PRIMARY KEY(aa, b)) inherits (a);
 INSERT INTO z VALUES (NULL, 'text');
 ---END---
 ---START---
-CREATE TABLE some_tab (_gemini_pk serial PRIMARY KEY, a integer, b integer);
+CREATE TABLE some_tab (gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
-CREATE TABLE some_tab_child (_gemini_pk serial PRIMARY KEY) INHERITS (some_tab);
+CREATE TABLE some_tab_child (gemini_pk serial PRIMARY KEY) INHERITS (some_tab);
 ---END---
 ---START---
 insert into some_tab_child values(1,2);
@@ -271,22 +271,22 @@ drop table some_tab cascade;
 -- Check UPDATE with inherited target and an inherited source table
 DROP TABLE IF EXISTS foo;
 
-CREATE TABLE foo (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer);
+CREATE TABLE foo (gemini_pk serial PRIMARY KEY, f1 integer, f2 integer);
 ---END---
 ---START---
 DROP TABLE IF EXISTS foo2;
 
-CREATE TABLE foo2 (_gemini_pk serial PRIMARY KEY, f3 integer) INHERITS (foo);
+CREATE TABLE foo2 (gemini_pk serial PRIMARY KEY, f3 integer) INHERITS (foo);
 ---END---
 ---START---
 DROP TABLE IF EXISTS bar;
 
-CREATE TABLE bar (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer);
+CREATE TABLE bar (gemini_pk serial PRIMARY KEY, f1 integer, f2 integer);
 ---END---
 ---START---
 DROP TABLE IF EXISTS bar2;
 
-CREATE TABLE bar2 (_gemini_pk serial PRIMARY KEY, f3 integer) INHERITS (bar);
+CREATE TABLE bar2 (gemini_pk serial PRIMARY KEY, f3 integer) INHERITS (bar);
 ---END---
 ---START---
 insert into foo values(1,1);
@@ -341,19 +341,19 @@ where bar.f1 = ss.f1;
 select tableoid::regclass::text as relname, bar.* from bar order by 1,2;
 ---END---
 ---START---
-CREATE TABLE some_tab (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE some_tab (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 insert into some_tab values (0);
 ---END---
 ---START---
-CREATE TABLE some_tab_child (_gemini_pk serial PRIMARY KEY) INHERITS (some_tab);
+CREATE TABLE some_tab_child (gemini_pk serial PRIMARY KEY) INHERITS (some_tab);
 ---END---
 ---START---
 insert into some_tab_child values (1);
 ---END---
 ---START---
-CREATE TABLE parted_tab (_gemini_pk serial PRIMARY KEY, a integer, b char) PARTITION BY list (a);
+CREATE TABLE parted_tab (gemini_pk serial PRIMARY KEY, a integer, b char) PARTITION BY list (a);
 ---END---
 ---START---
 create table parted_tab_part1 partition of parted_tab for values in (1);
@@ -399,7 +399,7 @@ explain update parted_tab set a = 2 where false;
 drop table parted_tab;
 ---END---
 ---START---
-CREATE TABLE mlparted_tab (_gemini_pk serial PRIMARY KEY, a integer, b char, c text) PARTITION BY list (a);
+CREATE TABLE mlparted_tab (gemini_pk serial PRIMARY KEY, a integer, b char, c text) PARTITION BY list (a);
 ---END---
 ---START---
 create table mlparted_tab_part1 partition of mlparted_tab for values in (1);
@@ -435,22 +435,22 @@ drop table mlparted_tab;
 drop table some_tab cascade;
 ---END---
 ---START---
-CREATE TABLE firstparent (_gemini_pk serial PRIMARY KEY, tomorrow date DEFAULT CAST(now() AS date) + 1);
+CREATE TABLE firstparent (gemini_pk serial PRIMARY KEY, tomorrow date DEFAULT CAST(now() AS date) + 1);
 ---END---
 ---START---
-CREATE TABLE secondparent (_gemini_pk serial PRIMARY KEY, tomorrow date DEFAULT CAST(now() AS date) + 1);
+CREATE TABLE secondparent (gemini_pk serial PRIMARY KEY, tomorrow date DEFAULT CAST(now() AS date) + 1);
 ---END---
 ---START---
-CREATE TABLE jointchild (_gemini_pk serial PRIMARY KEY) INHERITS (firstparent, secondparent);
+CREATE TABLE jointchild (gemini_pk serial PRIMARY KEY) INHERITS (firstparent, secondparent);
 ---END---
 ---START---
-CREATE TABLE thirdparent (_gemini_pk serial PRIMARY KEY, tomorrow date DEFAULT CAST(now() AS date) - 1);
+CREATE TABLE thirdparent (gemini_pk serial PRIMARY KEY, tomorrow date DEFAULT CAST(now() AS date) - 1);
 ---END---
 ---START---
-CREATE TABLE otherchild (_gemini_pk serial PRIMARY KEY) INHERITS (firstparent, thirdparent);
+CREATE TABLE otherchild (gemini_pk serial PRIMARY KEY) INHERITS (firstparent, thirdparent);
 ---END---
 ---START---
-CREATE TABLE otherchild (_gemini_pk serial PRIMARY KEY, tomorrow date DEFAULT now()) INHERITS (firstparent, thirdparent);
+CREATE TABLE otherchild (gemini_pk serial PRIMARY KEY, tomorrow date DEFAULT now()) INHERITS (firstparent, thirdparent);
 ---END---
 ---START---
 -- ok, child resolves ambiguous default
@@ -473,17 +473,17 @@ select * from d;
 -- an unrelated parent.
 DROP TABLE IF EXISTS parent1;
 
-CREATE TABLE parent1 (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer);
+CREATE TABLE parent1 (gemini_pk serial PRIMARY KEY, f1 integer, f2 integer);
 ---END---
 ---START---
 DROP TABLE IF EXISTS parent2;
 
-CREATE TABLE parent2 (_gemini_pk serial PRIMARY KEY, f1 integer, f3 bigint);
+CREATE TABLE parent2 (gemini_pk serial PRIMARY KEY, f1 integer, f3 bigint);
 ---END---
 ---START---
 DROP TABLE IF EXISTS childtab;
 
-CREATE TABLE childtab (_gemini_pk serial PRIMARY KEY, f4 integer) INHERITS (parent1, parent2);
+CREATE TABLE childtab (gemini_pk serial PRIMARY KEY, f4 integer) INHERITS (parent1, parent2);
 ---END---
 ---START---
 alter table parent1 alter column f1 type bigint;
@@ -493,7 +493,7 @@ alter table parent1 alter column f1 type bigint;
 alter table parent1 alter column f2 type bigint;
 ---END---
 ---START---
-CREATE TABLE p1 (_gemini_pk serial PRIMARY KEY, ff1 integer);
+CREATE TABLE p1 (gemini_pk serial PRIMARY KEY, ff1 integer);
 ---END---
 ---START---
 alter table p1 add constraint p1chk check (ff1 > 0) no inherit;
@@ -506,7 +506,7 @@ alter table p1 add constraint p2chk check (ff1 > 10);
 select pc.relname, pgc.conname, pgc.contype, pgc.conislocal, pgc.coninhcount, pgc.connoinherit from pg_class as pc inner join pg_constraint as pgc on (pgc.conrelid = pc.oid) where pc.relname = 'p1' order by 1,2;
 ---END---
 ---START---
-CREATE TABLE c1 (_gemini_pk serial PRIMARY KEY) INHERITS (p1);
+CREATE TABLE c1 (gemini_pk serial PRIMARY KEY) INHERITS (p1);
 ---END---
 ---START---
 \d p1
@@ -521,13 +521,13 @@ create table c2 (constraint p2chk check (ff1 > 10) no inherit) inherits (p1);
 drop table p1 cascade;
 ---END---
 ---START---
-CREATE TABLE base (_gemini_pk serial PRIMARY KEY, i integer);
+CREATE TABLE base (gemini_pk serial PRIMARY KEY, i integer);
 ---END---
 ---START---
-CREATE TABLE derived (_gemini_pk serial PRIMARY KEY) INHERITS (base);
+CREATE TABLE derived (gemini_pk serial PRIMARY KEY) INHERITS (base);
 ---END---
 ---START---
-CREATE TABLE more_derived (_gemini_pk serial PRIMARY KEY, LIKE derived, b integer) INHERITS (derived);
+CREATE TABLE more_derived (gemini_pk serial PRIMARY KEY, LIKE derived, b integer) INHERITS (derived);
 ---END---
 ---START---
 insert into derived (i) values (0);
@@ -555,16 +555,16 @@ drop table derived;
 drop table base;
 ---END---
 ---START---
-CREATE TABLE p1 (_gemini_pk serial PRIMARY KEY, ff1 integer);
+CREATE TABLE p1 (gemini_pk serial PRIMARY KEY, ff1 integer);
 ---END---
 ---START---
-CREATE TABLE p2 (_gemini_pk serial PRIMARY KEY, f1 text);
+CREATE TABLE p2 (gemini_pk serial PRIMARY KEY, f1 text);
 ---END---
 ---START---
 create function p2text(p2) returns text as 'select $1.f1' language sql;
 ---END---
 ---START---
-CREATE TABLE c1 (_gemini_pk serial PRIMARY KEY, f3 integer) INHERITS (p1, p2);
+CREATE TABLE c1 (gemini_pk serial PRIMARY KEY, f3 integer) INHERITS (p1, p2);
 ---END---
 ---START---
 insert into c1 values(123456789, 'hi', 42);
@@ -585,13 +585,13 @@ drop table p2;
 drop table p1;
 ---END---
 ---START---
-CREATE TABLE ac (_gemini_pk serial PRIMARY KEY, aa text);
+CREATE TABLE ac (gemini_pk serial PRIMARY KEY, aa text);
 ---END---
 ---START---
 alter table ac add constraint ac_check check (aa is not null);
 ---END---
 ---START---
-CREATE TABLE bc (_gemini_pk serial PRIMARY KEY, bb text) INHERITS (ac);
+CREATE TABLE bc (gemini_pk serial PRIMARY KEY, bb text) INHERITS (ac);
 ---END---
 ---START---
 select pc.relname, pgc.conname, pgc.contype, pgc.conislocal, pgc.coninhcount, pg_get_expr(pgc.conbin, pc.oid) as consrc from pg_class as pc inner join pg_constraint as pgc on (pgc.conrelid = pc.oid) where pc.relname in ('ac', 'bc') order by 1,2;
@@ -663,10 +663,10 @@ drop table bc;
 drop table ac;
 ---END---
 ---START---
-CREATE TABLE ac (_gemini_pk serial PRIMARY KEY, a integer CONSTRAINT check_a CHECK (a <> 0));
+CREATE TABLE ac (gemini_pk serial PRIMARY KEY, a integer CONSTRAINT check_a CHECK (a <> 0));
 ---END---
 ---START---
-CREATE TABLE bc (_gemini_pk serial PRIMARY KEY, a integer CONSTRAINT check_a CHECK (a <> 0), b integer CONSTRAINT check_b CHECK (b <> 0)) INHERITS (ac);
+CREATE TABLE bc (gemini_pk serial PRIMARY KEY, a integer CONSTRAINT check_a CHECK (a <> 0), b integer CONSTRAINT check_b CHECK (b <> 0)) INHERITS (ac);
 ---END---
 ---START---
 select pc.relname, pgc.conname, pgc.contype, pgc.conislocal, pgc.coninhcount, pg_get_expr(pgc.conbin, pc.oid) as consrc from pg_class as pc inner join pg_constraint as pgc on (pgc.conrelid = pc.oid) where pc.relname in ('ac', 'bc') order by 1,2;
@@ -678,13 +678,13 @@ drop table bc;
 drop table ac;
 ---END---
 ---START---
-CREATE TABLE ac (_gemini_pk serial PRIMARY KEY, a integer CONSTRAINT check_a CHECK (a <> 0));
+CREATE TABLE ac (gemini_pk serial PRIMARY KEY, a integer CONSTRAINT check_a CHECK (a <> 0));
 ---END---
 ---START---
-CREATE TABLE bc (_gemini_pk serial PRIMARY KEY, b integer CONSTRAINT check_b CHECK (b <> 0));
+CREATE TABLE bc (gemini_pk serial PRIMARY KEY, b integer CONSTRAINT check_b CHECK (b <> 0));
 ---END---
 ---START---
-CREATE TABLE cc (_gemini_pk serial PRIMARY KEY, c integer CONSTRAINT check_c CHECK (c <> 0)) INHERITS (ac, bc);
+CREATE TABLE cc (gemini_pk serial PRIMARY KEY, c integer CONSTRAINT check_c CHECK (c <> 0)) INHERITS (ac, bc);
 ---END---
 ---START---
 select pc.relname, pgc.conname, pgc.contype, pgc.conislocal, pgc.coninhcount, pg_get_expr(pgc.conbin, pc.oid) as consrc from pg_class as pc inner join pg_constraint as pgc on (pgc.conrelid = pc.oid) where pc.relname in ('ac', 'bc', 'cc') order by 1,2;
@@ -705,13 +705,13 @@ drop table bc;
 drop table ac;
 ---END---
 ---START---
-CREATE TABLE p1 (_gemini_pk serial PRIMARY KEY, f1 integer);
+CREATE TABLE p1 (gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
-CREATE TABLE p2 (_gemini_pk serial PRIMARY KEY, f2 integer);
+CREATE TABLE p2 (gemini_pk serial PRIMARY KEY, f2 integer);
 ---END---
 ---START---
-CREATE TABLE c1 (_gemini_pk serial PRIMARY KEY, f3 integer) INHERITS (p1, p2);
+CREATE TABLE c1 (gemini_pk serial PRIMARY KEY, f3 integer) INHERITS (p1, p2);
 ---END---
 ---START---
 insert into c1 values(1,-1,2);
@@ -737,7 +737,7 @@ alter table p2 add check (f2>0);
 insert into c1 values(1,-1,2);
 ---END---
 ---START---
-CREATE TABLE c2 (_gemini_pk serial PRIMARY KEY, f3 integer) INHERITS (p1, p2);
+CREATE TABLE c2 (gemini_pk serial PRIMARY KEY, f3 integer) INHERITS (p1, p2);
 ---END---
 ---START---
 \d c2
@@ -751,10 +751,10 @@ drop table p1 cascade;
 drop table p2 cascade;
 ---END---
 ---START---
-CREATE TABLE pp1 (_gemini_pk serial PRIMARY KEY, f1 integer);
+CREATE TABLE pp1 (gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
-CREATE TABLE cc1 (_gemini_pk serial PRIMARY KEY, f2 text, f3 integer) INHERITS (pp1);
+CREATE TABLE cc1 (gemini_pk serial PRIMARY KEY, f2 text, f3 integer) INHERITS (pp1);
 ---END---
 ---START---
 alter table pp1 add column a1 int check (a1 > 0);
@@ -772,13 +772,13 @@ alter table pp1 add column a2 int check (a2 > 0);
 drop table pp1 cascade;
 ---END---
 ---START---
-CREATE TABLE inht1 (_gemini_pk serial PRIMARY KEY, a integer, b integer);
+CREATE TABLE inht1 (gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
-CREATE TABLE inhs1 (_gemini_pk serial PRIMARY KEY, b integer, c integer);
+CREATE TABLE inhs1 (gemini_pk serial PRIMARY KEY, b integer, c integer);
 ---END---
 ---START---
-CREATE TABLE inhts (_gemini_pk serial PRIMARY KEY, d integer) INHERITS (inht1, inhs1);
+CREATE TABLE inhts (gemini_pk serial PRIMARY KEY, d integer) INHERITS (inht1, inhs1);
 ---END---
 ---START---
 ALTER TABLE inht1 RENAME a TO aa;
@@ -800,13 +800,13 @@ ALTER TABLE inhts RENAME d TO dd;
 DROP TABLE inhts;
 ---END---
 ---START---
-CREATE TABLE inht2 (_gemini_pk serial PRIMARY KEY, x integer) INHERITS (inht1);
+CREATE TABLE inht2 (gemini_pk serial PRIMARY KEY, x integer) INHERITS (inht1);
 ---END---
 ---START---
-CREATE TABLE inht3 (_gemini_pk serial PRIMARY KEY, y integer) INHERITS (inht1);
+CREATE TABLE inht3 (gemini_pk serial PRIMARY KEY, y integer) INHERITS (inht1);
 ---END---
 ---START---
-CREATE TABLE inht4 (_gemini_pk serial PRIMARY KEY, z integer) INHERITS (inht2, inht3);
+CREATE TABLE inht4 (gemini_pk serial PRIMARY KEY, z integer) INHERITS (inht2, inht3);
 ---END---
 ---START---
 ALTER TABLE inht1 RENAME aa TO aaa;
@@ -841,10 +841,10 @@ SELECT a.attrelid::regclass, a.attname, a.attinhcount, e.expected
 DROP TABLE inht1, inhs1 CASCADE;
 ---END---
 ---START---
-CREATE TABLE test_constraints (_gemini_pk serial PRIMARY KEY, id integer, val1 varchar, val2 integer, UNIQUE (val1, val2));
+CREATE TABLE test_constraints (gemini_pk serial PRIMARY KEY, id integer, val1 varchar, val2 integer, UNIQUE (val1, val2));
 ---END---
 ---START---
-CREATE TABLE test_constraints_inh (_gemini_pk serial PRIMARY KEY) INHERITS (test_constraints);
+CREATE TABLE test_constraints_inh (gemini_pk serial PRIMARY KEY) INHERITS (test_constraints);
 ---END---
 ---START---
 \d+ test_constraints
@@ -859,10 +859,10 @@ DROP TABLE test_constraints_inh;
 DROP TABLE test_constraints;
 ---END---
 ---START---
-CREATE TABLE test_ex_constraints (_gemini_pk serial PRIMARY KEY, c circle, EXCLUDE USING gist (c WITH OPERATOR(&&)));
+CREATE TABLE test_ex_constraints (gemini_pk serial PRIMARY KEY, c circle, EXCLUDE USING gist (c WITH OPERATOR(&&)));
 ---END---
 ---START---
-CREATE TABLE test_ex_constraints_inh (_gemini_pk serial PRIMARY KEY) INHERITS (test_ex_constraints);
+CREATE TABLE test_ex_constraints_inh (gemini_pk serial PRIMARY KEY) INHERITS (test_ex_constraints);
 ---END---
 ---START---
 \d+ test_ex_constraints
@@ -881,10 +881,10 @@ DROP TABLE test_ex_constraints;
 CREATE TABLE test_primary_constraints(id int PRIMARY KEY);
 ---END---
 ---START---
-CREATE TABLE test_foreign_constraints (_gemini_pk serial PRIMARY KEY, id1 integer REFERENCES test_primary_constraints (id));
+CREATE TABLE test_foreign_constraints (gemini_pk serial PRIMARY KEY, id1 integer REFERENCES test_primary_constraints (id));
 ---END---
 ---START---
-CREATE TABLE test_foreign_constraints_inh (_gemini_pk serial PRIMARY KEY) INHERITS (test_foreign_constraints);
+CREATE TABLE test_foreign_constraints_inh (gemini_pk serial PRIMARY KEY) INHERITS (test_foreign_constraints);
 ---END---
 ---START---
 \d+ test_primary_constraints
@@ -916,7 +916,7 @@ create table inh_fk_2 (x int primary key, y int references inh_fk_1 on delete ca
 insert into inh_fk_2 values (11, 1), (22, 2), (33, 3);
 ---END---
 ---START---
-CREATE TABLE inh_fk_2_child (_gemini_pk serial PRIMARY KEY) INHERITS (inh_fk_2);
+CREATE TABLE inh_fk_2_child (gemini_pk serial PRIMARY KEY) INHERITS (inh_fk_2);
 ---END---
 ---START---
 insert into inh_fk_2_child values (111, 1), (222, 2);
@@ -934,10 +934,10 @@ select * from inh_fk_2 order by 1, 2;
 drop table inh_fk_1, inh_fk_2, inh_fk_2_child;
 ---END---
 ---START---
-CREATE TABLE p1 (_gemini_pk serial PRIMARY KEY, f1 integer);
+CREATE TABLE p1 (gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
-CREATE TABLE p1_c1 (_gemini_pk serial PRIMARY KEY) INHERITS (p1);
+CREATE TABLE p1_c1 (gemini_pk serial PRIMARY KEY) INHERITS (p1);
 ---END---
 ---START---
 alter table p1 add constraint inh_check_constraint1 check (f1 > 0);
@@ -960,10 +960,10 @@ order by 1, 2;
 drop table p1 cascade;
 ---END---
 ---START---
-CREATE TABLE invalid_check_con (_gemini_pk serial PRIMARY KEY, f1 integer);
+CREATE TABLE invalid_check_con (gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
-CREATE TABLE invalid_check_con_child (_gemini_pk serial PRIMARY KEY) INHERITS (invalid_check_con);
+CREATE TABLE invalid_check_con_child (gemini_pk serial PRIMARY KEY) INHERITS (invalid_check_con);
 ---END---
 ---START---
 alter table invalid_check_con_child add constraint inh_check_constraint check(f1 > 0) not valid;
@@ -1014,7 +1014,7 @@ create table patest0 (id, x) as
 ---START---
 DROP TABLE IF EXISTS patest1;
 
-CREATE TABLE patest1 (_gemini_pk serial PRIMARY KEY) INHERITS (patest0);
+CREATE TABLE patest1 (gemini_pk serial PRIMARY KEY) INHERITS (patest0);
 ---END---
 ---START---
 insert into patest1
@@ -1023,7 +1023,7 @@ insert into patest1
 ---START---
 DROP TABLE IF EXISTS patest2;
 
-CREATE TABLE patest2 (_gemini_pk serial PRIMARY KEY) INHERITS (patest0);
+CREATE TABLE patest2 (gemini_pk serial PRIMARY KEY) INHERITS (patest0);
 ---END---
 ---START---
 insert into patest2
@@ -1160,10 +1160,10 @@ reset enable_parallel_append;
 drop table matest0 cascade;
 ---END---
 ---START---
-CREATE TABLE matest0 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer, d integer);
+CREATE TABLE matest0 (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer, d integer);
 ---END---
 ---START---
-CREATE TABLE matest1 (_gemini_pk serial PRIMARY KEY) INHERITS (matest0);
+CREATE TABLE matest1 (gemini_pk serial PRIMARY KEY) INHERITS (matest0);
 ---END---
 ---START---
 create index matest0i on matest0 (b, c);
@@ -1279,10 +1279,10 @@ reset enable_indexscan;
 reset enable_bitmapscan;
 ---END---
 ---START---
-CREATE TABLE inhpar (_gemini_pk serial PRIMARY KEY, f1 integer, f2 name);
+CREATE TABLE inhpar (gemini_pk serial PRIMARY KEY, f1 integer, f2 name);
 ---END---
 ---START---
-CREATE TABLE inhcld (_gemini_pk serial PRIMARY KEY, f2 name, f1 integer);
+CREATE TABLE inhcld (gemini_pk serial PRIMARY KEY, f2 name, f1 integer);
 ---END---
 ---START---
 alter table inhcld inherit inhpar;
@@ -1351,10 +1351,10 @@ select * from inhpar order by f1;
 drop table inhpar cascade;
 ---END---
 ---START---
-CREATE TABLE cnullparent (_gemini_pk serial PRIMARY KEY, f1 integer);
+CREATE TABLE cnullparent (gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
-CREATE TABLE cnullchild (_gemini_pk serial PRIMARY KEY, CHECK (f1 = 1 OR f1 = NULL)) INHERITS (cnullparent);
+CREATE TABLE cnullchild (gemini_pk serial PRIMARY KEY, CHECK (f1 = 1 OR f1 = NULL)) INHERITS (cnullparent);
 ---END---
 ---START---
 insert into cnullchild values(1);
@@ -1375,26 +1375,26 @@ select * from cnullparent where f1 = 2;
 drop table cnullparent cascade;
 ---END---
 ---START---
-CREATE TABLE inh_perm_parent (_gemini_pk serial PRIMARY KEY, a1 integer);
+CREATE TABLE inh_perm_parent (gemini_pk serial PRIMARY KEY, a1 integer);
 ---END---
 ---START---
 DROP TABLE IF EXISTS inh_temp_parent;
 
-CREATE TABLE inh_temp_parent (_gemini_pk serial PRIMARY KEY, a1 integer);
+CREATE TABLE inh_temp_parent (gemini_pk serial PRIMARY KEY, a1 integer);
 ---END---
 ---START---
 DROP TABLE IF EXISTS inh_temp_child;
 
-CREATE TABLE inh_temp_child (_gemini_pk serial PRIMARY KEY) INHERITS (inh_perm_parent);
+CREATE TABLE inh_temp_child (gemini_pk serial PRIMARY KEY) INHERITS (inh_perm_parent);
 ---END---
 ---START---
-CREATE TABLE inh_perm_child (_gemini_pk serial PRIMARY KEY) INHERITS (inh_temp_parent);
+CREATE TABLE inh_perm_child (gemini_pk serial PRIMARY KEY) INHERITS (inh_temp_parent);
 ---END---
 ---START---
 -- error
 DROP TABLE IF EXISTS inh_temp_child_2;
 
-CREATE TABLE inh_temp_child_2 (_gemini_pk serial PRIMARY KEY) INHERITS (inh_temp_parent);
+CREATE TABLE inh_temp_child_2 (gemini_pk serial PRIMARY KEY) INHERITS (inh_temp_parent);
 ---END---
 ---START---
 -- ok
@@ -1422,7 +1422,7 @@ drop table inh_perm_parent cascade;
 drop table inh_temp_parent cascade;
 ---END---
 ---START---
-CREATE TABLE list_parted (_gemini_pk serial PRIMARY KEY, a varchar) PARTITION BY list (a);
+CREATE TABLE list_parted (gemini_pk serial PRIMARY KEY, a varchar) PARTITION BY list (a);
 ---END---
 ---START---
 create table part_ab_cd partition of list_parted for values in ('ab', 'cd');
@@ -1452,7 +1452,7 @@ explain (costs off) select * from list_parted where a = 'ab' or a in (null, 'cd'
 explain (costs off) select * from list_parted where a = 'ab';
 ---END---
 ---START---
-CREATE TABLE range_list_parted (_gemini_pk serial PRIMARY KEY, a integer, b char(2)) PARTITION BY range (a);
+CREATE TABLE range_list_parted (gemini_pk serial PRIMARY KEY, a integer, b char(2)) PARTITION BY range (a);
 ---END---
 ---START---
 create table part_1_10 partition of range_list_parted for values from (1) to (10) partition by list (b);
@@ -1526,7 +1526,7 @@ drop table list_parted;
 drop table range_list_parted;
 ---END---
 ---START---
-CREATE TABLE mcrparted (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY range (a, (abs(b)), c);
+CREATE TABLE mcrparted (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY range (a, (abs(b)), c);
 ---END---
 ---START---
 create table mcrparted_def partition of mcrparted default;
@@ -1577,7 +1577,7 @@ explain (costs off) select * from mcrparted where a = 20 and abs(b) = 10 and c >
 explain (costs off) select * from mcrparted where a = 20 and c > 20;
 ---END---
 ---START---
-CREATE TABLE parted_minmax (_gemini_pk serial PRIMARY KEY, a integer, b varchar(16)) PARTITION BY range (a);
+CREATE TABLE parted_minmax (gemini_pk serial PRIMARY KEY, a integer, b varchar(16)) PARTITION BY range (a);
 ---END---
 ---START---
 create table parted_minmax1 partition of parted_minmax for values from (1) to (10);
@@ -1657,7 +1657,7 @@ set enable_bitmapscan to off;
 set enable_sort to off;
 ---END---
 ---START---
-CREATE TABLE mclparted (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
+CREATE TABLE mclparted (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 create table mclparted1 partition of mclparted for values in(1);
@@ -1766,7 +1766,7 @@ reset enable_bitmapscan;
 drop table mcrparted;
 ---END---
 ---START---
-CREATE TABLE bool_lp (_gemini_pk serial PRIMARY KEY, b bool) PARTITION BY list (b);
+CREATE TABLE bool_lp (gemini_pk serial PRIMARY KEY, b bool) PARTITION BY list (b);
 ---END---
 ---START---
 create table bool_lp_true partition of bool_lp for values in(true);
@@ -1784,7 +1784,7 @@ explain (costs off) select * from bool_lp order by b;
 drop table bool_lp;
 ---END---
 ---START---
-CREATE TABLE bool_rp (_gemini_pk serial PRIMARY KEY, b bool, a integer) PARTITION BY range (b, a);
+CREATE TABLE bool_rp (gemini_pk serial PRIMARY KEY, b bool, a integer) PARTITION BY range (b, a);
 ---END---
 ---START---
 create table bool_rp_false_1k partition of bool_rp for values from (false,0) to (false,1000);
@@ -1817,7 +1817,7 @@ explain (costs off) select * from bool_rp where b = false order by a;
 drop table bool_rp;
 ---END---
 ---START---
-CREATE TABLE range_parted (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY range (a, b);
+CREATE TABLE range_parted (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY range (a, b);
 ---END---
 ---START---
 create table range_parted1 partition of range_parted for values from (0,0) to (10,10);
@@ -1838,13 +1838,13 @@ explain (costs off) select * from range_parted order by a desc,b desc,c desc;
 drop table range_parted;
 ---END---
 ---START---
-CREATE TABLE permtest_parent (_gemini_pk serial PRIMARY KEY, a integer, b text, c text) PARTITION BY list (a);
+CREATE TABLE permtest_parent (gemini_pk serial PRIMARY KEY, a integer, b text, c text) PARTITION BY list (a);
 ---END---
 ---START---
-CREATE TABLE permtest_child (_gemini_pk serial PRIMARY KEY, b text, c text, a integer) PARTITION BY list (b);
+CREATE TABLE permtest_child (gemini_pk serial PRIMARY KEY, b text, c text, a integer) PARTITION BY list (b);
 ---END---
 ---START---
-CREATE TABLE permtest_grandchild (_gemini_pk serial PRIMARY KEY, c text, b text, a integer);
+CREATE TABLE permtest_grandchild (gemini_pk serial PRIMARY KEY, c text, b text, a integer);
 ---END---
 ---START---
 alter table permtest_child attach partition permtest_grandchild for values in ('a');
@@ -1921,16 +1921,16 @@ drop role regress_no_child_access;
 drop table permtest_parent;
 ---END---
 ---START---
-CREATE TABLE errtst_parent (_gemini_pk serial PRIMARY KEY, partid integer NOT NULL, shdata integer NOT NULL, data integer NOT NULL DEFAULT 0, CONSTRAINT shdata_small CHECK (shdata < 3)) PARTITION BY range (partid);
+CREATE TABLE errtst_parent (gemini_pk serial PRIMARY KEY, partid integer NOT NULL, shdata integer NOT NULL, data integer NOT NULL DEFAULT 0, CONSTRAINT shdata_small CHECK (shdata < 3)) PARTITION BY range (partid);
 ---END---
 ---START---
-CREATE TABLE errtst_child_fastdef (_gemini_pk serial PRIMARY KEY, partid integer NOT NULL, shdata integer NOT NULL, CONSTRAINT shdata_small CHECK (shdata < 3));
+CREATE TABLE errtst_child_fastdef (gemini_pk serial PRIMARY KEY, partid integer NOT NULL, shdata integer NOT NULL, CONSTRAINT shdata_small CHECK (shdata < 3));
 ---END---
 ---START---
-CREATE TABLE errtst_child_plaindef (_gemini_pk serial PRIMARY KEY, partid integer NOT NULL, shdata integer NOT NULL, data integer NOT NULL DEFAULT 0, CONSTRAINT shdata_small CHECK (shdata < 3), CHECK (data < 10));
+CREATE TABLE errtst_child_plaindef (gemini_pk serial PRIMARY KEY, partid integer NOT NULL, shdata integer NOT NULL, data integer NOT NULL DEFAULT 0, CONSTRAINT shdata_small CHECK (shdata < 3), CHECK (data < 10));
 ---END---
 ---START---
-CREATE TABLE errtst_child_reorder (_gemini_pk serial PRIMARY KEY, data integer NOT NULL DEFAULT 0, shdata integer NOT NULL, partid integer NOT NULL, CONSTRAINT shdata_small CHECK (shdata < 3), CHECK (data < 10));
+CREATE TABLE errtst_child_reorder (gemini_pk serial PRIMARY KEY, data integer NOT NULL DEFAULT 0, shdata integer NOT NULL, partid integer NOT NULL, CONSTRAINT shdata_small CHECK (shdata < 3), CHECK (data < 10));
 ---END---
 ---START---
 ALTER TABLE errtst_child_fastdef ADD COLUMN data int NOT NULL DEFAULT 0;

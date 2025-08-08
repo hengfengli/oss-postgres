@@ -95,7 +95,7 @@ REINDEX (TABLESPACE pg_global) TABLE pg_authid;
 REINDEX (TABLESPACE pg_global) TABLE CONCURRENTLY pg_authid;
 ---END---
 ---START---
-CREATE TABLE regress_tblspace_test_tbl (_gemini_pk serial PRIMARY KEY, num1 bigint, num2 double precision, t text);
+CREATE TABLE regress_tblspace_test_tbl (gemini_pk serial PRIMARY KEY, num1 bigint, num2 double precision, t text);
 ---END---
 ---START---
 INSERT INTO regress_tblspace_test_tbl (num1, num2, t)
@@ -195,7 +195,7 @@ SELECT relfilenode = :toast_filenode as toast_same FROM pg_class
 DROP TABLE regress_tblspace_test_tbl;
 ---END---
 ---START---
-CREATE TABLE tbspace_reindex_part (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer) PARTITION BY range (c1);
+CREATE TABLE tbspace_reindex_part (gemini_pk serial PRIMARY KEY, c1 integer, c2 integer) PARTITION BY range (c1);
 ---END---
 ---START---
 CREATE TABLE tbspace_reindex_part_0 PARTITION OF tbspace_reindex_part
@@ -279,7 +279,7 @@ DROP TABLE tbspace_reindex_part;
 CREATE SCHEMA testschema;
 ---END---
 ---START---
-CREATE TABLE testschema.foo (_gemini_pk serial PRIMARY KEY, i integer) TABLESPACE regress_tblspace;
+CREATE TABLE testschema.foo (gemini_pk serial PRIMARY KEY, i integer) TABLESPACE regress_tblspace;
 ---END---
 ---START---
 SELECT relname, spcname FROM pg_catalog.pg_tablespace t, pg_catalog.pg_class c
@@ -397,7 +397,7 @@ RESET default_tablespace;
 DROP TABLE testschema.part;
 ---END---
 ---START---
-CREATE TABLE testschema.part (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
+CREATE TABLE testschema.part (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE testschema.part1 PARTITION OF testschema.part FOR VALUES IN (1);
@@ -449,7 +449,7 @@ CREATE TABLE testschema.dflt2 (a int PRIMARY KEY) PARTITION BY LIST (a);
 DROP TABLE testschema.dflt, testschema.dflt2;
 ---END---
 ---START---
-CREATE TABLE testschema.test_default_tab (_gemini_pk serial PRIMARY KEY, id bigint) TABLESPACE regress_tblspace;
+CREATE TABLE testschema.test_default_tab (gemini_pk serial PRIMARY KEY, id bigint) TABLESPACE regress_tblspace;
 ---END---
 ---START---
 INSERT INTO testschema.test_default_tab VALUES (1);
@@ -520,7 +520,7 @@ ALTER TABLE testschema.test_default_tab ALTER id TYPE bigint;
 DROP TABLE testschema.test_default_tab;
 ---END---
 ---START---
-CREATE TABLE testschema.test_default_tab_p (_gemini_pk serial PRIMARY KEY, id bigint, val bigint) PARTITION BY list (id) TABLESPACE regress_tblspace;
+CREATE TABLE testschema.test_default_tab_p (gemini_pk serial PRIMARY KEY, id bigint, val bigint) PARTITION BY list (id) TABLESPACE regress_tblspace;
 ---END---
 ---START---
 CREATE TABLE testschema.test_default_tab_p1 PARTITION OF testschema.test_default_tab_p
@@ -595,7 +595,7 @@ ALTER TABLE testschema.test_default_tab_p ALTER val TYPE bigint;
 DROP TABLE testschema.test_default_tab_p;
 ---END---
 ---START---
-CREATE TABLE testschema.test_tab (_gemini_pk serial PRIMARY KEY, id integer) TABLESPACE regress_tblspace;
+CREATE TABLE testschema.test_tab (gemini_pk serial PRIMARY KEY, id integer) TABLESPACE regress_tblspace;
 ---END---
 ---START---
 INSERT INTO testschema.test_tab VALUES (1);
@@ -621,7 +621,7 @@ SELECT * FROM testschema.test_tab;
 DROP TABLE testschema.test_tab;
 ---END---
 ---START---
-CREATE TABLE testschema.test_tab (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer);
+CREATE TABLE testschema.test_tab (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer);
 ---END---
 ---START---
 SET default_tablespace TO regress_tblspace;
@@ -703,7 +703,7 @@ SELECT COUNT(*) FROM testschema.amv;
 CREATE TABLESPACE regress_badspace LOCATION '/no/such/location';
 ---END---
 ---START---
-CREATE TABLE bar (_gemini_pk serial PRIMARY KEY, i integer) TABLESPACE regress_nosuchspace;
+CREATE TABLE bar (gemini_pk serial PRIMARY KEY, i integer) TABLESPACE regress_nosuchspace;
 ---END---
 ---START---
 -- Fail, in use for some partitioned object
@@ -729,7 +729,7 @@ GRANT USAGE ON SCHEMA testschema TO regress_tablespace_user2;
 ALTER TABLESPACE regress_tblspace OWNER TO regress_tablespace_user1;
 ---END---
 ---START---
-CREATE TABLE testschema.tablespace_acl (_gemini_pk serial PRIMARY KEY, c integer);
+CREATE TABLE testschema.tablespace_acl (gemini_pk serial PRIMARY KEY, c integer);
 ---END---
 ---START---
 -- new owner lacks permission to create this index from scratch
@@ -742,7 +742,7 @@ ALTER TABLE testschema.tablespace_acl OWNER TO regress_tablespace_user2;
 SET SESSION ROLE regress_tablespace_user2;
 ---END---
 ---START---
-CREATE TABLE tablespace_table (_gemini_pk serial PRIMARY KEY, i integer) TABLESPACE regress_tblspace;
+CREATE TABLE tablespace_table (gemini_pk serial PRIMARY KEY, i integer) TABLESPACE regress_tblspace;
 ---END---
 ---START---
 -- fail

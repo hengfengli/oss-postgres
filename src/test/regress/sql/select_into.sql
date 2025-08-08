@@ -108,7 +108,7 @@ DROP SCHEMA selinto_schema CASCADE;
 DROP USER regress_selinto_user;
 ---END---
 ---START---
-CREATE TABLE ctas_base (_gemini_pk serial PRIMARY KEY, i integer, j integer);
+CREATE TABLE ctas_base (gemini_pk serial PRIMARY KEY, i integer, j integer);
 ---END---
 ---START---
 INSERT INTO ctas_base VALUES (1, 2);

@@ -1,8 +1,8 @@
 ---START---
-CREATE TABLE j1_tbl (_gemini_pk serial PRIMARY KEY, i integer, j integer, t text);
+CREATE TABLE j1_tbl (gemini_pk serial PRIMARY KEY, i integer, j integer, t text);
 ---END---
 ---START---
-CREATE TABLE j2_tbl (_gemini_pk serial PRIMARY KEY, i integer, k integer);
+CREATE TABLE j2_tbl (gemini_pk serial PRIMARY KEY, i integer, k integer);
 ---END---
 ---START---
 INSERT INTO J1_TBL VALUES (1, 4, 'one');
@@ -68,7 +68,7 @@ INSERT INTO J2_TBL VALUES (NULL, 0);
 -- useful in some tests below
 DROP TABLE IF EXISTS onerow;
 
-CREATE TABLE onerow (_gemini_pk serial PRIMARY KEY);
+CREATE TABLE onerow (gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
 insert into onerow default values;
@@ -306,13 +306,13 @@ where exists(select * from tenk1 b
       and i4.f1 = a.tenthous;
 ---END---
 ---START---
-CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, name text, n integer);
+CREATE TABLE t1 (gemini_pk serial PRIMARY KEY, name text, n integer);
 ---END---
 ---START---
-CREATE TABLE t2 (_gemini_pk serial PRIMARY KEY, name text, n integer);
+CREATE TABLE t2 (gemini_pk serial PRIMARY KEY, name text, n integer);
 ---END---
 ---START---
-CREATE TABLE t3 (_gemini_pk serial PRIMARY KEY, name text, n integer);
+CREATE TABLE t3 (gemini_pk serial PRIMARY KEY, name text, n integer);
 ---END---
 ---START---
 INSERT INTO t1 VALUES ( 'bb', 11 );
@@ -433,7 +433,7 @@ ON (s1_n = s2_n);
 
 DROP TABLE IF EXISTS x;
 
-CREATE TABLE x (_gemini_pk serial PRIMARY KEY, x1 integer, x2 integer);
+CREATE TABLE x (gemini_pk serial PRIMARY KEY, x1 integer, x2 integer);
 ---END---
 ---START---
 insert into x values (1,11);
@@ -453,7 +453,7 @@ insert into x values (5,null);
 ---START---
 DROP TABLE IF EXISTS y;
 
-CREATE TABLE y (_gemini_pk serial PRIMARY KEY, y1 integer, y2 integer);
+CREATE TABLE y (gemini_pk serial PRIMARY KEY, y1 integer, y2 integer);
 ---END---
 ---START---
 insert into y values (1,111);
@@ -823,17 +823,17 @@ DROP TABLE J2_TBL;
 
 DROP TABLE IF EXISTS t1;
 
-CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, a integer, b integer);
+CREATE TABLE t1 (gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 DROP TABLE IF EXISTS t2;
 
-CREATE TABLE t2 (_gemini_pk serial PRIMARY KEY, a integer, b integer);
+CREATE TABLE t2 (gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 DROP TABLE IF EXISTS t3;
 
-CREATE TABLE t3 (_gemini_pk serial PRIMARY KEY, x integer, y integer);
+CREATE TABLE t3 (gemini_pk serial PRIMARY KEY, x integer, y integer);
 ---END---
 ---START---
 INSERT INTO t1 VALUES (5, 10);
@@ -885,7 +885,7 @@ SELECT * FROM t3;
 
 DROP TABLE IF EXISTS t2a;
 
-CREATE TABLE t2a (_gemini_pk serial PRIMARY KEY) INHERITS (t2);
+CREATE TABLE t2a (gemini_pk serial PRIMARY KEY) INHERITS (t2);
 ---END---
 ---START---
 insert into t2a values (200, 2001);
@@ -932,7 +932,7 @@ select bar.*, unnamed_join.* from
 
 DROP TABLE IF EXISTS tt1;
 
-CREATE TABLE tt1 (_gemini_pk serial PRIMARY KEY, tt1_id int4, joincol int4);
+CREATE TABLE tt1 (gemini_pk serial PRIMARY KEY, tt1_id int4, joincol int4);
 ---END---
 ---START---
 INSERT INTO tt1 VALUES (1, 11);
@@ -943,7 +943,7 @@ INSERT INTO tt1 VALUES (2, NULL);
 ---START---
 DROP TABLE IF EXISTS tt2;
 
-CREATE TABLE tt2 (_gemini_pk serial PRIMARY KEY, tt2_id int4, joincol int4);
+CREATE TABLE tt2 (gemini_pk serial PRIMARY KEY, tt2_id int4, joincol int4);
 ---END---
 ---START---
 INSERT INTO tt2 VALUES (21, 11);
@@ -1009,7 +1009,7 @@ reset enable_memoize;
 
 DROP TABLE IF EXISTS tt3;
 
-CREATE TABLE tt3 (_gemini_pk serial PRIMARY KEY, f1 integer, f2 text);
+CREATE TABLE tt3 (gemini_pk serial PRIMARY KEY, f1 integer, f2 text);
 ---END---
 ---START---
 insert into tt3 select x, repeat('xyzzy', 100) from generate_series(1,10000) x;
@@ -1020,7 +1020,7 @@ analyze tt3;
 ---START---
 DROP TABLE IF EXISTS tt4;
 
-CREATE TABLE tt4 (_gemini_pk serial PRIMARY KEY, f1 integer);
+CREATE TABLE tt4 (gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
 insert into tt4 values (0),(1),(9999);
@@ -1094,7 +1094,7 @@ where b.unique2 is null;
 
 DROP TABLE IF EXISTS tt4x;
 
-CREATE TABLE tt4x (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer);
+CREATE TABLE tt4x (gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer);
 ---END---
 ---START---
 explain (costs off)
@@ -1115,12 +1115,12 @@ where not exists (
 
 DROP TABLE IF EXISTS tt5;
 
-CREATE TABLE tt5 (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer);
+CREATE TABLE tt5 (gemini_pk serial PRIMARY KEY, f1 integer, f2 integer);
 ---END---
 ---START---
 DROP TABLE IF EXISTS tt6;
 
-CREATE TABLE tt6 (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer);
+CREATE TABLE tt6 (gemini_pk serial PRIMARY KEY, f1 integer, f2 integer);
 ---END---
 ---START---
 insert into tt5 values(1, 10);
@@ -1147,12 +1147,12 @@ select * from tt5,tt6 where tt5.f1 = tt6.f1 and tt5.f1 = tt5.f2 - tt6.f2;
 
 DROP TABLE IF EXISTS xx;
 
-CREATE TABLE xx (_gemini_pk serial PRIMARY KEY, pkxx integer);
+CREATE TABLE xx (gemini_pk serial PRIMARY KEY, pkxx integer);
 ---END---
 ---START---
 DROP TABLE IF EXISTS yy;
 
-CREATE TABLE yy (_gemini_pk serial PRIMARY KEY, pkyy integer, pkxx integer);
+CREATE TABLE yy (gemini_pk serial PRIMARY KEY, pkyy integer, pkxx integer);
 ---END---
 ---START---
 insert into xx values (1);
@@ -1266,12 +1266,12 @@ set enable_nestloop = 0;
 ---START---
 DROP TABLE IF EXISTS a;
 
-CREATE TABLE a (_gemini_pk serial PRIMARY KEY, i integer);
+CREATE TABLE a (gemini_pk serial PRIMARY KEY, i integer);
 ---END---
 ---START---
 DROP TABLE IF EXISTS b;
 
-CREATE TABLE b (_gemini_pk serial PRIMARY KEY, x integer, y integer);
+CREATE TABLE b (gemini_pk serial PRIMARY KEY, x integer, y integer);
 ---END---
 ---START---
 select * from a left join b on i = x and i = y and x = i;
@@ -1291,7 +1291,7 @@ create type mycomptype as (id int, v bigint);
 ---START---
 DROP TABLE IF EXISTS tidv;
 
-CREATE TABLE tidv (_gemini_pk serial PRIMARY KEY, idv mycomptype);
+CREATE TABLE tidv (gemini_pk serial PRIMARY KEY, idv mycomptype);
 ---END---
 ---START---
 create index on tidv (idv);
@@ -2334,7 +2334,7 @@ begin;
 ---START---
 DROP TABLE IF EXISTS t;
 
-CREATE TABLE t (_gemini_pk serial PRIMARY KEY, a integer UNIQUE);
+CREATE TABLE t (gemini_pk serial PRIMARY KEY, a integer UNIQUE);
 ---END---
 ---START---
 explain (costs off)
@@ -2535,7 +2535,7 @@ CREATE TABLE c (id int PRIMARY KEY);
 ---START---
 DROP TABLE IF EXISTS d;
 
-CREATE TABLE d (_gemini_pk serial PRIMARY KEY, a integer, b integer);
+CREATE TABLE d (gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 INSERT INTO a VALUES (0, 0), (1, NULL);
@@ -2756,7 +2756,7 @@ create table parent (k int primary key, pd int);
 ---START---
 DROP TABLE IF EXISTS child;
 
-CREATE TABLE child (_gemini_pk serial PRIMARY KEY, k integer UNIQUE, cd integer);
+CREATE TABLE child (gemini_pk serial PRIMARY KEY, k integer UNIQUE, cd integer);
 ---END---
 ---START---
 insert into parent values (1, 10), (2, 20), (3, 30);
@@ -2892,7 +2892,7 @@ begin;
 ---START---
 DROP TABLE IF EXISTS uniquetbl;
 
-CREATE TABLE uniquetbl (_gemini_pk serial PRIMARY KEY, f1 text UNIQUE);
+CREATE TABLE uniquetbl (gemini_pk serial PRIMARY KEY, f1 text UNIQUE);
 ---END---
 ---START---
 explain (costs off)
@@ -2940,7 +2940,7 @@ begin;
 ---START---
 DROP TABLE IF EXISTS t;
 
-CREATE TABLE t (_gemini_pk serial PRIMARY KEY, a integer UNIQUE);
+CREATE TABLE t (gemini_pk serial PRIMARY KEY, a integer UNIQUE);
 ---END---
 ---START---
 insert into t values (1);
@@ -2972,7 +2972,7 @@ begin;
 ---START---
 DROP TABLE IF EXISTS t;
 
-CREATE TABLE t (_gemini_pk serial PRIMARY KEY, a integer UNIQUE, b integer);
+CREATE TABLE t (gemini_pk serial PRIMARY KEY, a integer UNIQUE, b integer);
 ---END---
 ---START---
 insert into t values (1,1), (2,2);
@@ -3526,7 +3526,7 @@ delete from xx1 using (select * from int4_tbl where f1 = xx1.x1) ss;
 delete from xx1 using lateral (select * from int4_tbl where f1 = x1) ss;
 ---END---
 ---START---
-CREATE TABLE join_pt1 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c varchar) PARTITION BY range (a);
+CREATE TABLE join_pt1 (gemini_pk serial PRIMARY KEY, a integer, b integer, c varchar) PARTITION BY range (a);
 ---END---
 ---START---
 create table join_pt1p1 partition of join_pt1 for values from (0) to (100) partition by range(b);
@@ -3541,7 +3541,7 @@ create table join_pt1p1p1 partition of join_pt1p1 for values from (0) to (100);
 insert into join_pt1 values (1, 1, 'x'), (101, 101, 'y');
 ---END---
 ---START---
-CREATE TABLE join_ut1 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c varchar);
+CREATE TABLE join_ut1 (gemini_pk serial PRIMARY KEY, a integer, b integer, c varchar);
 ---END---
 ---START---
 insert into join_ut1 values (101, 101, 'y'), (2, 2, 'z');
@@ -3573,7 +3573,7 @@ drop table join_ut1;
 begin;
 ---END---
 ---START---
-CREATE TABLE fkest (_gemini_pk serial PRIMARY KEY, x integer, x10 integer, x10b integer, x100 integer);
+CREATE TABLE fkest (gemini_pk serial PRIMARY KEY, x integer, x10 integer, x10b integer, x100 integer);
 ---END---
 ---START---
 insert into fkest select x, x/10, x/10, x/100 from generate_series(1,1000) x;
@@ -3657,7 +3657,7 @@ create table j1 (id int primary key);
 create table j2 (id int primary key);
 ---END---
 ---START---
-CREATE TABLE j3 (_gemini_pk serial PRIMARY KEY, id integer);
+CREATE TABLE j3 (gemini_pk serial PRIMARY KEY, id integer);
 ---END---
 ---START---
 insert into j1 values(1),(2),(3);

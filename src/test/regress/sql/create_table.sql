@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE unknowntab (_gemini_pk serial PRIMARY KEY, u unknown);
+CREATE TABLE unknowntab (gemini_pk serial PRIMARY KEY, u unknown);
 ---END---
 ---START---
 CREATE TYPE unknown_comptype AS (
@@ -122,16 +122,16 @@ SELECT firstc, lastc FROM extra_wide_table;
 CREATE TABLE withoid() WITH OIDS;
 ---END---
 ---START---
-CREATE TABLE withoid (_gemini_pk serial PRIMARY KEY) WITH (oids);
+CREATE TABLE withoid (gemini_pk serial PRIMARY KEY) WITH (oids);
 ---END---
 ---START---
-CREATE TABLE withoid (_gemini_pk serial PRIMARY KEY) WITH (oids = 'true');
+CREATE TABLE withoid (gemini_pk serial PRIMARY KEY) WITH (oids = 'true');
 ---END---
 ---START---
 -- but explicitly not adding oids is still supported
 DROP TABLE IF EXISTS withoutoid;
 
-CREATE TABLE withoutoid (_gemini_pk serial PRIMARY KEY);
+CREATE TABLE withoutoid (gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
 DROP TABLE withoutoid;
@@ -139,38 +139,38 @@ DROP TABLE withoutoid;
 ---START---
 DROP TABLE IF EXISTS withoutoid;
 
-CREATE TABLE withoutoid (_gemini_pk serial PRIMARY KEY) WITH (oids = 'false');
+CREATE TABLE withoutoid (gemini_pk serial PRIMARY KEY) WITH (oids = 'false');
 ---END---
 ---START---
 DROP TABLE withoutoid;
 ---END---
 ---START---
-CREATE TABLE default_expr_column (_gemini_pk serial PRIMARY KEY, id integer DEFAULT id);
+CREATE TABLE default_expr_column (gemini_pk serial PRIMARY KEY, id integer DEFAULT id);
 ---END---
 ---START---
-CREATE TABLE default_expr_column (_gemini_pk serial PRIMARY KEY, id integer DEFAULT bar.id);
+CREATE TABLE default_expr_column (gemini_pk serial PRIMARY KEY, id integer DEFAULT bar.id);
 ---END---
 ---START---
-CREATE TABLE default_expr_agg_column (_gemini_pk serial PRIMARY KEY, id integer DEFAULT avg(id));
+CREATE TABLE default_expr_agg_column (gemini_pk serial PRIMARY KEY, id integer DEFAULT avg(id));
 ---END---
 ---START---
-CREATE TABLE default_expr_non_column (_gemini_pk serial PRIMARY KEY, a integer DEFAULT avg(non_existent));
+CREATE TABLE default_expr_non_column (gemini_pk serial PRIMARY KEY, a integer DEFAULT avg(non_existent));
 ---END---
 ---START---
-CREATE TABLE default_expr_agg (_gemini_pk serial PRIMARY KEY, a integer DEFAULT avg(1));
+CREATE TABLE default_expr_agg (gemini_pk serial PRIMARY KEY, a integer DEFAULT avg(1));
 ---END---
 ---START---
-CREATE TABLE default_expr_agg (_gemini_pk serial PRIMARY KEY, a integer DEFAULT (SELECT 1));
+CREATE TABLE default_expr_agg (gemini_pk serial PRIMARY KEY, a integer DEFAULT (SELECT 1));
 ---END---
 ---START---
-CREATE TABLE default_expr_agg (_gemini_pk serial PRIMARY KEY, a integer DEFAULT generate_series(1, 3));
+CREATE TABLE default_expr_agg (gemini_pk serial PRIMARY KEY, a integer DEFAULT generate_series(1, 3));
 ---END---
 ---START---
 -- Verify that subtransaction rollback restores rd_createSubid.
 BEGIN;
 ---END---
 ---START---
-CREATE TABLE remember_create_subid (_gemini_pk serial PRIMARY KEY, c integer);
+CREATE TABLE remember_create_subid (gemini_pk serial PRIMARY KEY, c integer);
 ---END---
 ---START---
 SAVEPOINT q;
@@ -188,7 +188,7 @@ COMMIT;
 DROP TABLE remember_create_subid;
 ---END---
 ---START---
-CREATE TABLE remember_node_subid (_gemini_pk serial PRIMARY KEY, c integer);
+CREATE TABLE remember_node_subid (gemini_pk serial PRIMARY KEY, c integer);
 ---END---
 ---START---
 BEGIN;
@@ -212,41 +212,41 @@ COMMIT;
 DROP TABLE remember_node_subid;
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a integer) INHERITS (some_table) PARTITION BY list (a);
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a integer) INHERITS (some_table) PARTITION BY list (a);
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a1 integer, a2 integer) PARTITION BY list (a1, a2);
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a1 integer, a2 integer) PARTITION BY list (a1, a2);
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a integer, EXCLUDE USING gist (a WITH OPERATOR(&&))) PARTITION BY range (a);
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a integer, EXCLUDE USING gist (a WITH OPERATOR(&&))) PARTITION BY range (a);
 ---END---
 ---START---
 -- prevent using prohibited expressions in the key
 CREATE FUNCTION retset (a int) RETURNS SETOF int AS $$ SELECT 1; $$ LANGUAGE SQL IMMUTABLE;
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range ((retset(a)));
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range ((retset(a)));
 ---END---
 ---START---
 DROP FUNCTION retset(int);
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range ((avg(a)));
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range ((avg(a)));
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range ((avg(a) OVER (PARTITION BY b)));
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range ((avg(a) OVER (PARTITION BY b)));
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list ((a LIKE (SELECT 1)));
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list ((a LIKE (SELECT 1)));
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range ((42));
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range ((42));
 ---END---
 ---START---
 CREATE FUNCTION const_func () RETURNS int AS $$ SELECT 1; $$ LANGUAGE SQL IMMUTABLE;
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range ((const_func()));
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range ((const_func()));
 ---END---
 ---START---
 DROP FUNCTION const_func();
@@ -258,48 +258,48 @@ CREATE TABLE partitioned (
 ) PARTITION BY MAGIC (a);
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (b);
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (b);
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (xmin);
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (xmin);
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (((a, b)));
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (((a, b)));
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a, ('unknown'));
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a, ('unknown'));
 ---END---
 ---START---
 -- functions in key must be immutable
 CREATE FUNCTION immut_func (a int) RETURNS int AS $$ SELECT a + random()::int; $$ LANGUAGE SQL;
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range ((immut_func(a)));
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range ((immut_func(a)));
 ---END---
 ---START---
 DROP FUNCTION immut_func(int);
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a point) PARTITION BY list (a);
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a point) PARTITION BY list (a);
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a point) PARTITION BY list (a point_ops);
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a point) PARTITION BY list (a point_ops);
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a point) PARTITION BY range (a);
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a point) PARTITION BY range (a);
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a point) PARTITION BY range (a point_ops);
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a point) PARTITION BY range (a point_ops);
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a integer, CONSTRAINT check_a CHECK (a > 0) NO INHERIT) PARTITION BY range (a);
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a integer, CONSTRAINT check_a CHECK (a > 0) NO INHERIT) PARTITION BY range (a);
 ---END---
 ---START---
 -- some checks after successful creation of a partitioned table
 CREATE FUNCTION plusone(a int) RETURNS INT AS $$ SELECT a+1; $$ LANGUAGE SQL;
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text, d text) PARTITION BY range (a oid_ops, (plusone(b)), c COLLATE "default", d COLLATE "C");
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a integer, b integer, c text, d text) PARTITION BY range (a oid_ops, (plusone(b)), c COLLATE "default", d COLLATE "C");
 ---END---
 ---START---
 -- check relkind
@@ -310,10 +310,10 @@ SELECT relkind FROM pg_class WHERE relname = 'partitioned';
 DROP FUNCTION plusone(int);
 ---END---
 ---START---
-CREATE TABLE partitioned2 (_gemini_pk serial PRIMARY KEY, a integer, b text) PARTITION BY range ((a + 1), (substr(b, 1, 5)));
+CREATE TABLE partitioned2 (gemini_pk serial PRIMARY KEY, a integer, b text) PARTITION BY range ((a + 1), (substr(b, 1, 5)));
 ---END---
 ---START---
-CREATE TABLE fail (_gemini_pk serial PRIMARY KEY) INHERITS (partitioned2);
+CREATE TABLE fail (gemini_pk serial PRIMARY KEY) INHERITS (partitioned2);
 ---END---
 ---START---
 -- Partition key in describe output
@@ -331,7 +331,7 @@ CREATE TABLE part2_1 PARTITION OF partitioned2 FOR VALUES FROM (-1, 'aaaaa') TO 
 DROP TABLE partitioned, partitioned2;
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY list ((CAST(ROW(a, b) AS partitioned)));
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY list ((CAST(ROW(a, b) AS partitioned)));
 ---END---
 ---START---
 create table partitioned1
@@ -349,7 +349,7 @@ select * from partitioned where row(a,b)::partitioned = '(1,2)'::partitioned;
 drop table partitioned;
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY list ((partitioned));
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY list ((partitioned));
 ---END---
 ---START---
 create table partitioned1
@@ -372,7 +372,7 @@ drop table partitioned;
 create domain intdom1 as int;
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a intdom1, b text) PARTITION BY range (a);
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a intdom1, b text) PARTITION BY range (a);
 ---END---
 ---START---
 alter table partitioned drop column a;
@@ -397,7 +397,7 @@ table partitioned;
 create domain intdom1 as int;
 ---END---
 ---START---
-CREATE TABLE partitioned (_gemini_pk serial PRIMARY KEY, a intdom1, b text) PARTITION BY range ((plusone(a)));
+CREATE TABLE partitioned (gemini_pk serial PRIMARY KEY, a intdom1, b text) PARTITION BY range ((plusone(a)));
 ---END---
 ---START---
 alter table partitioned drop column a;
@@ -416,7 +416,7 @@ drop domain intdom1 cascade;
 table partitioned;
 ---END---
 ---START---
-CREATE TABLE list_parted (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
+CREATE TABLE list_parted (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE part_p1 PARTITION OF list_parted FOR VALUES IN ('1');
@@ -480,7 +480,7 @@ CREATE TABLE part_default PARTITION OF list_parted DEFAULT;
 CREATE TABLE fail_default_part PARTITION OF list_parted DEFAULT;
 ---END---
 ---START---
-CREATE TABLE bools (_gemini_pk serial PRIMARY KEY, a bool) PARTITION BY list (a);
+CREATE TABLE bools (gemini_pk serial PRIMARY KEY, a bool) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE bools_true PARTITION OF bools FOR VALUES IN (1);
@@ -489,7 +489,7 @@ CREATE TABLE bools_true PARTITION OF bools FOR VALUES IN (1);
 DROP TABLE bools;
 ---END---
 ---START---
-CREATE TABLE moneyp (_gemini_pk serial PRIMARY KEY, a money) PARTITION BY list (a);
+CREATE TABLE moneyp (gemini_pk serial PRIMARY KEY, a money) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE moneyp_10 PARTITION OF moneyp FOR VALUES IN (10);
@@ -504,7 +504,7 @@ CREATE TABLE moneyp_12 PARTITION OF moneyp FOR VALUES IN (to_char(12, '99')::int
 DROP TABLE moneyp;
 ---END---
 ---START---
-CREATE TABLE bigintp (_gemini_pk serial PRIMARY KEY, a bigint) PARTITION BY list (a);
+CREATE TABLE bigintp (gemini_pk serial PRIMARY KEY, a bigint) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE bigintp_10 PARTITION OF bigintp FOR VALUES IN (10);
@@ -517,7 +517,7 @@ CREATE TABLE bigintp_10_2 PARTITION OF bigintp FOR VALUES IN ('10');
 DROP TABLE bigintp;
 ---END---
 ---START---
-CREATE TABLE range_parted (_gemini_pk serial PRIMARY KEY, a date) PARTITION BY range (a);
+CREATE TABLE range_parted (gemini_pk serial PRIMARY KEY, a date) PARTITION BY range (a);
 ---END---
 ---START---
 -- forbidden expressions for partition bounds with range partitioned table
@@ -577,7 +577,7 @@ CREATE TABLE fail_part PARTITION OF range_parted FOR VALUES FROM (null) TO (maxv
 CREATE TABLE fail_part PARTITION OF range_parted FOR VALUES WITH (MODULUS 10, REMAINDER 1);
 ---END---
 ---START---
-CREATE TABLE hash_parted (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY hash (a);
+CREATE TABLE hash_parted (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY hash (a);
 ---END---
 ---START---
 CREATE TABLE hpart_1 PARTITION OF hash_parted FOR VALUES WITH (MODULUS 10, REMAINDER 0);
@@ -616,7 +616,7 @@ CREATE TABLE fail_part PARTITION OF hash_parted FOR VALUES IN (1000);
 CREATE TABLE fail_default_part PARTITION OF hash_parted DEFAULT;
 ---END---
 ---START---
-CREATE TABLE unparted (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE unparted (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 CREATE TABLE fail_part PARTITION OF unparted FOR VALUES IN ('a');
@@ -631,7 +631,7 @@ DROP TABLE unparted;
 -- cannot create a permanent rel as partition of a temp rel
 DROP TABLE IF EXISTS temp_parted;
 
-CREATE TABLE temp_parted (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
+CREATE TABLE temp_parted (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE fail_part PARTITION OF temp_parted FOR VALUES IN ('a');
@@ -640,7 +640,7 @@ CREATE TABLE fail_part PARTITION OF temp_parted FOR VALUES IN ('a');
 DROP TABLE temp_parted;
 ---END---
 ---START---
-CREATE TABLE list_parted2 (_gemini_pk serial PRIMARY KEY, a varchar) PARTITION BY list (a);
+CREATE TABLE list_parted2 (gemini_pk serial PRIMARY KEY, a varchar) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE part_null_z PARTITION OF list_parted2 FOR VALUES IN (null, 'z');
@@ -665,7 +665,7 @@ INSERT INTO list_parted2 VALUES('X');
 CREATE TABLE fail_part PARTITION OF list_parted2 FOR VALUES IN ('W', 'X', 'Y');
 ---END---
 ---START---
-CREATE TABLE range_parted2 (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
+CREATE TABLE range_parted2 (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 -- trying to create range partition with empty range
@@ -721,7 +721,7 @@ CREATE TABLE fail_part PARTITION OF range_parted2 FOR VALUES FROM (80) TO (90);
 CREATE TABLE part4 PARTITION OF range_parted2 FOR VALUES FROM (90) TO (100);
 ---END---
 ---START---
-CREATE TABLE range_parted3 (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a, (b + 1));
+CREATE TABLE range_parted3 (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a, (b + 1));
 ---END---
 ---START---
 CREATE TABLE part00 PARTITION OF range_parted3 FOR VALUES FROM (0, minvalue) TO (0, maxvalue);
@@ -751,7 +751,7 @@ CREATE TABLE range3_default PARTITION OF range_parted3 DEFAULT;
 CREATE TABLE fail_part PARTITION OF range_parted3 FOR VALUES FROM (1, minvalue) TO (1, maxvalue);
 ---END---
 ---START---
-CREATE TABLE hash_parted2 (_gemini_pk serial PRIMARY KEY, a varchar) PARTITION BY hash (a);
+CREATE TABLE hash_parted2 (gemini_pk serial PRIMARY KEY, a varchar) PARTITION BY hash (a);
 ---END---
 ---START---
 CREATE TABLE h2part_1 PARTITION OF hash_parted2 FOR VALUES WITH (MODULUS 4, REMAINDER 2);
@@ -778,7 +778,7 @@ CREATE TABLE fail_part PARTITION OF hash_parted2 FOR VALUES WITH (MODULUS 0, REM
 CREATE TABLE fail_part PARTITION OF hash_parted2 FOR VALUES WITH (MODULUS 8, REMAINDER 8);
 ---END---
 ---START---
-CREATE TABLE parted (_gemini_pk serial PRIMARY KEY, a text, b integer NOT NULL DEFAULT 0, CONSTRAINT check_a CHECK (length(a) > 0)) PARTITION BY list (a);
+CREATE TABLE parted (gemini_pk serial PRIMARY KEY, a text, b integer NOT NULL DEFAULT 0, CONSTRAINT check_a CHECK (length(a) > 0)) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE part_a PARTITION OF parted FOR VALUES IN ('a');
@@ -846,7 +846,7 @@ CREATE TABLE part_c PARTITION OF parted (b WITH OPTIONS NOT NULL DEFAULT 0) FOR 
 CREATE TABLE part_c_1_10 PARTITION OF part_c FOR VALUES FROM (1) TO (10);
 ---END---
 ---START---
-CREATE TABLE parted_notnull_inh_test (_gemini_pk serial PRIMARY KEY, a integer DEFAULT 1, b integer NOT NULL DEFAULT 0) PARTITION BY list (a);
+CREATE TABLE parted_notnull_inh_test (gemini_pk serial PRIMARY KEY, a integer DEFAULT 1, b integer NOT NULL DEFAULT 0) PARTITION BY list (a);
 ---END---
 ---START---
 create table parted_notnull_inh_test1 partition of parted_notnull_inh_test (a not null, b default 1) for values in (1);
@@ -860,7 +860,7 @@ insert into parted_notnull_inh_test (b) values (null);
 drop table parted_notnull_inh_test;
 ---END---
 ---START---
-CREATE TABLE parted_boolean_col (_gemini_pk serial PRIMARY KEY, a bool, b text) PARTITION BY list (a);
+CREATE TABLE parted_boolean_col (gemini_pk serial PRIMARY KEY, a bool, b text) PARTITION BY list (a);
 ---END---
 ---START---
 create table parted_boolean_less partition of parted_boolean_col
@@ -874,7 +874,7 @@ create table parted_boolean_greater partition of parted_boolean_col
 drop table parted_boolean_col;
 ---END---
 ---START---
-CREATE TABLE parted_collate_must_match (_gemini_pk serial PRIMARY KEY, a text COLLATE "C", b text COLLATE "C") PARTITION BY range (a);
+CREATE TABLE parted_collate_must_match (gemini_pk serial PRIMARY KEY, a text COLLATE "C", b text COLLATE "C") PARTITION BY range (a);
 ---END---
 ---START---
 -- on the partition key
@@ -890,7 +890,7 @@ create table parted_collate_must_match2 partition of parted_collate_must_match
 drop table parted_collate_must_match;
 ---END---
 ---START---
-CREATE TABLE test_part_coll_posix (_gemini_pk serial PRIMARY KEY, a text) PARTITION BY range (a COLLATE "POSIX");
+CREATE TABLE test_part_coll_posix (gemini_pk serial PRIMARY KEY, a text) PARTITION BY range (a COLLATE "POSIX");
 ---END---
 ---START---
 -- ok, collation is implicitly coerced
@@ -965,7 +965,7 @@ CREATE OPERATOR CLASS test_int4_ops FOR TYPE int4 USING btree AS
   OPERATOR 5 > (int4,int4), FUNCTION 1 my_int4_sort(int4,int4);
 ---END---
 ---START---
-CREATE TABLE partkey_t (_gemini_pk serial PRIMARY KEY, a int4) PARTITION BY range (a test_int4_ops);
+CREATE TABLE partkey_t (gemini_pk serial PRIMARY KEY, a int4) PARTITION BY range (a test_int4_ops);
 ---END---
 ---START---
 CREATE TABLE partkey_t_1 PARTITION OF partkey_t FOR VALUES FROM (0) TO (1000);
@@ -990,7 +990,7 @@ DROP OPERATOR CLASS test_int4_ops USING btree;
 DROP FUNCTION my_int4_sort(int4,int4);
 ---END---
 ---START---
-CREATE TABLE parted_col_comment (_gemini_pk serial PRIMARY KEY, a integer, b text) PARTITION BY list (a);
+CREATE TABLE parted_col_comment (gemini_pk serial PRIMARY KEY, a integer, b text) PARTITION BY list (a);
 ---END---
 ---START---
 COMMENT ON TABLE parted_col_comment IS 'Am partitioned table';
@@ -1006,10 +1006,10 @@ SELECT obj_description('parted_col_comment'::regclass);
 DROP TABLE parted_col_comment;
 ---END---
 ---START---
-CREATE TABLE parted_col_comment (_gemini_pk serial PRIMARY KEY, a integer, b text) PARTITION BY list (a) WITH (fillfactor = 100);
+CREATE TABLE parted_col_comment (gemini_pk serial PRIMARY KEY, a integer, b text) PARTITION BY list (a) WITH (fillfactor = 100);
 ---END---
 ---START---
-CREATE TABLE arrlp (_gemini_pk serial PRIMARY KEY, a integer[]) PARTITION BY list (a);
+CREATE TABLE arrlp (gemini_pk serial PRIMARY KEY, a integer[]) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE arrlp12 PARTITION OF arrlp FOR VALUES IN ('{1}', '{2}');
@@ -1019,7 +1019,7 @@ CREATE TABLE arrlp12 PARTITION OF arrlp FOR VALUES IN ('{1}', '{2}');
 DROP TABLE arrlp;
 ---END---
 ---START---
-CREATE TABLE boolspart (_gemini_pk serial PRIMARY KEY, a bool) PARTITION BY list (a);
+CREATE TABLE boolspart (gemini_pk serial PRIMARY KEY, a bool) PARTITION BY list (a);
 ---END---
 ---START---
 create table boolspart_t partition of boolspart for values in (true);
@@ -1032,12 +1032,12 @@ create table boolspart_f partition of boolspart for values in (false);
 drop table boolspart;
 ---END---
 ---START---
-CREATE TABLE perm_parted (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
+CREATE TABLE perm_parted (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 DROP TABLE IF EXISTS temp_parted;
 
-CREATE TABLE temp_parted (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
+CREATE TABLE temp_parted (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 create table perm_part partition of temp_parted default;
@@ -1062,7 +1062,7 @@ drop table perm_parted cascade;
 drop table temp_parted cascade;
 ---END---
 ---START---
-CREATE TABLE tab_part_create (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
+CREATE TABLE tab_part_create (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 create or replace function func_part_create() returns trigger
@@ -1086,7 +1086,7 @@ drop table tab_part_create;
 drop function func_part_create();
 ---END---
 ---START---
-CREATE TABLE volatile_partbound_test (_gemini_pk serial PRIMARY KEY, partkey timestamp) PARTITION BY range (partkey);
+CREATE TABLE volatile_partbound_test (gemini_pk serial PRIMARY KEY, partkey timestamp) PARTITION BY range (partkey);
 ---END---
 ---START---
 create table volatile_partbound_test1 partition of volatile_partbound_test for values from (minvalue) to (current_timestamp);
@@ -1105,10 +1105,10 @@ select tableoid::regclass from volatile_partbound_test;
 drop table volatile_partbound_test;
 ---END---
 ---START---
-CREATE TABLE defcheck (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY list (b);
+CREATE TABLE defcheck (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY list (b);
 ---END---
 ---START---
-CREATE TABLE defcheck_def (_gemini_pk serial PRIMARY KEY, a integer, c integer, b integer);
+CREATE TABLE defcheck_def (gemini_pk serial PRIMARY KEY, a integer, c integer, b integer);
 ---END---
 ---START---
 alter table defcheck_def drop c;
@@ -1133,7 +1133,7 @@ create table defcheck_0 partition of defcheck for values in (0);
 drop table defcheck;
 ---END---
 ---START---
-CREATE TABLE part_column_drop (_gemini_pk serial PRIMARY KEY, useless_1 integer, id integer, useless_2 integer, d integer, b integer, useless_3 integer) PARTITION BY range (id);
+CREATE TABLE part_column_drop (gemini_pk serial PRIMARY KEY, useless_1 integer, id integer, useless_2 integer, d integer, b integer, useless_3 integer) PARTITION BY range (id);
 ---END---
 ---START---
 alter table part_column_drop drop column useless_1;

@@ -94,7 +94,7 @@ select '1'::xid8 >= '2'::xid8, '2'::xid8 >= '2'::xid8, '2'::xid8 >= '1'::xid8;
 select xid8cmp('1', '2'), xid8cmp('2', '2'), xid8cmp('2', '1');
 ---END---
 ---START---
-CREATE TABLE xid8_t1 (_gemini_pk serial PRIMARY KEY, x xid8);
+CREATE TABLE xid8_t1 (gemini_pk serial PRIMARY KEY, x xid8);
 ---END---
 ---START---
 insert into xid8_t1 values ('0'), ('010'), ('42'), ('0xffffffffffffffff'), ('-1');
@@ -159,7 +159,7 @@ select * from pg_input_error_info('12:16:14,13', 'pg_snapshot');
 ---START---
 DROP TABLE IF EXISTS snapshot_test;
 
-CREATE TABLE snapshot_test (_gemini_pk serial PRIMARY KEY, nr integer, snap pg_snapshot);
+CREATE TABLE snapshot_test (gemini_pk serial PRIMARY KEY, nr integer, snap pg_snapshot);
 ---END---
 ---START---
 insert into snapshot_test values (1, '12:13:');

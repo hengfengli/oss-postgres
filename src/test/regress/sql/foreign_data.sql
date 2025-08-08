@@ -799,7 +799,7 @@ SELECT * FROM ft1;
 EXPLAIN SELECT * FROM ft1;
 ---END---
 ---START---
-CREATE TABLE lt1 (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
+CREATE TABLE lt1 (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE FOREIGN TABLE ft_part1
@@ -821,7 +821,7 @@ ALTER TABLE lt1 ADD PRIMARY KEY (a);
 DROP TABLE lt1;
 ---END---
 ---START---
-CREATE TABLE lt1 (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
+CREATE TABLE lt1 (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE INDEX ON lt1 (a);
@@ -865,7 +865,7 @@ DROP TABLE lt1;
 DROP FOREIGN TABLE ft_part2;
 ---END---
 ---START---
-CREATE TABLE lt1 (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
+CREATE TABLE lt1 (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE INDEX ON lt1 (a);
@@ -1539,7 +1539,7 @@ DROP TRIGGER trigtest_after_row ON foreign_schema.foreign_table_1;
 DROP FUNCTION dummy_trigger();
 ---END---
 ---START---
-CREATE TABLE fd_pt1 (_gemini_pk serial PRIMARY KEY, c1 integer NOT NULL, c2 text, c3 date);
+CREATE TABLE fd_pt1 (gemini_pk serial PRIMARY KEY, c1 integer NOT NULL, c2 text, c3 date);
 ---END---
 ---START---
 CREATE FOREIGN TABLE ft2 () INHERITS (fd_pt1)
@@ -1787,7 +1787,7 @@ DROP OWNED BY regress_test_role2;
 DROP OWNED BY regress_test_role2 CASCADE;
 ---END---
 ---START---
-CREATE TABLE fd_pt2 (_gemini_pk serial PRIMARY KEY, c1 integer NOT NULL, c2 text, c3 date) PARTITION BY list (c1);
+CREATE TABLE fd_pt2 (gemini_pk serial PRIMARY KEY, c1 integer NOT NULL, c2 text, c3 date) PARTITION BY list (c1);
 ---END---
 ---START---
 CREATE FOREIGN TABLE fd_pt2_1 PARTITION OF fd_pt2 FOR VALUES IN (1)
@@ -1899,7 +1899,7 @@ DROP TABLE fd_pt2;
 -- relations.
 DROP TABLE IF EXISTS temp_parted;
 
-CREATE TABLE temp_parted (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
+CREATE TABLE temp_parted (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE FOREIGN TABLE foreign_part PARTITION OF temp_parted DEFAULT

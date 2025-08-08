@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE pxtest1 (_gemini_pk serial PRIMARY KEY, foobar varchar(10));
+CREATE TABLE pxtest1 (gemini_pk serial PRIMARY KEY, foobar varchar(10));
 ---END---
 ---START---
 INSERT INTO pxtest1 VALUES ('aaa');
@@ -153,7 +153,7 @@ PREPARE TRANSACTION 'foo6';
 BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 ---END---
 ---START---
-CREATE TABLE pxtest2 (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE pxtest2 (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 INSERT INTO pxtest2 VALUES (1);
@@ -177,7 +177,7 @@ INSERT INTO pxtest2 VALUES (3);
 PREPARE TRANSACTION 'regress-one';
 ---END---
 ---START---
-CREATE TABLE pxtest3 (_gemini_pk serial PRIMARY KEY, fff integer);
+CREATE TABLE pxtest3 (gemini_pk serial PRIMARY KEY, fff integer);
 ---END---
 ---START---
 -- Test shared invalidation
@@ -187,7 +187,7 @@ BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 DROP TABLE pxtest3;
 ---END---
 ---START---
-CREATE TABLE pxtest4 (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE pxtest4 (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 INSERT INTO pxtest4 VALUES (1);

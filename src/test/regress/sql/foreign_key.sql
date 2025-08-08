@@ -10,7 +10,7 @@
 CREATE TABLE PKTABLE ( ptest1 int PRIMARY KEY, ptest2 text );
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 integer REFERENCES pktable MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE, ftest2 integer);
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 integer REFERENCES pktable MATCH FULL ON DELETE CASCADE ON UPDATE CASCADE, ftest2 integer);
 ---END---
 ---START---
 -- Insert test data into PKTABLE
@@ -78,7 +78,7 @@ DROP TABLE PKTABLE;
 CREATE TABLE PKTABLE ( ptest1 int, ptest2 int, ptest3 text, PRIMARY KEY(ptest1, ptest2) );
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 integer, ftest3 integer, CONSTRAINT constrname FOREIGN KEY (ftest1, ftest2) REFERENCES pktable MATCH FULL ON DELETE SET NULL ON UPDATE SET NULL);
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 integer, ftest3 integer, CONSTRAINT constrname FOREIGN KEY (ftest1, ftest2) REFERENCES pktable MATCH FULL ON DELETE SET NULL ON UPDATE SET NULL);
 ---END---
 ---START---
 -- Test comments
@@ -200,7 +200,7 @@ DROP TABLE FKTABLE;
 CREATE TABLE PKTABLE ( ptest1 int, ptest2 int, ptest3 text, PRIMARY KEY(ptest1, ptest2) );
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 integer DEFAULT -1, ftest2 integer DEFAULT -2, ftest3 integer, CONSTRAINT constrname2 FOREIGN KEY (ftest1, ftest2) REFERENCES pktable MATCH FULL ON DELETE SET DEFAULT ON UPDATE SET DEFAULT);
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 integer DEFAULT -1, ftest2 integer DEFAULT -2, ftest3 integer, CONSTRAINT constrname2 FOREIGN KEY (ftest1, ftest2) REFERENCES pktable MATCH FULL ON DELETE SET DEFAULT ON UPDATE SET DEFAULT);
 ---END---
 ---START---
 -- Insert a value in PKTABLE for default
@@ -299,7 +299,7 @@ DROP TABLE FKTABLE;
 CREATE TABLE PKTABLE ( ptest1 int PRIMARY KEY, ptest2 text );
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 integer REFERENCES pktable MATCH FULL, ftest2 integer);
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 integer REFERENCES pktable MATCH FULL, ftest2 integer);
 ---END---
 ---START---
 -- Insert test data into PKTABLE
@@ -379,7 +379,7 @@ DROP TABLE PKTABLE;
 CREATE TABLE PKTABLE ( ptest1 int, ptest2 int, PRIMARY KEY(ptest1, ptest2) );
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 integer);
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 integer);
 ---END---
 ---START---
 INSERT INTO PKTABLE VALUES (1, 2);
@@ -403,7 +403,7 @@ DROP TABLE PKTABLE;
 CREATE TABLE PKTABLE ( ptest1 int, ptest2 int, ptest3 int, ptest4 text, PRIMARY KEY(ptest1, ptest2, ptest3) );
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 integer, ftest3 integer, ftest4 integer, CONSTRAINT constrname3 FOREIGN KEY (ftest1, ftest2, ftest3) REFERENCES pktable);
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 integer, ftest3 integer, ftest4 integer, CONSTRAINT constrname3 FOREIGN KEY (ftest1, ftest2, ftest3) REFERENCES pktable);
 ---END---
 ---START---
 -- Insert Primary Key values
@@ -472,10 +472,10 @@ DROP TABLE FKTABLE;
 DROP TABLE PKTABLE;
 ---END---
 ---START---
-CREATE TABLE pktable (_gemini_pk serial PRIMARY KEY, ptest1 integer, ptest2 integer, ptest3 integer, ptest4 text, UNIQUE (ptest1, ptest2, ptest3));
+CREATE TABLE pktable (gemini_pk serial PRIMARY KEY, ptest1 integer, ptest2 integer, ptest3 integer, ptest4 text, UNIQUE (ptest1, ptest2, ptest3));
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 integer, ftest3 integer, ftest4 integer, CONSTRAINT constrname3 FOREIGN KEY (ftest1, ftest2, ftest3) REFERENCES pktable (ptest1, ptest2, ptest3));
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 integer, ftest3 integer, ftest4 integer, CONSTRAINT constrname3 FOREIGN KEY (ftest1, ftest2, ftest3) REFERENCES pktable (ptest1, ptest2, ptest3));
 ---END---
 ---START---
 INSERT INTO PKTABLE VALUES (1, 2, 3, 'test1');
@@ -509,7 +509,7 @@ DROP TABLE PKTABLE;
 CREATE TABLE PKTABLE ( ptest1 int, ptest2 int, ptest3 int, ptest4 text, PRIMARY KEY(ptest1, ptest2, ptest3) );
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 integer, ftest3 integer, ftest4 integer, CONSTRAINT constrname3 FOREIGN KEY (ftest1, ftest2, ftest3) REFERENCES pktable ON DELETE CASCADE ON UPDATE CASCADE);
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 integer, ftest3 integer, ftest4 integer, CONSTRAINT constrname3 FOREIGN KEY (ftest1, ftest2, ftest3) REFERENCES pktable ON DELETE CASCADE ON UPDATE CASCADE);
 ---END---
 ---START---
 -- Insert Primary Key values
@@ -596,7 +596,7 @@ DROP TABLE PKTABLE;
 CREATE TABLE PKTABLE ( ptest1 int, ptest2 int, ptest3 int, ptest4 text, PRIMARY KEY(ptest1, ptest2, ptest3) );
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 integer DEFAULT 0, ftest2 integer, ftest3 integer, ftest4 integer, CONSTRAINT constrname3 FOREIGN KEY (ftest1, ftest2, ftest3) REFERENCES pktable ON DELETE SET DEFAULT ON UPDATE SET NULL);
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 integer DEFAULT 0, ftest2 integer, ftest3 integer, ftest4 integer, CONSTRAINT constrname3 FOREIGN KEY (ftest1, ftest2, ftest3) REFERENCES pktable ON DELETE SET DEFAULT ON UPDATE SET NULL);
 ---END---
 ---START---
 -- Insert Primary Key values
@@ -686,7 +686,7 @@ DROP TABLE PKTABLE;
 CREATE TABLE PKTABLE ( ptest1 int, ptest2 int, ptest3 int, ptest4 text, PRIMARY KEY(ptest1, ptest2, ptest3) );
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 integer DEFAULT 0, ftest2 integer DEFAULT -1, ftest3 integer DEFAULT -2, ftest4 integer, CONSTRAINT constrname3 FOREIGN KEY (ftest1, ftest2, ftest3) REFERENCES pktable ON DELETE SET NULL ON UPDATE SET DEFAULT);
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 integer DEFAULT 0, ftest2 integer DEFAULT -1, ftest3 integer DEFAULT -2, ftest4 integer, CONSTRAINT constrname3 FOREIGN KEY (ftest1, ftest2, ftest3) REFERENCES pktable ON DELETE SET NULL ON UPDATE SET DEFAULT);
 ---END---
 ---START---
 -- Insert Primary Key values
@@ -789,16 +789,16 @@ DROP TABLE PKTABLE;
 CREATE TABLE PKTABLE (tid int, id int, PRIMARY KEY (tid, id));
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, tid integer, id integer, foo integer, FOREIGN KEY (tid, id) REFERENCES pktable ON DELETE SET NULL (bar));
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, tid integer, id integer, foo integer, FOREIGN KEY (tid, id) REFERENCES pktable ON DELETE SET NULL (bar));
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, tid integer, id integer, foo integer, FOREIGN KEY (tid, id) REFERENCES pktable ON DELETE SET NULL (foo));
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, tid integer, id integer, foo integer, FOREIGN KEY (tid, id) REFERENCES pktable ON DELETE SET NULL (foo));
 ---END---
 ---START---
 CREATE TABLE FKTABLE (tid int, id int, foo int, FOREIGN KEY (tid, foo) REFERENCES PKTABLE ON UPDATE SET NULL (foo));
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, tid integer, id integer, fk_id_del_set_null integer, fk_id_del_set_default integer DEFAULT 0, FOREIGN KEY (tid, fk_id_del_set_null) REFERENCES pktable ON DELETE SET NULL (fk_id_del_set_null), FOREIGN KEY (tid, fk_id_del_set_default) REFERENCES pktable ON DELETE SET DEFAULT (fk_id_del_set_default));
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, tid integer, id integer, fk_id_del_set_null integer, fk_id_del_set_default integer DEFAULT 0, FOREIGN KEY (tid, fk_id_del_set_null) REFERENCES pktable ON DELETE SET NULL (fk_id_del_set_null), FOREIGN KEY (tid, fk_id_del_set_default) REFERENCES pktable ON DELETE SET DEFAULT (fk_id_del_set_default));
 ---END---
 ---START---
 SELECT pg_get_constraintdef(oid) FROM pg_constraint WHERE conrelid = 'fktable'::regclass::oid ORDER BY oid;
@@ -828,25 +828,25 @@ DROP TABLE PKTABLE;
 CREATE TABLE PKTABLE (ptest1 int PRIMARY KEY, someoid oid);
 ---END---
 ---START---
-CREATE TABLE fktable_fail1 (_gemini_pk serial PRIMARY KEY, ftest1 integer, CONSTRAINT fkfail1 FOREIGN KEY (ftest2) REFERENCES pktable);
+CREATE TABLE fktable_fail1 (gemini_pk serial PRIMARY KEY, ftest1 integer, CONSTRAINT fkfail1 FOREIGN KEY (ftest2) REFERENCES pktable);
 ---END---
 ---START---
-CREATE TABLE fktable_fail2 (_gemini_pk serial PRIMARY KEY, ftest1 integer, CONSTRAINT fkfail1 FOREIGN KEY (ftest1) REFERENCES pktable (ptest2));
+CREATE TABLE fktable_fail2 (gemini_pk serial PRIMARY KEY, ftest1 integer, CONSTRAINT fkfail1 FOREIGN KEY (ftest1) REFERENCES pktable (ptest2));
 ---END---
 ---START---
-CREATE TABLE fktable_fail3 (_gemini_pk serial PRIMARY KEY, ftest1 integer, CONSTRAINT fkfail1 FOREIGN KEY (tableoid) REFERENCES pktable (someoid));
+CREATE TABLE fktable_fail3 (gemini_pk serial PRIMARY KEY, ftest1 integer, CONSTRAINT fkfail1 FOREIGN KEY (tableoid) REFERENCES pktable (someoid));
 ---END---
 ---START---
-CREATE TABLE fktable_fail4 (_gemini_pk serial PRIMARY KEY, ftest1 oid, CONSTRAINT fkfail1 FOREIGN KEY (ftest1) REFERENCES pktable (tableoid));
+CREATE TABLE fktable_fail4 (gemini_pk serial PRIMARY KEY, ftest1 oid, CONSTRAINT fkfail1 FOREIGN KEY (ftest1) REFERENCES pktable (tableoid));
 ---END---
 ---START---
 DROP TABLE PKTABLE;
 ---END---
 ---START---
-CREATE TABLE pktable (_gemini_pk serial PRIMARY KEY, ptest1 integer, ptest2 integer, UNIQUE (ptest1, ptest2));
+CREATE TABLE pktable (gemini_pk serial PRIMARY KEY, ptest1 integer, ptest2 integer, UNIQUE (ptest1, ptest2));
 ---END---
 ---START---
-CREATE TABLE fktable_fail1 (_gemini_pk serial PRIMARY KEY, ftest1 integer REFERENCES pktable (ptest1));
+CREATE TABLE fktable_fail1 (gemini_pk serial PRIMARY KEY, ftest1 integer REFERENCES pktable (ptest1));
 ---END---
 ---START---
 DROP TABLE FKTABLE_FAIL1;
@@ -865,13 +865,13 @@ CREATE TABLE PKTABLE (ptest1 int PRIMARY KEY);
 INSERT INTO PKTABLE VALUES(42);
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 inet REFERENCES pktable);
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 inet REFERENCES pktable);
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 inet REFERENCES pktable (ptest1));
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 inet REFERENCES pktable (ptest1));
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 int8 REFERENCES pktable);
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 int8 REFERENCES pktable);
 ---END---
 ---START---
 -- Check it actually works
@@ -894,7 +894,7 @@ UPDATE FKTABLE SET ftest1 = ftest1 + 1;
 DROP TABLE FKTABLE;
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 numeric REFERENCES pktable);
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 numeric REFERENCES pktable);
 ---END---
 ---START---
 DROP TABLE PKTABLE;
@@ -908,7 +908,7 @@ CREATE TABLE PKTABLE (ptest1 numeric PRIMARY KEY);
 INSERT INTO PKTABLE VALUES(42);
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 integer REFERENCES pktable);
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 integer REFERENCES pktable);
 ---END---
 ---START---
 -- Check it actually works
@@ -938,28 +938,28 @@ DROP TABLE PKTABLE;
 CREATE TABLE PKTABLE (ptest1 int, ptest2 inet, PRIMARY KEY(ptest1, ptest2));
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 cidr, ftest2 timestamp, FOREIGN KEY (ftest1, ftest2) REFERENCES pktable);
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 cidr, ftest2 timestamp, FOREIGN KEY (ftest1, ftest2) REFERENCES pktable);
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 cidr, ftest2 timestamp, FOREIGN KEY (ftest1, ftest2) REFERENCES pktable (ptest1, ptest2));
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 cidr, ftest2 timestamp, FOREIGN KEY (ftest1, ftest2) REFERENCES pktable (ptest1, ptest2));
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 inet, FOREIGN KEY (ftest2, ftest1) REFERENCES pktable);
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 inet, FOREIGN KEY (ftest2, ftest1) REFERENCES pktable);
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 inet, FOREIGN KEY (ftest2, ftest1) REFERENCES pktable (ptest1, ptest2));
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 inet, FOREIGN KEY (ftest2, ftest1) REFERENCES pktable (ptest1, ptest2));
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 inet, FOREIGN KEY (ftest1, ftest2) REFERENCES pktable (ptest2, ptest1));
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 inet, FOREIGN KEY (ftest1, ftest2) REFERENCES pktable (ptest2, ptest1));
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 inet, FOREIGN KEY (ftest2, ftest1) REFERENCES pktable (ptest2, ptest1));
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 inet, FOREIGN KEY (ftest2, ftest1) REFERENCES pktable (ptest2, ptest1));
 ---END---
 ---START---
 DROP TABLE FKTABLE;
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 inet, FOREIGN KEY (ftest1, ftest2) REFERENCES pktable (ptest1, ptest2));
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 inet, FOREIGN KEY (ftest1, ftest2) REFERENCES pktable (ptest1, ptest2));
 ---END---
 ---START---
 DROP TABLE FKTABLE;
@@ -1000,13 +1000,13 @@ CREATE TABLE PKTABLE (ptest1 int, ptest2 inet, ptest3 int, ptest4 inet, PRIMARY 
 ptest3) REFERENCES pktable);
 ---END---
 ---START---
-CREATE TABLE pktable_base (_gemini_pk serial PRIMARY KEY, base1 integer NOT NULL);
+CREATE TABLE pktable_base (gemini_pk serial PRIMARY KEY, base1 integer NOT NULL);
 ---END---
 ---START---
 create table pktable (ptest1 int, primary key(base1), unique(base1, ptest1)) inherits (pktable_base);
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 integer REFERENCES pktable (base1));
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 integer REFERENCES pktable (base1));
 ---END---
 ---START---
 -- now some ins, upd, del
@@ -1051,7 +1051,7 @@ drop table fktable;
 delete from pktable;
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 integer, FOREIGN KEY (ftest1, ftest2) REFERENCES pktable (base1, ptest1));
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 integer, FOREIGN KEY (ftest1, ftest2) REFERENCES pktable (base1, ptest1));
 ---END---
 ---START---
 -- now some ins, upd, del
@@ -1099,7 +1099,7 @@ drop table pktable;
 drop table pktable_base;
 ---END---
 ---START---
-CREATE TABLE pktable_base (_gemini_pk serial PRIMARY KEY, base1 integer NOT NULL, base2 integer);
+CREATE TABLE pktable_base (gemini_pk serial PRIMARY KEY, base1 integer NOT NULL, base2 integer);
 ---END---
 ---START---
 create table pktable(ptest1 int, ptest2 int, primary key(base1, ptest1), foreign key(base2, ptest2) references
@@ -1143,25 +1143,25 @@ drop table pktable;
 drop table pktable_base;
 ---END---
 ---START---
-CREATE TABLE pktable_base (_gemini_pk serial PRIMARY KEY, base1 integer NOT NULL);
+CREATE TABLE pktable_base (gemini_pk serial PRIMARY KEY, base1 integer NOT NULL);
 ---END---
 ---START---
 create table pktable(ptest1 inet, primary key(base1, ptest1)) inherits (pktable_base);
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 cidr, ftest2 integer[], FOREIGN KEY (ftest1, ftest2) REFERENCES pktable);
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 cidr, ftest2 integer[], FOREIGN KEY (ftest1, ftest2) REFERENCES pktable);
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 cidr, ftest2 integer[], FOREIGN KEY (ftest1, ftest2) REFERENCES pktable (base1, ptest1));
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 cidr, ftest2 integer[], FOREIGN KEY (ftest1, ftest2) REFERENCES pktable (base1, ptest1));
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 inet, FOREIGN KEY (ftest2, ftest1) REFERENCES pktable);
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 inet, FOREIGN KEY (ftest2, ftest1) REFERENCES pktable);
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 inet, FOREIGN KEY (ftest2, ftest1) REFERENCES pktable (base1, ptest1));
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 inet, FOREIGN KEY (ftest2, ftest1) REFERENCES pktable (base1, ptest1));
 ---END---
 ---START---
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 inet, FOREIGN KEY (ftest1, ftest2) REFERENCES pktable (ptest1, base1));
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, ftest1 integer, ftest2 inet, FOREIGN KEY (ftest1, ftest2) REFERENCES pktable (ptest1, base1));
 ---END---
 ---START---
 drop table pktable;
@@ -1170,7 +1170,7 @@ drop table pktable;
 drop table pktable_base;
 ---END---
 ---START---
-CREATE TABLE pktable_base (_gemini_pk serial PRIMARY KEY, base1 integer NOT NULL, base2 integer);
+CREATE TABLE pktable_base (gemini_pk serial PRIMARY KEY, base1 integer NOT NULL, base2 integer);
 ---END---
 ---START---
 create table pktable(ptest1 inet, ptest2 inet[], primary key(base1, ptest1), foreign key(base2, ptest2) references
@@ -1365,7 +1365,7 @@ CREATE TABLE pktable (
 ---START---
 DROP TABLE IF EXISTS fktable;
 
-CREATE TABLE fktable (_gemini_pk serial PRIMARY KEY, x1 int4 REFERENCES pktable (id1), x2 varchar(4) REFERENCES pktable (id2), x3 real REFERENCES pktable (id3), x4 text, x5 int2);
+CREATE TABLE fktable (gemini_pk serial PRIMARY KEY, x1 int4 REFERENCES pktable (id1), x2 varchar(4) REFERENCES pktable (id2), x3 real REFERENCES pktable (id3), x4 text, x5 int2);
 ---END---
 ---START---
 -- check individual constraints with alter table.
@@ -1704,7 +1704,7 @@ create table defp (f1 int primary key);
 ---START---
 DROP TABLE IF EXISTS defc;
 
-CREATE TABLE defc (_gemini_pk serial PRIMARY KEY, f1 integer DEFAULT 0 REFERENCES defp ON DELETE SET DEFAULT);
+CREATE TABLE defc (gemini_pk serial PRIMARY KEY, f1 integer DEFAULT 0 REFERENCES defp ON DELETE SET DEFAULT);
 ---END---
 ---START---
 insert into defp values (0), (1), (2);
@@ -1750,7 +1750,7 @@ create table pp (f1 int primary key);
 ---START---
 DROP TABLE IF EXISTS cc;
 
-CREATE TABLE cc (_gemini_pk serial PRIMARY KEY, f1 integer REFERENCES pp);
+CREATE TABLE cc (gemini_pk serial PRIMARY KEY, f1 integer REFERENCES pp);
 ---END---
 ---START---
 insert into pp values(12);
@@ -1786,7 +1786,7 @@ create table pp (f1 int primary key);
 ---START---
 DROP TABLE IF EXISTS cc;
 
-CREATE TABLE cc (_gemini_pk serial PRIMARY KEY, f1 integer REFERENCES pp ON DELETE RESTRICT ON UPDATE RESTRICT);
+CREATE TABLE cc (gemini_pk serial PRIMARY KEY, f1 integer REFERENCES pp ON DELETE RESTRICT ON UPDATE RESTRICT);
 ---END---
 ---START---
 insert into pp values(12);
@@ -1839,7 +1839,7 @@ delete from t1 where a = 1;
 create table pktable2 (a int, b int, c int, d int, e int, primary key (d, e));
 ---END---
 ---START---
-CREATE TABLE fktable2 (_gemini_pk serial PRIMARY KEY, d integer, e integer, FOREIGN KEY (d, e) REFERENCES pktable2);
+CREATE TABLE fktable2 (gemini_pk serial PRIMARY KEY, d integer, e integer, FOREIGN KEY (d, e) REFERENCES pktable2);
 ---END---
 ---START---
 insert into pktable2 values (1, 2, 3, 4, 5);
@@ -1864,7 +1864,7 @@ create table pktable1 (a int primary key);
 create table pktable2 (a int, b int, primary key (a, b));
 ---END---
 ---START---
-CREATE TABLE fktable2 (_gemini_pk serial PRIMARY KEY, a integer, b integer, very_very_long_column_name_to_exceed_63_characters integer, FOREIGN KEY (very_very_long_column_name_to_exceed_63_characters) REFERENCES pktable1, FOREIGN KEY (a, very_very_long_column_name_to_exceed_63_characters) REFERENCES pktable2, FOREIGN KEY (a, very_very_long_column_name_to_exceed_63_characters) REFERENCES pktable2);
+CREATE TABLE fktable2 (gemini_pk serial PRIMARY KEY, a integer, b integer, very_very_long_column_name_to_exceed_63_characters integer, FOREIGN KEY (very_very_long_column_name_to_exceed_63_characters) REFERENCES pktable1, FOREIGN KEY (a, very_very_long_column_name_to_exceed_63_characters) REFERENCES pktable2, FOREIGN KEY (a, very_very_long_column_name_to_exceed_63_characters) REFERENCES pktable2);
 ---END---
 ---START---
 select conname from pg_constraint where conrelid = 'fktable2'::regclass order by conname;
@@ -1879,7 +1879,7 @@ drop table pktable1, pktable2, fktable2;
 create table pktable2(f1 int primary key);
 ---END---
 ---START---
-CREATE TABLE fktable2 (_gemini_pk serial PRIMARY KEY, f1 integer REFERENCES pktable2 DEFERRABLE INITIALLY DEFERRED);
+CREATE TABLE fktable2 (gemini_pk serial PRIMARY KEY, f1 integer REFERENCES pktable2 DEFERRABLE INITIALLY DEFERRED);
 ---END---
 ---START---
 insert into pktable2 values(1);
@@ -1959,7 +1959,7 @@ drop table pktable2, fktable2;
 create table pktable2 (a float8, b float8, primary key (a, b));
 ---END---
 ---START---
-CREATE TABLE fktable2 (_gemini_pk serial PRIMARY KEY, x float8, y float8, FOREIGN KEY (x, y) REFERENCES pktable2 (a, b) ON UPDATE CASCADE);
+CREATE TABLE fktable2 (gemini_pk serial PRIMARY KEY, x float8, y float8, FOREIGN KEY (x, y) REFERENCES pktable2 (a, b) ON UPDATE CASCADE);
 ---END---
 ---START---
 insert into pktable2 values ('-0', '-0');
@@ -1999,13 +1999,13 @@ CREATE TABLE fk_notpartitioned_pk (fdrop1 int, a int, fdrop2 int, b int,
 ALTER TABLE fk_notpartitioned_pk DROP COLUMN fdrop1, DROP COLUMN fdrop2;
 ---END---
 ---START---
-CREATE TABLE fk_partitioned_fk (_gemini_pk serial PRIMARY KEY, b integer, fdrop1 integer, a integer) PARTITION BY range (a, b);
+CREATE TABLE fk_partitioned_fk (gemini_pk serial PRIMARY KEY, b integer, fdrop1 integer, a integer) PARTITION BY range (a, b);
 ---END---
 ---START---
 ALTER TABLE fk_partitioned_fk DROP COLUMN fdrop1;
 ---END---
 ---START---
-CREATE TABLE fk_partitioned_fk_1 (_gemini_pk serial PRIMARY KEY, fdrop1 integer, fdrop2 integer, a integer, fdrop3 integer, b integer);
+CREATE TABLE fk_partitioned_fk_1 (gemini_pk serial PRIMARY KEY, fdrop1 integer, fdrop2 integer, a integer, fdrop3 integer, b integer);
 ---END---
 ---START---
 ALTER TABLE fk_partitioned_fk_1 DROP COLUMN fdrop1, DROP COLUMN fdrop2, DROP COLUMN fdrop3;
@@ -2017,7 +2017,7 @@ ALTER TABLE fk_partitioned_fk ATTACH PARTITION fk_partitioned_fk_1 FOR VALUES FR
 ALTER TABLE fk_partitioned_fk ADD FOREIGN KEY (a, b) REFERENCES fk_notpartitioned_pk;
 ---END---
 ---START---
-CREATE TABLE fk_partitioned_fk_2 (_gemini_pk serial PRIMARY KEY, b integer, fdrop1 integer, fdrop2 integer, a integer);
+CREATE TABLE fk_partitioned_fk_2 (gemini_pk serial PRIMARY KEY, b integer, fdrop1 integer, fdrop2 integer, a integer);
 ---END---
 ---START---
 ALTER TABLE fk_partitioned_fk_2 DROP COLUMN fdrop1, DROP COLUMN fdrop2;
@@ -2026,7 +2026,7 @@ ALTER TABLE fk_partitioned_fk_2 DROP COLUMN fdrop1, DROP COLUMN fdrop2;
 ALTER TABLE fk_partitioned_fk ATTACH PARTITION fk_partitioned_fk_2 FOR VALUES FROM (1000,1000) TO (2000,2000);
 ---END---
 ---START---
-CREATE TABLE fk_partitioned_fk_3 (_gemini_pk serial PRIMARY KEY, fdrop1 integer, fdrop2 integer, fdrop3 integer, fdrop4 integer, b integer, a integer) PARTITION BY hash (a);
+CREATE TABLE fk_partitioned_fk_3 (gemini_pk serial PRIMARY KEY, fdrop1 integer, fdrop2 integer, fdrop3 integer, fdrop4 integer, b integer, a integer) PARTITION BY hash (a);
 ---END---
 ---START---
 ALTER TABLE fk_partitioned_fk_3 DROP COLUMN fdrop1, DROP COLUMN fdrop2,
@@ -2159,7 +2159,7 @@ DROP TABLE fk_notpartitioned_pk, fk_partitioned_fk;
 CREATE TABLE fk_notpartitioned_pk (a int, b int, primary key (a, b));
 ---END---
 ---START---
-CREATE TABLE fk_partitioned_fk (_gemini_pk serial PRIMARY KEY, a integer DEFAULT 2501, b integer DEFAULT 142857) PARTITION BY list (a);
+CREATE TABLE fk_partitioned_fk (gemini_pk serial PRIMARY KEY, a integer DEFAULT 2501, b integer DEFAULT 142857) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE fk_partitioned_fk_1 PARTITION OF fk_partitioned_fk FOR VALUES IN (NULL,500,501,502);
@@ -2173,7 +2173,7 @@ ALTER TABLE fk_partitioned_fk ADD FOREIGN KEY (a, b)
 CREATE TABLE fk_partitioned_fk_2 PARTITION OF fk_partitioned_fk FOR VALUES IN (1500,1502);
 ---END---
 ---START---
-CREATE TABLE fk_partitioned_fk_3 (_gemini_pk serial PRIMARY KEY, a integer, b integer);
+CREATE TABLE fk_partitioned_fk_3 (gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 ALTER TABLE fk_partitioned_fk ATTACH PARTITION fk_partitioned_fk_3 FOR VALUES IN (2500,2501,2502,2503);
@@ -2206,7 +2206,7 @@ INSERT INTO fk_partitioned_fk (a,b) VALUES (NULL, NULL);
 INSERT INTO fk_notpartitioned_pk VALUES (1, 2);
 ---END---
 ---START---
-CREATE TABLE fk_partitioned_fk_full (_gemini_pk serial PRIMARY KEY, x integer, y integer) PARTITION BY range (x);
+CREATE TABLE fk_partitioned_fk_full (gemini_pk serial PRIMARY KEY, x integer, y integer) PARTITION BY range (x);
 ---END---
 ---START---
 CREATE TABLE fk_partitioned_fk_full_1 PARTITION OF fk_partitioned_fk_full DEFAULT;
@@ -2392,7 +2392,7 @@ ALTER TABLE fk_partitioned_fk ATTACH PARTITION fk_partitioned_fk_2 FOR VALUES IN
 DROP TABLE fk_partitioned_fk_2;
 ---END---
 ---START---
-CREATE TABLE fk_partitioned_fk_2 (_gemini_pk serial PRIMARY KEY, b integer, c text, a integer, FOREIGN KEY (a, b) REFERENCES fk_notpartitioned_pk ON DELETE CASCADE ON UPDATE CASCADE);
+CREATE TABLE fk_partitioned_fk_2 (gemini_pk serial PRIMARY KEY, b integer, c text, a integer, FOREIGN KEY (a, b) REFERENCES fk_notpartitioned_pk ON DELETE CASCADE ON UPDATE CASCADE);
 ---END---
 ---START---
 ALTER TABLE fk_partitioned_fk_2 DROP COLUMN c;
@@ -2406,13 +2406,13 @@ ALTER TABLE fk_partitioned_fk ATTACH PARTITION fk_partitioned_fk_2 FOR VALUES IN
 DROP TABLE fk_partitioned_fk_2;
 ---END---
 ---START---
-CREATE TABLE fk_partitioned_fk_4 (_gemini_pk serial PRIMARY KEY, a integer, b integer, FOREIGN KEY (a, b) REFERENCES fk_notpartitioned_pk (a, b) ON DELETE CASCADE ON UPDATE CASCADE) PARTITION BY range (b, a);
+CREATE TABLE fk_partitioned_fk_4 (gemini_pk serial PRIMARY KEY, a integer, b integer, FOREIGN KEY (a, b) REFERENCES fk_notpartitioned_pk (a, b) ON DELETE CASCADE ON UPDATE CASCADE) PARTITION BY range (b, a);
 ---END---
 ---START---
 CREATE TABLE fk_partitioned_fk_4_1 PARTITION OF fk_partitioned_fk_4 FOR VALUES FROM (1,1) TO (100,100);
 ---END---
 ---START---
-CREATE TABLE fk_partitioned_fk_4_2 (_gemini_pk serial PRIMARY KEY, a integer, b integer, FOREIGN KEY (a, b) REFERENCES fk_notpartitioned_pk (a, b) ON UPDATE SET NULL);
+CREATE TABLE fk_partitioned_fk_4_2 (gemini_pk serial PRIMARY KEY, a integer, b integer, FOREIGN KEY (a, b) REFERENCES fk_notpartitioned_pk (a, b) ON UPDATE SET NULL);
 ---END---
 ---START---
 ALTER TABLE fk_partitioned_fk_4 ATTACH PARTITION fk_partitioned_fk_4_2 FOR VALUES FROM (100,100) TO (1000,1000);
@@ -2439,7 +2439,7 @@ CREATE TABLE fk_partitioned_fk_5 (a int, b int,
   PARTITION BY RANGE (a);
 ---END---
 ---START---
-CREATE TABLE fk_partitioned_fk_5_1 (_gemini_pk serial PRIMARY KEY, a integer, b integer, FOREIGN KEY (a, b) REFERENCES fk_notpartitioned_pk);
+CREATE TABLE fk_partitioned_fk_5_1 (gemini_pk serial PRIMARY KEY, a integer, b integer, FOREIGN KEY (a, b) REFERENCES fk_notpartitioned_pk);
 ---END---
 ---START---
 ALTER TABLE fk_partitioned_fk ATTACH PARTITION fk_partitioned_fk_5 FOR VALUES IN (4500);
@@ -2504,7 +2504,7 @@ grant references on fk_notpartitioned_pk to regress_other_partitioned_fk_owner;
 set role regress_other_partitioned_fk_owner;
 ---END---
 ---START---
-CREATE TABLE other_partitioned_fk (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY list (a);
+CREATE TABLE other_partitioned_fk (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY list (a);
 ---END---
 ---START---
 create table other_partitioned_fk_1 partition of other_partitioned_fk
@@ -2810,7 +2810,7 @@ CREATE TABLE pk (a int PRIMARY KEY) PARTITION BY RANGE (a);
 CREATE TABLE pk1 PARTITION OF pk FOR VALUES FROM (0) TO (1000);
 ---END---
 ---START---
-CREATE TABLE pk2 (_gemini_pk serial PRIMARY KEY, b integer, a integer);
+CREATE TABLE pk2 (gemini_pk serial PRIMARY KEY, b integer, a integer);
 ---END---
 ---START---
 ALTER TABLE pk2 DROP COLUMN b;
@@ -2822,7 +2822,7 @@ ALTER TABLE pk2 ALTER a SET NOT NULL;
 ALTER TABLE pk ATTACH PARTITION pk2 FOR VALUES FROM (1000) TO (2000);
 ---END---
 ---START---
-CREATE TABLE fk (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
+CREATE TABLE fk (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE TABLE fk1 PARTITION OF fk FOR VALUES FROM (0) TO (750);
@@ -2831,7 +2831,7 @@ CREATE TABLE fk1 PARTITION OF fk FOR VALUES FROM (0) TO (750);
 ALTER TABLE fk ADD FOREIGN KEY (a) REFERENCES pk;
 ---END---
 ---START---
-CREATE TABLE fk2 (_gemini_pk serial PRIMARY KEY, b integer, a integer);
+CREATE TABLE fk2 (gemini_pk serial PRIMARY KEY, b integer, a integer);
 ---END---
 ---START---
 ALTER TABLE fk2 DROP COLUMN b;
@@ -2843,13 +2843,13 @@ ALTER TABLE fk ATTACH PARTITION fk2 FOR VALUES FROM (750) TO (3500);
 CREATE TABLE pk3 PARTITION OF pk FOR VALUES FROM (2000) TO (3000);
 ---END---
 ---START---
-CREATE TABLE pk4 (_gemini_pk serial PRIMARY KEY, LIKE pk);
+CREATE TABLE pk4 (gemini_pk serial PRIMARY KEY, LIKE pk);
 ---END---
 ---START---
 ALTER TABLE pk ATTACH PARTITION pk4 FOR VALUES FROM (3000) TO (4000);
 ---END---
 ---START---
-CREATE TABLE pk5 (_gemini_pk serial PRIMARY KEY, c integer, b integer, a integer NOT NULL) PARTITION BY range (a);
+CREATE TABLE pk5 (gemini_pk serial PRIMARY KEY, c integer, b integer, a integer NOT NULL) PARTITION BY range (a);
 ---END---
 ---START---
 ALTER TABLE pk5 DROP COLUMN b, DROP COLUMN c;
@@ -3000,7 +3000,7 @@ CREATE TABLE droppk2_d PARTITION OF droppk2 DEFAULT;
 INSERT into droppk VALUES (1), (1000), (1500), (2000);
 ---END---
 ---START---
-CREATE TABLE dropfk (_gemini_pk serial PRIMARY KEY, a integer REFERENCES droppk);
+CREATE TABLE dropfk (gemini_pk serial PRIMARY KEY, a integer REFERENCES droppk);
 ---END---
 ---START---
 INSERT into dropfk VALUES (1), (1000), (1500), (2000);
@@ -3074,7 +3074,7 @@ CREATE TABLE pk1 PARTITION OF pk FOR VALUES IN (1) PARTITION BY LIST (a);
 CREATE TABLE pk11 PARTITION OF pk1 FOR VALUES IN (1);
 ---END---
 ---START---
-CREATE TABLE fk (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
+CREATE TABLE fk (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE fk1 PARTITION OF fk FOR VALUES IN (1) PARTITION BY LIST (a);
@@ -3089,13 +3089,13 @@ ALTER TABLE fk ADD FOREIGN KEY (a) REFERENCES pk;
 CREATE TABLE pk2 PARTITION OF pk FOR VALUES IN (2);
 ---END---
 ---START---
-CREATE TABLE pk3 (_gemini_pk serial PRIMARY KEY, a integer NOT NULL) PARTITION BY list (a);
+CREATE TABLE pk3 (gemini_pk serial PRIMARY KEY, a integer NOT NULL) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE pk31 PARTITION OF pk3 FOR VALUES IN (31);
 ---END---
 ---START---
-CREATE TABLE pk32 (_gemini_pk serial PRIMARY KEY, b integer, a integer NOT NULL);
+CREATE TABLE pk32 (gemini_pk serial PRIMARY KEY, b integer, a integer NOT NULL);
 ---END---
 ---START---
 ALTER TABLE pk32 DROP COLUMN b;
@@ -3110,7 +3110,7 @@ ALTER TABLE pk ATTACH PARTITION pk3 FOR VALUES IN (31, 32);
 CREATE TABLE fk2 PARTITION OF fk FOR VALUES IN (2);
 ---END---
 ---START---
-CREATE TABLE fk3 (_gemini_pk serial PRIMARY KEY, b integer, a integer);
+CREATE TABLE fk3 (gemini_pk serial PRIMARY KEY, b integer, a integer);
 ---END---
 ---START---
 ALTER TABLE fk3 DROP COLUMN b;
@@ -3126,7 +3126,7 @@ WHERE conrelid IN (SELECT relid FROM pg_partition_tree('fk'))
 ORDER BY conrelid::regclass::text, conname;
 ---END---
 ---START---
-CREATE TABLE fk4 (_gemini_pk serial PRIMARY KEY, LIKE fk);
+CREATE TABLE fk4 (gemini_pk serial PRIMARY KEY, LIKE fk);
 ---END---
 ---START---
 INSERT INTO fk4 VALUES (50);
@@ -3154,7 +3154,7 @@ CREATE TABLE pk11 PARTITION OF pk1 FOR VALUES IN (1);
 CREATE TABLE pk3 PARTITION OF pk FOR VALUES IN (3);
 ---END---
 ---START---
-CREATE TABLE fk (_gemini_pk serial PRIMARY KEY, a integer REFERENCES pk DEFERRABLE INITIALLY IMMEDIATE);
+CREATE TABLE fk (gemini_pk serial PRIMARY KEY, a integer REFERENCES pk DEFERRABLE INITIALLY IMMEDIATE);
 ---END---
 ---START---
 INSERT INTO fk VALUES (1);
@@ -3212,7 +3212,7 @@ COMMIT;
 CREATE TABLE pt(f1 int, f2 int, f3 int, PRIMARY KEY(f1,f2));
 ---END---
 ---START---
-CREATE TABLE ref (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, f3 integer) PARTITION BY list (f1);
+CREATE TABLE ref (gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, f3 integer) PARTITION BY list (f1);
 ---END---
 ---START---
 CREATE TABLE ref1 PARTITION OF ref FOR VALUES IN (1);
@@ -3253,7 +3253,7 @@ DROP TABLE pt, ref;
 CREATE TABLE pt(f1 int, f2 int, f3 int, PRIMARY KEY(f1,f2));
 ---END---
 ---START---
-CREATE TABLE ref (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, f3 integer) PARTITION BY list (f1);
+CREATE TABLE ref (gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, f3 integer) PARTITION BY list (f1);
 ---END---
 ---START---
 CREATE TABLE ref1_2 PARTITION OF ref FOR VALUES IN (1, 2) PARTITION BY list (f2);
@@ -3312,7 +3312,7 @@ CREATE TABLE pt1 PARTITION OF pt FOR VALUES IN (1);
 CREATE TABLE pt2 PARTITION OF pt FOR VALUES IN (2);
 ---END---
 ---START---
-CREATE TABLE ref (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, f3 integer);
+CREATE TABLE ref (gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, f3 integer);
 ---END---
 ---START---
 ALTER TABLE ref ADD FOREIGN KEY(f1,f2) REFERENCES pt;
@@ -3357,7 +3357,7 @@ CREATE TABLE pt1 PARTITION OF pt1_2 FOR VALUES IN (1);
 CREATE TABLE pt2 PARTITION OF pt1_2 FOR VALUES IN (2);
 ---END---
 ---START---
-CREATE TABLE ref (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, f3 integer);
+CREATE TABLE ref (gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, f3 integer);
 ---END---
 ---START---
 ALTER TABLE ref ADD FOREIGN KEY(f1,f2) REFERENCES pt;
@@ -3415,7 +3415,7 @@ CREATE TABLE pk11 PARTITION OF pk1 FOR VALUES FROM (1) TO (50);
 CREATE TABLE pk12 PARTITION OF pk1 FOR VALUES FROM (50) TO (100);
 ---END---
 ---START---
-CREATE TABLE fk (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
+CREATE TABLE fk (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE TABLE fk1 PARTITION OF fk FOR VALUES FROM (1) TO (100) PARTITION BY RANGE (a);
@@ -3460,7 +3460,7 @@ TRUNCATE TABLE pk;
 INSERT INTO pk VALUES (20), (50);
 ---END---
 ---START---
-CREATE TABLE fk (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
+CREATE TABLE fk (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE TABLE fk1 PARTITION OF fk FOR VALUES FROM (1) TO (100) PARTITION BY RANGE (a);
@@ -3499,7 +3499,7 @@ TRUNCATE TABLE pk;
 INSERT INTO pk VALUES (20), (30), (50);
 ---END---
 ---START---
-CREATE TABLE fk (_gemini_pk serial PRIMARY KEY, id integer, a integer DEFAULT 50) PARTITION BY range (a);
+CREATE TABLE fk (gemini_pk serial PRIMARY KEY, id integer, a integer DEFAULT 50) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE TABLE fk1 PARTITION OF fk FOR VALUES FROM (1) TO (100) PARTITION BY RANGE (a);
@@ -3538,7 +3538,7 @@ TRUNCATE TABLE pk;
 INSERT INTO pk VALUES (20), (30);
 ---END---
 ---START---
-CREATE TABLE fk (_gemini_pk serial PRIMARY KEY, a integer DEFAULT 50) PARTITION BY range (a);
+CREATE TABLE fk (gemini_pk serial PRIMARY KEY, a integer DEFAULT 50) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE TABLE fk1 PARTITION OF fk FOR VALUES FROM (1) TO (100) PARTITION BY RANGE (a);
@@ -3584,7 +3584,7 @@ ALTER TABLE fkpart7.pkpart1 ADD PRIMARY KEY (a);
 ALTER TABLE fkpart7.pkpart ADD PRIMARY KEY (a);
 ---END---
 ---START---
-CREATE TABLE fkpart7.fk (_gemini_pk serial PRIMARY KEY, a integer REFERENCES fkpart7.pkpart);
+CREATE TABLE fkpart7.fk (gemini_pk serial PRIMARY KEY, a integer REFERENCES fkpart7.pkpart);
 ---END---
 ---START---
 DROP SCHEMA fkpart7 CASCADE;
@@ -3737,7 +3737,7 @@ INSERT INTO fkpart10.tbl3 VALUES (-2), (-1);
 COMMIT;
 ---END---
 ---START---
-CREATE TABLE fkpart10.tbl5 (_gemini_pk serial PRIMARY KEY, f1 integer REFERENCES fkpart10.tbl3);
+CREATE TABLE fkpart10.tbl5 (gemini_pk serial PRIMARY KEY, f1 integer REFERENCES fkpart10.tbl3);
 ---END---
 ---START---
 INSERT INTO fkpart10.tbl5 VALUES (-2), (-1);
@@ -3797,13 +3797,13 @@ CREATE SCHEMA fkpart11
   CREATE TABLE fk3 PARTITION OF fk_parted FOR VALUES IN (4);
 ---END---
 ---START---
-CREATE TABLE fkpart11.pk11 (_gemini_pk serial PRIMARY KEY, b text, a integer NOT NULL);
+CREATE TABLE fkpart11.pk11 (gemini_pk serial PRIMARY KEY, b text, a integer NOT NULL);
 ---END---
 ---START---
 ALTER TABLE fkpart11.pk1 ATTACH PARTITION fkpart11.pk11 FOR VALUES IN (1);
 ---END---
 ---START---
-CREATE TABLE fkpart11.pk12 (_gemini_pk serial PRIMARY KEY, b text, c integer, a integer NOT NULL);
+CREATE TABLE fkpart11.pk12 (gemini_pk serial PRIMARY KEY, b text, c integer, a integer NOT NULL);
 ---END---
 ---START---
 ALTER TABLE fkpart11.pk12 DROP c;

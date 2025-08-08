@@ -1,7 +1,7 @@
 ---START---
 DROP TABLE IF EXISTS x;
 
-CREATE TABLE x (_gemini_pk serial PRIMARY KEY, a serial, b integer, c text NOT NULL DEFAULT 'stuff', d text, e text);
+CREATE TABLE x (gemini_pk serial PRIMARY KEY, a serial, b integer, c text NOT NULL DEFAULT 'stuff', d text, e text);
 ---END---
 ---START---
 CREATE FUNCTION fn_x_before () RETURNS TRIGGER AS '
@@ -241,7 +241,7 @@ SELECT * FROM testnull;
 BEGIN;
 ---END---
 ---START---
-CREATE TABLE vistest (_gemini_pk serial PRIMARY KEY, LIKE testeoc);
+CREATE TABLE vistest (gemini_pk serial PRIMARY KEY, LIKE testeoc);
 ---END---
 ---START---
 COPY vistest FROM stdin CSV;
@@ -435,7 +435,7 @@ SELECT * FROM vistest;
 -- Test FORCE_NOT_NULL and FORCE_NULL options
 DROP TABLE IF EXISTS forcetest;
 
-CREATE TABLE forcetest (_gemini_pk serial PRIMARY KEY, a integer NOT NULL, b text NOT NULL, c text, d text, e text);
+CREATE TABLE forcetest (gemini_pk serial PRIMARY KEY, a integer NOT NULL, b text NOT NULL, c text, d text, e text);
 ---END---
 ---START---
 \pset null NULL
@@ -522,7 +522,7 @@ CREATE ROLE regress_rls_copy_user;
 CREATE ROLE regress_rls_copy_user_colperms;
 ---END---
 ---START---
-CREATE TABLE rls_t1 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer);
+CREATE TABLE rls_t1 (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer);
 ---END---
 ---START---
 COPY rls_t1 (a, b, c) from stdin;

@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE timestamptz_tbl (_gemini_pk serial PRIMARY KEY, d1 timestamp(2) with time zone);
+CREATE TABLE timestamptz_tbl (gemini_pk serial PRIMARY KEY, d1 timestamp(2) with time zone);
 ---END---
 ---START---
 -- Test shorthand input values
@@ -747,7 +747,7 @@ SELECT to_char(now(), 'of') as "of", to_char(now(), 'tzh:tzm') as "tzh:tzm";
 RESET timezone;
 ---END---
 ---START---
-CREATE TABLE timestamptz_tst (_gemini_pk serial PRIMARY KEY, a integer, b timestamptz);
+CREATE TABLE timestamptz_tst (gemini_pk serial PRIMARY KEY, a integer, b timestamptz);
 ---END---
 ---START---
 -- Test year field value with len > 4

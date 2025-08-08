@@ -17,7 +17,7 @@ CREATE TABLE arrtest (
 );
 ---END---
 ---START---
-CREATE TABLE array_op_test (_gemini_pk serial PRIMARY KEY, seqno int4, i int4[], t text[]);
+CREATE TABLE array_op_test (gemini_pk serial PRIMARY KEY, seqno int4, i int4[], t text[]);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/array.data'
@@ -217,7 +217,7 @@ SELECT (now())[1];
 -- test slices with empty lower and/or upper index
 DROP TABLE IF EXISTS arrtest_s;
 
-CREATE TABLE arrtest_s (_gemini_pk serial PRIMARY KEY, a int2[], b int2[][]);
+CREATE TABLE arrtest_s (gemini_pk serial PRIMARY KEY, a int2[], b int2[][]);
 ---END---
 ---START---
 INSERT INTO arrtest_s VALUES ('{1,2,3,4,5}', '{{1,2,3}, {4,5,6}, {7,8,9}}');
@@ -316,7 +316,7 @@ UPDATE point_tbl SET f1[3] = 10 WHERE f1::text = '(-10,-10)'::point::text RETURN
 --
 DROP TABLE IF EXISTS arrtest1;
 
-CREATE TABLE arrtest1 (_gemini_pk serial PRIMARY KEY, i integer[], t text[]);
+CREATE TABLE arrtest1 (gemini_pk serial PRIMARY KEY, i integer[], t text[]);
 ---END---
 ---START---
 insert into arrtest1 values(array[1,2,null,4], array['one','two',null,'four']);
@@ -419,7 +419,7 @@ select * from arrtest1;
 -- table creation and INSERTs
 DROP TABLE IF EXISTS arrtest2;
 
-CREATE TABLE arrtest2 (_gemini_pk serial PRIMARY KEY, i integer[4], f float8[], n numeric[], t text[], d timestamp[]);
+CREATE TABLE arrtest2 (gemini_pk serial PRIMARY KEY, i integer[4], f float8[], n numeric[], t text[], d timestamp[]);
 ---END---
 ---START---
 INSERT INTO arrtest2 VALUES(
@@ -434,7 +434,7 @@ INSERT INTO arrtest2 VALUES(
 -- some more test data
 DROP TABLE IF EXISTS arrtest_f;
 
-CREATE TABLE arrtest_f (_gemini_pk serial PRIMARY KEY, f0 integer, f1 text, f2 float8);
+CREATE TABLE arrtest_f (gemini_pk serial PRIMARY KEY, f0 integer, f1 text, f2 float8);
 ---END---
 ---START---
 insert into arrtest_f values(1,'cat1',1.21);
@@ -466,7 +466,7 @@ insert into arrtest_f values(9,'cat2',1.30);
 ---START---
 DROP TABLE IF EXISTS arrtest_i;
 
-CREATE TABLE arrtest_i (_gemini_pk serial PRIMARY KEY, f0 integer, f1 text, f2 integer);
+CREATE TABLE arrtest_i (gemini_pk serial PRIMARY KEY, f0 integer, f1 text, f2 integer);
 ---END---
 ---START---
 insert into arrtest_i values(1,'cat1',21);
@@ -815,7 +815,7 @@ SELECT -1 != ALL(ARRAY(SELECT NULLIF(g.i, 900) FROM generate_series(1,1000) g(i)
 -- test indexes on arrays
 DROP TABLE IF EXISTS arr_tbl;
 
-CREATE TABLE arr_tbl (_gemini_pk serial PRIMARY KEY, f1 integer[] UNIQUE);
+CREATE TABLE arr_tbl (gemini_pk serial PRIMARY KEY, f1 integer[] UNIQUE);
 ---END---
 ---START---
 insert into arr_tbl values ('{1,2,3}');
@@ -973,7 +973,7 @@ select '[0:1]={1.1,2.2}'::float8[];
 -- tests for array aggregates
 DROP TABLE IF EXISTS arraggtest;
 
-CREATE TABLE arraggtest (_gemini_pk serial PRIMARY KEY, f1 integer[], f2 text[][], f3 double precision[]);
+CREATE TABLE arraggtest (gemini_pk serial PRIMARY KEY, f1 integer[], f2 text[][], f3 double precision[]);
 ---END---
 ---START---
 INSERT INTO arraggtest (f1, f2, f3) VALUES
@@ -1020,7 +1020,7 @@ SELECT max(f1), min(f1), max(f2), min(f2), max(f3), min(f3) FROM arraggtest;
 create type comptype as (f1 int, f2 text);
 ---END---
 ---START---
-CREATE TABLE comptable (_gemini_pk serial PRIMARY KEY, c1 comptype, c2 comptype[]);
+CREATE TABLE comptable (gemini_pk serial PRIMARY KEY, c1 comptype, c2 comptype[]);
 ---END---
 ---START---
 -- XXX would like to not have to specify row() construct types here ...
@@ -1387,7 +1387,7 @@ select array(select array['Hello', i::text] from generate_series(9,11) i);
 
 DROP TABLE IF EXISTS t1;
 
-CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, f1 int8_tbl[]);
+CREATE TABLE t1 (gemini_pk serial PRIMARY KEY, f1 int8_tbl[]);
 ---END---
 ---START---
 insert into t1 (f1[5].q1) values(42);
@@ -1406,7 +1406,7 @@ select * from t1;
 
 DROP TABLE IF EXISTS src;
 
-CREATE TABLE src (_gemini_pk serial PRIMARY KEY, f1 text);
+CREATE TABLE src (gemini_pk serial PRIMARY KEY, f1 text);
 ---END---
 ---START---
 insert into src
@@ -1418,7 +1418,7 @@ create type textandtext as (c1 text, c2 text);
 ---START---
 DROP TABLE IF EXISTS dest;
 
-CREATE TABLE dest (_gemini_pk serial PRIMARY KEY, f1 textandtext[]);
+CREATE TABLE dest (gemini_pk serial PRIMARY KEY, f1 textandtext[]);
 ---END---
 ---START---
 insert into dest select array[row(f1,f1)::textandtext] from src;

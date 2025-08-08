@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE gin_test_tbl (_gemini_pk serial PRIMARY KEY, i int4[]) WITH (autovacuum_enabled = off);
+CREATE TABLE gin_test_tbl (gemini_pk serial PRIMARY KEY, i int4[]) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 create index gin_test_idx on gin_test_tbl using gin (i)
@@ -81,7 +81,7 @@ reset gin_fuzzy_search_limit;
 -- Test optimization of empty queries
 DROP TABLE IF EXISTS t_gin_test_tbl;
 
-CREATE TABLE t_gin_test_tbl (_gemini_pk serial PRIMARY KEY, i int4[], j int4[]);
+CREATE TABLE t_gin_test_tbl (gemini_pk serial PRIMARY KEY, i int4[], j int4[]);
 ---END---
 ---START---
 create index on t_gin_test_tbl using gin (i, j);
@@ -252,7 +252,7 @@ reset enable_bitmapscan;
 drop table t_gin_test_tbl;
 ---END---
 ---START---
-CREATE UNLOGGED TABLE t_gin_test_tbl (_gemini_pk serial PRIMARY KEY, i int4[], j int4[]);
+CREATE UNLOGGED TABLE t_gin_test_tbl (gemini_pk serial PRIMARY KEY, i int4[], j int4[]);
 ---END---
 ---START---
 create index on t_gin_test_tbl using gin (i, j);

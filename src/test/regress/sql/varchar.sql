@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE varchar_tbl_temp (_gemini_pk serial PRIMARY KEY, f1 varchar(1));
+CREATE TABLE varchar_tbl_temp (gemini_pk serial PRIMARY KEY, f1 varchar(1));
 ---END---
 ---START---
 INSERT INTO VARCHAR_TBL_TEMP (f1) VALUES ('a');

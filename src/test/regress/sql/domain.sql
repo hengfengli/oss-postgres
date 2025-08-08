@@ -136,7 +136,7 @@ create domain domainint4arr int4[1];
 create domain domainchar4arr varchar(4)[2][3];
 ---END---
 ---START---
-CREATE TABLE domarrtest (_gemini_pk serial PRIMARY KEY, testint4arr domainint4arr, testchar4arr domainchar4arr);
+CREATE TABLE domarrtest (gemini_pk serial PRIMARY KEY, testint4arr domainint4arr, testchar4arr domainchar4arr);
 ---END---
 ---START---
 INSERT INTO domarrtest values ('{2,2}', '{{"a","b"},{"c","d"}}');
@@ -228,7 +228,7 @@ create type comptype as (r float8, i float8);
 create domain dcomptype as comptype;
 ---END---
 ---START---
-CREATE TABLE dcomptable (_gemini_pk serial PRIMARY KEY, d1 dcomptype UNIQUE);
+CREATE TABLE dcomptable (gemini_pk serial PRIMARY KEY, d1 dcomptype UNIQUE);
 ---END---
 ---START---
 insert into dcomptable values (row(1,2)::dcomptype);
@@ -380,7 +380,7 @@ create type comptype as (r float8, i float8);
 create domain dcomptypea as comptype[];
 ---END---
 ---START---
-CREATE TABLE dcomptable (_gemini_pk serial PRIMARY KEY, d1 dcomptypea UNIQUE);
+CREATE TABLE dcomptable (gemini_pk serial PRIMARY KEY, d1 dcomptypea UNIQUE);
 ---END---
 ---START---
 insert into dcomptable values (array[row(1,2)]::dcomptypea);
@@ -483,7 +483,7 @@ drop type comptype cascade;
 create domain posint as int check (value > 0);
 ---END---
 ---START---
-CREATE TABLE pitable (_gemini_pk serial PRIMARY KEY, f1 posint[]);
+CREATE TABLE pitable (gemini_pk serial PRIMARY KEY, f1 posint[]);
 ---END---
 ---START---
 insert into pitable values(array[42]);
@@ -513,7 +513,7 @@ drop table pitable;
 create domain vc4 as varchar(4);
 ---END---
 ---START---
-CREATE TABLE vc4table (_gemini_pk serial PRIMARY KEY, f1 vc4[]);
+CREATE TABLE vc4table (gemini_pk serial PRIMARY KEY, f1 vc4[]);
 ---END---
 ---START---
 insert into vc4table values(array['too long']);
@@ -537,7 +537,7 @@ drop type vc4;
 create domain dposinta as posint[];
 ---END---
 ---START---
-CREATE TABLE dposintatable (_gemini_pk serial PRIMARY KEY, f1 dposinta[]);
+CREATE TABLE dposintatable (gemini_pk serial PRIMARY KEY, f1 dposinta[]);
 ---END---
 ---START---
 insert into dposintatable values(array[array[42]]);
@@ -595,7 +595,7 @@ create type comptype as (cf1 int, cf2 int);
 create domain dcomptype as comptype check ((value).cf1 > 0);
 ---END---
 ---START---
-CREATE TABLE dcomptable (_gemini_pk serial PRIMARY KEY, f1 dcomptype[]);
+CREATE TABLE dcomptable (gemini_pk serial PRIMARY KEY, f1 dcomptype[]);
 ---END---
 ---START---
 insert into dcomptable values (null);
@@ -645,7 +645,7 @@ create domain dnull    varchar(15);
 create domain dcheck   varchar(15) NOT NULL CHECK (VALUE = 'a' OR VALUE = 'c' OR VALUE = 'd');
 ---END---
 ---START---
-CREATE TABLE nulltest (_gemini_pk serial PRIMARY KEY, col1 dnotnull, col2 dnotnull NULL, col3 dnull NOT NULL, col4 dnull, col5 dcheck CHECK (col5 IN ('c', 'd')));
+CREATE TABLE nulltest (gemini_pk serial PRIMARY KEY, col1 dnotnull, col2 dnotnull NULL, col3 dnull NOT NULL, col4 dnull, col5 dcheck CHECK (col5 IN ('c', 'd')));
 ---END---
 ---START---
 INSERT INTO nulltest DEFAULT VALUES;
@@ -797,7 +797,7 @@ drop table defaulttest cascade;
 create domain dnotnulltest integer;
 ---END---
 ---START---
-CREATE TABLE domnotnull (_gemini_pk serial PRIMARY KEY, col1 dnotnulltest, col2 dnotnulltest);
+CREATE TABLE domnotnull (gemini_pk serial PRIMARY KEY, col1 dnotnulltest, col2 dnotnulltest);
 ---END---
 ---START---
 insert into domnotnull default values;
@@ -836,7 +836,7 @@ update domnotnull set col1 = null;
 drop domain dnotnulltest cascade;
 ---END---
 ---START---
-CREATE TABLE domdeftest (_gemini_pk serial PRIMARY KEY, col1 ddef1);
+CREATE TABLE domdeftest (gemini_pk serial PRIMARY KEY, col1 ddef1);
 ---END---
 ---START---
 insert into domdeftest default values;
@@ -870,7 +870,7 @@ drop table domdeftest;
 create domain con as integer;
 ---END---
 ---START---
-CREATE TABLE domcontest (_gemini_pk serial PRIMARY KEY, col1 con);
+CREATE TABLE domcontest (gemini_pk serial PRIMARY KEY, col1 con);
 ---END---
 ---START---
 insert into domcontest values (1);
@@ -921,7 +921,7 @@ alter domain con drop constraint if exists nonexistent;
 create domain things AS INT;
 ---END---
 ---START---
-CREATE TABLE thethings (_gemini_pk serial PRIMARY KEY, stuff things);
+CREATE TABLE thethings (gemini_pk serial PRIMARY KEY, stuff things);
 ---END---
 ---START---
 INSERT INTO thethings (stuff) VALUES (55);
@@ -942,7 +942,7 @@ UPDATE thethings SET stuff = 10;
 ALTER DOMAIN things VALIDATE CONSTRAINT meow;
 ---END---
 ---START---
-CREATE TABLE domtab (_gemini_pk serial PRIMARY KEY, col1 integer);
+CREATE TABLE domtab (gemini_pk serial PRIMARY KEY, col1 integer);
 ---END---
 ---START---
 create domain dom as integer;
@@ -1043,7 +1043,7 @@ select 'xz23'::dtop;
 
 DROP TABLE IF EXISTS dtest;
 
-CREATE TABLE dtest (_gemini_pk serial PRIMARY KEY, f1 dtop);
+CREATE TABLE dtest (gemini_pk serial PRIMARY KEY, f1 dtop);
 ---END---
 ---START---
 insert into dtest values('x123');
@@ -1082,7 +1082,7 @@ drop domain vchar4 cascade;
 create domain str_domain as text not null;
 ---END---
 ---START---
-CREATE TABLE domain_test (_gemini_pk serial PRIMARY KEY, a integer, b integer);
+CREATE TABLE domain_test (gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 insert into domain_test values (1, 2);
@@ -1187,7 +1187,7 @@ create domain posint as int4;
 create type ddtest1 as (f1 posint);
 ---END---
 ---START---
-CREATE TABLE ddtest2 (_gemini_pk serial PRIMARY KEY, f1 ddtest1);
+CREATE TABLE ddtest2 (gemini_pk serial PRIMARY KEY, f1 ddtest1);
 ---END---
 ---START---
 insert into ddtest2 values(row(-1));
@@ -1199,7 +1199,7 @@ alter domain posint add constraint c1 check(value >= 0);
 drop table ddtest2;
 ---END---
 ---START---
-CREATE TABLE ddtest2 (_gemini_pk serial PRIMARY KEY, f1 ddtest1[]);
+CREATE TABLE ddtest2 (gemini_pk serial PRIMARY KEY, f1 ddtest1[]);
 ---END---
 ---START---
 insert into ddtest2 values('{(-1)}');
@@ -1215,7 +1215,7 @@ drop table ddtest2;
 create domain ddtest1d as ddtest1;
 ---END---
 ---START---
-CREATE TABLE ddtest2 (_gemini_pk serial PRIMARY KEY, f1 ddtest1d);
+CREATE TABLE ddtest2 (gemini_pk serial PRIMARY KEY, f1 ddtest1d);
 ---END---
 ---START---
 insert into ddtest2 values('(-1)');
@@ -1234,7 +1234,7 @@ drop domain ddtest1d;
 create domain ddtest1d as ddtest1[];
 ---END---
 ---START---
-CREATE TABLE ddtest2 (_gemini_pk serial PRIMARY KEY, f1 ddtest1d);
+CREATE TABLE ddtest2 (gemini_pk serial PRIMARY KEY, f1 ddtest1d);
 ---END---
 ---START---
 insert into ddtest2 values('{(-1)}');
@@ -1253,7 +1253,7 @@ drop domain ddtest1d;
 create type rposint as range (subtype = posint);
 ---END---
 ---START---
-CREATE TABLE ddtest2 (_gemini_pk serial PRIMARY KEY, f1 rposint);
+CREATE TABLE ddtest2 (gemini_pk serial PRIMARY KEY, f1 rposint);
 ---END---
 ---START---
 insert into ddtest2 values('(-1,3]');
@@ -1274,7 +1274,7 @@ alter domain posint add constraint c1 check(value >= 0);
 create domain posint2 as posint check (value % 2 = 0);
 ---END---
 ---START---
-CREATE TABLE ddtest2 (_gemini_pk serial PRIMARY KEY, f1 posint2);
+CREATE TABLE ddtest2 (gemini_pk serial PRIMARY KEY, f1 posint2);
 ---END---
 ---START---
 insert into ddtest2 values(11);
@@ -1381,7 +1381,7 @@ select array[2,1]::orderedpair;
 
 DROP TABLE IF EXISTS op;
 
-CREATE TABLE op (_gemini_pk serial PRIMARY KEY, f1 orderedpair);
+CREATE TABLE op (gemini_pk serial PRIMARY KEY, f1 orderedpair);
 ---END---
 ---START---
 insert into op values (array[1,2]);
@@ -1507,7 +1507,7 @@ select 1::inotnull;
 select null::inotnull;
 ---END---
 ---START---
-CREATE TABLE dom_table (_gemini_pk serial PRIMARY KEY, x inotnull);
+CREATE TABLE dom_table (gemini_pk serial PRIMARY KEY, x inotnull);
 ---END---
 ---START---
 insert into dom_table values ('1');

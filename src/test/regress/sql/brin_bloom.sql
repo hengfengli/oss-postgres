@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE brintest_bloom (_gemini_pk serial PRIMARY KEY, byteacol bytea, charcol "char", namecol name, int8col bigint, int2col smallint, int4col integer, textcol text, oidcol oid, float4col real, float8col double precision, macaddrcol macaddr, inetcol inet, cidrcol cidr, bpcharcol char, datecol date, timecol time, timestampcol timestamp, timestamptzcol timestamp with time zone, intervalcol interval, timetzcol time with time zone, numericcol numeric, uuidcol uuid, lsncol pg_lsn) WITH (fillfactor = 10);
+CREATE TABLE brintest_bloom (gemini_pk serial PRIMARY KEY, byteacol bytea, charcol "char", namecol name, int8col bigint, int2col smallint, int4col integer, textcol text, oidcol oid, float4col real, float8col double precision, macaddrcol macaddr, inetcol inet, cidrcol cidr, bpcharcol char, datecol date, timecol time, timestampcol timestamp, timestamptzcol timestamp with time zone, intervalcol interval, timetzcol time with time zone, numericcol numeric, uuidcol uuid, lsncol pg_lsn) WITH (fillfactor = 10);
 ---END---
 ---START---
 INSERT INTO brintest_bloom SELECT
@@ -80,7 +80,7 @@ CREATE INDEX brinidx_bloom ON brintest_bloom USING brin (
 ) with (pages_per_range = 1);
 ---END---
 ---START---
-CREATE TABLE brinopers_bloom (_gemini_pk serial PRIMARY KEY, colname name, typ text, op text[], value text[], matches integer[], CHECK (cardinality(op) = cardinality(value)), CHECK (cardinality(op) = cardinality(matches)));
+CREATE TABLE brinopers_bloom (gemini_pk serial PRIMARY KEY, colname name, typ text, op text[], value text[], matches integer[], CHECK (cardinality(op) = cardinality(value)), CHECK (cardinality(op) = cardinality(matches)));
 ---END---
 ---START---
 INSERT INTO brinopers_bloom VALUES
@@ -350,7 +350,7 @@ SELECT brin_desummarize_range('brinidx_bloom', 0);
 SELECT brin_desummarize_range('brinidx_bloom', 100000000);
 ---END---
 ---START---
-CREATE TABLE brin_summarize_bloom (_gemini_pk serial PRIMARY KEY, value integer) WITH (fillfactor = 10, autovacuum_enabled = 'false');
+CREATE TABLE brin_summarize_bloom (gemini_pk serial PRIMARY KEY, value integer) WITH (fillfactor = 10, autovacuum_enabled = 'false');
 ---END---
 ---START---
 CREATE INDEX brin_summarize_bloom_idx ON brin_summarize_bloom USING brin (value) WITH (pages_per_range=2);
@@ -391,7 +391,7 @@ SELECT brin_summarize_range('brin_summarize_bloom_idx', -1);
 SELECT brin_summarize_range('brin_summarize_bloom_idx', 4294967296);
 ---END---
 ---START---
-CREATE TABLE brin_test_bloom (_gemini_pk serial PRIMARY KEY, a integer, b integer);
+CREATE TABLE brin_test_bloom (gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 INSERT INTO brin_test_bloom SELECT x/100,x%100 FROM generate_series(1,10000) x(x);

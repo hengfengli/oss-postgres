@@ -6,7 +6,7 @@
 BEGIN;
 ---END---
 ---START---
-CREATE TABLE xacttest (_gemini_pk serial PRIMARY KEY, a smallint, b real);
+CREATE TABLE xacttest (gemini_pk serial PRIMARY KEY, a smallint, b real);
 ---END---
 ---START---
 INSERT INTO xacttest VALUES
@@ -29,7 +29,7 @@ SELECT a FROM xacttest WHERE a > 100;
 BEGIN;
 ---END---
 ---START---
-CREATE TABLE disappear (_gemini_pk serial PRIMARY KEY, a int4);
+CREATE TABLE disappear (gemini_pk serial PRIMARY KEY, a int4);
 ---END---
 ---START---
 DELETE FROM xacttest;
@@ -94,12 +94,12 @@ CREATE FUNCTION errfunc() RETURNS int LANGUAGE SQL AS 'SELECT 1'
 SET transaction_read_only = on;
 ---END---
 ---START---
-CREATE TABLE writetest (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE writetest (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 DROP TABLE IF EXISTS temptest;
 
-CREATE TABLE temptest (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE temptest (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 BEGIN;
@@ -295,13 +295,13 @@ COMMIT;
 SET SESSION CHARACTERISTICS AS TRANSACTION READ WRITE;
 ---END---
 ---START---
-CREATE TABLE trans_foobar (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE trans_foobar (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 BEGIN;
 ---END---
 ---START---
-CREATE TABLE trans_foo (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE trans_foo (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 SAVEPOINT one;
@@ -310,7 +310,7 @@ SAVEPOINT one;
 DROP TABLE trans_foo;
 ---END---
 ---START---
-CREATE TABLE trans_bar (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE trans_bar (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 ROLLBACK TO SAVEPOINT one;
@@ -322,7 +322,7 @@ RELEASE SAVEPOINT one;
 SAVEPOINT two;
 ---END---
 ---START---
-CREATE TABLE trans_baz (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE trans_baz (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 RELEASE SAVEPOINT two;
@@ -331,7 +331,7 @@ RELEASE SAVEPOINT two;
 drop TABLE trans_foobar;
 ---END---
 ---START---
-CREATE TABLE trans_barbaz (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE trans_barbaz (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 COMMIT;
@@ -435,7 +435,7 @@ RELEASE SAVEPOINT one;
 SAVEPOINT two;
 ---END---
 ---START---
-CREATE TABLE savepoints (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE savepoints (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 SAVEPOINT three;
@@ -845,7 +845,7 @@ BEGIN;
 savepoint x;
 ---END---
 ---START---
-CREATE TABLE koju (_gemini_pk serial PRIMARY KEY, a integer UNIQUE);
+CREATE TABLE koju (gemini_pk serial PRIMARY KEY, a integer UNIQUE);
 ---END---
 ---START---
 INSERT INTO koju VALUES (1);
@@ -857,7 +857,7 @@ INSERT INTO koju VALUES (1);
 rollback to x;
 ---END---
 ---START---
-CREATE TABLE koju (_gemini_pk serial PRIMARY KEY, a integer UNIQUE);
+CREATE TABLE koju (gemini_pk serial PRIMARY KEY, a integer UNIQUE);
 ---END---
 ---START---
 INSERT INTO koju VALUES (1);
@@ -889,7 +889,7 @@ exception
 end$$ language plpgsql volatile;
 ---END---
 ---START---
-CREATE TABLE revalidate_bug (_gemini_pk serial PRIMARY KEY, c float8 UNIQUE);
+CREATE TABLE revalidate_bug (gemini_pk serial PRIMARY KEY, c float8 UNIQUE);
 ---END---
 ---START---
 insert into revalidate_bug values (1);
@@ -913,7 +913,7 @@ begin;
 savepoint x;
 ---END---
 ---START---
-CREATE TABLE trans_abc (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE trans_abc (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 insert into trans_abc values (5);
@@ -941,7 +941,7 @@ commit;
 begin;
 ---END---
 ---START---
-CREATE TABLE trans_abc (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE trans_abc (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 insert into trans_abc values (5);
@@ -1035,7 +1035,7 @@ DROP FUNCTION create_temp_tab();
 DROP FUNCTION invert(x float8);
 ---END---
 ---START---
-CREATE TABLE trans_abc (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE trans_abc (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 -- set nondefault value so we have something to override below
@@ -1241,7 +1241,7 @@ DROP TABLE trans_abc;
 
 DROP TABLE IF EXISTS i_table;
 
-CREATE TABLE i_table (_gemini_pk serial PRIMARY KEY, f1 integer);
+CREATE TABLE i_table (gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
 -- psql will show all results of a multi-statement Query
@@ -1449,7 +1449,7 @@ ROLLBACK AND CHAIN;
 SHOW transaction_read_only;
 ---END---
 ---START---
-CREATE TABLE trans_abc (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE trans_abc (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 -- COMMIT/ROLLBACK + COMMIT/ROLLBACK AND CHAIN

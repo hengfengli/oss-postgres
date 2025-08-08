@@ -5,7 +5,7 @@
 
 DROP TABLE IF EXISTS empsalary;
 
-CREATE TABLE empsalary (_gemini_pk serial PRIMARY KEY, depname varchar, empno bigint, salary integer, enroll_date date);
+CREATE TABLE empsalary (gemini_pk serial PRIMARY KEY, depname varchar, empno bigint, salary integer, enroll_date date);
 ---END---
 ---START---
 INSERT INTO empsalary VALUES
@@ -713,7 +713,7 @@ from generate_series(-9223372036854775806, -9223372036854775804) x;
 
 DROP TABLE IF EXISTS numerics;
 
-CREATE TABLE numerics (_gemini_pk serial PRIMARY KEY, id integer, f_float4 float4, f_float8 float8, f_numeric numeric);
+CREATE TABLE numerics (gemini_pk serial PRIMARY KEY, id integer, f_float4 float4, f_float8 float8, f_numeric numeric);
 ---END---
 ---START---
 insert into numerics values
@@ -854,7 +854,7 @@ window w as (order by f_numeric range between
 
 DROP TABLE IF EXISTS datetimes;
 
-CREATE TABLE datetimes (_gemini_pk serial PRIMARY KEY, id integer, f_time time, f_timetz timetz, f_interval interval, f_timestamptz timestamptz, f_timestamp timestamp);
+CREATE TABLE datetimes (gemini_pk serial PRIMARY KEY, id integer, f_time time, f_timetz timetz, f_interval interval, f_timestamptz timestamptz, f_timestamp timestamp);
 ---END---
 ---START---
 insert into datetimes values
@@ -1129,7 +1129,7 @@ SELECT count(*) OVER (PARTITION BY four) FROM (SELECT * FROM tenk1 UNION ALL SEL
 -- check some degenerate cases
 DROP TABLE IF EXISTS t1;
 
-CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, f1 integer, f2 int8);
+CREATE TABLE t1 (gemini_pk serial PRIMARY KEY, f1 integer, f2 int8);
 ---END---
 ---START---
 insert into t1 values (1,1),(1,2),(2,2);

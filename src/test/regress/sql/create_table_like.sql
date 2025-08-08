@@ -1,17 +1,17 @@
 ---START---
-CREATE TABLE inhx (_gemini_pk serial PRIMARY KEY, xx text DEFAULT 'text');
+CREATE TABLE inhx (gemini_pk serial PRIMARY KEY, xx text DEFAULT 'text');
 ---END---
 ---START---
-CREATE TABLE ctla (_gemini_pk serial PRIMARY KEY, aa text);
+CREATE TABLE ctla (gemini_pk serial PRIMARY KEY, aa text);
 ---END---
 ---START---
-CREATE TABLE ctlb (_gemini_pk serial PRIMARY KEY, bb text) INHERITS (ctla);
+CREATE TABLE ctlb (gemini_pk serial PRIMARY KEY, bb text) INHERITS (ctla);
 ---END---
 ---START---
-CREATE TABLE foo (_gemini_pk serial PRIMARY KEY, LIKE nonexistent);
+CREATE TABLE foo (gemini_pk serial PRIMARY KEY, LIKE nonexistent);
 ---END---
 ---START---
-CREATE TABLE inhe (_gemini_pk serial PRIMARY KEY, ee text, LIKE inhx) INHERITS (ctlb);
+CREATE TABLE inhe (gemini_pk serial PRIMARY KEY, ee text, LIKE inhx) INHERITS (ctlb);
 ---END---
 ---START---
 INSERT INTO inhe VALUES ('ee-col1', 'ee-col2', DEFAULT, 'ee-col4');
@@ -32,10 +32,10 @@ SELECT * FROM ctlb;
 SELECT * FROM ctla;
 ---END---
 ---START---
-CREATE TABLE inhf (_gemini_pk serial PRIMARY KEY, LIKE inhx, LIKE inhx);
+CREATE TABLE inhf (gemini_pk serial PRIMARY KEY, LIKE inhx, LIKE inhx);
 ---END---
 ---START---
-CREATE TABLE inhf (_gemini_pk serial PRIMARY KEY, LIKE inhx INCLUDING CONSTRAINTS INCLUDING DEFAULTS);
+CREATE TABLE inhf (gemini_pk serial PRIMARY KEY, LIKE inhx INCLUDING CONSTRAINTS INCLUDING DEFAULTS);
 ---END---
 ---START---
 INSERT INTO inhf DEFAULT VALUES;
@@ -52,7 +52,7 @@ ALTER TABLE inhx add constraint foo CHECK (xx = 'text');
 ALTER TABLE inhx ADD PRIMARY KEY (xx);
 ---END---
 ---START---
-CREATE TABLE inhg (_gemini_pk serial PRIMARY KEY, LIKE inhx);
+CREATE TABLE inhg (gemini_pk serial PRIMARY KEY, LIKE inhx);
 ---END---
 ---START---
 /* Doesn't copy constraint */
@@ -62,7 +62,7 @@ INSERT INTO inhg VALUES ('foo');
 DROP TABLE inhg;
 ---END---
 ---START---
-CREATE TABLE inhg (_gemini_pk serial PRIMARY KEY, x text, LIKE inhx INCLUDING CONSTRAINTS, y text);
+CREATE TABLE inhg (gemini_pk serial PRIMARY KEY, x text, LIKE inhx INCLUDING CONSTRAINTS, y text);
 ---END---
 ---START---
 /* Copies constraints */
@@ -85,7 +85,7 @@ SELECT * FROM inhg;
 DROP TABLE inhg;
 ---END---
 ---START---
-CREATE TABLE test_like_id_1 (_gemini_pk serial PRIMARY KEY, a bigint GENERATED ALWAYS AS IDENTITY, b text);
+CREATE TABLE test_like_id_1 (gemini_pk serial PRIMARY KEY, a bigint GENERATED ALWAYS AS IDENTITY, b text);
 ---END---
 ---START---
 \d test_like_id_1
@@ -95,7 +95,7 @@ INSERT INTO test_like_id_1 (b) VALUES ('b1');
 SELECT * FROM test_like_id_1;
 ---END---
 ---START---
-CREATE TABLE test_like_id_2 (_gemini_pk serial PRIMARY KEY, LIKE test_like_id_1);
+CREATE TABLE test_like_id_2 (gemini_pk serial PRIMARY KEY, LIKE test_like_id_1);
 ---END---
 ---START---
 \d test_like_id_2
@@ -105,7 +105,7 @@ INSERT INTO test_like_id_2 (b) VALUES ('b2');
 SELECT * FROM test_like_id_2;
 ---END---
 ---START---
-CREATE TABLE test_like_id_3 (_gemini_pk serial PRIMARY KEY, LIKE test_like_id_1 INCLUDING IDENTITY);
+CREATE TABLE test_like_id_3 (gemini_pk serial PRIMARY KEY, LIKE test_like_id_1 INCLUDING IDENTITY);
 ---END---
 ---START---
 \d test_like_id_3
@@ -119,7 +119,7 @@ SELECT * FROM test_like_id_3;
 DROP TABLE test_like_id_1, test_like_id_2, test_like_id_3;
 ---END---
 ---START---
-CREATE TABLE test_like_gen_1 (_gemini_pk serial PRIMARY KEY, a integer, b integer GENERATED ALWAYS AS (a * 2) STORED);
+CREATE TABLE test_like_gen_1 (gemini_pk serial PRIMARY KEY, a integer, b integer GENERATED ALWAYS AS (a * 2) STORED);
 ---END---
 ---START---
 \d test_like_gen_1
@@ -129,7 +129,7 @@ INSERT INTO test_like_gen_1 (a) VALUES (1);
 SELECT * FROM test_like_gen_1;
 ---END---
 ---START---
-CREATE TABLE test_like_gen_2 (_gemini_pk serial PRIMARY KEY, LIKE test_like_gen_1);
+CREATE TABLE test_like_gen_2 (gemini_pk serial PRIMARY KEY, LIKE test_like_gen_1);
 ---END---
 ---START---
 \d test_like_gen_2
@@ -139,7 +139,7 @@ INSERT INTO test_like_gen_2 (a) VALUES (1);
 SELECT * FROM test_like_gen_2;
 ---END---
 ---START---
-CREATE TABLE test_like_gen_3 (_gemini_pk serial PRIMARY KEY, LIKE test_like_gen_1 INCLUDING GENERATED);
+CREATE TABLE test_like_gen_3 (gemini_pk serial PRIMARY KEY, LIKE test_like_gen_1 INCLUDING GENERATED);
 ---END---
 ---START---
 \d test_like_gen_3
@@ -152,20 +152,20 @@ SELECT * FROM test_like_gen_3;
 DROP TABLE test_like_gen_1, test_like_gen_2, test_like_gen_3;
 ---END---
 ---START---
-CREATE TABLE test_like_4 (_gemini_pk serial PRIMARY KEY, b integer DEFAULT 42, c integer GENERATED ALWAYS AS (a * 2) STORED, a integer CHECK (a > 0));
+CREATE TABLE test_like_4 (gemini_pk serial PRIMARY KEY, b integer DEFAULT 42, c integer GENERATED ALWAYS AS (a * 2) STORED, a integer CHECK (a > 0));
 ---END---
 ---START---
 \d test_like_4
 CREATE TABLE test_like_4a (LIKE test_like_4);
 ---END---
 ---START---
-CREATE TABLE test_like_4b (_gemini_pk serial PRIMARY KEY, LIKE test_like_4 INCLUDING DEFAULTS);
+CREATE TABLE test_like_4b (gemini_pk serial PRIMARY KEY, LIKE test_like_4 INCLUDING DEFAULTS);
 ---END---
 ---START---
-CREATE TABLE test_like_4c (_gemini_pk serial PRIMARY KEY, LIKE test_like_4 INCLUDING GENERATED);
+CREATE TABLE test_like_4c (gemini_pk serial PRIMARY KEY, LIKE test_like_4 INCLUDING GENERATED);
 ---END---
 ---START---
-CREATE TABLE test_like_4d (_gemini_pk serial PRIMARY KEY, LIKE test_like_4 INCLUDING DEFAULTS INCLUDING GENERATED);
+CREATE TABLE test_like_4d (gemini_pk serial PRIMARY KEY, LIKE test_like_4 INCLUDING DEFAULTS INCLUDING GENERATED);
 ---END---
 ---START---
 \d test_like_4a
@@ -196,13 +196,13 @@ INSERT INTO test_like_4d (a) VALUES(11);
 SELECT a, b, c FROM test_like_4d;
 ---END---
 ---START---
-CREATE TABLE test_like_5 (_gemini_pk serial PRIMARY KEY, x point, y point, z point);
+CREATE TABLE test_like_5 (gemini_pk serial PRIMARY KEY, x point, y point, z point);
 ---END---
 ---START---
-CREATE TABLE test_like_5x (_gemini_pk serial PRIMARY KEY, p integer CHECK (p > 0), q integer GENERATED ALWAYS AS (p * 2) STORED);
+CREATE TABLE test_like_5x (gemini_pk serial PRIMARY KEY, p integer CHECK (p > 0), q integer GENERATED ALWAYS AS (p * 2) STORED);
 ---END---
 ---START---
-CREATE TABLE test_like_5c (_gemini_pk serial PRIMARY KEY, LIKE test_like_4 INCLUDING ALL) INHERITS (test_like_5, test_like_5x);
+CREATE TABLE test_like_5c (gemini_pk serial PRIMARY KEY, LIKE test_like_4 INCLUDING ALL) INHERITS (test_like_5, test_like_5x);
 ---END---
 ---START---
 \d test_like_5c
@@ -213,7 +213,7 @@ DROP TABLE test_like_4, test_like_4a, test_like_4b, test_like_4c, test_like_4d;
 DROP TABLE test_like_5, test_like_5x, test_like_5c;
 ---END---
 ---START---
-CREATE TABLE inhg (_gemini_pk serial PRIMARY KEY, x text, LIKE inhx INCLUDING INDEXES, y text);
+CREATE TABLE inhg (gemini_pk serial PRIMARY KEY, x text, LIKE inhx INCLUDING INDEXES, y text);
 ---END---
 ---START---
 /* copies indexes */
@@ -231,13 +231,13 @@ DROP TABLE inhg;
 CREATE TABLE inhg (x text, LIKE inhx INCLUDING INDEXES, PRIMARY KEY(x));
 ---END---
 ---START---
-CREATE TABLE inhz (_gemini_pk serial PRIMARY KEY, xx text DEFAULT 'text', yy integer UNIQUE);
+CREATE TABLE inhz (gemini_pk serial PRIMARY KEY, xx text DEFAULT 'text', yy integer UNIQUE);
 ---END---
 ---START---
 CREATE UNIQUE INDEX inhz_xx_idx on inhz (xx) WHERE xx <> 'test';
 ---END---
 ---START---
-CREATE TABLE inhg (_gemini_pk serial PRIMARY KEY, x text UNIQUE, LIKE inhz INCLUDING INDEXES);
+CREATE TABLE inhg (gemini_pk serial PRIMARY KEY, x text UNIQUE, LIKE inhz INCLUDING INDEXES);
 ---END---
 ---START---
 INSERT INTO inhg (xx, yy, x) VALUES ('test', 5, 10);
@@ -256,7 +256,7 @@ DROP TABLE inhg;
 DROP TABLE inhz;
 ---END---
 ---START---
-CREATE TABLE inhz (_gemini_pk serial PRIMARY KEY, x text REFERENCES inhz, LIKE inhx INCLUDING INDEXES);
+CREATE TABLE inhz (gemini_pk serial PRIMARY KEY, x text REFERENCES inhz, LIKE inhx INCLUDING INDEXES);
 ---END---
 ---START---
 \d inhz
@@ -303,7 +303,7 @@ COMMENT ON INDEX ctlt1_b_key IS 'index b_key';
 ALTER TABLE ctlt1 ALTER COLUMN a SET STORAGE MAIN;
 ---END---
 ---START---
-CREATE TABLE ctlt2 (_gemini_pk serial PRIMARY KEY, c text);
+CREATE TABLE ctlt2 (gemini_pk serial PRIMARY KEY, c text);
 ---END---
 ---START---
 ALTER TABLE ctlt2 ALTER COLUMN c SET STORAGE EXTERNAL;
@@ -312,7 +312,7 @@ ALTER TABLE ctlt2 ALTER COLUMN c SET STORAGE EXTERNAL;
 COMMENT ON COLUMN ctlt2.c IS 'C';
 ---END---
 ---START---
-CREATE TABLE ctlt3 (_gemini_pk serial PRIMARY KEY, a text CHECK (length(a) < 5), c text CHECK (length(c) < 7));
+CREATE TABLE ctlt3 (gemini_pk serial PRIMARY KEY, a text CHECK (length(a) < 5), c text CHECK (length(c) < 7));
 ---END---
 ---START---
 ALTER TABLE ctlt3 ALTER COLUMN c SET STORAGE EXTERNAL;
@@ -333,13 +333,13 @@ COMMENT ON COLUMN ctlt3.c IS 'C';
 COMMENT ON CONSTRAINT ctlt3_a_check ON ctlt3 IS 't3_a_check';
 ---END---
 ---START---
-CREATE TABLE ctlt4 (_gemini_pk serial PRIMARY KEY, a text, c text);
+CREATE TABLE ctlt4 (gemini_pk serial PRIMARY KEY, a text, c text);
 ---END---
 ---START---
 ALTER TABLE ctlt4 ALTER COLUMN c SET STORAGE EXTERNAL;
 ---END---
 ---START---
-CREATE TABLE ctlt12_storage (_gemini_pk serial PRIMARY KEY, LIKE ctlt1 INCLUDING STORAGE, LIKE ctlt2 INCLUDING STORAGE);
+CREATE TABLE ctlt12_storage (gemini_pk serial PRIMARY KEY, LIKE ctlt1 INCLUDING STORAGE, LIKE ctlt2 INCLUDING STORAGE);
 ---END---
 ---START---
 \d+ ctlt12_storage
@@ -354,7 +354,7 @@ CREATE TABLE ctlt1_inh (LIKE ctlt1 INCLUDING CONSTRAINTS INCLUDING COMMENTS) INH
 SELECT description FROM pg_description, pg_constraint c WHERE classoid = 'pg_constraint'::regclass AND objoid = c.oid AND c.conrelid = 'ctlt1_inh'::regclass;
 ---END---
 ---START---
-CREATE TABLE ctlt13_inh (_gemini_pk serial PRIMARY KEY) INHERITS (ctlt1, ctlt3);
+CREATE TABLE ctlt13_inh (gemini_pk serial PRIMARY KEY) INHERITS (ctlt1, ctlt3);
 ---END---
 ---START---
 \d+ ctlt13_inh
@@ -365,7 +365,7 @@ CREATE TABLE ctlt13_like (LIKE ctlt3 INCLUDING CONSTRAINTS INCLUDING INDEXES INC
 SELECT description FROM pg_description, pg_constraint c WHERE classoid = 'pg_constraint'::regclass AND objoid = c.oid AND c.conrelid = 'ctlt13_like'::regclass;
 ---END---
 ---START---
-CREATE TABLE ctlt_all (_gemini_pk serial PRIMARY KEY, LIKE ctlt1 INCLUDING ALL);
+CREATE TABLE ctlt_all (gemini_pk serial PRIMARY KEY, LIKE ctlt1 INCLUDING ALL);
 ---END---
 ---START---
 \d+ ctlt_all
@@ -375,13 +375,13 @@ SELECT c.relname, objsubid, description FROM pg_description, pg_index i, pg_clas
 SELECT s.stxname, objsubid, description FROM pg_description, pg_statistic_ext s WHERE classoid = 'pg_statistic_ext'::regclass AND objoid = s.oid AND s.stxrelid = 'ctlt_all'::regclass ORDER BY s.stxname, objsubid;
 ---END---
 ---START---
-CREATE TABLE inh_error1 (_gemini_pk serial PRIMARY KEY) INHERITS (ctlt1, ctlt4);
+CREATE TABLE inh_error1 (gemini_pk serial PRIMARY KEY) INHERITS (ctlt1, ctlt4);
 ---END---
 ---START---
-CREATE TABLE inh_error2 (_gemini_pk serial PRIMARY KEY, LIKE ctlt4 INCLUDING STORAGE) INHERITS (ctlt1);
+CREATE TABLE inh_error2 (gemini_pk serial PRIMARY KEY, LIKE ctlt4 INCLUDING STORAGE) INHERITS (ctlt1);
 ---END---
 ---START---
-CREATE TABLE pg_attrdef (_gemini_pk serial PRIMARY KEY, LIKE ctlt1 INCLUDING ALL);
+CREATE TABLE pg_attrdef (gemini_pk serial PRIMARY KEY, LIKE ctlt1 INCLUDING ALL);
 ---END---
 ---START---
 \d+ public.pg_attrdef
@@ -398,7 +398,7 @@ CREATE SCHEMA ctl_schema;
 SET LOCAL search_path = ctl_schema, public;
 ---END---
 ---START---
-CREATE TABLE ctlt1 (_gemini_pk serial PRIMARY KEY, LIKE ctlt1 INCLUDING ALL);
+CREATE TABLE ctlt1 (gemini_pk serial PRIMARY KEY, LIKE ctlt1 INCLUDING ALL);
 ---END---
 ---START---
 \d+ ctlt1
@@ -408,10 +408,10 @@ ROLLBACK;
 DROP TABLE ctlt1, ctlt2, ctlt3, ctlt4, ctlt12_storage, ctlt12_comments, ctlt1_inh, ctlt13_inh, ctlt13_like, ctlt_all, ctla, ctlb CASCADE;
 ---END---
 ---START---
-CREATE TABLE noinh_con_copy (_gemini_pk serial PRIMARY KEY, a integer CHECK (a > 0) NO INHERIT);
+CREATE TABLE noinh_con_copy (gemini_pk serial PRIMARY KEY, a integer CHECK (a > 0) NO INHERIT);
 ---END---
 ---START---
-CREATE TABLE noinh_con_copy1 (_gemini_pk serial PRIMARY KEY, LIKE noinh_con_copy INCLUDING CONSTRAINTS);
+CREATE TABLE noinh_con_copy1 (gemini_pk serial PRIMARY KEY, LIKE noinh_con_copy INCLUDING CONSTRAINTS);
 ---END---
 ---START---
 \d noinh_con_copy1
@@ -424,13 +424,13 @@ CREATE TABLE noinh_con_copy1_parted (LIKE noinh_con_copy INCLUDING ALL)
 DROP TABLE noinh_con_copy, noinh_con_copy1;
 ---END---
 ---START---
-CREATE TABLE ctlt4 (_gemini_pk serial PRIMARY KEY, a integer, b text);
+CREATE TABLE ctlt4 (gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 CREATE SEQUENCE ctlseq1;
 ---END---
 ---START---
-CREATE TABLE ctlt10 (_gemini_pk serial PRIMARY KEY, LIKE ctlseq1);
+CREATE TABLE ctlt10 (gemini_pk serial PRIMARY KEY, LIKE ctlseq1);
 ---END---
 ---START---
 -- fail
@@ -438,16 +438,16 @@ CREATE TABLE ctlt10 (_gemini_pk serial PRIMARY KEY, LIKE ctlseq1);
 CREATE VIEW ctlv1 AS SELECT * FROM ctlt4;
 ---END---
 ---START---
-CREATE TABLE ctlt11 (_gemini_pk serial PRIMARY KEY, LIKE ctlv1);
+CREATE TABLE ctlt11 (gemini_pk serial PRIMARY KEY, LIKE ctlv1);
 ---END---
 ---START---
-CREATE TABLE ctlt11a (_gemini_pk serial PRIMARY KEY, LIKE ctlv1 INCLUDING ALL);
+CREATE TABLE ctlt11a (gemini_pk serial PRIMARY KEY, LIKE ctlv1 INCLUDING ALL);
 ---END---
 ---START---
 CREATE TYPE ctlty1 AS (a int, b text);
 ---END---
 ---START---
-CREATE TABLE ctlt12 (_gemini_pk serial PRIMARY KEY, LIKE ctlty1);
+CREATE TABLE ctlt12 (gemini_pk serial PRIMARY KEY, LIKE ctlty1);
 ---END---
 ---START---
 DROP SEQUENCE ctlseq1;

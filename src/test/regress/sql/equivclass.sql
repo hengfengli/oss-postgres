@@ -384,7 +384,7 @@ explain (costs off)
 -- check that we recognize equivalence with dummy domains in the way
 DROP TABLE IF EXISTS undername;
 
-CREATE TABLE undername (_gemini_pk serial PRIMARY KEY, f1 name, f2 integer);
+CREATE TABLE undername (gemini_pk serial PRIMARY KEY, f1 name, f2 integer);
 ---END---
 ---START---
 create temp view overview as

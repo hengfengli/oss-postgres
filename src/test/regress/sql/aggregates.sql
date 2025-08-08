@@ -10,7 +10,7 @@
 SET extra_float_digits = 0;
 ---END---
 ---START---
-CREATE TABLE aggtest (_gemini_pk serial PRIMARY KEY, a int2, b float4);
+CREATE TABLE aggtest (gemini_pk serial PRIMARY KEY, a int2, b float4);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/agg.data';
@@ -519,7 +519,7 @@ SELECT
 ---START---
 DROP TABLE IF EXISTS bool_test;
 
-CREATE TABLE bool_test (_gemini_pk serial PRIMARY KEY, b1 bool, b2 bool, b3 bool, b4 bool);
+CREATE TABLE bool_test (gemini_pk serial PRIMARY KEY, b1 bool, b2 bool, b3 bool, b4 bool);
 ---END---
 ---START---
 -- empty case
@@ -689,16 +689,16 @@ explain (costs off)
 select max(100) from tenk1;
 ---END---
 ---START---
-CREATE TABLE minmaxtest (_gemini_pk serial PRIMARY KEY, f1 integer);
+CREATE TABLE minmaxtest (gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
-CREATE TABLE minmaxtest1 (_gemini_pk serial PRIMARY KEY) INHERITS (minmaxtest);
+CREATE TABLE minmaxtest1 (gemini_pk serial PRIMARY KEY) INHERITS (minmaxtest);
 ---END---
 ---START---
-CREATE TABLE minmaxtest2 (_gemini_pk serial PRIMARY KEY) INHERITS (minmaxtest);
+CREATE TABLE minmaxtest2 (gemini_pk serial PRIMARY KEY) INHERITS (minmaxtest);
 ---END---
 ---START---
-CREATE TABLE minmaxtest3 (_gemini_pk serial PRIMARY KEY) INHERITS (minmaxtest);
+CREATE TABLE minmaxtest3 (gemini_pk serial PRIMARY KEY) INHERITS (minmaxtest);
 ---END---
 ---START---
 create index minmaxtesti on minmaxtest(f1);
@@ -800,7 +800,7 @@ explain (costs off) select * from t3 group by a,b,c;
 ---START---
 DROP TABLE IF EXISTS t1c;
 
-CREATE TABLE t1c (_gemini_pk serial PRIMARY KEY) INHERITS (t1);
+CREATE TABLE t1c (gemini_pk serial PRIMARY KEY) INHERITS (t1);
 ---END---
 ---START---
 -- Ensure we don't remove any columns when t1 has a child table
@@ -854,12 +854,12 @@ drop table p_t1;
 
 DROP TABLE IF EXISTS t1;
 
-CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer);
+CREATE TABLE t1 (gemini_pk serial PRIMARY KEY, f1 integer, f2 integer);
 ---END---
 ---START---
 DROP TABLE IF EXISTS t2;
 
-CREATE TABLE t2 (_gemini_pk serial PRIMARY KEY, f1 bigint, f2 oid);
+CREATE TABLE t2 (gemini_pk serial PRIMARY KEY, f1 bigint, f2 oid);
 ---END---
 ---START---
 select f1 from t1 left join t2 using (f1) group by f1;
@@ -1186,7 +1186,7 @@ select string_agg(distinct f1, ',' order by f1::text) from varchar_tbl;
 select string_agg(distinct f1::text, ',' order by f1::text) from varchar_tbl;
 ---END---
 ---START---
-CREATE TABLE bytea_test_table (_gemini_pk serial PRIMARY KEY, v bytea);
+CREATE TABLE bytea_test_table (gemini_pk serial PRIMARY KEY, v bytea);
 ---END---
 ---START---
 select string_agg(v, '') from bytea_test_table;
@@ -1213,7 +1213,7 @@ select string_agg(v, decode('ee', 'hex')) from bytea_test_table;
 drop table bytea_test_table;
 ---END---
 ---START---
-CREATE TABLE pagg_test (_gemini_pk serial PRIMARY KEY, x integer, y integer);
+CREATE TABLE pagg_test (gemini_pk serial PRIMARY KEY, x integer, y integer);
 ---END---
 ---START---
 insert into pagg_test

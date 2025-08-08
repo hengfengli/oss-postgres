@@ -7,7 +7,7 @@
 
 DROP TABLE IF EXISTS foo;
 
-CREATE TABLE foo (_gemini_pk serial PRIMARY KEY, f1 serial, f2 text, f3 integer DEFAULT 42);
+CREATE TABLE foo (gemini_pk serial PRIMARY KEY, f1 serial, f2 text, f3 integer DEFAULT 42);
 ---END---
 ---START---
 INSERT INTO foo (f2,f3)
@@ -73,7 +73,7 @@ SELECT * FROM foo;
 
 DROP TABLE IF EXISTS foochild;
 
-CREATE TABLE foochild (_gemini_pk serial PRIMARY KEY, fc integer) INHERITS (foo);
+CREATE TABLE foochild (gemini_pk serial PRIMARY KEY, fc integer) INHERITS (foo);
 ---END---
 ---START---
 INSERT INTO foochild VALUES(123,'child',999,-123);
@@ -201,7 +201,7 @@ SELECT * FROM voo;
 
 DROP TABLE IF EXISTS joinme;
 
-CREATE TABLE joinme (_gemini_pk serial PRIMARY KEY, f2j text, other integer);
+CREATE TABLE joinme (gemini_pk serial PRIMARY KEY, f2j text, other integer);
 ---END---
 ---START---
 INSERT INTO joinme VALUES('more', 12345);

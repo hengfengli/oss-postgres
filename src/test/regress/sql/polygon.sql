@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE polygon_tbl (_gemini_pk serial PRIMARY KEY, f1 polygon);
+CREATE TABLE polygon_tbl (gemini_pk serial PRIMARY KEY, f1 polygon);
 ---END---
 ---START---
 INSERT INTO POLYGON_TBL(f1) VALUES ('(2.0,0.0),(2.0,4.0),(0.0,0.0)');
@@ -44,7 +44,7 @@ INSERT INTO POLYGON_TBL(f1) VALUES ('asdf');
 SELECT * FROM POLYGON_TBL;
 ---END---
 ---START---
-CREATE TABLE quad_poly_tbl (_gemini_pk serial PRIMARY KEY, id integer, p polygon);
+CREATE TABLE quad_poly_tbl (gemini_pk serial PRIMARY KEY, id integer, p polygon);
 ---END---
 ---START---
 INSERT INTO quad_poly_tbl

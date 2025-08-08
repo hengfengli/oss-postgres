@@ -200,7 +200,7 @@ SELECT 1_000.5_;
 SELECT 1_000.5e_1;
 ---END---
 ---START---
-CREATE TABLE temp_float (_gemini_pk serial PRIMARY KEY, f1 float8);
+CREATE TABLE temp_float (gemini_pk serial PRIMARY KEY, f1 float8);
 ---END---
 ---START---
 INSERT INTO TEMP_FLOAT (f1)
@@ -215,7 +215,7 @@ SELECT f1 FROM TEMP_FLOAT
   ORDER BY f1;
 ---END---
 ---START---
-CREATE TABLE temp_int4 (_gemini_pk serial PRIMARY KEY, f1 int4);
+CREATE TABLE temp_int4 (gemini_pk serial PRIMARY KEY, f1 int4);
 ---END---
 ---START---
 INSERT INTO TEMP_INT4 (f1)
@@ -231,7 +231,7 @@ SELECT f1 FROM TEMP_INT4
   ORDER BY f1;
 ---END---
 ---START---
-CREATE TABLE temp_int2 (_gemini_pk serial PRIMARY KEY, f1 int2);
+CREATE TABLE temp_int2 (gemini_pk serial PRIMARY KEY, f1 int2);
 ---END---
 ---START---
 INSERT INTO TEMP_INT2 (f1)
@@ -248,7 +248,7 @@ SELECT f1 FROM TEMP_INT2
   ORDER BY f1;
 ---END---
 ---START---
-CREATE TABLE temp_group (_gemini_pk serial PRIMARY KEY, f1 int4, f2 int4, f3 float8);
+CREATE TABLE temp_group (gemini_pk serial PRIMARY KEY, f1 int4, f2 int4, f3 float8);
 ---END---
 ---START---
 INSERT INTO TEMP_GROUP

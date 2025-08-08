@@ -699,7 +699,7 @@ CREATE AGGREGATE mysum2(anyelement,anyelement) (SFUNC = sum3,
 -- create test data for polymorphic aggregates
 DROP TABLE IF EXISTS t;
 
-CREATE TABLE t (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer[], f3 text);
+CREATE TABLE t (gemini_pk serial PRIMARY KEY, f1 integer, f2 integer[], f3 text);
 ---END---
 ---START---
 insert into t values(1,array[1],'a');

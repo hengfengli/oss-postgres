@@ -221,7 +221,7 @@ select unnest(textmultirange(textrange('a', 'b'), textrange('d', 'e')));
 select unnest(textmultirange(textrange('\\\\', repeat('a', 200)), textrange('c', 'd')));
 ---END---
 ---START---
-CREATE TABLE nummultirange_test (_gemini_pk serial PRIMARY KEY, nmr nummultirange);
+CREATE TABLE nummultirange_test (gemini_pk serial PRIMARY KEY, nmr nummultirange);
 ---END---
 ---START---
 CREATE INDEX nummultirange_test_btree ON nummultirange_test(nmr);
@@ -1130,7 +1130,7 @@ SELECT '{[1,4), [7,10)}'::nummultirange * '{[0,2), [3,8), [9,12)}'::nummultirang
 SELECT '{[1,4), [7,10)}'::nummultirange * '{[0,2), [3,8), [9,12)}'::nummultirange;
 ---END---
 ---START---
-CREATE TABLE test_multirange_gist (_gemini_pk serial PRIMARY KEY, mr int4multirange);
+CREATE TABLE test_multirange_gist (gemini_pk serial PRIMARY KEY, mr int4multirange);
 ---END---
 ---START---
 insert into test_multirange_gist select int4multirange(int4range(g, g+10),int4range(g+20, g+30),int4range(g+40, g+50)) from generate_series(1,2000) g;
@@ -1406,7 +1406,7 @@ select count(*) from test_multirange_gist where mr -|- int4multirange(int4range(
 drop table test_multirange_gist;
 ---END---
 ---START---
-CREATE TABLE reservations (_gemini_pk serial PRIMARY KEY, room_id integer NOT NULL, booked_during daterange);
+CREATE TABLE reservations (gemini_pk serial PRIMARY KEY, room_id integer NOT NULL, booked_during daterange);
 ---END---
 ---START---
 insert into reservations values
@@ -1516,7 +1516,7 @@ select range_intersect_agg(nmr) from (values ('{[1,6], [10,12]}'::nummultirange)
 select range_intersect_agg(nmr) from nummultirange_test where nmr @> 4.0;
 ---END---
 ---START---
-CREATE TABLE nummultirange_test2 (_gemini_pk serial PRIMARY KEY, nmr nummultirange);
+CREATE TABLE nummultirange_test2 (gemini_pk serial PRIMARY KEY, nmr nummultirange);
 ---END---
 ---START---
 create index nummultirange_test2_hash_idx on nummultirange_test2 using hash (nmr);
@@ -1601,7 +1601,7 @@ DROP TABLE nummultirange_test2;
 select '{[123.001, 5.e9)}'::float8multirange @> 888.882::float8;
 ---END---
 ---START---
-CREATE TABLE float8multirange_test (_gemini_pk serial PRIMARY KEY, f8mr float8multirange, i integer);
+CREATE TABLE float8multirange_test (gemini_pk serial PRIMARY KEY, f8mr float8multirange, i integer);
 ---END---
 ---START---
 insert into float8multirange_test values(float8multirange(float8range(-100.00007, '1.111113e9')), 42);
@@ -1809,7 +1809,7 @@ create function bogus_func(anycompatible)
 select ARRAY[nummultirange(numrange(1.1, 1.2)), nummultirange(numrange(12.3, 155.5))];
 ---END---
 ---START---
-CREATE TABLE i8mr_array (_gemini_pk serial PRIMARY KEY, f1 integer, f2 int8multirange[]);
+CREATE TABLE i8mr_array (gemini_pk serial PRIMARY KEY, f1 integer, f2 int8multirange[]);
 ---END---
 ---START---
 insert into i8mr_array values (42, array[int8multirange(int8range(1,10)), int8multirange(int8range(2,20))]);

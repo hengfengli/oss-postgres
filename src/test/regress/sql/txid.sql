@@ -29,7 +29,7 @@ select '12:16:14,13'::txid_snapshot;
 ---START---
 DROP TABLE IF EXISTS snapshot_test;
 
-CREATE TABLE snapshot_test (_gemini_pk serial PRIMARY KEY, nr integer, snap txid_snapshot);
+CREATE TABLE snapshot_test (gemini_pk serial PRIMARY KEY, nr integer, snap txid_snapshot);
 ---END---
 ---START---
 insert into snapshot_test values (1, '12:13:');

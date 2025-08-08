@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE update_test (_gemini_pk serial PRIMARY KEY, a integer DEFAULT 10, b integer, c text);
+CREATE TABLE update_test (gemini_pk serial PRIMARY KEY, a integer DEFAULT 10, b integer, c text);
 ---END---
 ---START---
 CREATE TABLE upsert_test (
@@ -224,16 +224,16 @@ WITH aaa AS (SELECT 1 AS ctea, ' Foo' AS cteb) INSERT INTO upsert_test
 DROP TABLE upsert_test;
 ---END---
 ---START---
-CREATE TABLE range_parted (_gemini_pk serial PRIMARY KEY, a text, b bigint, c numeric, d integer, e varchar) PARTITION BY range (a, b);
+CREATE TABLE range_parted (gemini_pk serial PRIMARY KEY, a text, b bigint, c numeric, d integer, e varchar) PARTITION BY range (a, b);
 ---END---
 ---START---
-CREATE TABLE part_b_20_b_30 (_gemini_pk serial PRIMARY KEY, e varchar, c numeric, a text, b bigint, d integer);
+CREATE TABLE part_b_20_b_30 (gemini_pk serial PRIMARY KEY, e varchar, c numeric, a text, b bigint, d integer);
 ---END---
 ---START---
 ALTER TABLE range_parted ATTACH PARTITION part_b_20_b_30 FOR VALUES FROM ('b', 20) TO ('b', 30);
 ---END---
 ---START---
-CREATE TABLE part_b_10_b_20 (_gemini_pk serial PRIMARY KEY, e varchar, c numeric, a text, b bigint, d integer) PARTITION BY range (c);
+CREATE TABLE part_b_10_b_20 (gemini_pk serial PRIMARY KEY, e varchar, c numeric, a text, b bigint, d integer) PARTITION BY range (c);
 ---END---
 ---START---
 CREATE TABLE part_b_1_b_10 PARTITION OF range_parted FOR VALUES FROM ('b', 1) TO ('b', 10);
@@ -253,7 +253,7 @@ CREATE TABLE part_a_1_a_10 PARTITION OF range_parted FOR VALUES FROM ('a', 1) TO
 UPDATE part_b_10_b_20 set b = b - 6;
 ---END---
 ---START---
-CREATE TABLE part_c_100_200 (_gemini_pk serial PRIMARY KEY, e varchar, c numeric, a text, b bigint, d integer) PARTITION BY range ((abs(d)));
+CREATE TABLE part_c_100_200 (gemini_pk serial PRIMARY KEY, e varchar, c numeric, a text, b bigint, d integer) PARTITION BY range ((abs(d)));
 ---END---
 ---START---
 ALTER TABLE part_c_100_200 DROP COLUMN e, DROP COLUMN c, DROP COLUMN a;
@@ -277,7 +277,7 @@ CREATE TABLE part_d_15_20 PARTITION OF part_c_100_200 FOR VALUES FROM (15) TO (2
 ALTER TABLE part_b_10_b_20 ATTACH PARTITION part_c_100_200 FOR VALUES FROM (100) TO (200);
 ---END---
 ---START---
-CREATE TABLE part_c_1_100 (_gemini_pk serial PRIMARY KEY, e varchar, d integer, c numeric, b bigint, a text);
+CREATE TABLE part_c_1_100 (gemini_pk serial PRIMARY KEY, e varchar, d integer, c numeric, b bigint, a text);
 ---END---
 ---START---
 ALTER TABLE part_b_10_b_20 ATTACH PARTITION part_c_1_100 FOR VALUES FROM (1) TO (100);
@@ -325,7 +325,7 @@ UPDATE part_b_10_b_20 set b = b - 6 WHERE c > 116 returning *;
 UPDATE range_parted set b = b - 6 WHERE c > 116 returning a, b + c;
 ---END---
 ---START---
-CREATE TABLE mintab (_gemini_pk serial PRIMARY KEY, c1 integer);
+CREATE TABLE mintab (gemini_pk serial PRIMARY KEY, c1 integer);
 ---END---
 ---START---
 INSERT into mintab VALUES (120);
@@ -734,7 +734,7 @@ UPDATE range_parted set a = 'b' WHERE a = 'bd';
 DROP TABLE range_parted;
 ---END---
 ---START---
-CREATE TABLE list_parted (_gemini_pk serial PRIMARY KEY, a text, b integer) PARTITION BY list (a);
+CREATE TABLE list_parted (gemini_pk serial PRIMARY KEY, a text, b integer) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE list_part1  PARTITION OF list_parted for VALUES in ('a', 'b');
@@ -760,13 +760,13 @@ UPDATE list_default set a = 'x' WHERE a = 'd';
 DROP TABLE list_parted;
 ---END---
 ---START---
-CREATE TABLE utrtest (_gemini_pk serial PRIMARY KEY, a integer, b text) PARTITION BY list (a);
+CREATE TABLE utrtest (gemini_pk serial PRIMARY KEY, a integer, b text) PARTITION BY list (a);
 ---END---
 ---START---
-CREATE TABLE utr1 (_gemini_pk serial PRIMARY KEY, a integer CHECK (a IN (1)), q text, b text);
+CREATE TABLE utr1 (gemini_pk serial PRIMARY KEY, a integer CHECK (a IN (1)), q text, b text);
 ---END---
 ---START---
-CREATE TABLE utr2 (_gemini_pk serial PRIMARY KEY, a integer CHECK (a IN (2)), b text);
+CREATE TABLE utr2 (gemini_pk serial PRIMARY KEY, a integer CHECK (a IN (2)), b text);
 ---END---
 ---START---
 alter table utr1 drop column q;
@@ -812,25 +812,25 @@ delete from utrtest
 drop table utrtest;
 ---END---
 ---START---
-CREATE TABLE list_parted (_gemini_pk serial PRIMARY KEY, a numeric, b integer, c int8) PARTITION BY list (a);
+CREATE TABLE list_parted (gemini_pk serial PRIMARY KEY, a numeric, b integer, c int8) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE sub_parted PARTITION OF list_parted for VALUES in (1) PARTITION BY list (b);
 ---END---
 ---START---
-CREATE TABLE sub_part1 (_gemini_pk serial PRIMARY KEY, b integer, c int8, a numeric);
+CREATE TABLE sub_part1 (gemini_pk serial PRIMARY KEY, b integer, c int8, a numeric);
 ---END---
 ---START---
 ALTER TABLE sub_parted ATTACH PARTITION sub_part1 for VALUES in (1);
 ---END---
 ---START---
-CREATE TABLE sub_part2 (_gemini_pk serial PRIMARY KEY, b integer, c int8, a numeric);
+CREATE TABLE sub_part2 (gemini_pk serial PRIMARY KEY, b integer, c int8, a numeric);
 ---END---
 ---START---
 ALTER TABLE sub_parted ATTACH PARTITION sub_part2 for VALUES in (2);
 ---END---
 ---START---
-CREATE TABLE list_part1 (_gemini_pk serial PRIMARY KEY, a numeric, b integer, c int8);
+CREATE TABLE list_part1 (gemini_pk serial PRIMARY KEY, a numeric, b integer, c int8);
 ---END---
 ---START---
 ALTER TABLE list_parted ATTACH PARTITION list_part1 for VALUES in (2,3);
@@ -922,7 +922,7 @@ SELECT tableoid::regclass::text, * FROM list_parted ORDER BY 1, 2, 3, 4;
 DROP FUNCTION func_parted_mod_b();
 ---END---
 ---START---
-CREATE TABLE non_parted (_gemini_pk serial PRIMARY KEY, id integer);
+CREATE TABLE non_parted (gemini_pk serial PRIMARY KEY, id integer);
 ---END---
 ---START---
 INSERT into non_parted VALUES (1), (1), (1), (2), (2), (2), (3), (3), (3);
@@ -951,7 +951,7 @@ create operator class custom_opclass for type int4 using hash as
 operator 1 = , function 2 dummy_hashint4(int4, int8);
 ---END---
 ---START---
-CREATE TABLE hash_parted (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY hash (a custom_opclass, b custom_opclass);
+CREATE TABLE hash_parted (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY hash (a custom_opclass, b custom_opclass);
 ---END---
 ---START---
 create table hpart1 partition of hash_parted for values with (modulus 2, remainder 1);

@@ -11,7 +11,7 @@ CALL random();
 CREATE FUNCTION cp_testfunc1(a int) RETURNS int LANGUAGE SQL AS $$ SELECT a $$;
 ---END---
 ---START---
-CREATE TABLE cp_test (_gemini_pk serial PRIMARY KEY, a integer, b text);
+CREATE TABLE cp_test (gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 CREATE PROCEDURE ptest1(x text)

@@ -93,7 +93,7 @@ analyze bigger_than_it_looks;
 update pg_class set reltuples = 1000 where relname = 'bigger_than_it_looks';
 ---END---
 ---START---
-CREATE TABLE extremely_skewed (_gemini_pk serial PRIMARY KEY, id integer, t text);
+CREATE TABLE extremely_skewed (gemini_pk serial PRIMARY KEY, id integer, t text);
 ---END---
 ---START---
 alter table extremely_skewed set (autovacuum_enabled = 'false');
@@ -968,10 +968,10 @@ SET parallel_setup_cost = 0;
 SET parallel_tuple_cost = 0;
 ---END---
 ---START---
-CREATE TABLE hjtest_matchbits_t1 (_gemini_pk serial PRIMARY KEY, id integer);
+CREATE TABLE hjtest_matchbits_t1 (gemini_pk serial PRIMARY KEY, id integer);
 ---END---
 ---START---
-CREATE TABLE hjtest_matchbits_t2 (_gemini_pk serial PRIMARY KEY, id integer);
+CREATE TABLE hjtest_matchbits_t2 (gemini_pk serial PRIMARY KEY, id integer);
 ---END---
 ---START---
 INSERT INTO hjtest_matchbits_t1 VALUES (1);
@@ -1029,10 +1029,10 @@ SET LOCAL enable_sort = OFF;
 SET LOCAL from_collapse_limit = 1;
 ---END---
 ---START---
-CREATE TABLE hjtest_1 (_gemini_pk serial PRIMARY KEY, a text, b integer, id integer, c bool);
+CREATE TABLE hjtest_1 (gemini_pk serial PRIMARY KEY, a text, b integer, id integer, c bool);
 ---END---
 ---START---
-CREATE TABLE hjtest_2 (_gemini_pk serial PRIMARY KEY, a bool, id integer, b text, c integer);
+CREATE TABLE hjtest_2 (gemini_pk serial PRIMARY KEY, a bool, id integer, b text, c integer);
 ---END---
 ---START---
 INSERT INTO hjtest_1(a, b, id, c) VALUES ('text', 2, 1, false);

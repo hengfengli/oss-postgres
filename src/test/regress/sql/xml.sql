@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE xmltest (_gemini_pk serial PRIMARY KEY, id integer, data xml);
+CREATE TABLE xmltest (gemini_pk serial PRIMARY KEY, id integer, data xml);
 ---END---
 ---START---
 INSERT INTO xmltest VALUES (1, '<value>one</value>');
@@ -610,7 +610,7 @@ SELECT COUNT(id) FROM xmltest WHERE xpath_exists('/myns:menu/myns:beers',data,AR
 SELECT COUNT(id) FROM xmltest WHERE xpath_exists('/myns:menu/myns:beers/myns:name[text() = ''Molson'']',data,ARRAY[ARRAY['myns','http://myns.com']]);
 ---END---
 ---START---
-CREATE TABLE query (_gemini_pk serial PRIMARY KEY, expr text);
+CREATE TABLE query (gemini_pk serial PRIMARY KEY, expr text);
 ---END---
 ---START---
 INSERT INTO query VALUES ('/menu/beers/cost[text() = ''lots'']');
@@ -720,7 +720,7 @@ SELECT XMLPARSE(DOCUMENT '<!DOCTYPE foo [<!ENTITY c SYSTEM "/etc/no.such.file">]
 SELECT XMLPARSE(DOCUMENT '<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd"><chapter>&nbsp;</chapter>');
 ---END---
 ---START---
-CREATE TABLE xmldata (_gemini_pk serial PRIMARY KEY, data xml);
+CREATE TABLE xmldata (gemini_pk serial PRIMARY KEY, data xml);
 ---END---
 ---START---
 INSERT INTO xmldata VALUES('<ROWS>
@@ -1053,7 +1053,7 @@ WITH
    EXCEPT SELECT * FROM x;
 ---END---
 ---START---
-CREATE TABLE xmltest2 (_gemini_pk serial PRIMARY KEY, x xml, _path text);
+CREATE TABLE xmltest2 (gemini_pk serial PRIMARY KEY, x xml, _path text);
 ---END---
 ---START---
 INSERT INTO xmltest2 VALUES('<d><r><ac>1</ac></r></d>', 'A');

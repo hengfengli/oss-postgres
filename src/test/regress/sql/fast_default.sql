@@ -9,7 +9,7 @@ SET search_path = fast_default;
 CREATE SCHEMA fast_default;
 ---END---
 ---START---
-CREATE TABLE m (_gemini_pk serial PRIMARY KEY, id oid);
+CREATE TABLE m (gemini_pk serial PRIMARY KEY, id oid);
 ---END---
 ---START---
 INSERT INTO m VALUES (NULL::OID);
@@ -732,7 +732,7 @@ DROP TABLE t;
 CREATE TABLE leader (a int PRIMARY KEY, b int);
 ---END---
 ---START---
-CREATE TABLE follower (_gemini_pk serial PRIMARY KEY, a integer REFERENCES leader ON DELETE CASCADE, b integer);
+CREATE TABLE follower (gemini_pk serial PRIMARY KEY, a integer REFERENCES leader ON DELETE CASCADE, b integer);
 ---END---
 ---START---
 INSERT INTO leader VALUES (1, 1), (2, 2);
@@ -747,7 +747,7 @@ ALTER TABLE leader DROP c;
 DELETE FROM leader;
 ---END---
 ---START---
-CREATE TABLE vtype (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE vtype (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 INSERT INTO vtype VALUES (1);
@@ -770,7 +770,7 @@ ALTER TABLE vtype
 SELECT * FROM vtype;
 ---END---
 ---START---
-CREATE TABLE vtype2 (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE vtype2 (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 INSERT INTO vtype2 VALUES (1);
@@ -797,7 +797,7 @@ SELECT * FROM vtype2;
 BEGIN;
 ---END---
 ---START---
-CREATE TABLE t (_gemini_pk serial PRIMARY KEY);
+CREATE TABLE t (gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
 INSERT INTO t DEFAULT VALUES;
@@ -906,7 +906,7 @@ DROP SCHEMA fast_default;
 set search_path = public;
 ---END---
 ---START---
-CREATE TABLE has_fast_default (_gemini_pk serial PRIMARY KEY, f1 integer);
+CREATE TABLE has_fast_default (gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
 insert into has_fast_default values(1);

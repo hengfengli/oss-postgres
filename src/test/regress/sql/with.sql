@@ -409,7 +409,7 @@ SELECT t1.id, t2.path, t2 FROM t AS t1 JOIN t AS t2 ON
 
 DROP TABLE IF EXISTS graph0;
 
-CREATE TABLE graph0 (_gemini_pk serial PRIMARY KEY, f integer, t integer, label text);
+CREATE TABLE graph0 (gemini_pk serial PRIMARY KEY, f integer, t integer, label text);
 ---END---
 ---START---
 insert into graph0 values
@@ -610,7 +610,7 @@ select * from v_search;
 --
 DROP TABLE IF EXISTS graph;
 
-CREATE TABLE graph (_gemini_pk serial PRIMARY KEY, f integer, t integer, label text);
+CREATE TABLE graph (gemini_pk serial PRIMARY KEY, f integer, t integer, label text);
 ---END---
 ---START---
 insert into graph values
@@ -954,7 +954,7 @@ WITH RECURSIVE
 
 DROP TABLE IF EXISTS y;
 
-CREATE TABLE y (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE y (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 INSERT INTO y SELECT generate_series(1, 10);
@@ -1031,7 +1031,7 @@ WITH RECURSIVE x(n) AS (SELECT n FROM x UNION ALL SELECT 1)
 ---START---
 DROP TABLE IF EXISTS y;
 
-CREATE TABLE y (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE y (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 INSERT INTO y SELECT generate_series(1, 10);
@@ -1160,7 +1160,7 @@ SELECT * FROM foo;
 -- disallow OLD/NEW reference in CTE
 DROP TABLE IF EXISTS x;
 
-CREATE TABLE x (_gemini_pk serial PRIMARY KEY, n integer);
+CREATE TABLE x (gemini_pk serial PRIMARY KEY, n integer);
 ---END---
 ---START---
 CREATE RULE r2 AS ON UPDATE TO x DO INSTEAD
@@ -1418,7 +1418,7 @@ SELECT * FROM bug6051;
 ---START---
 DROP TABLE IF EXISTS bug6051_2;
 
-CREATE TABLE bug6051_2 (_gemini_pk serial PRIMARY KEY, i integer);
+CREATE TABLE bug6051_2 (gemini_pk serial PRIMARY KEY, i integer);
 ---END---
 ---START---
 CREATE RULE bug6051_ins AS ON INSERT TO bug6051 DO INSTEAD
@@ -1704,7 +1704,7 @@ INSERT INTO y SELECT generate_series(1, 3);
 ---START---
 DROP TABLE IF EXISTS yy;
 
-CREATE TABLE yy (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE yy (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 WITH RECURSIVE t1 AS (
@@ -1829,17 +1829,17 @@ DROP FUNCTION y_trigger();
 
 DROP TABLE IF EXISTS parent;
 
-CREATE TABLE parent (_gemini_pk serial PRIMARY KEY, id integer, val text);
+CREATE TABLE parent (gemini_pk serial PRIMARY KEY, id integer, val text);
 ---END---
 ---START---
 DROP TABLE IF EXISTS child1;
 
-CREATE TABLE child1 (_gemini_pk serial PRIMARY KEY) INHERITS (parent);
+CREATE TABLE child1 (gemini_pk serial PRIMARY KEY) INHERITS (parent);
 ---END---
 ---START---
 DROP TABLE IF EXISTS child2;
 
-CREATE TABLE child2 (_gemini_pk serial PRIMARY KEY) INHERITS (parent);
+CREATE TABLE child2 (gemini_pk serial PRIMARY KEY) INHERITS (parent);
 ---END---
 ---START---
 INSERT INTO parent VALUES ( 1, 'p1' );
@@ -1981,7 +1981,7 @@ WITH with_test AS (SELECT 42) INSERT INTO with_test VALUES (1);
 -- statements)
 DROP TABLE IF EXISTS with_test;
 
-CREATE TABLE with_test (_gemini_pk serial PRIMARY KEY, i integer);
+CREATE TABLE with_test (gemini_pk serial PRIMARY KEY, i integer);
 ---END---
 ---START---
 with with_test as (select 42) insert into with_test select * from with_test;

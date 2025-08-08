@@ -7,7 +7,7 @@
 set plan_cache_mode = force_generic_plan;
 ---END---
 ---START---
-CREATE TABLE lp (_gemini_pk serial PRIMARY KEY, a char) PARTITION BY list (a);
+CREATE TABLE lp (gemini_pk serial PRIMARY KEY, a char) PARTITION BY list (a);
 ---END---
 ---START---
 create table lp_default partition of lp default;
@@ -65,7 +65,7 @@ explain (costs off) select * from lp where a <> 'a' and a <> 'd';
 explain (costs off) select * from lp where a not in ('a', 'd');
 ---END---
 ---START---
-CREATE TABLE coll_pruning (_gemini_pk serial PRIMARY KEY, a text COLLATE "C") PARTITION BY list (a);
+CREATE TABLE coll_pruning (gemini_pk serial PRIMARY KEY, a text COLLATE "C") PARTITION BY list (a);
 ---END---
 ---START---
 create table coll_pruning_a partition of coll_pruning for values in ('a');
@@ -84,7 +84,7 @@ explain (costs off) select * from coll_pruning where a collate "C" = 'a' collate
 explain (costs off) select * from coll_pruning where a collate "POSIX" = 'a' collate "POSIX";
 ---END---
 ---START---
-CREATE TABLE rlp (_gemini_pk serial PRIMARY KEY, a integer, b varchar) PARTITION BY range (a);
+CREATE TABLE rlp (gemini_pk serial PRIMARY KEY, a integer, b varchar) PARTITION BY range (a);
 ---END---
 ---START---
 create table rlp_default partition of rlp default partition by list (a);
@@ -108,7 +108,7 @@ create table rlp1 partition of rlp for values from (minvalue) to (1);
 create table rlp2 partition of rlp for values from (1) to (10);
 ---END---
 ---START---
-CREATE TABLE rlp3 (_gemini_pk serial PRIMARY KEY, b varchar, a integer) PARTITION BY list (b varchar_ops);
+CREATE TABLE rlp3 (gemini_pk serial PRIMARY KEY, b varchar, a integer) PARTITION BY list (b varchar_ops);
 ---END---
 ---START---
 create table rlp3_default partition of rlp3 default;
@@ -260,7 +260,7 @@ explain (costs off) select * from rlp where a = 1 and a = 3;
 explain (costs off) select * from rlp where (a = 1 and a = 3) or (a > 1 and a = 15);
 ---END---
 ---START---
-CREATE TABLE mc3p (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY range (a, (abs(b)), c);
+CREATE TABLE mc3p (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY range (a, (abs(b)), c);
 ---END---
 ---START---
 create table mc3p_default partition of mc3p default;
@@ -347,7 +347,7 @@ explain (costs off) select * from mc3p where (a = 1 and abs(b) = 1) or (a = 10 a
 explain (costs off) select * from mc3p where (a = 1 and abs(b) = 1) or (a = 10 and abs(b) = 9);
 ---END---
 ---START---
-CREATE TABLE mc2p (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a, b);
+CREATE TABLE mc2p (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a, b);
 ---END---
 ---START---
 create table mc2p_default partition of mc2p default;
@@ -399,7 +399,7 @@ explain (costs off) select * from mc2p where a is null;
 explain (costs off) select * from mc2p where b is null;
 ---END---
 ---START---
-CREATE TABLE boolpart (_gemini_pk serial PRIMARY KEY, a bool) PARTITION BY list (a);
+CREATE TABLE boolpart (gemini_pk serial PRIMARY KEY, a bool) PARTITION BY list (a);
 ---END---
 ---START---
 create table boolpart_default partition of boolpart default;
@@ -462,7 +462,7 @@ select * from boolpart where a is unknown;
 select * from boolpart where a is not unknown;
 ---END---
 ---START---
-CREATE TABLE iboolpart (_gemini_pk serial PRIMARY KEY, a bool) PARTITION BY list ((NOT a));
+CREATE TABLE iboolpart (gemini_pk serial PRIMARY KEY, a bool) PARTITION BY list ((NOT a));
 ---END---
 ---START---
 create table iboolpart_default partition of iboolpart default;
@@ -525,7 +525,7 @@ select * from iboolpart where a is unknown;
 select * from iboolpart where a is not unknown;
 ---END---
 ---START---
-CREATE TABLE boolrangep (_gemini_pk serial PRIMARY KEY, a bool, b bool, c integer) PARTITION BY range (a, b, c);
+CREATE TABLE boolrangep (gemini_pk serial PRIMARY KEY, a bool, b bool, c integer) PARTITION BY range (a, b, c);
 ---END---
 ---START---
 create table boolrangep_tf partition of boolrangep for values from ('true', 'false', 0) to ('true', 'false', 100);
@@ -544,7 +544,7 @@ create table boolrangep_ff2 partition of boolrangep for values from ('false', 'f
 explain (costs off)  select * from boolrangep where not a and not b and c = 25;
 ---END---
 ---START---
-CREATE TABLE coercepart (_gemini_pk serial PRIMARY KEY, a varchar) PARTITION BY list (a);
+CREATE TABLE coercepart (gemini_pk serial PRIMARY KEY, a varchar) PARTITION BY list (a);
 ---END---
 ---START---
 create table coercepart_ab partition of coercepart for values in ('ab');
@@ -595,7 +595,7 @@ explain (costs off) select * from coercepart where a = all (null::text[]);
 drop table coercepart;
 ---END---
 ---START---
-CREATE TABLE part (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY list (a);
+CREATE TABLE part (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE part_p1 PARTITION OF part FOR VALUES IN (-2,-1,0,1,2);
@@ -607,7 +607,7 @@ CREATE TABLE part_p2 PARTITION OF part DEFAULT PARTITION BY RANGE(a);
 CREATE TABLE part_p2_p1 PARTITION OF part_p2 DEFAULT;
 ---END---
 ---START---
-CREATE TABLE part_rev (_gemini_pk serial PRIMARY KEY, b integer, c integer, a integer);
+CREATE TABLE part_rev (gemini_pk serial PRIMARY KEY, b integer, c integer, a integer);
 ---END---
 ---START---
 ALTER TABLE part ATTACH PARTITION part_rev FOR VALUES IN (3);
@@ -650,7 +650,7 @@ explain (costs off) select * from mc2p t1, lateral (select count(*) from mc3p t2
 explain (costs off) select * from mc2p t1, lateral (select count(*) from mc3p t2 where t2.a = 1 and abs(t2.b) = 1 and t2.c = 1) s where t1.a = 1;
 ---END---
 ---START---
-CREATE TABLE rp (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
+CREATE TABLE rp (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 create table rp0 partition of rp for values from (minvalue) to (1);
@@ -685,7 +685,7 @@ explain (costs off) select * from lp where (a <> 'a' and a <> 'd') or a is null;
 explain (costs off) select * from rlp where a = 15 and b <> 'ab' and b <> 'cd' and b <> 'xy' and b is not null;
 ---END---
 ---START---
-CREATE TABLE coll_pruning_multi (_gemini_pk serial PRIMARY KEY, a text) PARTITION BY range ((substr(a, 1)) COLLATE "POSIX", (substr(a, 1)) COLLATE "C");
+CREATE TABLE coll_pruning_multi (gemini_pk serial PRIMARY KEY, a text) PARTITION BY range ((substr(a, 1)) COLLATE "POSIX", (substr(a, 1)) COLLATE "C");
 ---END---
 ---START---
 create table coll_pruning_multi1 partition of coll_pruning_multi for values from ('a', 'a') to ('a', 'e');
@@ -709,7 +709,7 @@ explain (costs off) select * from coll_pruning_multi where substr(a, 1) = 'a' co
 explain (costs off) select * from coll_pruning_multi where substr(a, 1) = 'e' collate "C" and substr(a, 1) = 'a' collate "POSIX";
 ---END---
 ---START---
-CREATE TABLE like_op_noprune (_gemini_pk serial PRIMARY KEY, a text) PARTITION BY list (a);
+CREATE TABLE like_op_noprune (gemini_pk serial PRIMARY KEY, a text) PARTITION BY list (a);
 ---END---
 ---START---
 create table like_op_noprune1 partition of like_op_noprune for values in ('ABC');
@@ -721,7 +721,7 @@ create table like_op_noprune2 partition of like_op_noprune for values in ('BCD')
 explain (costs off) select * from like_op_noprune where a like '%BC';
 ---END---
 ---START---
-CREATE TABLE lparted_by_int2 (_gemini_pk serial PRIMARY KEY, a smallint) PARTITION BY list (a);
+CREATE TABLE lparted_by_int2 (gemini_pk serial PRIMARY KEY, a smallint) PARTITION BY list (a);
 ---END---
 ---START---
 create table lparted_by_int2_1 partition of lparted_by_int2 for values in (1);
@@ -733,7 +733,7 @@ create table lparted_by_int2_16384 partition of lparted_by_int2 for values in (1
 explain (costs off) select * from lparted_by_int2 where a = 100_000_000_000_000;
 ---END---
 ---START---
-CREATE TABLE rparted_by_int2 (_gemini_pk serial PRIMARY KEY, a smallint) PARTITION BY range (a);
+CREATE TABLE rparted_by_int2 (gemini_pk serial PRIMARY KEY, a smallint) PARTITION BY range (a);
 ---END---
 ---START---
 create table rparted_by_int2_1 partition of rparted_by_int2 for values from (1) to (10);
@@ -756,7 +756,7 @@ explain (costs off) select * from rparted_by_int2 where a > 100_000_000_000_000;
 drop table lp, coll_pruning, rlp, mc3p, mc2p, boolpart, iboolpart, boolrangep, rp, coll_pruning_multi, like_op_noprune, lparted_by_int2, rparted_by_int2;
 ---END---
 ---START---
-CREATE TABLE hp (_gemini_pk serial PRIMARY KEY, a integer, b text, c integer) PARTITION BY hash (a part_test_int4_ops, b part_test_text_ops);
+CREATE TABLE hp (gemini_pk serial PRIMARY KEY, a integer, b text, c integer) PARTITION BY hash (a part_test_int4_ops, b part_test_text_ops);
 ---END---
 ---START---
 create table hp0 partition of hp for values with (modulus 4, remainder 0);
@@ -861,7 +861,7 @@ explain (costs off) select * from hp where a = 1 and b = 'abcde' and
 drop table hp;
 ---END---
 ---START---
-CREATE TABLE ab (_gemini_pk serial PRIMARY KEY, a integer NOT NULL, b integer NOT NULL) PARTITION BY list (a);
+CREATE TABLE ab (gemini_pk serial PRIMARY KEY, a integer NOT NULL, b integer NOT NULL) PARTITION BY list (a);
 ---END---
 ---START---
 create table ab_a2 partition of ab for values in(2) partition by list (b);
@@ -947,7 +947,7 @@ select a from ab where b between $1 and $2 and a < (select 3);
 explain (analyze, costs off, summary off, timing off) execute ab_q3 (2, 2);
 ---END---
 ---START---
-CREATE TABLE list_part (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
+CREATE TABLE list_part (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 create table list_part1 partition of list_part for values in (1);
@@ -1077,7 +1077,7 @@ select explain_parallel_append('execute ab_q5 (33, 44, 55)');
 select explain_parallel_append('select count(*) from ab where (a = (select 1) or a = (select 3)) and b = 2');
 ---END---
 ---START---
-CREATE TABLE lprt_a (_gemini_pk serial PRIMARY KEY, a integer NOT NULL);
+CREATE TABLE lprt_a (gemini_pk serial PRIMARY KEY, a integer NOT NULL);
 ---END---
 ---START---
 -- Insert some values we won't find in ab
@@ -1186,7 +1186,7 @@ explain (analyze, costs off, summary off, timing off)
 select * from (select * from ab where a = 1 union all (values(10,5)) union all select * from ab) ab where b = (select 1);
 ---END---
 ---START---
-CREATE TABLE xy_1 (_gemini_pk serial PRIMARY KEY, x integer, y integer);
+CREATE TABLE xy_1 (gemini_pk serial PRIMARY KEY, x integer, y integer);
 ---END---
 ---START---
 insert into xy_1 values(100,-10);
@@ -1268,13 +1268,13 @@ select tableoid::regclass, * from ab;
 drop table ab, lprt_a;
 ---END---
 ---START---
-CREATE TABLE tbl1 (_gemini_pk serial PRIMARY KEY, col1 integer);
+CREATE TABLE tbl1 (gemini_pk serial PRIMARY KEY, col1 integer);
 ---END---
 ---START---
 insert into tbl1 values (501), (505);
 ---END---
 ---START---
-CREATE TABLE tprt (_gemini_pk serial PRIMARY KEY, col1 integer) PARTITION BY range (col1);
+CREATE TABLE tprt (gemini_pk serial PRIMARY KEY, col1 integer) PARTITION BY range (col1);
 ---END---
 ---START---
 create table tprt_1 partition of tprt for values from (1) to (501);
@@ -1397,16 +1397,16 @@ order by tbl1.col1, tprt.col1;
 drop table tbl1, tprt;
 ---END---
 ---START---
-CREATE TABLE part_abc (_gemini_pk serial PRIMARY KEY, a integer NOT NULL, b integer NOT NULL, c integer NOT NULL) PARTITION BY list (a);
+CREATE TABLE part_abc (gemini_pk serial PRIMARY KEY, a integer NOT NULL, b integer NOT NULL, c integer NOT NULL) PARTITION BY list (a);
 ---END---
 ---START---
-CREATE TABLE part_bac (_gemini_pk serial PRIMARY KEY, b integer NOT NULL, a integer NOT NULL, c integer NOT NULL) PARTITION BY list (b);
+CREATE TABLE part_bac (gemini_pk serial PRIMARY KEY, b integer NOT NULL, a integer NOT NULL, c integer NOT NULL) PARTITION BY list (b);
 ---END---
 ---START---
-CREATE TABLE part_cab (_gemini_pk serial PRIMARY KEY, c integer NOT NULL, a integer NOT NULL, b integer NOT NULL) PARTITION BY list (c);
+CREATE TABLE part_cab (gemini_pk serial PRIMARY KEY, c integer NOT NULL, a integer NOT NULL, b integer NOT NULL) PARTITION BY list (c);
 ---END---
 ---START---
-CREATE TABLE part_abc_p1 (_gemini_pk serial PRIMARY KEY, a integer NOT NULL, b integer NOT NULL, c integer NOT NULL);
+CREATE TABLE part_abc_p1 (gemini_pk serial PRIMARY KEY, a integer NOT NULL, b integer NOT NULL, c integer NOT NULL);
 ---END---
 ---START---
 alter table part_abc attach partition part_bac for values in(1);
@@ -1432,7 +1432,7 @@ deallocate part_abc_q1;
 drop table part_abc;
 ---END---
 ---START---
-CREATE TABLE listp (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY list (a);
+CREATE TABLE listp (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY list (a);
 ---END---
 ---START---
 create table listp_1 partition of listp for values in(1) partition by list (b);
@@ -1489,7 +1489,7 @@ select * from listp where a = (select null::int);
 drop table listp;
 ---END---
 ---START---
-CREATE TABLE stable_qual_pruning (_gemini_pk serial PRIMARY KEY, a timestamp) PARTITION BY range (a);
+CREATE TABLE stable_qual_pruning (gemini_pk serial PRIMARY KEY, a timestamp) PARTITION BY range (a);
 ---END---
 ---START---
 create table stable_qual_pruning1 partition of stable_qual_pruning
@@ -1548,7 +1548,7 @@ select * from stable_qual_pruning
 drop table stable_qual_pruning;
 ---END---
 ---START---
-CREATE TABLE mc3p (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY range (a, (abs(b)), c);
+CREATE TABLE mc3p (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY range (a, (abs(b)), c);
 ---END---
 ---START---
 create table mc3p0 partition of mc3p
@@ -1600,13 +1600,13 @@ deallocate ps2;
 drop table mc3p;
 ---END---
 ---START---
-CREATE TABLE boolvalues (_gemini_pk serial PRIMARY KEY, value bool NOT NULL);
+CREATE TABLE boolvalues (gemini_pk serial PRIMARY KEY, value bool NOT NULL);
 ---END---
 ---START---
 insert into boolvalues values('t'),('f');
 ---END---
 ---START---
-CREATE TABLE boolp (_gemini_pk serial PRIMARY KEY, a bool) PARTITION BY list (a);
+CREATE TABLE boolp (gemini_pk serial PRIMARY KEY, a bool) PARTITION BY list (a);
 ---END---
 ---START---
 create table boolp_t partition of boolp for values in('t');
@@ -1635,7 +1635,7 @@ set enable_seqscan = off;
 set enable_sort = off;
 ---END---
 ---START---
-CREATE TABLE ma_test (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a);
+CREATE TABLE ma_test (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a);
 ---END---
 ---START---
 create table ma_test_p1 partition of ma_test for values from (0) to (10);
@@ -1707,7 +1707,7 @@ drop table ma_test;
 reset enable_indexonlyscan;
 ---END---
 ---START---
-CREATE TABLE pp_arrpart (_gemini_pk serial PRIMARY KEY, a integer[]) PARTITION BY list (a);
+CREATE TABLE pp_arrpart (gemini_pk serial PRIMARY KEY, a integer[]) PARTITION BY list (a);
 ---END---
 ---START---
 create table pp_arrpart1 partition of pp_arrpart for values in ('{1}');
@@ -1734,7 +1734,7 @@ explain (costs off) delete from pp_arrpart where a = '{1}';
 drop table pp_arrpart;
 ---END---
 ---START---
-CREATE TABLE pph_arrpart (_gemini_pk serial PRIMARY KEY, a integer[]) PARTITION BY hash (a);
+CREATE TABLE pph_arrpart (gemini_pk serial PRIMARY KEY, a integer[]) PARTITION BY hash (a);
 ---END---
 ---START---
 create table pph_arrpart1 partition of pph_arrpart for values with (modulus 2, remainder 0);
@@ -1765,7 +1765,7 @@ drop table pph_arrpart;
 create type pp_colors as enum ('green', 'blue', 'black');
 ---END---
 ---START---
-CREATE TABLE pp_enumpart (_gemini_pk serial PRIMARY KEY, a pp_colors) PARTITION BY list (a);
+CREATE TABLE pp_enumpart (gemini_pk serial PRIMARY KEY, a pp_colors) PARTITION BY list (a);
 ---END---
 ---START---
 create table pp_enumpart_green partition of pp_enumpart for values in ('green');
@@ -1790,7 +1790,7 @@ drop type pp_colors;
 create type pp_rectype as (a int, b int);
 ---END---
 ---START---
-CREATE TABLE pp_recpart (_gemini_pk serial PRIMARY KEY, a pp_rectype) PARTITION BY list (a);
+CREATE TABLE pp_recpart (gemini_pk serial PRIMARY KEY, a pp_rectype) PARTITION BY list (a);
 ---END---
 ---START---
 create table pp_recpart_11 partition of pp_recpart for values in ('(1,1)');
@@ -1811,7 +1811,7 @@ drop table pp_recpart;
 drop type pp_rectype;
 ---END---
 ---START---
-CREATE TABLE pp_intrangepart (_gemini_pk serial PRIMARY KEY, a int4range) PARTITION BY list (a);
+CREATE TABLE pp_intrangepart (gemini_pk serial PRIMARY KEY, a int4range) PARTITION BY list (a);
 ---END---
 ---START---
 create table pp_intrangepart12 partition of pp_intrangepart for values in ('[1,2]');
@@ -1829,7 +1829,7 @@ explain (costs off) select * from pp_intrangepart where a = '(1,2)'::int4range;
 drop table pp_intrangepart;
 ---END---
 ---START---
-CREATE TABLE pp_lp (_gemini_pk serial PRIMARY KEY, a integer, value integer) PARTITION BY list (a);
+CREATE TABLE pp_lp (gemini_pk serial PRIMARY KEY, a integer, value integer) PARTITION BY list (a);
 ---END---
 ---START---
 create table pp_lp1 partition of pp_lp for values in(1);
@@ -1881,13 +1881,13 @@ explain (costs off) delete from pp_lp where a = 1;
 drop table pp_lp;
 ---END---
 ---START---
-CREATE TABLE inh_lp (_gemini_pk serial PRIMARY KEY, a integer, value integer);
+CREATE TABLE inh_lp (gemini_pk serial PRIMARY KEY, a integer, value integer);
 ---END---
 ---START---
-CREATE TABLE inh_lp1 (_gemini_pk serial PRIMARY KEY, a integer, value integer, CHECK (a = 1)) INHERITS (inh_lp);
+CREATE TABLE inh_lp1 (gemini_pk serial PRIMARY KEY, a integer, value integer, CHECK (a = 1)) INHERITS (inh_lp);
 ---END---
 ---START---
-CREATE TABLE inh_lp2 (_gemini_pk serial PRIMARY KEY, a integer, value integer, CHECK (a = 2)) INHERITS (inh_lp);
+CREATE TABLE inh_lp2 (gemini_pk serial PRIMARY KEY, a integer, value integer, CHECK (a = 2)) INHERITS (inh_lp);
 ---END---
 ---START---
 set constraint_exclusion = 'partition';
@@ -1920,7 +1920,7 @@ reset constraint_exclusion;
 -- Check pruning for a partition tree containing only temporary relations
 DROP TABLE IF EXISTS pp_temp_parent;
 
-CREATE TABLE pp_temp_parent (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
+CREATE TABLE pp_temp_parent (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 DROP TABLE IF EXISTS pp_temp_part_1;
@@ -1945,7 +1945,7 @@ drop table pp_temp_parent;
 -- Stress run-time partition pruning a bit more, per bug reports
 DROP TABLE IF EXISTS p;
 
-CREATE TABLE p (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY list (a);
+CREATE TABLE p (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY list (a);
 ---END---
 ---START---
 DROP TABLE IF EXISTS p1;
@@ -1960,7 +1960,7 @@ create table p2 partition of p for values in (2);
 ---START---
 DROP TABLE IF EXISTS q;
 
-CREATE TABLE q (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY list (a);
+CREATE TABLE q (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY list (a);
 ---END---
 ---START---
 DROP TABLE IF EXISTS q1;
@@ -2040,7 +2040,7 @@ execute q (1, 1);
 drop table p, q;
 ---END---
 ---START---
-CREATE TABLE listp (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY list (a);
+CREATE TABLE listp (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY list (a);
 ---END---
 ---START---
 create table listp1 partition of listp for values in(1);
@@ -2101,7 +2101,7 @@ set parallel_setup_cost to 0;
 set parallel_tuple_cost to 0;
 ---END---
 ---START---
-CREATE TABLE listp (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
+CREATE TABLE listp (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 create table listp_12 partition of listp for values in(1,2) partition by list(a);
@@ -2146,7 +2146,7 @@ reset parallel_setup_cost;
 set enable_sort to 0;
 ---END---
 ---START---
-CREATE TABLE rangep (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a);
+CREATE TABLE rangep (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a);
 ---END---
 ---START---
 create table rangep_0_to_100 partition of rangep for values from (0) to (100) partition by list (b);
@@ -2180,7 +2180,7 @@ reset enable_sort;
 drop table rangep;
 ---END---
 ---START---
-CREATE TABLE rp_prefix_test1 (_gemini_pk serial PRIMARY KEY, a integer, b varchar) PARTITION BY range (a, b);
+CREATE TABLE rp_prefix_test1 (gemini_pk serial PRIMARY KEY, a integer, b varchar) PARTITION BY range (a, b);
 ---END---
 ---START---
 create table rp_prefix_test1_p1 partition of rp_prefix_test1 for values from (1, 'a') to (1, 'b');
@@ -2194,7 +2194,7 @@ create table rp_prefix_test1_p2 partition of rp_prefix_test1 for values from (2,
 explain (costs off) select * from rp_prefix_test1 where a <= 1 and b = 'a';
 ---END---
 ---START---
-CREATE TABLE rp_prefix_test2 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY range (a, b, c);
+CREATE TABLE rp_prefix_test2 (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY range (a, b, c);
 ---END---
 ---START---
 create table rp_prefix_test2_p1 partition of rp_prefix_test2 for values from (1, 1, 0) to (1, 1, 10);
@@ -2208,7 +2208,7 @@ create table rp_prefix_test2_p2 partition of rp_prefix_test2 for values from (2,
 explain (costs off) select * from rp_prefix_test2 where a <= 1 and b = 1 and c >= 0;
 ---END---
 ---START---
-CREATE TABLE rp_prefix_test3 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer, d integer) PARTITION BY range (a, b, c, d);
+CREATE TABLE rp_prefix_test3 (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer, d integer) PARTITION BY range (a, b, c, d);
 ---END---
 ---START---
 create table rp_prefix_test3_p1 partition of rp_prefix_test3 for values from (1, 1, 1, 0) to (1, 1, 1, 10);
@@ -2228,7 +2228,7 @@ explain (costs off) select * from rp_prefix_test3 where a >= 1 and b >= 1 and b 
 explain (costs off) select * from rp_prefix_test3 where a >= 1 and b >= 1 and b = 2 and c = 2 and d >= 0;
 ---END---
 ---START---
-CREATE TABLE hp_prefix_test (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer, d integer) PARTITION BY hash (a part_test_int4_ops, b part_test_int4_ops, c part_test_int4_ops, d part_test_int4_ops);
+CREATE TABLE hp_prefix_test (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer, d integer) PARTITION BY hash (a part_test_int4_ops, b part_test_int4_ops, c part_test_int4_ops, d part_test_int4_ops);
 ---END---
 ---START---
 create table hp_prefix_test_p1 partition of hp_prefix_test for values with (modulus 2, remainder 0);
@@ -2275,7 +2275,7 @@ operator 1 ===,
 function 2 part_hashint4_noop(int4, int8);
 ---END---
 ---START---
-CREATE TABLE hp_contradict_test (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY hash (a part_test_int4_ops2, b part_test_int4_ops2);
+CREATE TABLE hp_contradict_test (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY hash (a part_test_int4_ops2, b part_test_int4_ops2);
 ---END---
 ---START---
 create table hp_contradict_test_p1 partition of hp_contradict_test for values with (modulus 2, remainder 0);

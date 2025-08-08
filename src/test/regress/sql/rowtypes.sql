@@ -10,7 +10,7 @@ create type complex as (r float8, i float8);
 ---START---
 DROP TABLE IF EXISTS fullname;
 
-CREATE TABLE fullname (_gemini_pk serial PRIMARY KEY, first text, last text);
+CREATE TABLE fullname (gemini_pk serial PRIMARY KEY, first text, last text);
 ---END---
 ---START---
 -- Nested composite
@@ -78,7 +78,7 @@ SELECT * FROM pg_input_error_info('(1,1e400)', 'complex');
 ---START---
 DROP TABLE IF EXISTS quadtable;
 
-CREATE TABLE quadtable (_gemini_pk serial PRIMARY KEY, f1 integer, q quad);
+CREATE TABLE quadtable (gemini_pk serial PRIMARY KEY, f1 integer, q quad);
 ---END---
 ---START---
 insert into quadtable values (1, ((3.3,4.4),(5.5,6.6)));
@@ -100,7 +100,7 @@ select f1, (q).c1, (qq.q).c1.i from quadtable qq;
 ---START---
 DROP TABLE IF EXISTS people;
 
-CREATE TABLE people (_gemini_pk serial PRIMARY KEY, fn fullname, bd date);
+CREATE TABLE people (gemini_pk serial PRIMARY KEY, fn fullname, bd date);
 ---END---
 ---START---
 insert into people values ('(Joe,Blow)', '1984-01-10');
@@ -147,7 +147,7 @@ select * from quadtable;
 
 DROP TABLE IF EXISTS pp;
 
-CREATE TABLE pp (_gemini_pk serial PRIMARY KEY, f1 text);
+CREATE TABLE pp (gemini_pk serial PRIMARY KEY, f1 text);
 ---END---
 ---START---
 insert into pp values (repeat('abcdefghijkl', 100000));
@@ -277,7 +277,7 @@ order by thousand, hundred;
 -- Test case for bug #14010: indexed row comparisons fail with nulls
 DROP TABLE IF EXISTS test_table;
 
-CREATE TABLE test_table (_gemini_pk serial PRIMARY KEY, a text, b text);
+CREATE TABLE test_table (gemini_pk serial PRIMARY KEY, a text, b text);
 ---END---
 ---START---
 insert into test_table values ('a', 'b');
@@ -371,7 +371,7 @@ create type cantcompare as (p point, r float8);
 ---START---
 DROP TABLE IF EXISTS cc;
 
-CREATE TABLE cc (_gemini_pk serial PRIMARY KEY, f1 cantcompare);
+CREATE TABLE cc (gemini_pk serial PRIMARY KEY, f1 cantcompare);
 ---END---
 ---START---
 insert into cc values('("(1,2)",3)');
@@ -655,7 +655,7 @@ rollback;
 
 DROP TABLE IF EXISTS compos;
 
-CREATE TABLE compos (_gemini_pk serial PRIMARY KEY, f1 integer, f2 text);
+CREATE TABLE compos (gemini_pk serial PRIMARY KEY, f1 integer, f2 text);
 ---END---
 ---START---
 create function fcompos1(v compos) returns void as $$
@@ -822,7 +822,7 @@ create table tt1 as select * from int8_tbl limit 2;
 ---START---
 DROP TABLE IF EXISTS tt2;
 
-CREATE TABLE tt2 (_gemini_pk serial PRIMARY KEY) INHERITS (tt1);
+CREATE TABLE tt2 (gemini_pk serial PRIMARY KEY) INHERITS (tt1);
 ---END---
 ---START---
 insert into tt2 values(0,0);
@@ -834,7 +834,7 @@ select row_to_json(r) from (select q2,q1 from tt1 offset 0) r;
 -- check no-op rowtype conversions
 DROP TABLE IF EXISTS tt3;
 
-CREATE TABLE tt3 (_gemini_pk serial PRIMARY KEY) INHERITS (tt2);
+CREATE TABLE tt3 (gemini_pk serial PRIMARY KEY) INHERITS (tt2);
 ---END---
 ---START---
 insert into tt3 values(33,44);
@@ -871,7 +871,7 @@ with r(a,b) as materialized
 select r, r is null as isnull, r is not null as isnotnull from r;
 ---END---
 ---START---
-CREATE TABLE compositetable (_gemini_pk serial PRIMARY KEY, a text, b text);
+CREATE TABLE compositetable (gemini_pk serial PRIMARY KEY, a text, b text);
 ---END---
 ---START---
 INSERT INTO compositetable(a, b) VALUES('fa', 'fb');

@@ -29,7 +29,7 @@ end;
 $$;
 ---END---
 ---START---
-CREATE TABLE ext_stats_test (_gemini_pk serial PRIMARY KEY, x text, y integer, z integer);
+CREATE TABLE ext_stats_test (gemini_pk serial PRIMARY KEY, x text, y integer, z integer);
 ---END---
 ---START---
 CREATE STATISTICS tst;
@@ -81,7 +81,7 @@ CREATE STATISTICS tst ON (x, y) FROM ext_stats_test;
 DROP TABLE ext_stats_test;
 ---END---
 ---START---
-CREATE TABLE ab1 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer);
+CREATE TABLE ab1 (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer);
 ---END---
 ---START---
 CREATE STATISTICS IF NOT EXISTS ab1_a_b_stats ON a, b FROM ab1;
@@ -154,7 +154,7 @@ DROP TABLE ab1;
 SELECT stxname FROM pg_statistic_ext WHERE stxname LIKE 'ab1%';
 ---END---
 ---START---
-CREATE TABLE ab1 (_gemini_pk serial PRIMARY KEY, a integer, b integer);
+CREATE TABLE ab1 (gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 ALTER TABLE ab1 ALTER a SET STATISTICS 0;
@@ -205,10 +205,10 @@ ALTER STATISTICS ab1_a_b_stats SET STATISTICS 0;
 ALTER STATISTICS IF EXISTS ab1_a_b_stats SET STATISTICS 0;
 ---END---
 ---START---
-CREATE TABLE ab1 (_gemini_pk serial PRIMARY KEY, a integer, b integer);
+CREATE TABLE ab1 (gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
-CREATE TABLE ab1c (_gemini_pk serial PRIMARY KEY) INHERITS (ab1);
+CREATE TABLE ab1c (gemini_pk serial PRIMARY KEY) INHERITS (ab1);
 ---END---
 ---START---
 INSERT INTO ab1 VALUES (1,1);
@@ -223,13 +223,13 @@ ANALYZE ab1;
 DROP TABLE ab1 CASCADE;
 ---END---
 ---START---
-CREATE TABLE stxdinh (_gemini_pk serial PRIMARY KEY, a integer, b integer);
+CREATE TABLE stxdinh (gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
-CREATE TABLE stxdinh1 (_gemini_pk serial PRIMARY KEY) INHERITS (stxdinh);
+CREATE TABLE stxdinh1 (gemini_pk serial PRIMARY KEY) INHERITS (stxdinh);
 ---END---
 ---START---
-CREATE TABLE stxdinh2 (_gemini_pk serial PRIMARY KEY) INHERITS (stxdinh);
+CREATE TABLE stxdinh2 (gemini_pk serial PRIMARY KEY) INHERITS (stxdinh);
 ---END---
 ---START---
 INSERT INTO stxdinh SELECT mod(a,50), mod(a,100) FROM generate_series(0, 1999) a;
@@ -277,7 +277,7 @@ SELECT * FROM check_estimated_rows('SELECT a, b FROM ONLY stxdinh WHERE a = 0 AN
 DROP TABLE stxdinh, stxdinh1, stxdinh2;
 ---END---
 ---START---
-CREATE TABLE stxdinp (_gemini_pk serial PRIMARY KEY, i integer, a integer, b integer) PARTITION BY range (i);
+CREATE TABLE stxdinp (gemini_pk serial PRIMARY KEY, i integer, a integer, b integer) PARTITION BY range (i);
 ---END---
 ---START---
 CREATE TABLE stxdinp1 PARTITION OF stxdinp FOR VALUES FROM (1) TO (100);
@@ -305,7 +305,7 @@ SELECT * FROM check_estimated_rows('SELECT a + 1, b FROM ONLY stxdinp GROUP BY 1
 DROP TABLE stxdinp;
 ---END---
 ---START---
-CREATE TABLE ab1 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c timestamp, d timestamptz);
+CREATE TABLE ab1 (gemini_pk serial PRIMARY KEY, a integer, b integer, c timestamp, d timestamptz);
 ---END---
 ---START---
 -- expression stats may be built on a single expression column
@@ -361,7 +361,7 @@ DROP TABLE ab1;
 CREATE schema tststats;
 ---END---
 ---START---
-CREATE TABLE tststats.t (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text);
+CREATE TABLE tststats.t (gemini_pk serial PRIMARY KEY, a integer, b integer, c text);
 ---END---
 ---START---
 CREATE INDEX ti ON tststats.t (a, b);
@@ -388,7 +388,7 @@ CREATE SERVER extstats_dummy_srv FOREIGN DATA WRAPPER extstats_dummy_fdw;
 CREATE FOREIGN TABLE tststats.f (a int, b int, c text) SERVER extstats_dummy_srv;
 ---END---
 ---START---
-CREATE TABLE tststats.pt (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY range (a, b);
+CREATE TABLE tststats.pt (gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY range (a, b);
 ---END---
 ---START---
 CREATE TABLE tststats.pt1 PARTITION OF tststats.pt FOR VALUES FROM (-10, -10) TO (10, 10);
@@ -438,7 +438,7 @@ DROP SCHEMA tststats CASCADE;
 DROP FOREIGN DATA WRAPPER extstats_dummy_fdw CASCADE;
 ---END---
 ---START---
-CREATE TABLE ndistinct (_gemini_pk serial PRIMARY KEY, filler1 text, filler2 numeric, a integer, b integer, filler3 date, c integer, d integer) WITH (autovacuum_enabled = off);
+CREATE TABLE ndistinct (gemini_pk serial PRIMARY KEY, filler1 text, filler2 numeric, a integer, b integer, filler3 date, c integer, d integer) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 -- over-estimates when using only per-column statistics
@@ -886,7 +886,7 @@ DROP STATISTICS s11;
 DROP STATISTICS s12;
 ---END---
 ---START---
-CREATE TABLE functional_dependencies (_gemini_pk serial PRIMARY KEY, filler1 text, filler2 numeric, a integer, b text, filler3 date, c integer, d text) WITH (autovacuum_enabled = off);
+CREATE TABLE functional_dependencies (gemini_pk serial PRIMARY KEY, filler1 text, filler2 numeric, a integer, b text, filler3 date, c integer, d text) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 CREATE INDEX fdeps_ab_idx ON functional_dependencies (a, b);
@@ -1338,7 +1338,7 @@ SELECT * FROM check_estimated_rows('SELECT * FROM functional_dependencies WHERE 
 SELECT * FROM check_estimated_rows('SELECT * FROM functional_dependencies WHERE (a * 2) IN (2, 4, 102, 104) AND upper(b) = ALL (ARRAY[''1'', ''2''])');
 ---END---
 ---START---
-CREATE TABLE functional_dependencies_multi (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer, d integer) WITH (autovacuum_enabled = off);
+CREATE TABLE functional_dependencies_multi (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer, d integer) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 INSERT INTO functional_dependencies_multi (a, b, c, d)
@@ -1397,7 +1397,7 @@ SELECT * FROM check_estimated_rows('SELECT * FROM functional_dependencies_multi 
 DROP TABLE functional_dependencies_multi;
 ---END---
 ---START---
-CREATE TABLE mcv_lists (_gemini_pk serial PRIMARY KEY, filler1 text, filler2 numeric, a integer, b varchar, filler3 date, c integer, d text, ia integer[]) WITH (autovacuum_enabled = off);
+CREATE TABLE mcv_lists (gemini_pk serial PRIMARY KEY, filler1 text, filler2 numeric, a integer, b varchar, filler3 date, c integer, d text, ia integer[]) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 -- random data (no MCV list)
@@ -1917,7 +1917,7 @@ SELECT * FROM check_estimated_rows('SELECT * FROM mcv_lists WHERE a = 1 OR b = '
 SELECT * FROM check_estimated_rows('SELECT * FROM mcv_lists WHERE a IS NULL AND (b = ''x'' OR d = ''x'')');
 ---END---
 ---START---
-CREATE TABLE mcv_lists_uuid (_gemini_pk serial PRIMARY KEY, a uuid, b uuid, c uuid) WITH (autovacuum_enabled = off);
+CREATE TABLE mcv_lists_uuid (gemini_pk serial PRIMARY KEY, a uuid, b uuid, c uuid) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 INSERT INTO mcv_lists_uuid (a, b, c)
@@ -1953,7 +1953,7 @@ SELECT * FROM check_estimated_rows('SELECT * FROM mcv_lists_uuid WHERE a = ''e7f
 DROP TABLE mcv_lists_uuid;
 ---END---
 ---START---
-CREATE TABLE mcv_lists_arrays (_gemini_pk serial PRIMARY KEY, a text[], b numeric[], c integer[]) WITH (autovacuum_enabled = off);
+CREATE TABLE mcv_lists_arrays (gemini_pk serial PRIMARY KEY, a text[], b numeric[], c integer[]) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 INSERT INTO mcv_lists_arrays (a, b, c)
@@ -1971,7 +1971,7 @@ CREATE STATISTICS mcv_lists_arrays_stats (mcv) ON a, b, c
 ANALYZE mcv_lists_arrays;
 ---END---
 ---START---
-CREATE TABLE mcv_lists_bool (_gemini_pk serial PRIMARY KEY, a bool, b bool, c bool) WITH (autovacuum_enabled = off);
+CREATE TABLE mcv_lists_bool (gemini_pk serial PRIMARY KEY, a bool, b bool, c bool) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 INSERT INTO mcv_lists_bool (a, b, c)
@@ -2014,7 +2014,7 @@ SELECT * FROM check_estimated_rows('SELECT * FROM mcv_lists_bool WHERE NOT a AND
 SELECT * FROM check_estimated_rows('SELECT * FROM mcv_lists_bool WHERE NOT a AND b AND NOT c');
 ---END---
 ---START---
-CREATE TABLE mcv_lists_partial (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer);
+CREATE TABLE mcv_lists_partial (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer);
 ---END---
 ---START---
 -- 10 frequent groups, each with 100 elements
@@ -2105,7 +2105,7 @@ SELECT * FROM check_estimated_rows('SELECT * FROM mcv_lists_partial WHERE (a = 0
 DROP TABLE mcv_lists_partial;
 ---END---
 ---START---
-CREATE TABLE mcv_lists_multi (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer, d integer) WITH (autovacuum_enabled = off);
+CREATE TABLE mcv_lists_multi (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer, d integer) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 INSERT INTO mcv_lists_multi (a, b, c, d)
@@ -2176,7 +2176,7 @@ SELECT * FROM check_estimated_rows('SELECT * FROM mcv_lists_multi WHERE a = 0 OR
 DROP TABLE mcv_lists_multi;
 ---END---
 ---START---
-CREATE TABLE expr_stats (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer);
+CREATE TABLE expr_stats (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer);
 ---END---
 ---START---
 INSERT INTO expr_stats SELECT mod(i,10), mod(i,10), mod(i,10) FROM generate_series(1,1000) s(i);
@@ -2209,7 +2209,7 @@ DROP STATISTICS expr_stats_1;
 DROP TABLE expr_stats;
 ---END---
 ---START---
-CREATE TABLE expr_stats (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer);
+CREATE TABLE expr_stats (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer);
 ---END---
 ---START---
 INSERT INTO expr_stats SELECT mod(i,10), mod(i,10), mod(i,10) FROM generate_series(1,1000) s(i);
@@ -2245,7 +2245,7 @@ SELECT * FROM check_estimated_rows('SELECT * FROM expr_stats WHERE a = 0 AND b =
 DROP TABLE expr_stats;
 ---END---
 ---START---
-CREATE TABLE expr_stats (_gemini_pk serial PRIMARY KEY, a integer, b name, c text);
+CREATE TABLE expr_stats (gemini_pk serial PRIMARY KEY, a integer, b name, c text);
 ---END---
 ---START---
 INSERT INTO expr_stats SELECT mod(i,10), fipshash(mod(i,10)::text), fipshash(mod(i,10)::text) FROM generate_series(1,1000) s(i);
@@ -2269,7 +2269,7 @@ SELECT * FROM check_estimated_rows('SELECT * FROM expr_stats WHERE a = 0 AND (b 
 DROP TABLE expr_stats;
 ---END---
 ---START---
-CREATE TABLE expr_stats_incompatible_test (_gemini_pk serial PRIMARY KEY, c0 double precision, c1 boolean NOT NULL);
+CREATE TABLE expr_stats_incompatible_test (gemini_pk serial PRIMARY KEY, c0 double precision, c1 boolean NOT NULL);
 ---END---
 ---START---
 CREATE STATISTICS expr_stat_comp_1 ON c0, c1 FROM expr_stats_incompatible_test;
@@ -2300,7 +2300,7 @@ DROP TABLE expr_stats_incompatible_test;
 CREATE SCHEMA tststats;
 ---END---
 ---START---
-CREATE TABLE tststats.priv_test_tbl (_gemini_pk serial PRIMARY KEY, a integer, b integer);
+CREATE TABLE tststats.priv_test_tbl (gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 INSERT INTO tststats.priv_test_tbl
@@ -2314,7 +2314,7 @@ CREATE STATISTICS tststats.priv_test_stats (mcv) ON a, b
 ANALYZE tststats.priv_test_tbl;
 ---END---
 ---START---
-CREATE TABLE stts_t1 (_gemini_pk serial PRIMARY KEY, a integer, b integer);
+CREATE TABLE stts_t1 (gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 create statistics (ndistinct) on a, b from stts_t1;
@@ -2326,13 +2326,13 @@ create statistics (ndistinct, dependencies) on a, b from stts_t1;
 create statistics (ndistinct, dependencies, mcv) on a, b from stts_t1;
 ---END---
 ---START---
-CREATE TABLE stts_t2 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer);
+CREATE TABLE stts_t2 (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer);
 ---END---
 ---START---
 create statistics on b, c from stts_t2;
 ---END---
 ---START---
-CREATE TABLE stts_t3 (_gemini_pk serial PRIMARY KEY, col1 integer, col2 integer, col3 integer);
+CREATE TABLE stts_t3 (gemini_pk serial PRIMARY KEY, col1 integer, col2 integer, col3 integer);
 ---END---
 ---START---
 create statistics stts_hoge on col1, col2, col3 from stts_t3;

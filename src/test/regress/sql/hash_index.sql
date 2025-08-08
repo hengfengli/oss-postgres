@@ -12,13 +12,13 @@ CREATE TABLE hash_i4_heap (
 );
 ---END---
 ---START---
-CREATE TABLE hash_name_heap (_gemini_pk serial PRIMARY KEY, seqno int4, random name);
+CREATE TABLE hash_name_heap (gemini_pk serial PRIMARY KEY, seqno int4, random name);
 ---END---
 ---START---
-CREATE TABLE hash_txt_heap (_gemini_pk serial PRIMARY KEY, seqno int4, random text);
+CREATE TABLE hash_txt_heap (gemini_pk serial PRIMARY KEY, seqno int4, random text);
 ---END---
 ---START---
-CREATE TABLE hash_f8_heap (_gemini_pk serial PRIMARY KEY, seqno int4, random float8);
+CREATE TABLE hash_f8_heap (gemini_pk serial PRIMARY KEY, seqno int4, random float8);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/hash.data'
@@ -244,7 +244,7 @@ SELECT h.seqno AS f20000
    WHERE h.random = '488912369'::float8;
 ---END---
 ---START---
-CREATE TABLE hash_split_heap (_gemini_pk serial PRIMARY KEY, keycol integer);
+CREATE TABLE hash_split_heap (gemini_pk serial PRIMARY KEY, keycol integer);
 ---END---
 ---START---
 INSERT INTO hash_split_heap SELECT 1 FROM generate_series(1, 500) a;
@@ -308,7 +308,7 @@ DROP TABLE hash_split_heap;
 -- Index on temp table.
 DROP TABLE IF EXISTS hash_temp_heap;
 
-CREATE TABLE hash_temp_heap (_gemini_pk serial PRIMARY KEY, x integer, y integer);
+CREATE TABLE hash_temp_heap (gemini_pk serial PRIMARY KEY, x integer, y integer);
 ---END---
 ---START---
 INSERT INTO hash_temp_heap VALUES (1,1);
@@ -320,7 +320,7 @@ CREATE INDEX hash_idx ON hash_temp_heap USING hash (x);
 DROP TABLE hash_temp_heap CASCADE;
 ---END---
 ---START---
-CREATE TABLE hash_heap_float4 (_gemini_pk serial PRIMARY KEY, x float4, y integer);
+CREATE TABLE hash_heap_float4 (gemini_pk serial PRIMARY KEY, x float4, y integer);
 ---END---
 ---START---
 INSERT INTO hash_heap_float4 VALUES (1.1,1);

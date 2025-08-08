@@ -88,7 +88,7 @@ COPY onek TO :'filename';
 ---START---
 DROP TABLE IF EXISTS onek_copy;
 
-CREATE TABLE onek_copy (_gemini_pk serial PRIMARY KEY, LIKE onek);
+CREATE TABLE onek_copy (gemini_pk serial PRIMARY KEY, LIKE onek);
 ---END---
 ---START---
 COPY onek_copy FROM :'filename';
@@ -106,7 +106,7 @@ COPY BINARY stud_emp TO :'filename';
 ---START---
 DROP TABLE IF EXISTS stud_emp_copy;
 
-CREATE TABLE stud_emp_copy (_gemini_pk serial PRIMARY KEY, LIKE stud_emp);
+CREATE TABLE stud_emp_copy (gemini_pk serial PRIMARY KEY, LIKE stud_emp);
 ---END---
 ---START---
 COPY BINARY stud_emp_copy FROM :'filename';
@@ -115,10 +115,10 @@ COPY BINARY stud_emp_copy FROM :'filename';
 SELECT * FROM stud_emp_copy;
 ---END---
 ---START---
-CREATE TABLE hobbies_r (_gemini_pk serial PRIMARY KEY, name text, person text);
+CREATE TABLE hobbies_r (gemini_pk serial PRIMARY KEY, name text, person text);
 ---END---
 ---START---
-CREATE TABLE equipment_r (_gemini_pk serial PRIMARY KEY, name text, hobby text);
+CREATE TABLE equipment_r (gemini_pk serial PRIMARY KEY, name text, hobby text);
 ---END---
 ---START---
 INSERT INTO hobbies_r (name, person)

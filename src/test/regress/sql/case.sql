@@ -1,8 +1,8 @@
 ---START---
-CREATE TABLE case_tbl (_gemini_pk serial PRIMARY KEY, i integer, f double precision);
+CREATE TABLE case_tbl (gemini_pk serial PRIMARY KEY, i integer, f double precision);
 ---END---
 ---START---
-CREATE TABLE case2_tbl (_gemini_pk serial PRIMARY KEY, i integer, j integer);
+CREATE TABLE case2_tbl (gemini_pk serial PRIMARY KEY, i integer, j integer);
 ---END---
 ---START---
 INSERT INTO CASE_TBL VALUES (1, 10.1);

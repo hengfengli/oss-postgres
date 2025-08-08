@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE money_data (_gemini_pk serial PRIMARY KEY, m money);
+CREATE TABLE money_data (gemini_pk serial PRIMARY KEY, m money);
 ---END---
 ---START---
 INSERT INTO money_data VALUES ('123');

@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY range (a);
 ---END---
 ---START---
 -- relhassubclass of a partitioned index is false before creating any partition.
@@ -50,7 +50,7 @@ select relname, relkind, relhassubclass, inhparent::regclass
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY range (a);
 ---END---
 ---START---
 create table idxpart1 partition of idxpart for values from (0) to (10);
@@ -62,13 +62,13 @@ create index concurrently on idxpart (a);
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, col1 integer) PARTITION BY range (col1);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, col1 integer) PARTITION BY range (col1);
 ---END---
 ---START---
 CREATE INDEX ON idxpart (col1);
 ---END---
 ---START---
-CREATE TABLE idxpart_two (_gemini_pk serial PRIMARY KEY, col2 integer);
+CREATE TABLE idxpart_two (gemini_pk serial PRIMARY KEY, col2 integer);
 ---END---
 ---START---
 SELECT col2 FROM idxpart_two fk LEFT OUTER JOIN idxpart pk ON (col1 = col2);
@@ -77,7 +77,7 @@ SELECT col2 FROM idxpart_two fk LEFT OUTER JOIN idxpart pk ON (col1 = col2);
 DROP table idxpart, idxpart_two;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer, b text, c integer) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer, b text, c integer) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE TABLE idxpart1 PARTITION OF idxpart FOR VALUES FROM (MINVALUE) TO (MAXVALUE);
@@ -95,7 +95,7 @@ ALTER TABLE idxpart ALTER COLUMN c TYPE numeric;
 DROP TABLE idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY range (a);
 ---END---
 ---START---
 create index idxparti on idxpart (a);
@@ -104,7 +104,7 @@ create index idxparti on idxpart (a);
 create index idxparti2 on idxpart (b, c);
 ---END---
 ---START---
-CREATE TABLE idxpart1 (_gemini_pk serial PRIMARY KEY, LIKE idxpart);
+CREATE TABLE idxpart1 (gemini_pk serial PRIMARY KEY, LIKE idxpart);
 ---END---
 ---START---
 \d idxpart1
@@ -139,7 +139,7 @@ alter table idxpart_c detach partition idxpart1_c;
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a, b);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a, b);
 ---END---
 ---START---
 create table idxpart1 partition of idxpart for values from (0, 0) to (10, 10);
@@ -161,7 +161,7 @@ select relname, relkind, relhassubclass, inhparent::regclass
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 create index on idxpart (a);
@@ -203,7 +203,7 @@ drop table idxpart;
 -- DROP behavior with temporary partitioned indexes
 DROP TABLE IF EXISTS idxpart_temp;
 
-CREATE TABLE idxpart_temp (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
+CREATE TABLE idxpart_temp (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 create index on idxpart_temp(a);
@@ -230,7 +230,7 @@ select relname, relkind from pg_class
 drop table idxpart_temp;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a, b);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a, b);
 ---END---
 ---START---
 create table idxpart1 partition of idxpart for values from (0, 0) to (10, 10);
@@ -296,10 +296,10 @@ select indexrelid::regclass, indrelid::regclass
   from pg_index where indexrelid::regclass::text like 'idxpart%';
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a);
 ---END---
 ---START---
-CREATE TABLE idxpart1 (_gemini_pk serial PRIMARY KEY, a integer, b integer);
+CREATE TABLE idxpart1 (gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 create index on idxpart1 using hash (a);
@@ -324,7 +324,7 @@ alter table idxpart attach partition idxpart1 for values from (0) to (1000);
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 create table idxpart1 partition of idxpart for values from (0) to (100);
@@ -385,7 +385,7 @@ alter index idxpart2_a_idx attach partition idxpart21_a_idx;
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text, d bool) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer, b integer, c text, d bool) PARTITION BY range (a);
 ---END---
 ---START---
 create index idxparti on idxpart (a);
@@ -394,7 +394,7 @@ create index idxparti on idxpart (a);
 create index idxparti2 on idxpart (b, c);
 ---END---
 ---START---
-CREATE TABLE idxpart1 (_gemini_pk serial PRIMARY KEY, LIKE idxpart INCLUDING INDEXES);
+CREATE TABLE idxpart1 (gemini_pk serial PRIMARY KEY, LIKE idxpart INCLUDING INDEXES);
 ---END---
 ---START---
 \d idxpart1
@@ -438,7 +438,7 @@ select relname, relkind, inhparent::regclass
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a);
 ---END---
 ---START---
 create table idxpart1 partition of idxpart for values from (1) to (1000) partition by range (a);
@@ -481,10 +481,10 @@ select relname, indisvalid from pg_class join pg_index on indexrelid = oid
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
-CREATE TABLE idxpart1 (_gemini_pk serial PRIMARY KEY, LIKE idxpart);
+CREATE TABLE idxpart1 (gemini_pk serial PRIMARY KEY, LIKE idxpart);
 ---END---
 ---START---
 create index on idxpart1 (a);
@@ -493,7 +493,7 @@ create index on idxpart1 (a);
 create index on idxpart (a);
 ---END---
 ---START---
-CREATE TABLE idxpart2 (_gemini_pk serial PRIMARY KEY, LIKE idxpart);
+CREATE TABLE idxpart2 (gemini_pk serial PRIMARY KEY, LIKE idxpart);
 ---END---
 ---START---
 alter table idxpart attach partition idxpart1 for values from (0000) to (1000);
@@ -536,10 +536,10 @@ drop table idxpart, idxpart1, idxpart2, idxpart3;
 select relname, relkind from pg_class where relname like 'idxpart%' order by relname;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
-CREATE TABLE idxpart1 (_gemini_pk serial PRIMARY KEY, LIKE idxpart);
+CREATE TABLE idxpart1 (gemini_pk serial PRIMARY KEY, LIKE idxpart);
 ---END---
 ---START---
 create index on idxpart1 (a);
@@ -548,7 +548,7 @@ create index on idxpart1 (a);
 create index on idxpart (a);
 ---END---
 ---START---
-CREATE TABLE idxpart2 (_gemini_pk serial PRIMARY KEY, LIKE idxpart);
+CREATE TABLE idxpart2 (gemini_pk serial PRIMARY KEY, LIKE idxpart);
 ---END---
 ---START---
 alter table idxpart attach partition idxpart1 for values from (0000) to (1000);
@@ -585,7 +585,7 @@ drop table idxpart, idxpart1, idxpart2, idxpart3;
 select relname, relkind from pg_class where relname like 'idxpart%' order by relname;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY range (a);
 ---END---
 ---START---
 create index on idxpart(c);
@@ -608,10 +608,10 @@ alter table idxpart2 drop column c;
 drop table idxpart, idxpart2;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a);
 ---END---
 ---START---
-CREATE TABLE idxpart1 (_gemini_pk serial PRIMARY KEY, LIKE idxpart);
+CREATE TABLE idxpart1 (gemini_pk serial PRIMARY KEY, LIKE idxpart);
 ---END---
 ---START---
 create index on idxpart1 ((a + b));
@@ -620,7 +620,7 @@ create index on idxpart1 ((a + b));
 create index on idxpart ((a + b));
 ---END---
 ---START---
-CREATE TABLE idxpart2 (_gemini_pk serial PRIMARY KEY, LIKE idxpart);
+CREATE TABLE idxpart2 (gemini_pk serial PRIMARY KEY, LIKE idxpart);
 ---END---
 ---START---
 alter table idxpart attach partition idxpart1 for values from (0000) to (1000);
@@ -641,13 +641,13 @@ select relname as child, inhparent::regclass as parent, pg_get_indexdef as child
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a text) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a text) PARTITION BY range (a);
 ---END---
 ---START---
-CREATE TABLE idxpart1 (_gemini_pk serial PRIMARY KEY, LIKE idxpart);
+CREATE TABLE idxpart1 (gemini_pk serial PRIMARY KEY, LIKE idxpart);
 ---END---
 ---START---
-CREATE TABLE idxpart2 (_gemini_pk serial PRIMARY KEY, LIKE idxpart);
+CREATE TABLE idxpart2 (gemini_pk serial PRIMARY KEY, LIKE idxpart);
 ---END---
 ---START---
 create index on idxpart2 (a collate "POSIX");
@@ -683,13 +683,13 @@ select relname as child, inhparent::regclass as parent, pg_get_indexdef as child
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a text) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a text) PARTITION BY range (a);
 ---END---
 ---START---
-CREATE TABLE idxpart1 (_gemini_pk serial PRIMARY KEY, LIKE idxpart);
+CREATE TABLE idxpart1 (gemini_pk serial PRIMARY KEY, LIKE idxpart);
 ---END---
 ---START---
-CREATE TABLE idxpart2 (_gemini_pk serial PRIMARY KEY, LIKE idxpart);
+CREATE TABLE idxpart2 (gemini_pk serial PRIMARY KEY, LIKE idxpart);
 ---END---
 ---START---
 create index on idxpart2 (a);
@@ -730,10 +730,10 @@ alter index idxpart_a_idx attach partition idxpart2_a_idx;
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, col1 integer, a integer, col2 integer, b integer) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, col1 integer, a integer, col2 integer, b integer) PARTITION BY range (a);
 ---END---
 ---START---
-CREATE TABLE idxpart1 (_gemini_pk serial PRIMARY KEY, b integer, col1 integer, col2 integer, col3 integer, a integer);
+CREATE TABLE idxpart1 (gemini_pk serial PRIMARY KEY, b integer, col1 integer, col2 integer, col3 integer, a integer);
 ---END---
 ---START---
 alter table idxpart drop column col1, drop column col2;
@@ -795,7 +795,7 @@ select relname as child, inhparent::regclass as parent, pg_get_indexdef as child
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY range (a);
 ---END---
 ---START---
 create index idxparti on idxpart (a);
@@ -804,13 +804,13 @@ create index idxparti on idxpart (a);
 create index idxparti2 on idxpart (c, b);
 ---END---
 ---START---
-CREATE TABLE idxpart1 (_gemini_pk serial PRIMARY KEY, c text, a integer, b integer);
+CREATE TABLE idxpart1 (gemini_pk serial PRIMARY KEY, c text, a integer, b integer);
 ---END---
 ---START---
 alter table idxpart attach partition idxpart1 for values from (0) to (10);
 ---END---
 ---START---
-CREATE TABLE idxpart2 (_gemini_pk serial PRIMARY KEY, c text, a integer, b integer);
+CREATE TABLE idxpart2 (gemini_pk serial PRIMARY KEY, c text, a integer, b integer);
 ---END---
 ---START---
 create index on idxpart2 (a);
@@ -831,13 +831,13 @@ select c.relname, pg_get_indexdef(indexrelid)
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, col1 integer, col2 integer, a integer, b integer) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, col1 integer, col2 integer, a integer, b integer) PARTITION BY range (a);
 ---END---
 ---START---
-CREATE TABLE idxpart1 (_gemini_pk serial PRIMARY KEY, col2 integer, b integer, col1 integer, a integer);
+CREATE TABLE idxpart1 (gemini_pk serial PRIMARY KEY, col2 integer, b integer, col1 integer, a integer);
 ---END---
 ---START---
-CREATE TABLE idxpart2 (_gemini_pk serial PRIMARY KEY, col1 integer, col2 integer, b integer, a integer);
+CREATE TABLE idxpart2 (gemini_pk serial PRIMARY KEY, col1 integer, col2 integer, b integer, a integer);
 ---END---
 ---START---
 alter table idxpart drop column col1, drop column col2;
@@ -873,13 +873,13 @@ select c.relname, pg_get_indexdef(indexrelid)
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, col1 integer, a integer, col3 integer, b integer) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, col1 integer, a integer, col3 integer, b integer) PARTITION BY range (a);
 ---END---
 ---START---
 alter table idxpart drop column col1, drop column col3;
 ---END---
 ---START---
-CREATE TABLE idxpart1 (_gemini_pk serial PRIMARY KEY, col1 integer, col2 integer, col3 integer, col4 integer, b integer, a integer);
+CREATE TABLE idxpart1 (gemini_pk serial PRIMARY KEY, col1 integer, col2 integer, col3 integer, col4 integer, b integer, a integer);
 ---END---
 ---START---
 alter table idxpart1 drop column col1, drop column col2, drop column col3, drop column col4;
@@ -888,7 +888,7 @@ alter table idxpart1 drop column col1, drop column col2, drop column col3, drop 
 alter table idxpart attach partition idxpart1 for values from (0) to (1000);
 ---END---
 ---START---
-CREATE TABLE idxpart2 (_gemini_pk serial PRIMARY KEY, col1 integer, col2 integer, b integer, a integer);
+CREATE TABLE idxpart2 (gemini_pk serial PRIMARY KEY, col1 integer, col2 integer, b integer, a integer);
 ---END---
 ---START---
 create index on idxpart2 (a) where b > 1000;
@@ -912,7 +912,7 @@ select c.relname, pg_get_indexdef(indexrelid)
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart1 (_gemini_pk serial PRIMARY KEY, drop_1 integer, drop_2 integer, col_keep integer, drop_3 integer);
+CREATE TABLE idxpart1 (gemini_pk serial PRIMARY KEY, drop_1 integer, drop_2 integer, col_keep integer, drop_3 integer);
 ---END---
 ---START---
 alter table idxpart1 drop column drop_1;
@@ -927,7 +927,7 @@ alter table idxpart1 drop column drop_3;
 create index on idxpart1 (col_keep);
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, col_keep integer) PARTITION BY range (col_keep);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, col_keep integer) PARTITION BY range (col_keep);
 ---END---
 ---START---
 create index on idxpart (col_keep);
@@ -946,7 +946,7 @@ select attrelid::regclass, attname, attnum from pg_attribute
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, drop_1 integer, drop_2 integer, col_keep integer, drop_3 integer) PARTITION BY range (col_keep);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, drop_1 integer, drop_2 integer, col_keep integer, drop_3 integer) PARTITION BY range (col_keep);
 ---END---
 ---START---
 alter table idxpart drop column drop_1;
@@ -958,7 +958,7 @@ alter table idxpart drop column drop_2;
 alter table idxpart drop column drop_3;
 ---END---
 ---START---
-CREATE TABLE idxpart1 (_gemini_pk serial PRIMARY KEY, col_keep integer);
+CREATE TABLE idxpart1 (gemini_pk serial PRIMARY KEY, col_keep integer);
 ---END---
 ---START---
 create index on idxpart1 (col_keep);
@@ -996,7 +996,7 @@ create table failpart partition of idxpart (b primary key) for values from (0) t
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 create table idxpart1pk partition of idxpart (a primary key) for values from (0) to (100);
@@ -1006,10 +1006,10 @@ create table idxpart1pk partition of idxpart (a primary key) for values from (0)
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer UNIQUE, b integer) PARTITION BY range (a, b);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer UNIQUE, b integer) PARTITION BY range (a, b);
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer, b integer UNIQUE) PARTITION BY range (a, b);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer, b integer UNIQUE) PARTITION BY range (a, b);
 ---END---
 ---START---
 create table idxpart (a int primary key, b int) partition by range (b, a);
@@ -1025,17 +1025,17 @@ create table idxpart (a int, b int, c text, primary key  (a, b, c)) partition by
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer, EXCLUDE USING btree (a WITH OPERATOR(=))) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer, EXCLUDE USING btree (a WITH OPERATOR(=))) PARTITION BY range (a);
 ---END---
 ---START---
 -- no expressions in partition key for PK/UNIQUE
 create table idxpart (a int primary key, b int) partition by range ((b + a));
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer UNIQUE, b integer) PARTITION BY range ((b + a));
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer UNIQUE, b integer) PARTITION BY range ((b + a));
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY range (a, b);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY range (a, b);
 ---END---
 ---START---
 alter table idxpart add primary key (a);
@@ -1054,7 +1054,7 @@ create table idxpart1 partition of idxpart for values from (0, 0) to (1000, 1000
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a, b);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a, b);
 ---END---
 ---START---
 alter table idxpart add unique (a);
@@ -1069,7 +1069,7 @@ alter table idxpart add unique (b, a);
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a);
 ---END---
 ---START---
 alter table idxpart add exclude (a with =);
@@ -1095,7 +1095,7 @@ create table idxpart21 partition of idxpart2 for values from (10) to (15);
 create table idxpart22 partition of idxpart2 for values from (15) to (20);
 ---END---
 ---START---
-CREATE TABLE idxpart3 (_gemini_pk serial PRIMARY KEY, b integer NOT NULL, a integer NOT NULL);
+CREATE TABLE idxpart3 (gemini_pk serial PRIMARY KEY, b integer NOT NULL, a integer NOT NULL);
 ---END---
 ---START---
 alter table idxpart attach partition idxpart3 for values from (20, 20) to (30, 30);
@@ -1122,10 +1122,10 @@ for values from (0) to (1000) partition by range (b);
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer UNIQUE, b integer) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer UNIQUE, b integer) PARTITION BY range (a);
 ---END---
 ---START---
-CREATE TABLE idxpart1 (_gemini_pk serial PRIMARY KEY, a integer NOT NULL, b integer, UNIQUE (a, b)) PARTITION BY range (a, b);
+CREATE TABLE idxpart1 (gemini_pk serial PRIMARY KEY, a integer NOT NULL, b integer, UNIQUE (a, b)) PARTITION BY range (a, b);
 ---END---
 ---START---
 alter table idxpart attach partition idxpart1 for values from (1) to (1000);
@@ -1152,7 +1152,7 @@ select conname, contype, conrelid::regclass, conindid::regclass, conkey
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, i integer) PARTITION BY hash (i);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, i integer) PARTITION BY hash (i);
 ---END---
 ---START---
 create table idxpart0 partition of idxpart (i) for values with (modulus 2, remainder 0);
@@ -1211,7 +1211,7 @@ drop table idxpart;
 CREATE TABLE idxpart (c1 INT PRIMARY KEY, c2 INT, c3 VARCHAR(10)) PARTITION BY RANGE(c1);
 ---END---
 ---START---
-CREATE TABLE idxpart1 (_gemini_pk serial PRIMARY KEY, LIKE idxpart);
+CREATE TABLE idxpart1 (gemini_pk serial PRIMARY KEY, LIKE idxpart);
 ---END---
 ---START---
 ALTER TABLE idxpart1 ADD PRIMARY KEY (c1, c2);
@@ -1227,7 +1227,7 @@ DROP TABLE idxpart, idxpart1;
 create table idxpart (a int, b int, primary key (a)) partition by range (a);
 ---END---
 ---START---
-CREATE TABLE idxpart1 (_gemini_pk serial PRIMARY KEY, a integer NOT NULL, b integer) PARTITION BY range (a);
+CREATE TABLE idxpart1 (gemini_pk serial PRIMARY KEY, a integer NOT NULL, b integer) PARTITION BY range (a);
 ---END---
 ---START---
 create table idxpart11 (a int not null, b int primary key);
@@ -1242,10 +1242,10 @@ alter table idxpart attach partition idxpart1 for values from (0) to (10000);
 drop table idxpart, idxpart1, idxpart11;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
-CREATE TABLE idxpart0 (_gemini_pk serial PRIMARY KEY, LIKE idxpart);
+CREATE TABLE idxpart0 (gemini_pk serial PRIMARY KEY, LIKE idxpart);
 ---END---
 ---START---
 alter table idxpart0 add primary key (a);
@@ -1279,10 +1279,10 @@ select indrelid::regclass, indexrelid::regclass, inhparent::regclass, indisvalid
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
-CREATE TABLE idxpart0 (_gemini_pk serial PRIMARY KEY, LIKE idxpart);
+CREATE TABLE idxpart0 (gemini_pk serial PRIMARY KEY, LIKE idxpart);
 ---END---
 ---START---
 alter table idxpart0 add unique (a);
@@ -1309,10 +1309,10 @@ alter table idxpart0 alter column a drop not null;
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a);
 ---END---
 ---START---
-CREATE TABLE idxpart1 (_gemini_pk serial PRIMARY KEY, a integer NOT NULL, b integer);
+CREATE TABLE idxpart1 (gemini_pk serial PRIMARY KEY, a integer NOT NULL, b integer);
 ---END---
 ---START---
 create unique index on idxpart1 (a);
@@ -1335,10 +1335,10 @@ select indrelid::regclass, indexrelid::regclass, inhparent::regclass, indisvalid
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a);
 ---END---
 ---START---
-CREATE TABLE idxpart1 (_gemini_pk serial PRIMARY KEY, a integer NOT NULL, b integer);
+CREATE TABLE idxpart1 (gemini_pk serial PRIMARY KEY, a integer NOT NULL, b integer);
 ---END---
 ---START---
 create unique index on idxpart1 (a);
@@ -1364,7 +1364,7 @@ create table idxpart (a int, b text, primary key (a, b)) partition by range (a);
 create table idxpart1 partition of idxpart for values from (0) to (100000);
 ---END---
 ---START---
-CREATE TABLE idxpart2 (_gemini_pk serial PRIMARY KEY, c integer, LIKE idxpart);
+CREATE TABLE idxpart2 (gemini_pk serial PRIMARY KEY, c integer, LIKE idxpart);
 ---END---
 ---START---
 insert into idxpart2 (c, a, b) values (42, 572814, 'inserted first');
@@ -1406,7 +1406,7 @@ select tableoid::regclass, * from idxpart order by a;
 drop table idxpart;
 ---END---
 ---START---
-CREATE TABLE idxpart (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
+CREATE TABLE idxpart (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 create table idxpart1 partition of idxpart for values from (0) to (100);
@@ -1440,7 +1440,7 @@ create table idxpart_another (a int, b int, primary key (a, b)) partition by ran
 create table idxpart_another_1 partition of idxpart_another for values from (0) to (100);
 ---END---
 ---START---
-CREATE TABLE idxpart3 (_gemini_pk serial PRIMARY KEY, c integer, b integer, a integer) PARTITION BY range (a);
+CREATE TABLE idxpart3 (gemini_pk serial PRIMARY KEY, c integer, b integer, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 alter table idxpart3 drop column b, drop column c;
@@ -1469,7 +1469,7 @@ create table pk (a int primary key) partition by range (a);
 create table pk1 partition of pk for values from (0) to (1000);
 ---END---
 ---START---
-CREATE TABLE pk2 (_gemini_pk serial PRIMARY KEY, b integer, a integer);
+CREATE TABLE pk2 (gemini_pk serial PRIMARY KEY, b integer, a integer);
 ---END---
 ---START---
 alter table pk2 drop column b;
@@ -1484,13 +1484,13 @@ alter table pk attach partition pk2 for values from (1000) to (2000);
 create table pk3 partition of pk for values from (2000) to (3000);
 ---END---
 ---START---
-CREATE TABLE pk4 (_gemini_pk serial PRIMARY KEY, LIKE pk);
+CREATE TABLE pk4 (gemini_pk serial PRIMARY KEY, LIKE pk);
 ---END---
 ---START---
 alter table pk attach partition pk4 for values from (3000) to (4000);
 ---END---
 ---START---
-CREATE TABLE pk5 (_gemini_pk serial PRIMARY KEY, LIKE pk) PARTITION BY range (a);
+CREATE TABLE pk5 (gemini_pk serial PRIMARY KEY, LIKE pk) PARTITION BY range (a);
 ---END---
 ---START---
 create table pk51 partition of pk5 for values from (4000) to (4500);
@@ -1505,7 +1505,7 @@ alter table pk attach partition pk5 for values from (4000) to (5000);
 reset search_path;
 ---END---
 ---START---
-CREATE TABLE covidxpart (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY list (a);
+CREATE TABLE covidxpart (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY list (a);
 ---END---
 ---START---
 create unique index on covidxpart (a) include (b);
@@ -1523,7 +1523,7 @@ insert into covidxpart values (1, 1);
 insert into covidxpart values (1, 1);
 ---END---
 ---START---
-CREATE TABLE covidxpart3 (_gemini_pk serial PRIMARY KEY, b integer, c integer, a integer);
+CREATE TABLE covidxpart3 (gemini_pk serial PRIMARY KEY, b integer, c integer, a integer);
 ---END---
 ---START---
 alter table covidxpart3 drop c;
@@ -1538,7 +1538,7 @@ insert into covidxpart values (3, 1);
 insert into covidxpart values (3, 1);
 ---END---
 ---START---
-CREATE TABLE covidxpart4 (_gemini_pk serial PRIMARY KEY, b integer, a integer);
+CREATE TABLE covidxpart4 (gemini_pk serial PRIMARY KEY, b integer, a integer);
 ---END---
 ---START---
 create unique index on covidxpart4 (a) include (b);
@@ -1581,7 +1581,7 @@ alter table parted_pk_detach_test1 drop constraint parted_pk_detach_test1_pkey;
 drop table parted_pk_detach_test, parted_pk_detach_test1;
 ---END---
 ---START---
-CREATE TABLE parted_uniq_detach_test (_gemini_pk serial PRIMARY KEY, a integer UNIQUE) PARTITION BY list (a);
+CREATE TABLE parted_uniq_detach_test (gemini_pk serial PRIMARY KEY, a integer UNIQUE) PARTITION BY list (a);
 ---END---
 ---START---
 create table parted_uniq_detach_test1 partition of parted_uniq_detach_test for values in (1);
@@ -1600,7 +1600,7 @@ alter table parted_uniq_detach_test1 drop constraint parted_uniq_detach_test1_a_
 drop table parted_uniq_detach_test, parted_uniq_detach_test1;
 ---END---
 ---START---
-CREATE TABLE parted_index_col_drop (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY list (a);
+CREATE TABLE parted_index_col_drop (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY list (a);
 ---END---
 ---START---
 create table parted_index_col_drop1 partition of parted_index_col_drop
@@ -1635,13 +1635,13 @@ alter table parted_index_col_drop drop column c;
 drop table parted_index_col_drop;
 ---END---
 ---START---
-CREATE TABLE parted_inval_tab (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
+CREATE TABLE parted_inval_tab (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 create index parted_inval_idx on parted_inval_tab (a);
 ---END---
 ---START---
-CREATE TABLE parted_inval_tab_1 (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
+CREATE TABLE parted_inval_tab_1 (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 create table parted_inval_tab_1_1 partition of parted_inval_tab_1
@@ -1673,7 +1673,7 @@ select indexrelid::regclass, indisvalid,
 drop table parted_inval_tab;
 ---END---
 ---START---
-CREATE TABLE parted_isvalid_tab (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a);
+CREATE TABLE parted_isvalid_tab (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a);
 ---END---
 ---START---
 create table parted_isvalid_tab_1 partition of parted_isvalid_tab
@@ -1719,7 +1719,7 @@ drop table parted_isvalid_tab;
 begin;
 ---END---
 ---START---
-CREATE TABLE parted_replica_tab (_gemini_pk serial PRIMARY KEY, id integer NOT NULL) PARTITION BY range (id);
+CREATE TABLE parted_replica_tab (gemini_pk serial PRIMARY KEY, id integer NOT NULL) PARTITION BY range (id);
 ---END---
 ---START---
 create table parted_replica_tab_1 partition of parted_replica_tab

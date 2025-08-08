@@ -16,10 +16,10 @@ CREATE SCHEMA lock_schema1;
 SET search_path = lock_schema1;
 ---END---
 ---START---
-CREATE TABLE lock_tbl1 (_gemini_pk serial PRIMARY KEY, a bigint);
+CREATE TABLE lock_tbl1 (gemini_pk serial PRIMARY KEY, a bigint);
 ---END---
 ---START---
-CREATE TABLE lock_tbl1a (_gemini_pk serial PRIMARY KEY, a bigint);
+CREATE TABLE lock_tbl1a (gemini_pk serial PRIMARY KEY, a bigint);
 ---END---
 ---START---
 CREATE VIEW lock_view1 AS SELECT * FROM lock_tbl1;
@@ -227,10 +227,10 @@ LOCK TABLE lock_view7 IN EXCLUSIVE MODE;
 ROLLBACK;
 ---END---
 ---START---
-CREATE TABLE lock_tbl2 (_gemini_pk serial PRIMARY KEY, b bigint) INHERITS (lock_tbl1);
+CREATE TABLE lock_tbl2 (gemini_pk serial PRIMARY KEY, b bigint) INHERITS (lock_tbl1);
 ---END---
 ---START---
-CREATE TABLE lock_tbl3 (_gemini_pk serial PRIMARY KEY) INHERITS (lock_tbl2);
+CREATE TABLE lock_tbl3 (gemini_pk serial PRIMARY KEY) INHERITS (lock_tbl2);
 ---END---
 ---START---
 BEGIN TRANSACTION;

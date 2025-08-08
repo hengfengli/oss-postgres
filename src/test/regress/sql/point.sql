@@ -104,7 +104,7 @@ SELECT p1.f1 AS point1, p2.f1 AS point2, (p1.f1 <-> p2.f1) AS distance
 -- Test that GiST indexes provide same behavior as sequential scan
 DROP TABLE IF EXISTS point_gist_tbl;
 
-CREATE TABLE point_gist_tbl (_gemini_pk serial PRIMARY KEY, f1 point);
+CREATE TABLE point_gist_tbl (gemini_pk serial PRIMARY KEY, f1 point);
 ---END---
 ---START---
 INSERT INTO point_gist_tbl SELECT '(0,0)' FROM generate_series(0,1000);

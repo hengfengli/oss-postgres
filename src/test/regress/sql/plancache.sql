@@ -234,7 +234,7 @@ select cachebug();
 select cachebug();
 ---END---
 ---START---
-CREATE TABLE pc_list_parted (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
+CREATE TABLE pc_list_parted (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 create table pc_list_part_null partition of pc_list_parted for values in (null);
@@ -282,7 +282,7 @@ drop table pc_list_parted, pc_list_part_null;
 deallocate pstmt_def_insert;
 ---END---
 ---START---
-CREATE TABLE test_mode (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE test_mode (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 insert into test_mode select 1 from generate_series(1,1000) union all select 2;

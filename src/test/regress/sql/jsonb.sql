@@ -336,7 +336,7 @@ SELECT jsonb_agg(q ORDER BY x NULLS FIRST, y)
 -- jsonb extraction functions
 DROP TABLE IF EXISTS test_jsonb;
 
-CREATE TABLE test_jsonb (_gemini_pk serial PRIMARY KEY, json_type text, test_json jsonb);
+CREATE TABLE test_jsonb (gemini_pk serial PRIMARY KEY, json_type text, test_json jsonb);
 ---END---
 ---START---
 INSERT INTO test_jsonb VALUES
@@ -950,7 +950,7 @@ SELECT jsonb_object_agg(NULL, '{"a":1}');
 ---START---
 DROP TABLE IF EXISTS foo;
 
-CREATE TABLE foo (_gemini_pk serial PRIMARY KEY, serial_num integer, name text, type text);
+CREATE TABLE foo (gemini_pk serial PRIMARY KEY, serial_num integer, name text, type text);
 ---END---
 ---START---
 INSERT INTO foo VALUES (847001,'t15','GE1043');
@@ -1691,7 +1691,7 @@ select * from jsonb_to_record('{"out": "{\"key\": 1}"}') as x(out jsonb);
 -- test type info caching in jsonb_populate_record()
 DROP TABLE IF EXISTS jsbpoptest;
 
-CREATE TABLE jsbpoptest (_gemini_pk serial PRIMARY KEY, js jsonb);
+CREATE TABLE jsbpoptest (gemini_pk serial PRIMARY KEY, js jsonb);
 ---END---
 ---START---
 INSERT INTO jsbpoptest
@@ -2212,7 +2212,7 @@ SELECT '{"a":[1,2,{"c":3,"x":4}],"c":"b"}'::jsonb @> '{"a":[{"x":4},1]}';
 -- check some corner cases for indexed nested containment (bug #13756)
 DROP TABLE IF EXISTS nestjsonb;
 
-CREATE TABLE nestjsonb (_gemini_pk serial PRIMARY KEY, j jsonb);
+CREATE TABLE nestjsonb (gemini_pk serial PRIMARY KEY, j jsonb);
 ---END---
 ---START---
 insert into nestjsonb (j) values ('{"a":[["b",{"x":1}],["b",{"x":2}]],"c":3}');
@@ -2920,7 +2920,7 @@ select ('[1, "2", null]'::jsonb)[:];
 ---START---
 DROP TABLE IF EXISTS test_jsonb_subscript;
 
-CREATE TABLE test_jsonb_subscript (_gemini_pk serial PRIMARY KEY, id integer, test_json jsonb);
+CREATE TABLE test_jsonb_subscript (gemini_pk serial PRIMARY KEY, id integer, test_json jsonb);
 ---END---
 ---START---
 insert into test_jsonb_subscript values
@@ -3225,7 +3225,7 @@ drop table test_jsonb_subscript;
 ---START---
 DROP TABLE IF EXISTS test_jsonb_subscript;
 
-CREATE TABLE test_jsonb_subscript (_gemini_pk serial PRIMARY KEY, id text, test_json jsonb);
+CREATE TABLE test_jsonb_subscript (gemini_pk serial PRIMARY KEY, id text, test_json jsonb);
 ---END---
 ---START---
 insert into test_jsonb_subscript values('foo', '{"foo": "bar"}');

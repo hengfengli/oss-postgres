@@ -30,7 +30,7 @@ SELECT pg_input_is_valid('(0,-1)', 'tid');
 SELECT * FROM pg_input_error_info('(0,-1)', 'tid');
 ---END---
 ---START---
-CREATE TABLE tid_tab (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE tid_tab (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 -- min() and max() for TIDs
@@ -94,7 +94,7 @@ SELECT currtid2('tid_ind'::text, '(0,1)'::tid);
 DROP INDEX tid_ind;
 ---END---
 ---START---
-CREATE TABLE tid_part (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
+CREATE TABLE tid_part (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 SELECT currtid2('tid_part'::text, '(0,1)'::tid);

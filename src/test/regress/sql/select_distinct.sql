@@ -249,7 +249,7 @@ SELECT DISTINCT four,1,2,3 FROM tenk1 WHERE four = 0;
 
 DROP TABLE IF EXISTS disttable;
 
-CREATE TABLE disttable (_gemini_pk serial PRIMARY KEY, f1 integer);
+CREATE TABLE disttable (gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
 INSERT INTO DISTTABLE VALUES(1);

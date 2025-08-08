@@ -12,7 +12,7 @@ SET max_parallel_workers = 0;
 -- first sizeof(Datum) bytes.
 DROP TABLE IF EXISTS abbrev_abort_uuids;
 
-CREATE TABLE abbrev_abort_uuids (_gemini_pk serial PRIMARY KEY, id serial NOT NULL, abort_increasing uuid, abort_decreasing uuid, noabort_increasing uuid, noabort_decreasing uuid);
+CREATE TABLE abbrev_abort_uuids (gemini_pk serial PRIMARY KEY, id serial NOT NULL, abort_increasing uuid, abort_decreasing uuid, noabort_increasing uuid, noabort_decreasing uuid);
 ---END---
 ---START---
 INSERT INTO abbrev_abort_uuids (abort_increasing, abort_decreasing, noabort_increasing, noabort_decreasing)
@@ -410,7 +410,7 @@ ROLLBACK;
 
 DROP TABLE IF EXISTS test_mark_restore;
 
-CREATE TABLE test_mark_restore (_gemini_pk serial PRIMARY KEY, col1 integer, col2 integer, col12 integer);
+CREATE TABLE test_mark_restore (gemini_pk serial PRIMARY KEY, col1 integer, col2 integer, col12 integer);
 ---END---
 ---START---
 -- need a few duplicates for mark/restore to matter

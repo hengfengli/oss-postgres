@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE brintest_multi (_gemini_pk serial PRIMARY KEY, int8col bigint, int2col smallint, int4col integer, oidcol oid, tidcol tid, float4col real, float8col double precision, macaddrcol macaddr, macaddr8col macaddr8, inetcol inet, cidrcol cidr, datecol date, timecol time, timestampcol timestamp, timestamptzcol timestamp with time zone, intervalcol interval, timetzcol time with time zone, numericcol numeric, uuidcol uuid, lsncol pg_lsn) WITH (fillfactor = 10);
+CREATE TABLE brintest_multi (gemini_pk serial PRIMARY KEY, int8col bigint, int2col smallint, int4col integer, oidcol oid, tidcol tid, float4col real, float8col double precision, macaddrcol macaddr, macaddr8col macaddr8, inetcol inet, cidrcol cidr, datecol date, timecol time, timestampcol timestamp, timestamptzcol timestamp with time zone, intervalcol interval, timetzcol time with time zone, numericcol numeric, uuidcol uuid, lsncol pg_lsn) WITH (fillfactor = 10);
 ---END---
 ---START---
 INSERT INTO brintest_multi SELECT
@@ -99,7 +99,7 @@ CREATE INDEX brinidx_multi ON brintest_multi USING brin (
 ) with (pages_per_range = 1);
 ---END---
 ---START---
-CREATE TABLE brinopers_multi (_gemini_pk serial PRIMARY KEY, colname name, typ text, op text[], value text[], matches integer[], CHECK (cardinality(op) = cardinality(value)), CHECK (cardinality(op) = cardinality(matches)));
+CREATE TABLE brinopers_multi (gemini_pk serial PRIMARY KEY, colname name, typ text, op text[], value text[], matches integer[], CHECK (cardinality(op) = cardinality(value)), CHECK (cardinality(op) = cardinality(matches)));
 ---END---
 ---START---
 INSERT INTO brinopers_multi VALUES
@@ -359,7 +359,7 @@ insert into public.brintest_multi (float8col) values (real 'nan');
 UPDATE brintest_multi SET int8col = int8col * int4col;
 ---END---
 ---START---
-CREATE TABLE brin_test_inet (_gemini_pk serial PRIMARY KEY, a inet);
+CREATE TABLE brin_test_inet (gemini_pk serial PRIMARY KEY, a inet);
 ---END---
 ---START---
 CREATE INDEX ON brin_test_inet USING brin (a inet_minmax_multi_ops);
@@ -402,7 +402,7 @@ SELECT brin_desummarize_range('brinidx_multi', 0);
 SELECT brin_desummarize_range('brinidx_multi', 100000000);
 ---END---
 ---START---
-CREATE TABLE brin_large_range (_gemini_pk serial PRIMARY KEY, a int4);
+CREATE TABLE brin_large_range (gemini_pk serial PRIMARY KEY, a int4);
 ---END---
 ---START---
 INSERT INTO brin_large_range SELECT i FROM generate_series(1,10000) s(i);
@@ -414,7 +414,7 @@ CREATE INDEX brin_large_range_idx ON brin_large_range USING brin (a int4_minmax_
 DROP TABLE brin_large_range;
 ---END---
 ---START---
-CREATE TABLE brin_summarize_multi (_gemini_pk serial PRIMARY KEY, value integer) WITH (fillfactor = 10, autovacuum_enabled = 'false');
+CREATE TABLE brin_summarize_multi (gemini_pk serial PRIMARY KEY, value integer) WITH (fillfactor = 10, autovacuum_enabled = 'false');
 ---END---
 ---START---
 CREATE INDEX brin_summarize_multi_idx ON brin_summarize_multi USING brin (value) WITH (pages_per_range=2);
@@ -455,7 +455,7 @@ SELECT brin_summarize_range('brin_summarize_multi_idx', -1);
 SELECT brin_summarize_range('brin_summarize_multi_idx', 4294967296);
 ---END---
 ---START---
-CREATE TABLE brin_test_multi (_gemini_pk serial PRIMARY KEY, a integer, b integer);
+CREATE TABLE brin_test_multi (gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 INSERT INTO brin_test_multi SELECT x/100,x%100 FROM generate_series(1,10000) x(x);

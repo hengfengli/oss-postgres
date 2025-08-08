@@ -542,7 +542,7 @@ SELECT '3.4'::numeric UNION SELECT 'foo';
 
 DROP TABLE IF EXISTS t1;
 
-CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, a text, b text);
+CREATE TABLE t1 (gemini_pk serial PRIMARY KEY, a text, b text);
 ---END---
 ---START---
 CREATE INDEX t1_ab_idx on t1 ((a || b));
@@ -591,7 +591,7 @@ explain (costs off)
 
 DROP TABLE IF EXISTS t1c;
 
-CREATE TABLE t1c (_gemini_pk serial PRIMARY KEY, b text, a text);
+CREATE TABLE t1c (gemini_pk serial PRIMARY KEY, b text, a text);
 ---END---
 ---START---
 ALTER TABLE t1c INHERIT t1;
@@ -649,7 +649,7 @@ create table events (event_id int primary key);
 create table other_events (event_id int primary key);
 ---END---
 ---START---
-CREATE TABLE events_child (_gemini_pk serial PRIMARY KEY) INHERITS (events);
+CREATE TABLE events_child (gemini_pk serial PRIMARY KEY) INHERITS (events);
 ---END---
 ---START---
 explain (costs off)

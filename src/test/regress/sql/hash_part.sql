@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE mchash (_gemini_pk serial PRIMARY KEY, a integer, b text, c jsonb) PARTITION BY hash (a part_test_int4_ops, b part_test_text_ops);
+CREATE TABLE mchash (gemini_pk serial PRIMARY KEY, a integer, b text, c jsonb) PARTITION BY hash (a part_test_int4_ops, b part_test_text_ops);
 ---END---
 ---START---
 CREATE TABLE mchash1
@@ -64,7 +64,7 @@ SELECT satisfies_hash_partition('mchash'::regclass, 2, 1,
 								variadic array[1,2]::int[]);
 ---END---
 ---START---
-CREATE TABLE mcinthash (_gemini_pk serial PRIMARY KEY, a integer, b integer, c jsonb) PARTITION BY hash (a part_test_int4_ops, b part_test_int4_ops);
+CREATE TABLE mcinthash (gemini_pk serial PRIMARY KEY, a integer, b integer, c jsonb) PARTITION BY hash (a part_test_int4_ops, b part_test_int4_ops);
 ---END---
 ---START---
 -- now variadic should work, should be false
@@ -87,7 +87,7 @@ SELECT satisfies_hash_partition('mcinthash'::regclass, 4, 0,
 								variadic array[now(), now()]);
 ---END---
 ---START---
-CREATE TABLE text_hashp (_gemini_pk serial PRIMARY KEY, a text) PARTITION BY hash (a);
+CREATE TABLE text_hashp (gemini_pk serial PRIMARY KEY, a text) PARTITION BY hash (a);
 ---END---
 ---START---
 create table text_hashp0 partition of text_hashp for values with (modulus 2, remainder 0);

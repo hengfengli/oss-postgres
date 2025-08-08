@@ -14,7 +14,7 @@ create temp view gstest1(a,b,v)
 ---START---
 DROP TABLE IF EXISTS gstest2;
 
-CREATE TABLE gstest2 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer, d integer, e integer, f integer, g integer, h integer);
+CREATE TABLE gstest2 (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer, d integer, e integer, f integer, g integer, h integer);
 ---END---
 ---START---
 copy gstest2 from stdin;
@@ -32,7 +32,7 @@ copy gstest2 from stdin;
 ---START---
 DROP TABLE IF EXISTS gstest3;
 
-CREATE TABLE gstest3 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer, d integer);
+CREATE TABLE gstest3 (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer, d integer);
 ---END---
 ---START---
 copy gstest3 from stdin;
@@ -46,7 +46,7 @@ alter table gstest3 add primary key (a);
 ---START---
 DROP TABLE IF EXISTS gstest4;
 
-CREATE TABLE gstest4 (_gemini_pk serial PRIMARY KEY, id integer, v integer, unhashable_col pg_catalog.bit(4), unsortable_col xid);
+CREATE TABLE gstest4 (gemini_pk serial PRIMARY KEY, id integer, v integer, unhashable_col pg_catalog.bit(4), unsortable_col xid);
 ---END---
 ---START---
 insert into gstest4
@@ -58,7 +58,7 @@ values (1,1,b'0000','1'), (2,2,b'0001','1'),
 ---START---
 DROP TABLE IF EXISTS gstest_empty;
 
-CREATE TABLE gstest_empty (_gemini_pk serial PRIMARY KEY, a integer, b integer, v integer);
+CREATE TABLE gstest_empty (gemini_pk serial PRIMARY KEY, a integer, b integer, v integer);
 ---END---
 ---START---
 create function gstest_data(v integer, out a integer, out b integer)
@@ -696,7 +696,7 @@ select v||'a', case when grouping(v||'a') = 1 then 1 else 0 end, count(*)
  group by rollup(i, v||'a') order by 1,3;
 ---END---
 ---START---
-CREATE TABLE bug_16784 (_gemini_pk serial PRIMARY KEY, i integer, j integer);
+CREATE TABLE bug_16784 (gemini_pk serial PRIMARY KEY, i integer, j integer);
 ---END---
 ---START---
 analyze bug_16784;

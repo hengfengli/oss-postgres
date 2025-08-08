@@ -131,7 +131,7 @@ SELECT * FROM gtest1;
 DELETE FROM gtest1 WHERE a = 2000000000;
 ---END---
 ---START---
-CREATE TABLE gtestx (_gemini_pk serial PRIMARY KEY, x integer, y integer);
+CREATE TABLE gtestx (gemini_pk serial PRIMARY KEY, x integer, y integer);
 ---END---
 ---START---
 INSERT INTO gtestx VALUES (11, 1), (22, 2), (33, 3);
@@ -240,7 +240,7 @@ DROP VIEW gtest1v;
 WITH foo AS (SELECT * FROM gtest1) SELECT * FROM foo;
 ---END---
 ---START---
-CREATE TABLE gtest1_1 (_gemini_pk serial PRIMARY KEY) INHERITS (gtest1);
+CREATE TABLE gtest1_1 (gemini_pk serial PRIMARY KEY) INHERITS (gtest1);
 ---END---
 ---START---
 SELECT * FROM gtest1_1;
@@ -256,13 +256,13 @@ SELECT * FROM gtest1_1;
 SELECT * FROM gtest1;
 ---END---
 ---START---
-CREATE TABLE gtest_normal (_gemini_pk serial PRIMARY KEY, a integer, b integer);
+CREATE TABLE gtest_normal (gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
-CREATE TABLE gtest_normal_child (_gemini_pk serial PRIMARY KEY, a integer, b integer GENERATED ALWAYS AS (a * 2) STORED) INHERITS (gtest_normal);
+CREATE TABLE gtest_normal_child (gemini_pk serial PRIMARY KEY, a integer, b integer GENERATED ALWAYS AS (a * 2) STORED) INHERITS (gtest_normal);
 ---END---
 ---START---
-CREATE TABLE gtest_normal_child (_gemini_pk serial PRIMARY KEY, a integer, b integer GENERATED ALWAYS AS (a * 2) STORED);
+CREATE TABLE gtest_normal_child (gemini_pk serial PRIMARY KEY, a integer, b integer GENERATED ALWAYS AS (a * 2) STORED);
 ---END---
 ---START---
 ALTER TABLE gtest_normal_child INHERIT gtest_normal;
@@ -272,13 +272,13 @@ ALTER TABLE gtest_normal_child INHERIT gtest_normal;
 DROP TABLE gtest_normal, gtest_normal_child;
 ---END---
 ---START---
-CREATE TABLE gtestx (_gemini_pk serial PRIMARY KEY, x integer, b integer DEFAULT 10) INHERITS (gtest1);
+CREATE TABLE gtestx (gemini_pk serial PRIMARY KEY, x integer, b integer DEFAULT 10) INHERITS (gtest1);
 ---END---
 ---START---
-CREATE TABLE gtestx (_gemini_pk serial PRIMARY KEY, x integer, b integer GENERATED ALWAYS AS IDENTITY) INHERITS (gtest1);
+CREATE TABLE gtestx (gemini_pk serial PRIMARY KEY, x integer, b integer GENERATED ALWAYS AS IDENTITY) INHERITS (gtest1);
 ---END---
 ---START---
-CREATE TABLE gtestx (_gemini_pk serial PRIMARY KEY, x integer, b integer GENERATED ALWAYS AS (a * 22) STORED) INHERITS (gtest1);
+CREATE TABLE gtestx (gemini_pk serial PRIMARY KEY, x integer, b integer GENERATED ALWAYS AS (a * 22) STORED) INHERITS (gtest1);
 ---END---
 ---START---
 -- ok, overrides parent
@@ -290,45 +290,45 @@ CREATE TABLE gtestxx_1 (a int NOT NULL, b int);
 ALTER TABLE gtestxx_1 INHERIT gtest1;
 ---END---
 ---START---
-CREATE TABLE gtestxx_3 (_gemini_pk serial PRIMARY KEY, a integer NOT NULL, b integer GENERATED ALWAYS AS (a * 2) STORED);
+CREATE TABLE gtestxx_3 (gemini_pk serial PRIMARY KEY, a integer NOT NULL, b integer GENERATED ALWAYS AS (a * 2) STORED);
 ---END---
 ---START---
 ALTER TABLE gtestxx_3 INHERIT gtest1;
 ---END---
 ---START---
-CREATE TABLE gtestxx_4 (_gemini_pk serial PRIMARY KEY, b integer GENERATED ALWAYS AS (a * 2) STORED, a integer NOT NULL);
+CREATE TABLE gtestxx_4 (gemini_pk serial PRIMARY KEY, b integer GENERATED ALWAYS AS (a * 2) STORED, a integer NOT NULL);
 ---END---
 ---START---
 ALTER TABLE gtestxx_4 INHERIT gtest1;
 ---END---
 ---START---
-CREATE TABLE gtesty (_gemini_pk serial PRIMARY KEY, x integer, b integer DEFAULT 55);
+CREATE TABLE gtesty (gemini_pk serial PRIMARY KEY, x integer, b integer DEFAULT 55);
 ---END---
 ---START---
-CREATE TABLE gtest1_y (_gemini_pk serial PRIMARY KEY) INHERITS (gtest0, gtesty);
----END---
----START---
--- error
-DROP TABLE gtesty;
----END---
----START---
-CREATE TABLE gtesty (_gemini_pk serial PRIMARY KEY, x integer, b integer);
----END---
----START---
-CREATE TABLE gtest1_y (_gemini_pk serial PRIMARY KEY) INHERITS (gtest1, gtesty);
+CREATE TABLE gtest1_y (gemini_pk serial PRIMARY KEY) INHERITS (gtest0, gtesty);
 ---END---
 ---START---
 -- error
 DROP TABLE gtesty;
 ---END---
 ---START---
-CREATE TABLE gtesty (_gemini_pk serial PRIMARY KEY, x integer, b integer GENERATED ALWAYS AS (x * 22) STORED);
+CREATE TABLE gtesty (gemini_pk serial PRIMARY KEY, x integer, b integer);
 ---END---
 ---START---
-CREATE TABLE gtest1_y (_gemini_pk serial PRIMARY KEY) INHERITS (gtest1, gtesty);
+CREATE TABLE gtest1_y (gemini_pk serial PRIMARY KEY) INHERITS (gtest1, gtesty);
 ---END---
 ---START---
-CREATE TABLE gtest1_y (_gemini_pk serial PRIMARY KEY, b integer GENERATED ALWAYS AS (x + 1) STORED) INHERITS (gtest1, gtesty);
+-- error
+DROP TABLE gtesty;
+---END---
+---START---
+CREATE TABLE gtesty (gemini_pk serial PRIMARY KEY, x integer, b integer GENERATED ALWAYS AS (x * 22) STORED);
+---END---
+---START---
+CREATE TABLE gtest1_y (gemini_pk serial PRIMARY KEY) INHERITS (gtest1, gtesty);
+---END---
+---START---
+CREATE TABLE gtest1_y (gemini_pk serial PRIMARY KEY, b integer GENERATED ALWAYS AS (x + 1) STORED) INHERITS (gtest1, gtesty);
 ---END---
 ---START---
 -- ok
@@ -338,7 +338,7 @@ CREATE TABLE gtest1_y (_gemini_pk serial PRIMARY KEY, b integer GENERATED ALWAYS
 CREATE TABLE gtestp (f1 int);
 ---END---
 ---START---
-CREATE TABLE gtestc (_gemini_pk serial PRIMARY KEY, f2 integer GENERATED ALWAYS AS (f1 + 1) STORED) INHERITS (gtestp);
+CREATE TABLE gtestc (gemini_pk serial PRIMARY KEY, f2 integer GENERATED ALWAYS AS (f1 + 1) STORED) INHERITS (gtestp);
 ---END---
 ---START---
 INSERT INTO gtestc values(42);
@@ -356,7 +356,7 @@ TABLE gtestc;
 DROP TABLE gtestp CASCADE;
 ---END---
 ---START---
-CREATE TABLE gtest3 (_gemini_pk serial PRIMARY KEY, a integer, b integer GENERATED ALWAYS AS (a * 3) STORED);
+CREATE TABLE gtest3 (gemini_pk serial PRIMARY KEY, a integer, b integer GENERATED ALWAYS AS (a * 3) STORED);
 ---END---
 ---START---
 INSERT INTO gtest3 (a) VALUES (1), (2), (3), (NULL);
@@ -371,7 +371,7 @@ UPDATE gtest3 SET a = 22 WHERE a = 2;
 SELECT * FROM gtest3 ORDER BY a;
 ---END---
 ---START---
-CREATE TABLE gtest3a (_gemini_pk serial PRIMARY KEY, a text, b text GENERATED ALWAYS AS ((a || '+') || a) STORED);
+CREATE TABLE gtest3a (gemini_pk serial PRIMARY KEY, a text, b text GENERATED ALWAYS AS ((a || '+') || a) STORED);
 ---END---
 ---START---
 INSERT INTO gtest3a (a) VALUES ('a'), ('b'), ('c'), (NULL);
@@ -436,7 +436,7 @@ INSERT INTO gtest2 VALUES (1);
 SELECT * FROM gtest2;
 ---END---
 ---START---
-CREATE TABLE gtest_varlena (_gemini_pk serial PRIMARY KEY, a varchar, b varchar GENERATED ALWAYS AS (a) STORED);
+CREATE TABLE gtest_varlena (gemini_pk serial PRIMARY KEY, a varchar, b varchar GENERATED ALWAYS AS (a) STORED);
 ---END---
 ---START---
 INSERT INTO gtest_varlena (a) VALUES('01234567890123456789');
@@ -455,7 +455,7 @@ DROP TABLE gtest_varlena;
 CREATE TYPE double_int as (a int, b int);
 ---END---
 ---START---
-CREATE TABLE gtest4 (_gemini_pk serial PRIMARY KEY, a integer, b double_int GENERATED ALWAYS AS ((a * 2, a * 3)) STORED);
+CREATE TABLE gtest4 (gemini_pk serial PRIMARY KEY, a integer, b double_int GENERATED ALWAYS AS ((a * 2, a * 3)) STORED);
 ---END---
 ---START---
 INSERT INTO gtest4 VALUES (1), (6);
@@ -675,7 +675,7 @@ INSERT INTO gtest22b VALUES (2);
 INSERT INTO gtest22b VALUES (2);
 ---END---
 ---START---
-CREATE TABLE gtest22c (_gemini_pk serial PRIMARY KEY, a integer, b integer GENERATED ALWAYS AS (a * 2) STORED);
+CREATE TABLE gtest22c (gemini_pk serial PRIMARY KEY, a integer, b integer GENERATED ALWAYS AS (a * 2) STORED);
 ---END---
 ---START---
 CREATE INDEX gtest22c_b_idx ON gtest22c (b);
@@ -796,13 +796,13 @@ INSERT INTO gtest24 (a) VALUES (6);
 CREATE TYPE gtest_type AS (f1 integer, f2 text, f3 bigint);
 ---END---
 ---START---
-CREATE TABLE gtest28 OF gtest_type (_gemini_pk serial PRIMARY KEY, f1 WITH OPTIONS GENERATED ALWAYS AS (f2 * 2) STORED);
+CREATE TABLE gtest28 OF gtest_type (gemini_pk serial PRIMARY KEY, f1 WITH OPTIONS GENERATED ALWAYS AS (f2 * 2) STORED);
 ---END---
 ---START---
 DROP TYPE gtest_type CASCADE;
 ---END---
 ---START---
-CREATE TABLE gtest_parent (_gemini_pk serial PRIMARY KEY, f1 date NOT NULL, f2 bigint, f3 bigint) PARTITION BY range (f1);
+CREATE TABLE gtest_parent (gemini_pk serial PRIMARY KEY, f1 date NOT NULL, f2 bigint, f3 bigint) PARTITION BY range (f1);
 ---END---
 ---START---
 CREATE TABLE gtest_child PARTITION OF gtest_parent (
@@ -810,7 +810,7 @@ CREATE TABLE gtest_child PARTITION OF gtest_parent (
 ) FOR VALUES FROM ('2016-07-01') TO ('2016-08-01');
 ---END---
 ---START---
-CREATE TABLE gtest_child (_gemini_pk serial PRIMARY KEY, f1 date NOT NULL, f2 bigint, f3 bigint GENERATED ALWAYS AS (f2 * 2) STORED);
+CREATE TABLE gtest_child (gemini_pk serial PRIMARY KEY, f1 date NOT NULL, f2 bigint, f3 bigint GENERATED ALWAYS AS (f2 * 2) STORED);
 ---END---
 ---START---
 ALTER TABLE gtest_parent ATTACH PARTITION gtest_child FOR VALUES FROM ('2016-07-01') TO ('2016-08-01');
@@ -820,7 +820,7 @@ ALTER TABLE gtest_parent ATTACH PARTITION gtest_child FOR VALUES FROM ('2016-07-
 DROP TABLE gtest_parent, gtest_child;
 ---END---
 ---START---
-CREATE TABLE gtest_parent (_gemini_pk serial PRIMARY KEY, f1 date NOT NULL, f2 bigint, f3 bigint GENERATED ALWAYS AS (f2 * 2) STORED) PARTITION BY range (f1);
+CREATE TABLE gtest_parent (gemini_pk serial PRIMARY KEY, f1 date NOT NULL, f2 bigint, f3 bigint GENERATED ALWAYS AS (f2 * 2) STORED) PARTITION BY range (f1);
 ---END---
 ---START---
 CREATE TABLE gtest_child PARTITION OF gtest_parent
@@ -843,7 +843,7 @@ CREATE TABLE gtest_child3 PARTITION OF gtest_parent (
 ) FOR VALUES FROM ('2016-09-01') TO ('2016-10-01');
 ---END---
 ---START---
-CREATE TABLE gtest_child3 (_gemini_pk serial PRIMARY KEY, f1 date NOT NULL, f2 bigint, f3 bigint);
+CREATE TABLE gtest_child3 (gemini_pk serial PRIMARY KEY, f1 date NOT NULL, f2 bigint, f3 bigint);
 ---END---
 ---START---
 ALTER TABLE gtest_parent ATTACH PARTITION gtest_child3 FOR VALUES FROM ('2016-09-01') TO ('2016-10-01');
@@ -853,7 +853,7 @@ ALTER TABLE gtest_parent ATTACH PARTITION gtest_child3 FOR VALUES FROM ('2016-09
 DROP TABLE gtest_child3;
 ---END---
 ---START---
-CREATE TABLE gtest_child3 (_gemini_pk serial PRIMARY KEY, f1 date NOT NULL, f2 bigint, f3 bigint DEFAULT 42);
+CREATE TABLE gtest_child3 (gemini_pk serial PRIMARY KEY, f1 date NOT NULL, f2 bigint, f3 bigint DEFAULT 42);
 ---END---
 ---START---
 ALTER TABLE gtest_parent ATTACH PARTITION gtest_child3 FOR VALUES FROM ('2016-09-01') TO ('2016-10-01');
@@ -863,7 +863,7 @@ ALTER TABLE gtest_parent ATTACH PARTITION gtest_child3 FOR VALUES FROM ('2016-09
 DROP TABLE gtest_child3;
 ---END---
 ---START---
-CREATE TABLE gtest_child3 (_gemini_pk serial PRIMARY KEY, f1 date NOT NULL, f2 bigint, f3 bigint GENERATED ALWAYS AS IDENTITY);
+CREATE TABLE gtest_child3 (gemini_pk serial PRIMARY KEY, f1 date NOT NULL, f2 bigint, f3 bigint GENERATED ALWAYS AS IDENTITY);
 ---END---
 ---START---
 ALTER TABLE gtest_parent ATTACH PARTITION gtest_child3 FOR VALUES FROM ('2016-09-01') TO ('2016-10-01');
@@ -873,7 +873,7 @@ ALTER TABLE gtest_parent ATTACH PARTITION gtest_child3 FOR VALUES FROM ('2016-09
 DROP TABLE gtest_child3;
 ---END---
 ---START---
-CREATE TABLE gtest_child3 (_gemini_pk serial PRIMARY KEY, f1 date NOT NULL, f2 bigint, f3 bigint GENERATED ALWAYS AS (f2 * 33) STORED);
+CREATE TABLE gtest_child3 (gemini_pk serial PRIMARY KEY, f1 date NOT NULL, f2 bigint, f3 bigint GENERATED ALWAYS AS (f2 * 33) STORED);
 ---END---
 ---START---
 ALTER TABLE gtest_parent ATTACH PARTITION gtest_child3 FOR VALUES FROM ('2016-09-01') TO ('2016-10-01');
@@ -900,10 +900,10 @@ SELECT * FROM gtest_parent;
 SELECT * FROM gtest_child3;
 ---END---
 ---START---
-CREATE TABLE gtest_part_key (_gemini_pk serial PRIMARY KEY, f1 date NOT NULL, f2 bigint, f3 bigint GENERATED ALWAYS AS (f2 * 2) STORED) PARTITION BY range (f3);
+CREATE TABLE gtest_part_key (gemini_pk serial PRIMARY KEY, f1 date NOT NULL, f2 bigint, f3 bigint GENERATED ALWAYS AS (f2 * 2) STORED) PARTITION BY range (f3);
 ---END---
 ---START---
-CREATE TABLE gtest_part_key (_gemini_pk serial PRIMARY KEY, f1 date NOT NULL, f2 bigint, f3 bigint GENERATED ALWAYS AS (f2 * 2) STORED) PARTITION BY range ((f3 * 3));
+CREATE TABLE gtest_part_key (gemini_pk serial PRIMARY KEY, f1 date NOT NULL, f2 bigint, f3 bigint GENERATED ALWAYS AS (f2 * 2) STORED) PARTITION BY range ((f3 * 3));
 ---END---
 ---START---
 -- ALTER TABLE ... ADD COLUMN
@@ -993,7 +993,7 @@ ALTER TABLE gtest27
 SELECT * FROM gtest27;
 ---END---
 ---START---
-CREATE TABLE gtest29 (_gemini_pk serial PRIMARY KEY, a integer, b integer GENERATED ALWAYS AS (a * 2) STORED);
+CREATE TABLE gtest29 (gemini_pk serial PRIMARY KEY, a integer, b integer GENERATED ALWAYS AS (a * 2) STORED);
 ---END---
 ---START---
 INSERT INTO gtest29 (a) VALUES (3), (4);
@@ -1035,7 +1035,7 @@ CREATE TABLE gtest30 (
 );
 ---END---
 ---START---
-CREATE TABLE gtest30_1 (_gemini_pk serial PRIMARY KEY) INHERITS (gtest30);
+CREATE TABLE gtest30_1 (gemini_pk serial PRIMARY KEY) INHERITS (gtest30);
 ---END---
 ---START---
 ALTER TABLE gtest30 ALTER COLUMN b DROP EXPRESSION;
@@ -1046,10 +1046,10 @@ ALTER TABLE gtest30 ALTER COLUMN b DROP EXPRESSION;
 DROP TABLE gtest30 CASCADE;
 ---END---
 ---START---
-CREATE TABLE gtest30 (_gemini_pk serial PRIMARY KEY, a integer, b integer GENERATED ALWAYS AS (a * 2) STORED);
+CREATE TABLE gtest30 (gemini_pk serial PRIMARY KEY, a integer, b integer GENERATED ALWAYS AS (a * 2) STORED);
 ---END---
 ---START---
-CREATE TABLE gtest30_1 (_gemini_pk serial PRIMARY KEY) INHERITS (gtest30);
+CREATE TABLE gtest30_1 (gemini_pk serial PRIMARY KEY) INHERITS (gtest30);
 ---END---
 ---START---
 ALTER TABLE ONLY gtest30 ALTER COLUMN b DROP EXPRESSION;
@@ -1215,11 +1215,11 @@ UPDATE gtest26 SET a = 11 WHERE a = 1;
 SELECT * FROM gtest26 ORDER BY a;
 ---END---
 ---START---
-CREATE TABLE gtest28a (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer, x integer GENERATED ALWAYS AS (b * 2) STORED);
+CREATE TABLE gtest28a (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer, x integer GENERATED ALWAYS AS (b * 2) STORED);
 ---END---
 ---START---
 ALTER TABLE gtest28a DROP COLUMN a;
 ---END---
 ---START---
-CREATE TABLE gtest28b (_gemini_pk serial PRIMARY KEY, LIKE gtest28a INCLUDING GENERATED);
+CREATE TABLE gtest28b (gemini_pk serial PRIMARY KEY, LIKE gtest28a INCLUDING GENERATED);
 ---END---

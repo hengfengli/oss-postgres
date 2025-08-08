@@ -5,7 +5,7 @@ SET max_parallel_maintenance_workers TO 4;
 SET min_parallel_index_scan_size TO '128kB';
 ---END---
 ---START---
-CREATE TABLE parallel_vacuum_table (_gemini_pk serial PRIMARY KEY, a integer) WITH (autovacuum_enabled = off);
+CREATE TABLE parallel_vacuum_table (gemini_pk serial PRIMARY KEY, a integer) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 INSERT INTO parallel_vacuum_table SELECT i from generate_series(1, 10000) i;

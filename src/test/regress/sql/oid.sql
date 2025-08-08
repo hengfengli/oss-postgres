@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE oid_tbl (_gemini_pk serial PRIMARY KEY, f1 oid);
+CREATE TABLE oid_tbl (gemini_pk serial PRIMARY KEY, f1 oid);
 ---END---
 ---START---
 INSERT INTO OID_TBL(f1) VALUES ('1234');

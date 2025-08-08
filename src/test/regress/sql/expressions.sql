@@ -81,7 +81,7 @@ RESET search_path;
 begin;
 ---END---
 ---START---
-CREATE TABLE numeric_tbl (_gemini_pk serial PRIMARY KEY, f1 numeric(18, 3), f2 numeric);
+CREATE TABLE numeric_tbl (gemini_pk serial PRIMARY KEY, f1 numeric(18, 3), f2 numeric);
 ---END---
 ---START---
 create view numeric_view as
@@ -96,7 +96,7 @@ create view numeric_view as
 explain (verbose, costs off) select * from numeric_view;
 ---END---
 ---START---
-CREATE TABLE bpchar_tbl (_gemini_pk serial PRIMARY KEY, f1 char(16) UNIQUE, f2 bpchar);
+CREATE TABLE bpchar_tbl (gemini_pk serial PRIMARY KEY, f1 char(16) UNIQUE, f2 bpchar);
 ---END---
 ---START---
 create view bpchar_view as
@@ -285,7 +285,7 @@ default for type myint using hash as
   function    1   myinthash(myint);
 ---END---
 ---START---
-CREATE TABLE inttest (_gemini_pk serial PRIMARY KEY, a myint);
+CREATE TABLE inttest (gemini_pk serial PRIMARY KEY, a myint);
 ---END---
 ---START---
 insert into inttest values(1::myint),(null);

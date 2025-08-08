@@ -397,7 +397,7 @@ SET SESSION AUTHORIZATION regress_priv_user1;
 SELECT session_user, current_user;
 ---END---
 ---START---
-CREATE TABLE atest1 (_gemini_pk serial PRIMARY KEY, a integer, b text);
+CREATE TABLE atest1 (gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 SELECT * FROM atest1;
@@ -439,7 +439,7 @@ GRANT SELECT ON atest1 TO regress_priv_user3, regress_priv_user4;
 SELECT * FROM atest1;
 ---END---
 ---START---
-CREATE TABLE atest2 (_gemini_pk serial PRIMARY KEY, col1 varchar(10), col2 boolean);
+CREATE TABLE atest2 (gemini_pk serial PRIMARY KEY, col1 varchar(10), col2 boolean);
 ---END---
 ---START---
 GRANT SELECT ON atest2 TO regress_priv_user2;
@@ -709,7 +709,7 @@ DROP FUNCTION leak2(integer, integer) CASCADE;
 SET SESSION AUTHORIZATION regress_priv_user3;
 ---END---
 ---START---
-CREATE TABLE atest3 (_gemini_pk serial PRIMARY KEY, one integer, two integer, three integer);
+CREATE TABLE atest3 (gemini_pk serial PRIMARY KEY, one integer, two integer, three integer);
 ---END---
 ---START---
 GRANT DELETE ON atest3 TO GROUP regress_priv_group2;
@@ -898,10 +898,10 @@ SELECT * FROM atestv2;
 SET SESSION AUTHORIZATION regress_priv_user1;
 ---END---
 ---START---
-CREATE TABLE atest5 (_gemini_pk serial PRIMARY KEY, one integer, two integer UNIQUE, three integer, four integer UNIQUE);
+CREATE TABLE atest5 (gemini_pk serial PRIMARY KEY, one integer, two integer UNIQUE, three integer, four integer UNIQUE);
 ---END---
 ---START---
-CREATE TABLE atest6 (_gemini_pk serial PRIMARY KEY, one integer, two integer, blue integer);
+CREATE TABLE atest6 (gemini_pk serial PRIMARY KEY, one integer, two integer, blue integer);
 ---END---
 ---START---
 GRANT SELECT (one), INSERT (two), UPDATE (three) ON atest5 TO regress_priv_user4;
@@ -1110,10 +1110,10 @@ COPY atest6 TO stdout;
 SET SESSION AUTHORIZATION regress_priv_user1;
 ---END---
 ---START---
-CREATE TABLE mtarget (_gemini_pk serial PRIMARY KEY, a integer, b text);
+CREATE TABLE mtarget (gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
-CREATE TABLE msource (_gemini_pk serial PRIMARY KEY, a integer, b text);
+CREATE TABLE msource (gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 INSERT INTO mtarget VALUES (1, 'init1'), (2, 'init2');
@@ -1333,13 +1333,13 @@ SET SESSION AUTHORIZATION regress_priv_user1;
 DROP TABLE t1;
 ---END---
 ---START---
-CREATE TABLE errtst (_gemini_pk serial PRIMARY KEY, a text, b text NOT NULL, c text, secret1 text, secret2 text) PARTITION BY list (a);
+CREATE TABLE errtst (gemini_pk serial PRIMARY KEY, a text, b text NOT NULL, c text, secret1 text, secret2 text) PARTITION BY list (a);
 ---END---
 ---START---
-CREATE TABLE errtst_part_1 (_gemini_pk serial PRIMARY KEY, secret2 text, c text, a text, b text NOT NULL, secret1 text);
+CREATE TABLE errtst_part_1 (gemini_pk serial PRIMARY KEY, secret2 text, c text, a text, b text NOT NULL, secret1 text);
 ---END---
 ---START---
-CREATE TABLE errtst_part_2 (_gemini_pk serial PRIMARY KEY, secret1 text, secret2 text, a text, c text, b text NOT NULL);
+CREATE TABLE errtst_part_2 (gemini_pk serial PRIMARY KEY, secret1 text, secret2 text, a text, c text, b text NOT NULL);
 ---END---
 ---START---
 ALTER TABLE errtst ATTACH PARTITION errtst_part_1 FOR VALUES IN ('aaa');
@@ -1482,13 +1482,13 @@ DELETE FROM atest5 WHERE two = 2;
 SET SESSION AUTHORIZATION regress_priv_user1;
 ---END---
 ---START---
-CREATE TABLE atestp1 (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer);
+CREATE TABLE atestp1 (gemini_pk serial PRIMARY KEY, f1 integer, f2 integer);
 ---END---
 ---START---
-CREATE TABLE atestp2 (_gemini_pk serial PRIMARY KEY, fx integer, fy integer);
+CREATE TABLE atestp2 (gemini_pk serial PRIMARY KEY, fx integer, fy integer);
 ---END---
 ---START---
-CREATE TABLE atestc (_gemini_pk serial PRIMARY KEY, fz integer) INHERITS (atestp1, atestp2);
+CREATE TABLE atestc (gemini_pk serial PRIMARY KEY, fz integer) INHERITS (atestp1, atestp2);
 ---END---
 ---START---
 GRANT SELECT(fx,fy,tableoid) ON atestp2 TO regress_priv_user2;
@@ -1873,16 +1873,16 @@ CREATE FUNCTION priv_testfunc6a(b int) RETURNS priv_testdomain1 LANGUAGE SQL AS 
 CREATE OPERATOR !+! (PROCEDURE = int4pl, LEFTARG = priv_testdomain1, RIGHTARG = priv_testdomain1);
 ---END---
 ---START---
-CREATE TABLE test5a (_gemini_pk serial PRIMARY KEY, a integer, b priv_testdomain1);
+CREATE TABLE test5a (gemini_pk serial PRIMARY KEY, a integer, b priv_testdomain1);
 ---END---
 ---START---
-CREATE TABLE test6a OF priv_testtype1 (_gemini_pk serial PRIMARY KEY);
+CREATE TABLE test6a OF priv_testtype1 (gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
-CREATE TABLE test10a (_gemini_pk serial PRIMARY KEY, a integer[], b priv_testtype1[]);
+CREATE TABLE test10a (gemini_pk serial PRIMARY KEY, a integer[], b priv_testtype1[]);
 ---END---
 ---START---
-CREATE TABLE test9a (_gemini_pk serial PRIMARY KEY, a integer, b integer);
+CREATE TABLE test9a (gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 ALTER TABLE test9a ADD COLUMN c priv_testdomain1;
@@ -1938,16 +1938,16 @@ CREATE FUNCTION priv_testfunc6b(b int) RETURNS priv_testdomain1 LANGUAGE SQL AS 
 CREATE OPERATOR !! (PROCEDURE = priv_testfunc5b, RIGHTARG = priv_testdomain1);
 ---END---
 ---START---
-CREATE TABLE test5b (_gemini_pk serial PRIMARY KEY, a integer, b priv_testdomain1);
+CREATE TABLE test5b (gemini_pk serial PRIMARY KEY, a integer, b priv_testdomain1);
 ---END---
 ---START---
-CREATE TABLE test6b OF priv_testtype1 (_gemini_pk serial PRIMARY KEY);
+CREATE TABLE test6b OF priv_testtype1 (gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
-CREATE TABLE test10b (_gemini_pk serial PRIMARY KEY, a integer[], b priv_testtype1[]);
+CREATE TABLE test10b (gemini_pk serial PRIMARY KEY, a integer[], b priv_testtype1[]);
 ---END---
 ---START---
-CREATE TABLE test9b (_gemini_pk serial PRIMARY KEY, a integer, b integer);
+CREATE TABLE test9b (gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 ALTER TABLE test9b ADD COLUMN c priv_testdomain1;
@@ -2235,7 +2235,7 @@ select has_column_privilege(9999,99::int2,'select');
 ---START---
 DROP TABLE IF EXISTS mytable;
 
-CREATE TABLE mytable (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, f3 integer);
+CREATE TABLE mytable (gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, f3 integer);
 ---END---
 ---START---
 alter table mytable drop column f2;
@@ -2270,7 +2270,7 @@ drop table mytable;
 SET SESSION AUTHORIZATION regress_priv_user1;
 ---END---
 ---START---
-CREATE TABLE atest4 (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE atest4 (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 GRANT SELECT ON atest4 TO regress_priv_user2 WITH GRANT OPTION;
@@ -2345,7 +2345,7 @@ END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 ---END---
 ---START---
-CREATE TABLE sro_tab (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE sro_tab (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 ALTER TABLE sro_tab OWNER TO regress_sro_user;
@@ -2403,7 +2403,7 @@ SELECT brin_summarize_range('sro_brin', 0);
 DROP TABLE sro_tab;
 ---END---
 ---START---
-CREATE TABLE sro_ptab (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
+CREATE TABLE sro_ptab (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 ALTER TABLE sro_ptab OWNER TO regress_sro_user;
@@ -2453,7 +2453,7 @@ REFRESH MATERIALIZED VIEW sro_mv;
 SET SESSION AUTHORIZATION regress_sro_user;
 ---END---
 ---START---
-CREATE TABLE sro_trojan_table (_gemini_pk serial PRIMARY KEY);
+CREATE TABLE sro_trojan_table (gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
 CREATE FUNCTION sro_trojan() RETURNS trigger LANGUAGE plpgsql AS
@@ -2832,7 +2832,7 @@ GRANT pg_database_owner TO regress_priv_user1;
 GRANT regress_priv_user1 TO pg_database_owner;
 ---END---
 ---START---
-CREATE TABLE datdba_only (_gemini_pk serial PRIMARY KEY);
+CREATE TABLE datdba_only (gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
 ALTER TABLE datdba_only OWNER TO pg_database_owner;
@@ -2904,7 +2904,7 @@ CREATE SCHEMA testns;
 GRANT ALL ON SCHEMA testns TO regress_priv_user1;
 ---END---
 ---START---
-CREATE TABLE testns.acltest1 (_gemini_pk serial PRIMARY KEY, x integer);
+CREATE TABLE testns.acltest1 (gemini_pk serial PRIMARY KEY, x integer);
 ---END---
 ---START---
 SELECT has_table_privilege('regress_priv_user1', 'testns.acltest1', 'SELECT');
@@ -2932,7 +2932,7 @@ SELECT has_table_privilege('regress_priv_user1', 'testns.acltest1', 'INSERT');
 DROP TABLE testns.acltest1;
 ---END---
 ---START---
-CREATE TABLE testns.acltest1 (_gemini_pk serial PRIMARY KEY, x integer);
+CREATE TABLE testns.acltest1 (gemini_pk serial PRIMARY KEY, x integer);
 ---END---
 ---START---
 SELECT has_table_privilege('regress_priv_user1', 'testns.acltest1', 'SELECT');
@@ -2950,7 +2950,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA testns GRANT INSERT ON TABLES TO regress_priv
 DROP TABLE testns.acltest1;
 ---END---
 ---START---
-CREATE TABLE testns.acltest1 (_gemini_pk serial PRIMARY KEY, x integer);
+CREATE TABLE testns.acltest1 (gemini_pk serial PRIMARY KEY, x integer);
 ---END---
 ---START---
 SELECT has_table_privilege('regress_priv_user1', 'testns.acltest1', 'SELECT');
@@ -2968,7 +2968,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA testns REVOKE INSERT ON TABLES FROM regress_p
 DROP TABLE testns.acltest1;
 ---END---
 ---START---
-CREATE TABLE testns.acltest1 (_gemini_pk serial PRIMARY KEY, x integer);
+CREATE TABLE testns.acltest1 (gemini_pk serial PRIMARY KEY, x integer);
 ---END---
 ---START---
 SELECT has_table_privilege('regress_priv_user1', 'testns.acltest1', 'SELECT');
@@ -3271,10 +3271,10 @@ SELECT d.*     -- check that entries went away
 CREATE SCHEMA testns;
 ---END---
 ---START---
-CREATE TABLE testns.t1 (_gemini_pk serial PRIMARY KEY, f1 integer);
+CREATE TABLE testns.t1 (gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
-CREATE TABLE testns.t2 (_gemini_pk serial PRIMARY KEY, f1 integer);
+CREATE TABLE testns.t2 (gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
 SELECT has_table_privilege('regress_priv_user1', 'testns.t1', 'SELECT');
@@ -3419,7 +3419,7 @@ DROP ROLE regress_schemauser_renamed;
 set session role regress_priv_user1;
 ---END---
 ---START---
-CREATE TABLE dep_priv_test (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE dep_priv_test (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 grant select on dep_priv_test to regress_priv_user2 with grant option;
@@ -3577,7 +3577,7 @@ DROP USER regress_priv_user8;
 CREATE USER regress_locktable_user;
 ---END---
 ---START---
-CREATE TABLE lock_table (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE lock_table (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 -- LOCK TABLE and SELECT permission
@@ -3922,22 +3922,22 @@ GRANT regress_roleoption_recipient TO regress_roleoption_protagonist WITH INHERI
 SET SESSION AUTHORIZATION regress_roleoption_protagonist;
 ---END---
 ---START---
-CREATE TABLE regress_roleoption.t1 (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE regress_roleoption.t1 (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
-CREATE TABLE regress_roleoption.t2 (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE regress_roleoption.t2 (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 SET SESSION AUTHORIZATION regress_roleoption_donor;
 ---END---
 ---START---
-CREATE TABLE regress_roleoption.t3 (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE regress_roleoption.t3 (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 SET SESSION AUTHORIZATION regress_roleoption_recipient;
 ---END---
 ---START---
-CREATE TABLE regress_roleoption.t4 (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE regress_roleoption.t4 (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 SET SESSION AUTHORIZATION regress_roleoption_protagonist;

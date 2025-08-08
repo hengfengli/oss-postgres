@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE bmscantest (_gemini_pk serial PRIMARY KEY, a integer, b integer, t text);
+CREATE TABLE bmscantest (gemini_pk serial PRIMARY KEY, a integer, b integer, t text);
 ---END---
 ---START---
 INSERT INTO bmscantest

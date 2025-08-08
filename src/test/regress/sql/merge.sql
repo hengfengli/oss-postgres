@@ -15,10 +15,10 @@ DROP TABLE IF EXISTS target;
 DROP TABLE IF EXISTS source;
 ---END---
 ---START---
-CREATE TABLE target (_gemini_pk serial PRIMARY KEY, tid integer, balance integer) WITH (autovacuum_enabled = off);
+CREATE TABLE target (gemini_pk serial PRIMARY KEY, tid integer, balance integer) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
-CREATE TABLE source (_gemini_pk serial PRIMARY KEY, sid integer, delta integer) WITH (autovacuum_enabled = off);
+CREATE TABLE source (gemini_pk serial PRIMARY KEY, sid integer, delta integer) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 INSERT INTO target VALUES (1, 10);
@@ -39,10 +39,10 @@ ALTER TABLE target OWNER TO regress_merge_privs;
 ALTER TABLE source OWNER TO regress_merge_privs;
 ---END---
 ---START---
-CREATE TABLE target2 (_gemini_pk serial PRIMARY KEY, tid integer, balance integer) WITH (autovacuum_enabled = off);
+CREATE TABLE target2 (gemini_pk serial PRIMARY KEY, tid integer, balance integer) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
-CREATE TABLE source2 (_gemini_pk serial PRIMARY KEY, sid integer, delta integer) WITH (autovacuum_enabled = off);
+CREATE TABLE source2 (gemini_pk serial PRIMARY KEY, sid integer, delta integer) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 ALTER TABLE target2 OWNER TO regress_merge_no_privs;
@@ -695,10 +695,10 @@ WHEN MATCHED THEN
 ROLLBACK;
 ---END---
 ---START---
-CREATE TABLE wq_target (_gemini_pk serial PRIMARY KEY, tid integer NOT NULL, balance integer DEFAULT -1) WITH (autovacuum_enabled = off);
+CREATE TABLE wq_target (gemini_pk serial PRIMARY KEY, tid integer NOT NULL, balance integer DEFAULT -1) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
-CREATE TABLE wq_source (_gemini_pk serial PRIMARY KEY, balance integer, sid integer) WITH (autovacuum_enabled = off);
+CREATE TABLE wq_source (gemini_pk serial PRIMARY KEY, balance integer, sid integer) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 INSERT INTO wq_source (sid, balance) VALUES (1, 100);
@@ -1217,10 +1217,10 @@ SELECT * FROM target ORDER BY tid;
 ROLLBACK;
 ---END---
 ---START---
-CREATE TABLE sq_target (_gemini_pk serial PRIMARY KEY, tid integer NOT NULL, balance integer) WITH (autovacuum_enabled = off);
+CREATE TABLE sq_target (gemini_pk serial PRIMARY KEY, tid integer NOT NULL, balance integer) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
-CREATE TABLE sq_source (_gemini_pk serial PRIMARY KEY, delta integer, sid integer, balance integer DEFAULT 0) WITH (autovacuum_enabled = off);
+CREATE TABLE sq_source (gemini_pk serial PRIMARY KEY, delta integer, sid integer, balance integer DEFAULT 0) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 INSERT INTO sq_target(tid, balance) VALUES (1,100), (2,200), (3,300);
@@ -1352,10 +1352,10 @@ RETURNING *;
 ROLLBACK;
 ---END---
 ---START---
-CREATE TABLE ex_mtarget (_gemini_pk serial PRIMARY KEY, a integer, b integer) WITH (autovacuum_enabled = off);
+CREATE TABLE ex_mtarget (gemini_pk serial PRIMARY KEY, a integer, b integer) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
-CREATE TABLE ex_msource (_gemini_pk serial PRIMARY KEY, a integer, b integer) WITH (autovacuum_enabled = off);
+CREATE TABLE ex_msource (gemini_pk serial PRIMARY KEY, a integer, b integer) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 INSERT INTO ex_mtarget SELECT i, i*10 FROM generate_series(1,100,2) i;
@@ -1486,7 +1486,7 @@ ROLLBACK;
 DROP TABLE sq_target, sq_source CASCADE;
 ---END---
 ---START---
-CREATE TABLE pa_target (_gemini_pk serial PRIMARY KEY, tid integer, balance double precision, val text) PARTITION BY list (tid);
+CREATE TABLE pa_target (gemini_pk serial PRIMARY KEY, tid integer, balance double precision, val text) PARTITION BY list (tid);
 ---END---
 ---START---
 CREATE TABLE part1 PARTITION OF pa_target FOR VALUES IN (1,4)
@@ -1505,7 +1505,7 @@ CREATE TABLE part4 PARTITION OF pa_target DEFAULT
   WITH (autovacuum_enabled=off);
 ---END---
 ---START---
-CREATE TABLE pa_source (_gemini_pk serial PRIMARY KEY, sid integer, delta double precision);
+CREATE TABLE pa_source (gemini_pk serial PRIMARY KEY, sid integer, delta double precision);
 ---END---
 ---START---
 -- insert many rows to the source table
@@ -1589,19 +1589,19 @@ ROLLBACK;
 DROP TABLE pa_target CASCADE;
 ---END---
 ---START---
-CREATE TABLE pa_target (_gemini_pk serial PRIMARY KEY, tid integer, balance double precision, val text) PARTITION BY list (tid);
+CREATE TABLE pa_target (gemini_pk serial PRIMARY KEY, tid integer, balance double precision, val text) PARTITION BY list (tid);
 ---END---
 ---START---
-CREATE TABLE part1 (_gemini_pk serial PRIMARY KEY, tid integer, balance double precision, val text) WITH (autovacuum_enabled = off);
+CREATE TABLE part1 (gemini_pk serial PRIMARY KEY, tid integer, balance double precision, val text) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
-CREATE TABLE part2 (_gemini_pk serial PRIMARY KEY, balance double precision, tid integer, val text) WITH (autovacuum_enabled = off);
+CREATE TABLE part2 (gemini_pk serial PRIMARY KEY, balance double precision, tid integer, val text) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
-CREATE TABLE part3 (_gemini_pk serial PRIMARY KEY, tid integer, balance double precision, val text) WITH (autovacuum_enabled = off);
+CREATE TABLE part3 (gemini_pk serial PRIMARY KEY, tid integer, balance double precision, val text) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
-CREATE TABLE part4 (_gemini_pk serial PRIMARY KEY, extraid text, tid integer, balance double precision, val text) WITH (autovacuum_enabled = off);
+CREATE TABLE part4 (gemini_pk serial PRIMARY KEY, extraid text, tid integer, balance double precision, val text) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 ALTER TABLE part4 DROP COLUMN extraid;
@@ -1710,7 +1710,7 @@ DROP TABLE pa_source;
 DROP TABLE pa_target CASCADE;
 ---END---
 ---START---
-CREATE TABLE pa_target (_gemini_pk serial PRIMARY KEY, logts timestamp, tid integer, balance double precision, val text) PARTITION BY range (logts);
+CREATE TABLE pa_target (gemini_pk serial PRIMARY KEY, logts timestamp, tid integer, balance double precision, val text) PARTITION BY range (logts);
 ---END---
 ---START---
 CREATE TABLE part_m01 PARTITION OF pa_target
@@ -1739,7 +1739,7 @@ CREATE TABLE part_m02_even PARTITION OF part_m02
 	FOR VALUES IN (2,4,6,8) WITH (autovacuum_enabled=off);
 ---END---
 ---START---
-CREATE TABLE pa_source (_gemini_pk serial PRIMARY KEY, sid integer, delta double precision) WITH (autovacuum_enabled = off);
+CREATE TABLE pa_source (gemini_pk serial PRIMARY KEY, sid integer, delta double precision) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 -- insert many rows to the source table
@@ -1786,7 +1786,7 @@ CREATE TABLE pa_target (tid integer PRIMARY KEY) PARTITION BY LIST (tid);
 CREATE TABLE pa_targetp PARTITION OF pa_target DEFAULT;
 ---END---
 ---START---
-CREATE TABLE pa_source (_gemini_pk serial PRIMARY KEY, sid integer);
+CREATE TABLE pa_source (gemini_pk serial PRIMARY KEY, sid integer);
 ---END---
 ---START---
 INSERT INTO pa_source VALUES (1), (2);
@@ -1825,13 +1825,13 @@ DROP TABLE pa_source;
 DROP TABLE pa_target CASCADE;
 ---END---
 ---START---
-CREATE TABLE cj_target (_gemini_pk serial PRIMARY KEY, tid integer, balance double precision, val text) WITH (autovacuum_enabled = off);
+CREATE TABLE cj_target (gemini_pk serial PRIMARY KEY, tid integer, balance double precision, val text) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
-CREATE TABLE cj_source1 (_gemini_pk serial PRIMARY KEY, sid1 integer, scat integer, delta integer) WITH (autovacuum_enabled = off);
+CREATE TABLE cj_source1 (gemini_pk serial PRIMARY KEY, sid1 integer, scat integer, delta integer) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
-CREATE TABLE cj_source2 (_gemini_pk serial PRIMARY KEY, sid2 integer, sval text) WITH (autovacuum_enabled = off);
+CREATE TABLE cj_source2 (gemini_pk serial PRIMARY KEY, sid2 integer, sval text) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 INSERT INTO cj_source1 VALUES (1, 10, 100);
@@ -1929,7 +1929,7 @@ WHEN NOT MATCHED THEN
 DROP TABLE cj_source2, cj_source1, cj_target;
 ---END---
 ---START---
-CREATE TABLE fs_target (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) WITH (autovacuum_enabled = off);
+CREATE TABLE fs_target (gemini_pk serial PRIMARY KEY, a integer, b integer, c text) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 MERGE INTO fs_target t
@@ -1956,16 +1956,16 @@ SELECT count(*) FROM fs_target;
 DROP TABLE fs_target;
 ---END---
 ---START---
-CREATE TABLE measurement (_gemini_pk serial PRIMARY KEY, city_id integer NOT NULL, logdate date NOT NULL, peaktemp integer, unitsales integer) WITH (autovacuum_enabled = off);
+CREATE TABLE measurement (gemini_pk serial PRIMARY KEY, city_id integer NOT NULL, logdate date NOT NULL, peaktemp integer, unitsales integer) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
-CREATE TABLE measurement_y2006m02 (_gemini_pk serial PRIMARY KEY, CHECK (logdate >= CAST('2006-02-01' AS date) AND logdate < CAST('2006-03-01' AS date))) INHERITS (measurement) WITH (autovacuum_enabled = off);
+CREATE TABLE measurement_y2006m02 (gemini_pk serial PRIMARY KEY, CHECK (logdate >= CAST('2006-02-01' AS date) AND logdate < CAST('2006-03-01' AS date))) INHERITS (measurement) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
-CREATE TABLE measurement_y2006m03 (_gemini_pk serial PRIMARY KEY, CHECK (logdate >= CAST('2006-03-01' AS date) AND logdate < CAST('2006-04-01' AS date))) INHERITS (measurement) WITH (autovacuum_enabled = off);
+CREATE TABLE measurement_y2006m03 (gemini_pk serial PRIMARY KEY, CHECK (logdate >= CAST('2006-03-01' AS date) AND logdate < CAST('2006-04-01' AS date))) INHERITS (measurement) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
-CREATE TABLE measurement_y2007m01 (_gemini_pk serial PRIMARY KEY, filler text, peaktemp integer, logdate date NOT NULL, city_id integer NOT NULL, unitsales integer CHECK (logdate >= CAST('2007-01-01' AS date) AND logdate < CAST('2007-02-01' AS date))) WITH (autovacuum_enabled = off);
+CREATE TABLE measurement_y2007m01 (gemini_pk serial PRIMARY KEY, filler text, peaktemp integer, logdate date NOT NULL, city_id integer NOT NULL, unitsales integer CHECK (logdate >= CAST('2007-01-01' AS date) AND logdate < CAST('2007-02-01' AS date))) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 ALTER TABLE measurement_y2007m01 DROP COLUMN filler;
@@ -2024,7 +2024,7 @@ INSERT INTO measurement VALUES (1, '2007-01-17', 10, 10);
 SELECT tableoid::regclass, * FROM measurement ORDER BY city_id, logdate;
 ---END---
 ---START---
-CREATE TABLE new_measurement (_gemini_pk serial PRIMARY KEY, LIKE measurement) WITH (autovacuum_enabled = off);
+CREATE TABLE new_measurement (gemini_pk serial PRIMARY KEY, LIKE measurement) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 INSERT INTO new_measurement VALUES (0, '2005-07-21', 25, 20);

@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE line_tbl (_gemini_pk serial PRIMARY KEY, s line);
+CREATE TABLE line_tbl (gemini_pk serial PRIMARY KEY, s line);
 ---END---
 ---START---
 INSERT INTO LINE_TBL VALUES ('{0,-1,5}');

@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE time_tbl (_gemini_pk serial PRIMARY KEY, f1 time(2));
+CREATE TABLE time_tbl (gemini_pk serial PRIMARY KEY, f1 time(2));
 ---END---
 ---START---
 INSERT INTO TIME_TBL VALUES ('00:00');

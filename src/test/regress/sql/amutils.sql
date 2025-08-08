@@ -83,7 +83,7 @@ select amname, prop, pg_indexam_has_property(a.oid, prop) as p
 --
 DROP TABLE IF EXISTS foo;
 
-CREATE TABLE foo (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, f3 integer, f4 integer);
+CREATE TABLE foo (gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, f3 integer, f4 integer);
 ---END---
 ---START---
 CREATE INDEX fooindex ON foo (f1 desc, f2 asc, f3 nulls first, f4 nulls last);

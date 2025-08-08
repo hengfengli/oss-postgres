@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE spgist_point_tbl (_gemini_pk serial PRIMARY KEY, id int4, p point);
+CREATE TABLE spgist_point_tbl (gemini_pk serial PRIMARY KEY, id int4, p point);
 ---END---
 ---START---
 create index spgist_point_idx on spgist_point_tbl using spgist(p) with (fillfactor = 75);
@@ -39,7 +39,7 @@ delete from spgist_point_tbl where id < 10000;
 vacuum spgist_point_tbl;
 ---END---
 ---START---
-CREATE TABLE spgist_box_tbl (_gemini_pk serial PRIMARY KEY, id serial, b box);
+CREATE TABLE spgist_box_tbl (gemini_pk serial PRIMARY KEY, id serial, b box);
 ---END---
 ---START---
 insert into spgist_box_tbl(b)
@@ -57,7 +57,7 @@ select count(*)
  where exists(select * from spgist_box_tbl b where b.b && box(v.p,v.p));
 ---END---
 ---START---
-CREATE TABLE spgist_text_tbl (_gemini_pk serial PRIMARY KEY, id int4, t text);
+CREATE TABLE spgist_text_tbl (gemini_pk serial PRIMARY KEY, id int4, t text);
 ---END---
 ---START---
 create index spgist_text_idx on spgist_text_tbl using spgist(t);
@@ -94,7 +94,7 @@ reindex index spgist_point_idx;
 create domain spgist_text as varchar;
 ---END---
 ---START---
-CREATE TABLE spgist_domain_tbl (_gemini_pk serial PRIMARY KEY, f1 spgist_text);
+CREATE TABLE spgist_domain_tbl (gemini_pk serial PRIMARY KEY, f1 spgist_text);
 ---END---
 ---START---
 create index spgist_domain_idx on spgist_domain_tbl using spgist(f1);
@@ -110,7 +110,7 @@ select * from spgist_domain_tbl where f1 = 'fo';
 select * from spgist_domain_tbl where f1 = 'fo';
 ---END---
 ---START---
-CREATE UNLOGGED TABLE spgist_unlogged_tbl (_gemini_pk serial PRIMARY KEY, id serial, b box);
+CREATE UNLOGGED TABLE spgist_unlogged_tbl (gemini_pk serial PRIMARY KEY, id serial, b box);
 ---END---
 ---START---
 create index spgist_unlogged_idx on spgist_unlogged_tbl using spgist (b);

@@ -235,7 +235,7 @@ rollback;
 
 DROP TABLE IF EXISTS gexec_test;
 
-CREATE TABLE gexec_test (_gemini_pk serial PRIMARY KEY, a integer, b text, c date, d double precision);
+CREATE TABLE gexec_test (gemini_pk serial PRIMARY KEY, a integer, b text, c date, d double precision);
 ---END---
 ---START---
 select format('create index on gexec_test(%I)', attname)
@@ -759,10 +759,10 @@ CREATE ACCESS METHOD heap_psql TYPE TABLE HANDLER heap_tableam_handler;
 SET ROLE TO regress_display_role;
 ---END---
 ---START---
-CREATE TABLE tbl_heap_psql (_gemini_pk serial PRIMARY KEY, f1 integer, f2 char(100)) USING heap_psql;
+CREATE TABLE tbl_heap_psql (gemini_pk serial PRIMARY KEY, f1 integer, f2 char(100)) USING heap_psql;
 ---END---
 ---START---
-CREATE TABLE tbl_heap (_gemini_pk serial PRIMARY KEY, f1 integer, f2 char(100)) USING heap;
+CREATE TABLE tbl_heap (gemini_pk serial PRIMARY KEY, f1 integer, f2 char(100)) USING heap;
 ---END---
 ---START---
 CREATE VIEW view_heap_psql AS SELECT f1 from tbl_heap_psql;
@@ -1963,10 +1963,10 @@ $$ LANGUAGE plpgsql;
 BEGIN;
 ---END---
 ---START---
-CREATE TABLE bla (_gemini_pk serial PRIMARY KEY, s no_such_type);
+CREATE TABLE bla (gemini_pk serial PRIMARY KEY, s no_such_type);
 ---END---
 ---START---
-CREATE TABLE bla (_gemini_pk serial PRIMARY KEY, s text);
+CREATE TABLE bla (gemini_pk serial PRIMARY KEY, s text);
 ---END---
 ---START---
 -- succeeds

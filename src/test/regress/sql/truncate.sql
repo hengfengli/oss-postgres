@@ -38,16 +38,16 @@ COMMIT;
 SELECT * FROM truncate_a;
 ---END---
 ---START---
-CREATE TABLE trunc_b (_gemini_pk serial PRIMARY KEY, a integer REFERENCES truncate_a);
+CREATE TABLE trunc_b (gemini_pk serial PRIMARY KEY, a integer REFERENCES truncate_a);
 ---END---
 ---START---
 CREATE TABLE trunc_c (a serial PRIMARY KEY);
 ---END---
 ---START---
-CREATE TABLE trunc_d (_gemini_pk serial PRIMARY KEY, a integer REFERENCES trunc_c);
+CREATE TABLE trunc_d (gemini_pk serial PRIMARY KEY, a integer REFERENCES trunc_c);
 ---END---
 ---START---
-CREATE TABLE trunc_e (_gemini_pk serial PRIMARY KEY, a integer REFERENCES truncate_a, b integer REFERENCES trunc_c);
+CREATE TABLE trunc_e (gemini_pk serial PRIMARY KEY, a integer REFERENCES truncate_a, b integer REFERENCES trunc_c);
 ---END---
 ---START---
 TRUNCATE TABLE truncate_a;
@@ -191,19 +191,19 @@ INSERT INTO trunc_f VALUES (1);
 INSERT INTO trunc_f VALUES (2);
 ---END---
 ---START---
-CREATE TABLE trunc_fa (_gemini_pk serial PRIMARY KEY, col2a text) INHERITS (trunc_f);
+CREATE TABLE trunc_fa (gemini_pk serial PRIMARY KEY, col2a text) INHERITS (trunc_f);
 ---END---
 ---START---
 INSERT INTO trunc_fa VALUES (3, 'three');
 ---END---
 ---START---
-CREATE TABLE trunc_fb (_gemini_pk serial PRIMARY KEY, col2b integer) INHERITS (trunc_f);
+CREATE TABLE trunc_fb (gemini_pk serial PRIMARY KEY, col2b integer) INHERITS (trunc_f);
 ---END---
 ---START---
 INSERT INTO trunc_fb VALUES (4, 444);
 ---END---
 ---START---
-CREATE TABLE trunc_faa (_gemini_pk serial PRIMARY KEY, col3 text) INHERITS (trunc_fa);
+CREATE TABLE trunc_faa (gemini_pk serial PRIMARY KEY, col3 text) INHERITS (trunc_fa);
 ---END---
 ---START---
 INSERT INTO trunc_faa VALUES (5, 'five', 'FIVE');
@@ -296,10 +296,10 @@ ROLLBACK;
 DROP TABLE trunc_f CASCADE;
 ---END---
 ---START---
-CREATE TABLE trunc_trigger_test (_gemini_pk serial PRIMARY KEY, f1 integer, f2 text, f3 text);
+CREATE TABLE trunc_trigger_test (gemini_pk serial PRIMARY KEY, f1 integer, f2 text, f3 text);
 ---END---
 ---START---
-CREATE TABLE trunc_trigger_log (_gemini_pk serial PRIMARY KEY, tgop text, tglevel text, tgwhen text, tgargv text, tgtable name, rowcount bigint);
+CREATE TABLE trunc_trigger_log (gemini_pk serial PRIMARY KEY, tgop text, tglevel text, tgwhen text, tgargv text, tgtable name, rowcount bigint);
 ---END---
 ---START---
 CREATE FUNCTION trunctrigger() RETURNS trigger as $$
@@ -382,7 +382,7 @@ DROP FUNCTION trunctrigger();
 CREATE SEQUENCE truncate_a_id1 START WITH 33;
 ---END---
 ---START---
-CREATE TABLE truncate_a (_gemini_pk serial PRIMARY KEY, id serial, id1 integer DEFAULT nextval('truncate_a_id1'));
+CREATE TABLE truncate_a (gemini_pk serial PRIMARY KEY, id serial, id1 integer DEFAULT nextval('truncate_a_id1'));
 ---END---
 ---START---
 ALTER SEQUENCE truncate_a_id1 OWNED BY truncate_a.id1;
@@ -421,7 +421,7 @@ INSERT INTO truncate_a DEFAULT VALUES;
 SELECT * FROM truncate_a;
 ---END---
 ---START---
-CREATE TABLE truncate_b (_gemini_pk serial PRIMARY KEY, id integer GENERATED ALWAYS AS IDENTITY(START WITH 44));
+CREATE TABLE truncate_b (gemini_pk serial PRIMARY KEY, id integer GENERATED ALWAYS AS IDENTITY(START WITH 44));
 ---END---
 ---START---
 INSERT INTO truncate_b DEFAULT VALUES;
@@ -488,7 +488,7 @@ DROP TABLE truncate_a;
 SELECT nextval('truncate_a_id1');
 ---END---
 ---START---
-CREATE TABLE truncparted (_gemini_pk serial PRIMARY KEY, a integer, b char) PARTITION BY list (a);
+CREATE TABLE truncparted (gemini_pk serial PRIMARY KEY, a integer, b char) PARTITION BY list (a);
 ---END---
 ---START---
 -- error, can't truncate a partitioned table
@@ -535,7 +535,7 @@ $$;
 CREATE TABLE truncprim (a int PRIMARY KEY);
 ---END---
 ---START---
-CREATE TABLE truncpart (_gemini_pk serial PRIMARY KEY, a integer REFERENCES truncprim) PARTITION BY range (a);
+CREATE TABLE truncpart (gemini_pk serial PRIMARY KEY, a integer REFERENCES truncprim) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE TABLE truncpart_1 PARTITION OF truncpart FOR VALUES FROM (0) TO (100);

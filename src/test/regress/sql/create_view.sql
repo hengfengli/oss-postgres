@@ -26,7 +26,7 @@ CREATE FUNCTION interpt_pp(path, path)
     LANGUAGE C STRICT;
 ---END---
 ---START---
-CREATE TABLE real_city (_gemini_pk serial PRIMARY KEY, pop int4, cname text, outline path);
+CREATE TABLE real_city (gemini_pk serial PRIMARY KEY, pop int4, cname text, outline path);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/real_city.data';
@@ -172,7 +172,7 @@ SET search_path TO temp_view_test, public;
 ---START---
 DROP TABLE IF EXISTS temp_table;
 
-CREATE TABLE temp_table (_gemini_pk serial PRIMARY KEY, a integer, id integer);
+CREATE TABLE temp_table (gemini_pk serial PRIMARY KEY, a integer, id integer);
 ---END---
 ---START---
 -- should be created in temp_view_test schema
@@ -293,15 +293,15 @@ CREATE SCHEMA testviewschm2;
 SET search_path TO testviewschm2, public;
 ---END---
 ---START---
-CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, num integer, name text);
+CREATE TABLE t1 (gemini_pk serial PRIMARY KEY, num integer, name text);
 ---END---
 ---START---
-CREATE TABLE t2 (_gemini_pk serial PRIMARY KEY, num2 integer, value text);
+CREATE TABLE t2 (gemini_pk serial PRIMARY KEY, num2 integer, value text);
 ---END---
 ---START---
 DROP TABLE IF EXISTS tt;
 
-CREATE TABLE tt (_gemini_pk serial PRIMARY KEY, num2 integer, value text);
+CREATE TABLE tt (gemini_pk serial PRIMARY KEY, num2 integer, value text);
 ---END---
 ---START---
 CREATE VIEW nontemp1 AS SELECT * FROM t1 CROSS JOIN t2;
@@ -340,21 +340,21 @@ SELECT relname FROM pg_class
     ORDER BY relname;
 ---END---
 ---START---
-CREATE TABLE tbl1 (_gemini_pk serial PRIMARY KEY, a integer, b integer);
+CREATE TABLE tbl1 (gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
-CREATE TABLE tbl2 (_gemini_pk serial PRIMARY KEY, c integer, d integer);
+CREATE TABLE tbl2 (gemini_pk serial PRIMARY KEY, c integer, d integer);
 ---END---
 ---START---
-CREATE TABLE tbl3 (_gemini_pk serial PRIMARY KEY, e integer, f integer);
+CREATE TABLE tbl3 (gemini_pk serial PRIMARY KEY, e integer, f integer);
 ---END---
 ---START---
-CREATE TABLE tbl4 (_gemini_pk serial PRIMARY KEY, g integer, h integer);
+CREATE TABLE tbl4 (gemini_pk serial PRIMARY KEY, g integer, h integer);
 ---END---
 ---START---
 DROP TABLE IF EXISTS tmptbl;
 
-CREATE TABLE tmptbl (_gemini_pk serial PRIMARY KEY, i integer, j integer);
+CREATE TABLE tmptbl (gemini_pk serial PRIMARY KEY, i integer, j integer);
 ---END---
 ---START---
 --Should be in testviewschm2
@@ -496,13 +496,13 @@ SELECT a::varchar(3) FROM tt1;
 DROP VIEW tt1;
 ---END---
 ---START---
-CREATE TABLE tt1 (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, f3 text);
+CREATE TABLE tt1 (gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, f3 text);
 ---END---
 ---START---
-CREATE TABLE tx1 (_gemini_pk serial PRIMARY KEY, x1 integer, x2 integer, x3 text);
+CREATE TABLE tx1 (gemini_pk serial PRIMARY KEY, x1 integer, x2 integer, x3 text);
 ---END---
 ---START---
-CREATE TABLE temp_view_test.tt1 (_gemini_pk serial PRIMARY KEY, y1 integer, f2 integer, f3 text);
+CREATE TABLE temp_view_test.tt1 (gemini_pk serial PRIMARY KEY, y1 integer, f2 integer, f3 text);
 ---END---
 ---START---
 CREATE VIEW aliased_view_1 AS
@@ -616,13 +616,13 @@ select pg_get_viewdef('view_of_joins_2c', true);
 select pg_get_viewdef('view_of_joins_2d', true);
 ---END---
 ---START---
-CREATE TABLE tt2 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer);
+CREATE TABLE tt2 (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer);
 ---END---
 ---START---
-CREATE TABLE tt3 (_gemini_pk serial PRIMARY KEY, ax int8, b int2, c numeric);
+CREATE TABLE tt3 (gemini_pk serial PRIMARY KEY, ax int8, b int2, c numeric);
 ---END---
 ---START---
-CREATE TABLE tt4 (_gemini_pk serial PRIMARY KEY, ay integer, b integer, q integer);
+CREATE TABLE tt4 (gemini_pk serial PRIMARY KEY, ay integer, b integer, q integer);
 ---END---
 ---START---
 create view v1 as select * from tt2 natural join tt3;
@@ -733,10 +733,10 @@ select pg_get_viewdef('v2a', true);
 select pg_get_viewdef('v3', true);
 ---END---
 ---START---
-CREATE TABLE tt5 (_gemini_pk serial PRIMARY KEY, a integer, b integer);
+CREATE TABLE tt5 (gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
-CREATE TABLE tt6 (_gemini_pk serial PRIMARY KEY, c integer, d integer);
+CREATE TABLE tt6 (gemini_pk serial PRIMARY KEY, c integer, d integer);
 ---END---
 ---START---
 create view vv1 as select * from (tt5 cross join tt6) j(aa,bb,cc,dd);
@@ -775,13 +775,13 @@ select pg_get_viewdef('v1', true);
 select pg_get_viewdef('v4', true);
 ---END---
 ---START---
-CREATE TABLE tt7 (_gemini_pk serial PRIMARY KEY, x integer, xx integer, y integer);
+CREATE TABLE tt7 (gemini_pk serial PRIMARY KEY, x integer, xx integer, y integer);
 ---END---
 ---START---
 alter table tt7 drop column xx;
 ---END---
 ---START---
-CREATE TABLE tt8 (_gemini_pk serial PRIMARY KEY, x integer, z integer);
+CREATE TABLE tt8 (gemini_pk serial PRIMARY KEY, x integer, z integer);
 ---END---
 ---START---
 create view vv2 as
@@ -836,13 +836,13 @@ select pg_get_viewdef('vv3', true);
 select pg_get_viewdef('vv4', true);
 ---END---
 ---START---
-CREATE TABLE tt7a (_gemini_pk serial PRIMARY KEY, x date, xx integer, y integer);
+CREATE TABLE tt7a (gemini_pk serial PRIMARY KEY, x date, xx integer, y integer);
 ---END---
 ---START---
 alter table tt7a drop column xx;
 ---END---
 ---START---
-CREATE TABLE tt8a (_gemini_pk serial PRIMARY KEY, x timestamptz, z integer);
+CREATE TABLE tt8a (gemini_pk serial PRIMARY KEY, x timestamptz, z integer);
 ---END---
 ---START---
 create view vv2a as
@@ -854,10 +854,10 @@ select * from tt7a left join tt8a using (x), tt8a tt8ax;
 select pg_get_viewdef('vv2a', true);
 ---END---
 ---START---
-CREATE TABLE tt9 (_gemini_pk serial PRIMARY KEY, x integer, xx integer, y integer);
+CREATE TABLE tt9 (gemini_pk serial PRIMARY KEY, x integer, xx integer, y integer);
 ---END---
 ---START---
-CREATE TABLE tt10 (_gemini_pk serial PRIMARY KEY, x integer, z integer);
+CREATE TABLE tt10 (gemini_pk serial PRIMARY KEY, x integer, z integer);
 ---END---
 ---START---
 create view vv5 as select x,y,z from tt9 join tt10 using(x);
@@ -872,13 +872,13 @@ alter table tt9 drop column xx;
 select pg_get_viewdef('vv5', true);
 ---END---
 ---START---
-CREATE TABLE tt11 (_gemini_pk serial PRIMARY KEY, x integer, y integer);
+CREATE TABLE tt11 (gemini_pk serial PRIMARY KEY, x integer, y integer);
 ---END---
 ---START---
-CREATE TABLE tt12 (_gemini_pk serial PRIMARY KEY, x integer, z integer);
+CREATE TABLE tt12 (gemini_pk serial PRIMARY KEY, x integer, z integer);
 ---END---
 ---START---
-CREATE TABLE tt13 (_gemini_pk serial PRIMARY KEY, z integer, q integer);
+CREATE TABLE tt13 (gemini_pk serial PRIMARY KEY, z integer, q integer);
 ---END---
 ---START---
 create view vv6 as select x,y,z,q from
@@ -894,7 +894,7 @@ alter table tt11 add column z int;
 select pg_get_viewdef('vv6', true);
 ---END---
 ---START---
-CREATE TABLE tt14t (_gemini_pk serial PRIMARY KEY, f1 text, f2 text, f3 text, f4 text);
+CREATE TABLE tt14t (gemini_pk serial PRIMARY KEY, f1 text, f2 text, f3 text, f4 text);
 ---END---
 ---START---
 insert into tt14t values('foo', 'bar', 'baz', '42');
@@ -1075,7 +1075,7 @@ select pg_get_viewdef('tt17v', true);
 select * from int8_tbl i where i.* in (values(i.*::int8_tbl));
 ---END---
 ---START---
-CREATE TABLE tt15v_log (_gemini_pk serial PRIMARY KEY, o tt15v, n tt15v, incr bool);
+CREATE TABLE tt15v_log (gemini_pk serial PRIMARY KEY, o tt15v, n tt15v, incr bool);
 ---END---
 ---START---
 create rule updlog as on update to tt15v do also

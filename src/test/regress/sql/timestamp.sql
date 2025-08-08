@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE timestamp_tbl (_gemini_pk serial PRIMARY KEY, d1 timestamp(2));
+CREATE TABLE timestamp_tbl (gemini_pk serial PRIMARY KEY, d1 timestamp(2));
 ---END---
 ---START---
 -- Test shorthand input values

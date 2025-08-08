@@ -44,7 +44,7 @@ SELECT ((SELECT ARRAY[1,2,3]))[2];
 SELECT (((SELECT ARRAY[1,2,3])))[3];
 ---END---
 ---START---
-CREATE TABLE subselect_tbl (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, f3 double precision);
+CREATE TABLE subselect_tbl (gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, f3 double precision);
 ---END---
 ---START---
 INSERT INTO SUBSELECT_TBL VALUES (1, 2, 3);
@@ -247,12 +247,12 @@ select count(distinct ss.ten) from
 
 DROP TABLE IF EXISTS foo;
 
-CREATE TABLE foo (_gemini_pk serial PRIMARY KEY, id integer);
+CREATE TABLE foo (gemini_pk serial PRIMARY KEY, id integer);
 ---END---
 ---START---
 DROP TABLE IF EXISTS bar;
 
-CREATE TABLE bar (_gemini_pk serial PRIMARY KEY, id1 integer, id2 integer);
+CREATE TABLE bar (gemini_pk serial PRIMARY KEY, id1 integer, id2 integer);
 ---END---
 ---START---
 INSERT INTO foo VALUES (1);
@@ -295,7 +295,7 @@ SELECT * FROM foo WHERE id IN
                       SELECT id2 FROM bar) AS s);
 ---END---
 ---START---
-CREATE TABLE orderstest (_gemini_pk serial PRIMARY KEY, approver_ref integer, po_ref integer, ordercanceled boolean);
+CREATE TABLE orderstest (gemini_pk serial PRIMARY KEY, approver_ref integer, po_ref integer, ordercanceled boolean);
 ---END---
 ---START---
 INSERT INTO orderstest VALUES (1, 1, false);
@@ -382,12 +382,12 @@ DROP TABLE orderstest cascade;
 
 DROP TABLE IF EXISTS parts;
 
-CREATE TABLE parts (_gemini_pk serial PRIMARY KEY, partnum text, cost float8);
+CREATE TABLE parts (gemini_pk serial PRIMARY KEY, partnum text, cost float8);
 ---END---
 ---START---
 DROP TABLE IF EXISTS shipped;
 
-CREATE TABLE shipped (_gemini_pk serial PRIMARY KEY, ttype char(2), ordnum int4, partnum text, value float8);
+CREATE TABLE shipped (gemini_pk serial PRIMARY KEY, ttype char(2), ordnum int4, partnum text, value float8);
 ---END---
 ---START---
 create temp view shipped_view as
@@ -455,7 +455,7 @@ select * from (
 
 DROP TABLE IF EXISTS numeric_table;
 
-CREATE TABLE numeric_table (_gemini_pk serial PRIMARY KEY, num_col numeric);
+CREATE TABLE numeric_table (gemini_pk serial PRIMARY KEY, num_col numeric);
 ---END---
 ---START---
 insert into numeric_table values (1), (1.000000000000000000001), (2), (3);
@@ -463,7 +463,7 @@ insert into numeric_table values (1), (1.000000000000000000001), (2), (3);
 ---START---
 DROP TABLE IF EXISTS float_table;
 
-CREATE TABLE float_table (_gemini_pk serial PRIMARY KEY, float_col float8);
+CREATE TABLE float_table (gemini_pk serial PRIMARY KEY, float_col float8);
 ---END---
 ---START---
 insert into float_table values (1), (2), (3);
@@ -532,7 +532,7 @@ from tc;
 
 DROP TABLE IF EXISTS t1;
 
-CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, f1 numeric(14, 0), f2 varchar(30));
+CREATE TABLE t1 (gemini_pk serial PRIMARY KEY, f1 numeric(14, 0), f2 varchar(30));
 ---END---
 ---START---
 select * from
@@ -547,7 +547,7 @@ group by f1,f2,fs;
 
 DROP TABLE IF EXISTS table_a;
 
-CREATE TABLE table_a (_gemini_pk serial PRIMARY KEY, id integer);
+CREATE TABLE table_a (gemini_pk serial PRIMARY KEY, id integer);
 ---END---
 ---START---
 insert into table_a values (42);
@@ -645,7 +645,7 @@ returning *;
 
 DROP TABLE IF EXISTS outer_7597;
 
-CREATE TABLE outer_7597 (_gemini_pk serial PRIMARY KEY, f1 int4, f2 int4);
+CREATE TABLE outer_7597 (gemini_pk serial PRIMARY KEY, f1 int4, f2 int4);
 ---END---
 ---START---
 insert into outer_7597 values (0, 0);
@@ -662,7 +662,7 @@ insert into outer_7597 values (1, null);
 ---START---
 DROP TABLE IF EXISTS inner_7597;
 
-CREATE TABLE inner_7597 (_gemini_pk serial PRIMARY KEY, c1 int8, c2 int8);
+CREATE TABLE inner_7597 (gemini_pk serial PRIMARY KEY, c1 int8, c2 int8);
 ---END---
 ---START---
 insert into inner_7597 values(0, null);
@@ -679,7 +679,7 @@ select * from outer_7597 where (f1, f2) not in (select * from inner_7597);
 
 DROP TABLE IF EXISTS outer_text;
 
-CREATE TABLE outer_text (_gemini_pk serial PRIMARY KEY, f1 text, f2 text);
+CREATE TABLE outer_text (gemini_pk serial PRIMARY KEY, f1 text, f2 text);
 ---END---
 ---START---
 insert into outer_text values ('a', 'a');
@@ -696,7 +696,7 @@ insert into outer_text values ('b', null);
 ---START---
 DROP TABLE IF EXISTS inner_text;
 
-CREATE TABLE inner_text (_gemini_pk serial PRIMARY KEY, c1 text, c2 text);
+CREATE TABLE inner_text (gemini_pk serial PRIMARY KEY, c1 text, c2 text);
 ---END---
 ---START---
 insert into inner_text values ('a', null);
@@ -823,7 +823,7 @@ where (exists(select 1 from tenk1 k where k.unique1 = t.unique2) or ten < 0)
 -- It's possible for the same EXISTS to get resolved both ways
 DROP TABLE IF EXISTS exists_tbl;
 
-CREATE TABLE exists_tbl (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer) PARTITION BY list (c1);
+CREATE TABLE exists_tbl (gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer) PARTITION BY list (c1);
 ---END---
 ---START---
 DROP TABLE IF EXISTS exists_tbl_null;
@@ -960,12 +960,12 @@ where o.ten = 1;
 --
 DROP TABLE IF EXISTS notinouter;
 
-CREATE TABLE notinouter (_gemini_pk serial PRIMARY KEY, a integer);
+CREATE TABLE notinouter (gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 DROP TABLE IF EXISTS notininner;
 
-CREATE TABLE notininner (_gemini_pk serial PRIMARY KEY, b integer NOT NULL);
+CREATE TABLE notininner (gemini_pk serial PRIMARY KEY, b integer NOT NULL);
 ---END---
 ---START---
 insert into notinouter values (null), (1);
@@ -979,7 +979,7 @@ select * from notinouter where a not in (select b from notininner);
 --
 DROP TABLE IF EXISTS nocolumns;
 
-CREATE TABLE nocolumns (_gemini_pk serial PRIMARY KEY);
+CREATE TABLE nocolumns (gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
 select exists(select * from nocolumns);

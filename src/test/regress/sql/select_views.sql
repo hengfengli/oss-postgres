@@ -32,10 +32,10 @@ CREATE TABLE customer (
 );
 ---END---
 ---START---
-CREATE TABLE credit_card (_gemini_pk serial PRIMARY KEY, cid integer REFERENCES customer (cid), cnum text, climit integer);
+CREATE TABLE credit_card (gemini_pk serial PRIMARY KEY, cid integer REFERENCES customer (cid), cnum text, climit integer);
 ---END---
 ---START---
-CREATE TABLE credit_usage (_gemini_pk serial PRIMARY KEY, cid integer REFERENCES customer (cid), ymd date, usage integer);
+CREATE TABLE credit_usage (gemini_pk serial PRIMARY KEY, cid integer REFERENCES customer (cid), ymd date, usage integer);
 ---END---
 ---START---
 INSERT INTO customer

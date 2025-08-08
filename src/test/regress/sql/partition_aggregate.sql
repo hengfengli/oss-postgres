@@ -23,7 +23,7 @@ SET max_parallel_workers_per_gather TO 0;
 SET enable_incremental_sort TO off;
 ---END---
 ---START---
-CREATE TABLE pagg_tab (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text, d integer) PARTITION BY list (c);
+CREATE TABLE pagg_tab (gemini_pk serial PRIMARY KEY, a integer, b integer, c text, d integer) PARTITION BY list (c);
 ---END---
 ---START---
 CREATE TABLE pagg_tab_p1 PARTITION OF pagg_tab FOR VALUES IN ('0000', '0001', '0002', '0003', '0004');
@@ -145,7 +145,7 @@ EXPLAIN (COSTS OFF)
 SELECT a, sum(b order by a) FROM pagg_tab GROUP BY a ORDER BY 1, 2;
 ---END---
 ---START---
-CREATE TABLE pagg_tab1 (_gemini_pk serial PRIMARY KEY, x integer, y integer) PARTITION BY range (x);
+CREATE TABLE pagg_tab1 (gemini_pk serial PRIMARY KEY, x integer, y integer) PARTITION BY range (x);
 ---END---
 ---START---
 CREATE TABLE pagg_tab1_p1 PARTITION OF pagg_tab1 FOR VALUES FROM (0) TO (10);
@@ -157,7 +157,7 @@ CREATE TABLE pagg_tab1_p2 PARTITION OF pagg_tab1 FOR VALUES FROM (10) TO (20);
 CREATE TABLE pagg_tab1_p3 PARTITION OF pagg_tab1 FOR VALUES FROM (20) TO (30);
 ---END---
 ---START---
-CREATE TABLE pagg_tab2 (_gemini_pk serial PRIMARY KEY, x integer, y integer) PARTITION BY range (y);
+CREATE TABLE pagg_tab2 (gemini_pk serial PRIMARY KEY, x integer, y integer) PARTITION BY range (y);
 ---END---
 ---START---
 CREATE TABLE pagg_tab2_p1 PARTITION OF pagg_tab2 FOR VALUES FROM (0) TO (10);
@@ -277,7 +277,7 @@ SELECT a.x, a.y, count(*) FROM (SELECT * FROM pagg_tab1 WHERE x = 1 AND x = 2) a
 SELECT a.x, a.y, count(*) FROM (SELECT * FROM pagg_tab1 WHERE x = 1 AND x = 2) a LEFT JOIN pagg_tab2 b ON a.x = b.y GROUP BY a.x, a.y ORDER BY 1, 2;
 ---END---
 ---START---
-CREATE TABLE pagg_tab_m (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY range (a, ((a + b) / 2));
+CREATE TABLE pagg_tab_m (gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY range (a, ((a + b) / 2));
 ---END---
 ---START---
 CREATE TABLE pagg_tab_m_p1 PARTITION OF pagg_tab_m FOR VALUES FROM (0, 0) TO (12, 12);
@@ -319,7 +319,7 @@ SELECT a, c, sum(b), avg(c), count(*) FROM pagg_tab_m GROUP BY (a+b)/2, 2, 1 HAV
 SELECT a, c, sum(b), avg(c), count(*) FROM pagg_tab_m GROUP BY (a+b)/2, 2, 1 HAVING sum(b) = 50 AND avg(c) > 25 ORDER BY 1, 2, 3;
 ---END---
 ---START---
-CREATE TABLE pagg_tab_ml (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY range (a);
+CREATE TABLE pagg_tab_ml (gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE TABLE pagg_tab_ml_p1 PARTITION OF pagg_tab_ml FOR VALUES FROM (0) TO (12);
@@ -334,10 +334,10 @@ CREATE TABLE pagg_tab_ml_p2_s1 PARTITION OF pagg_tab_ml_p2 FOR VALUES IN ('0000'
 CREATE TABLE pagg_tab_ml_p2_s2 PARTITION OF pagg_tab_ml_p2 FOR VALUES IN ('0003');
 ---END---
 ---START---
-CREATE TABLE pagg_tab_ml_p3 (_gemini_pk serial PRIMARY KEY, b integer, c text, a integer) PARTITION BY range (b);
+CREATE TABLE pagg_tab_ml_p3 (gemini_pk serial PRIMARY KEY, b integer, c text, a integer) PARTITION BY range (b);
 ---END---
 ---START---
-CREATE TABLE pagg_tab_ml_p3_s1 (_gemini_pk serial PRIMARY KEY, c text, a integer, b integer);
+CREATE TABLE pagg_tab_ml_p3_s1 (gemini_pk serial PRIMARY KEY, c text, a integer, b integer);
 ---END---
 ---START---
 CREATE TABLE pagg_tab_ml_p3_s2 PARTITION OF pagg_tab_ml_p3 FOR VALUES FROM (7) TO (10);
@@ -455,7 +455,7 @@ SELECT a, sum(b), count(*) FROM pagg_tab_ml GROUP BY a, b, c HAVING avg(b) > 7 O
 SET parallel_setup_cost TO 10;
 ---END---
 ---START---
-CREATE TABLE pagg_tab_para (_gemini_pk serial PRIMARY KEY, x integer, y integer) PARTITION BY range (x);
+CREATE TABLE pagg_tab_para (gemini_pk serial PRIMARY KEY, x integer, y integer) PARTITION BY range (x);
 ---END---
 ---START---
 CREATE TABLE pagg_tab_para_p1 PARTITION OF pagg_tab_para FOR VALUES FROM (0) TO (12);

@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE rngfunc2 (_gemini_pk serial PRIMARY KEY, rngfuncid integer, f2 integer);
+CREATE TABLE rngfunc2 (gemini_pk serial PRIMARY KEY, rngfuncid integer, f2 integer);
 ---END---
 ---START---
 INSERT INTO rngfunc2 VALUES(1, 11);
@@ -959,7 +959,7 @@ DROP FUNCTION rngfunc();
 
 DROP TABLE IF EXISTS tt;
 
-CREATE TABLE tt (_gemini_pk serial PRIMARY KEY, f1 serial, data text);
+CREATE TABLE tt (gemini_pk serial PRIMARY KEY, f1 serial, data text);
 ---END---
 ---START---
 create function insert_tt(text) returns int as
@@ -1031,7 +1031,7 @@ select * from tt;
 -- and rules work
 DROP TABLE IF EXISTS tt_log;
 
-CREATE TABLE tt_log (_gemini_pk serial PRIMARY KEY, f1 integer, data text);
+CREATE TABLE tt_log (gemini_pk serial PRIMARY KEY, f1 integer, data text);
 ---END---
 ---START---
 create rule insert_tt_rule as on insert to tt do also
@@ -1128,7 +1128,7 @@ explain (verbose, costs off)
 ---START---
 DROP TABLE IF EXISTS rngfunc;
 
-CREATE TABLE rngfunc (_gemini_pk serial PRIMARY KEY, f1 int8, f2 int8);
+CREATE TABLE rngfunc (gemini_pk serial PRIMARY KEY, f1 int8, f2 int8);
 ---END---
 ---START---
 create function testrngfunc() returns record as $$
@@ -1294,7 +1294,7 @@ drop type rngfunc_type cascade;
 
 DROP TABLE IF EXISTS users;
 
-CREATE TABLE users (_gemini_pk serial PRIMARY KEY, userid text, seq integer, email text, todrop bool, moredrop integer, enabled bool);
+CREATE TABLE users (gemini_pk serial PRIMARY KEY, userid text, seq integer, email text, todrop bool, moredrop integer, enabled bool);
 ---END---
 ---START---
 insert into users values ('id',1,'email',true,11,true);

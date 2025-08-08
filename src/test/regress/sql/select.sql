@@ -180,7 +180,7 @@ TABLE int8_tbl;
 -- corner case: VALUES with no columns
 DROP TABLE IF EXISTS nocols;
 
-CREATE TABLE nocols (_gemini_pk serial PRIMARY KEY);
+CREATE TABLE nocols (gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
 INSERT INTO nocols DEFAULT VALUES;
@@ -195,7 +195,7 @@ SELECT * FROM nocols n, LATERAL (VALUES(n.*)) v;
 
 DROP TABLE IF EXISTS foo;
 
-CREATE TABLE foo (_gemini_pk serial PRIMARY KEY, f1 integer);
+CREATE TABLE foo (gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
 INSERT INTO foo VALUES (42),(3),(10),(7),(null),(null),(1);
@@ -390,7 +390,7 @@ select * from (values (2),(null),(1)) v(k) where k = k order by k;
 select * from (values (2),(null),(1)) v(k) where k = k;
 ---END---
 ---START---
-CREATE TABLE list_parted_tbl (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY list (a);
+CREATE TABLE list_parted_tbl (gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY list (a);
 ---END---
 ---START---
 create table list_parted_tbl1 partition of list_parted_tbl

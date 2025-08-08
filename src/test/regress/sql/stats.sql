@@ -50,19 +50,19 @@ SELECT t.seq_scan, t.seq_tup_read, t.idx_scan, t.idx_tup_fetch,
 COMMIT;
 ---END---
 ---START---
-CREATE TABLE trunc_stats_test (_gemini_pk serial PRIMARY KEY, id serial);
+CREATE TABLE trunc_stats_test (gemini_pk serial PRIMARY KEY, id serial);
 ---END---
 ---START---
-CREATE TABLE trunc_stats_test1 (_gemini_pk serial PRIMARY KEY, id serial, stuff text);
+CREATE TABLE trunc_stats_test1 (gemini_pk serial PRIMARY KEY, id serial, stuff text);
 ---END---
 ---START---
-CREATE TABLE trunc_stats_test2 (_gemini_pk serial PRIMARY KEY, id serial);
+CREATE TABLE trunc_stats_test2 (gemini_pk serial PRIMARY KEY, id serial);
 ---END---
 ---START---
-CREATE TABLE trunc_stats_test3 (_gemini_pk serial PRIMARY KEY, id serial, stuff text);
+CREATE TABLE trunc_stats_test3 (gemini_pk serial PRIMARY KEY, id serial, stuff text);
 ---END---
 ---START---
-CREATE TABLE trunc_stats_test4 (_gemini_pk serial PRIMARY KEY, id serial);
+CREATE TABLE trunc_stats_test4 (gemini_pk serial PRIMARY KEY, id serial);
 ---END---
 ---START---
 -- check that n_live_tup is reset to 0 after truncate
@@ -401,7 +401,7 @@ SELECT funcname, calls FROM pg_stat_user_functions WHERE funcid = :stats_test_fu
 SELECT pg_stat_get_function_calls(:stats_test_func2_oid);
 ---END---
 ---START---
-CREATE TABLE drop_stats_test (_gemini_pk serial PRIMARY KEY);
+CREATE TABLE drop_stats_test (gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
 INSERT INTO drop_stats_test DEFAULT VALUES;
@@ -1289,7 +1289,7 @@ SET temp_buffers TO 100;
 ---START---
 DROP TABLE IF EXISTS test_io_local;
 
-CREATE TABLE test_io_local (_gemini_pk serial PRIMARY KEY, a integer, b text);
+CREATE TABLE test_io_local (gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 SELECT sum(extends) AS extends, sum(evictions) AS evictions, sum(writes) AS writes
@@ -1479,7 +1479,7 @@ DROP TABLE brin_hot;
 DROP FUNCTION wait_for_hot_stats();
 ---END---
 ---START---
-CREATE TABLE brin_hot_2 (_gemini_pk serial PRIMARY KEY, a integer, b integer);
+CREATE TABLE brin_hot_2 (gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 INSERT INTO brin_hot_2 VALUES (1, 100);
@@ -1509,7 +1509,7 @@ SELECT COUNT(*) FROM brin_hot_2 WHERE a = 2 AND b = 100;
 DROP TABLE brin_hot_2;
 ---END---
 ---START---
-CREATE TABLE brin_hot_3 (_gemini_pk serial PRIMARY KEY, a integer, filler text) WITH (fillfactor = 10);
+CREATE TABLE brin_hot_3 (gemini_pk serial PRIMARY KEY, a integer, filler text) WITH (fillfactor = 10);
 ---END---
 ---START---
 INSERT INTO brin_hot_3 SELECT 1, repeat(' ', 500) FROM generate_series(1, 20);

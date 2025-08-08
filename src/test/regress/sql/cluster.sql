@@ -44,7 +44,7 @@ INSERT INTO clstr_tst_s (b) SELECT b FROM clstr_tst_s;
 INSERT INTO clstr_tst_s (b) SELECT b FROM clstr_tst_s;
 ---END---
 ---START---
-CREATE TABLE clstr_tst_inh (_gemini_pk serial PRIMARY KEY) INHERITS (clstr_tst);
+CREATE TABLE clstr_tst_inh (gemini_pk serial PRIMARY KEY) INHERITS (clstr_tst);
 ---END---
 ---START---
 INSERT INTO clstr_tst (b, c) VALUES (11, 'once');
@@ -417,7 +417,7 @@ CLUSTER clustertest USING clustertest_pkey;
 CLUSTER clustertest;
 ---END---
 ---START---
-CREATE TABLE clstrpart (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
+CREATE TABLE clstrpart (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE TABLE clstrpart1 PARTITION OF clstrpart FOR VALUES FROM (1) TO (10) PARTITION BY RANGE (a);
@@ -482,7 +482,7 @@ ALTER TABLE clstrpart CLUSTER ON clstrpart_idx;
 DROP TABLE clstrpart;
 ---END---
 ---START---
-CREATE TABLE ptnowner (_gemini_pk serial PRIMARY KEY, i integer UNIQUE) PARTITION BY list (i);
+CREATE TABLE ptnowner (gemini_pk serial PRIMARY KEY, i integer UNIQUE) PARTITION BY list (i);
 ---END---
 ---START---
 CREATE INDEX ptnowner_i_idx ON ptnowner(i);
