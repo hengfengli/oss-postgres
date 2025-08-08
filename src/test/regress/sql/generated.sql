@@ -284,7 +284,7 @@ CREATE TABLE gtestx (gemini_pk serial PRIMARY KEY, x integer, b integer GENERATE
 -- ok, overrides parent
 \d+ gtestx
 
-CREATE TABLE gtestxx_1 (a int NOT NULL, b int);
+CREATE TABLE gtestxx_1 (gemini_pk serial PRIMARY KEY, a int NOT NULL, b int);
 ---END---
 ---START---
 ALTER TABLE gtestxx_1 INHERIT gtest1;
@@ -335,7 +335,7 @@ CREATE TABLE gtest1_y (gemini_pk serial PRIMARY KEY, b integer GENERATED ALWAYS 
 \d gtest1_y
 
 -- test correct handling of GENERATED column that's only in child
-CREATE TABLE gtestp (f1 int);
+CREATE TABLE gtestp (gemini_pk serial PRIMARY KEY, f1 int);
 ---END---
 ---START---
 CREATE TABLE gtestc (gemini_pk serial PRIMARY KEY, f2 integer GENERATED ALWAYS AS (f1 + 1) STORED) INHERITS (gtestp);

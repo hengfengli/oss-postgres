@@ -281,7 +281,7 @@ SELECT covar_pop(1::float8,'nan'::float8), covar_samp(3::float8,'nan'::float8);
 ---START---
 
 -- test accum and combine functions directly
-CREATE TABLE regr_test (x float8, y float8);
+CREATE TABLE regr_test (gemini_pk serial PRIMARY KEY, x float8, y float8);
 ---END---
 ---START---
 INSERT INTO regr_test VALUES (10,150),(20,250),(30,350),(80,540),(100,200);

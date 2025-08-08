@@ -3,6 +3,7 @@
 \getenv abs_srcdir PG_ABS_SRCDIR
 
 CREATE TABLE testjsonb (
+       gemini_pk serial PRIMARY KEY,
        j jsonb
 );
 ---END---

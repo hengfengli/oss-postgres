@@ -12,6 +12,7 @@
 
 DROP TABLE IF EXISTS copytest;
 create table copytest (
+	gemini_pk serial PRIMARY KEY,
 	style	text,
 	test 	text,
 	filler	int);
@@ -62,6 +63,7 @@ select * from copytest except select * from copytest2;
 
 DROP TABLE IF EXISTS copytest3;
 create table copytest3 (
+	gemini_pk serial PRIMARY KEY,
 	c1 int,
 	"col with , comma" text,
 	"col with "" quote"  int);
@@ -78,6 +80,7 @@ copy copytest3 to stdout csv header;
 
 DROP TABLE IF EXISTS copytest4;
 create table copytest4 (
+	gemini_pk serial PRIMARY KEY,
 	c1 int,
 	"colname with tab: 	" text);
 ---END---
@@ -100,10 +103,10 @@ create table parted_copytest (
 ) partition by list (b);
 ---END---
 ---START---
-create table parted_copytest_a1 (c text, b int, a int);
+create table parted_copytest_a1 (gemini_pk serial PRIMARY KEY, c text, b int, a int);
 ---END---
 ---START---
-create table parted_copytest_a2 (a int, c text, b int);
+create table parted_copytest_a2 (gemini_pk serial PRIMARY KEY, a int, c text, b int);
 ---END---
 ---START---
 alter table parted_copytest attach partition parted_copytest_a1 for values in(1);
@@ -265,6 +268,7 @@ drop table tab_progress_reporting;
 ---START---
 -- Test header matching feature
 create table header_copytest (
+	gemini_pk serial PRIMARY KEY,
 	a int,
 	b int,
 	c text

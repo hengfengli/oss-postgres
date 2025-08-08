@@ -29,7 +29,7 @@ SELECT pg_get_serial_sequence('itest1', 'a');
 ---START---
 \d itest1_a_seq
 
-CREATE TABLE itest4 (a int, b text);
+CREATE TABLE itest4 (gemini_pk serial PRIMARY KEY, a int, b text);
 ---END---
 ---START---
 ALTER TABLE itest4 ALTER COLUMN a ADD GENERATED ALWAYS AS IDENTITY;

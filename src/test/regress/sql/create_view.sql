@@ -589,7 +589,7 @@ select * from
 ---START---
 \d+ view_of_joins
 
-create table tbl1a (a int, c int);
+create table tbl1a (gemini_pk serial PRIMARY KEY, a int, c int);
 ---END---
 ---START---
 create view view_of_joins_2a as select * from tbl1 join tbl1a using (a);

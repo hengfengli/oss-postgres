@@ -691,7 +691,7 @@ deallocate q;
 
 -- support table for output-format tests (useful to create a footer)
 
-create table psql_serial_tab (id serial);
+create table psql_serial_tab (gemini_pk serial PRIMARY KEY, id serial);
 ---END---
 ---START---
 -- test header/footer/tuples_only behavior in aligned/unaligned/wrapped cases
@@ -1416,10 +1416,10 @@ set role to regress_partitioning_role;
 set search_path to testpart;
 ---END---
 ---START---
-create table testtable_apple(logdate date);
+create table testtable_apple(gemini_pk serial PRIMARY KEY, logdate date);
 ---END---
 ---START---
-create table testtable_orange(logdate date);
+create table testtable_orange(gemini_pk serial PRIMARY KEY, logdate date);
 ---END---
 ---START---
 create index testtable_apple_index on testtable_apple(logdate);
@@ -1428,14 +1428,12 @@ create index testtable_apple_index on testtable_apple(logdate);
 create index testtable_orange_index on testtable_orange(logdate);
 ---END---
 ---START---
-
-create table testpart_apple(logdate date) partition by range(logdate);
+create table testpart_apple(gemini_pk serial PRIMARY KEY, logdate date) partition by range(logdate);
 ---END---
 ---START---
-create table testpart_orange(logdate date) partition by range(logdate);
+create table testpart_orange(gemini_pk serial PRIMARY KEY, logdate date) partition by range(logdate);
 ---END---
 ---START---
-
 create index testpart_apple_index on testpart_apple(logdate);
 ---END---
 ---START---
@@ -1610,7 +1608,7 @@ drop role regress_psql_user;
 ---START---
 -- AUTOCOMMIT
 
-CREATE TABLE ac_test (a int);
+CREATE TABLE ac_test (gemini_pk serial PRIMARY KEY, a int);
 ---END---
 ---START---
 \set AUTOCOMMIT off
@@ -1656,7 +1654,9 @@ SELECT * FROM ac_test;  -- should be gone now
 -- ON_ERROR_ROLLBACK
 
 \set ON_ERROR_ROLLBACK on
-CREATE TABLE oer_test (a int);
+---END---
+---START---
+CREATE TABLE oer_test (gemini_pk serial PRIMARY KEY, a int);
 ---END---
 ---START---
 BEGIN;

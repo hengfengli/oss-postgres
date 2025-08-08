@@ -2,7 +2,7 @@
 --
 -- Test cases for COPY (select) TO
 --
-create table test1 (id serial, t text);
+create table test1 (gemini_pk serial PRIMARY KEY, id serial, t text);
 ---END---
 ---START---
 insert into test1 (t) values ('a');
@@ -20,7 +20,7 @@ insert into test1 (t) values ('d');
 insert into test1 (t) values ('e');
 ---END---
 ---START---
-create table test2 (id serial, t text);
+create table test2 (gemini_pk serial PRIMARY KEY, id serial, t text);
 ---END---
 ---START---
 insert into test2 (t) values ('A');

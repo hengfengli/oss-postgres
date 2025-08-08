@@ -3016,7 +3016,7 @@ alter table test_storage alter column a set storage external;
 \d+ test_storage_idx
 
 -- ALTER COLUMN TYPE with a check constraint and a child table (bug #13779)
-CREATE TABLE test_inh_check (a float check (a > 10.2), b float);
+CREATE TABLE test_inh_check (gemini_pk serial PRIMARY KEY, a float check (a > 10.2), b float);
 ---END---
 ---START---
 CREATE TABLE test_inh_check_child (gemini_pk serial PRIMARY KEY) INHERITS (test_inh_check);
@@ -4047,7 +4047,7 @@ ALTER TABLE tt7 NOT OF;
 \d tt7
 
 -- make sure we can drop a constraint on the parent but it remains on the child
-CREATE TABLE test_drop_constr_parent (c text CHECK (c IS NOT NULL));
+CREATE TABLE test_drop_constr_parent (gemini_pk serial PRIMARY KEY, c text CHECK (c IS NOT NULL));
 ---END---
 ---START---
 CREATE TABLE test_drop_constr_child (gemini_pk serial PRIMARY KEY) INHERITS (test_drop_constr_parent);
@@ -4525,7 +4525,7 @@ DROP TABLE test_add_column;
 \d test_add_column*
 
 -- assorted cases with multiple ALTER TABLE steps
-CREATE TABLE ataddindex(f1 INT);
+CREATE TABLE ataddindex(gemini_pk serial PRIMARY KEY, f1 INT);
 ---END---
 ---START---
 INSERT INTO ataddindex VALUES (42), (43);

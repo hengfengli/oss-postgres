@@ -16,7 +16,7 @@
 -- DEFAULT syntax
 --
 
-CREATE TABLE DEFAULT_TBL (i int DEFAULT 100,
+CREATE TABLE DEFAULT_TBL (gemini_pk serial PRIMARY KEY, i int DEFAULT 100,
 	x text DEFAULT 'vadim', f float8 DEFAULT 123.456);
 ---END---
 ---START---
