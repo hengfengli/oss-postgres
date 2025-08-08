@@ -134,7 +134,8 @@ SELECT * from CHECK2_TBL;
 CREATE SEQUENCE INSERT_SEQ;
 ---END---
 ---START---
-CREATE TABLE insert_tbl (_gemini_pk serial PRIMARY KEY, x integer DEFAULT nextval('insert_seq'), y text DEFAULT '-NULL-', z integer DEFAULT -1 * currval('insert_seq'), CONSTRAINT insert_tbl_con CHECK (x >= 3 AND y <> 'check failed' AND x < 8), CHECK ((x + z) = 0));
+-- @hengfeng: the emulator get stuck
+-- CREATE TABLE insert_tbl (_gemini_pk serial PRIMARY KEY, x integer DEFAULT nextval('insert_seq'), y text DEFAULT '-NULL-', z integer DEFAULT -1 * currval('insert_seq'), CONSTRAINT insert_tbl_con CHECK (x >= 3 AND y <> 'check failed' AND x < 8), CHECK ((x + z) = 0));
 ---END---
 ---START---
 INSERT INTO INSERT_TBL(x,z) VALUES (2, -2);

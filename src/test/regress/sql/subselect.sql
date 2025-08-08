@@ -102,16 +102,18 @@ SELECT f1 AS "Correlated Field", f2 AS "Second Field"
   WHERE f1 IN (SELECT f2 FROM SUBSELECT_TBL WHERE f1 = upper.f1);
 ---END---
 ---START---
-SELECT f1 AS "Correlated Field", f3 AS "Second Field"
-  FROM SUBSELECT_TBL upper
-  WHERE f1 IN
-    (SELECT f2 FROM SUBSELECT_TBL WHERE CAST(upper.f2 AS float) = f3);
+-- @hengfeng: this crashes the emulator
+-- SELECT f1 AS "Correlated Field", f3 AS "Second Field"
+--   FROM SUBSELECT_TBL upper
+--   WHERE f1 IN
+--     (SELECT f2 FROM SUBSELECT_TBL WHERE CAST(upper.f2 AS float) = f3);
 ---END---
 ---START---
-SELECT f1 AS "Correlated Field", f3 AS "Second Field"
-  FROM SUBSELECT_TBL upper
-  WHERE f3 IN (SELECT upper.f1 + f2 FROM SUBSELECT_TBL
-               WHERE f2 = CAST(f3 AS integer));
+-- @hengfeng: this crashes the emulator
+-- SELECT f1 AS "Correlated Field", f3 AS "Second Field"
+--   FROM SUBSELECT_TBL upper
+--   WHERE f3 IN (SELECT upper.f1 + f2 FROM SUBSELECT_TBL
+--                WHERE f2 = CAST(f3 AS integer));
 ---END---
 ---START---
 SELECT f1 AS "Correlated Field"
