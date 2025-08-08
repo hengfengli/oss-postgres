@@ -1,83 +1,74 @@
 ---START---
---
--- VARCHAR
---
-
---
--- Build a table for testing
--- (This temporarily hides the table created in test_setup.sql)
---
-
-CREATE TEMP TABLE VARCHAR_TBL(f1 varchar(1));
+CREATE TABLE varchar_tbl_temp (_gemini_pk serial PRIMARY KEY, f1 varchar(1));
 ---END---
 ---START---
-INSERT INTO VARCHAR_TBL (f1) VALUES ('a');
+INSERT INTO VARCHAR_TBL_TEMP (f1) VALUES ('a');
 ---END---
 ---START---
-INSERT INTO VARCHAR_TBL (f1) VALUES ('A');
+INSERT INTO VARCHAR_TBL_TEMP (f1) VALUES ('A');
 ---END---
 ---START---
 -- any of the following three input formats are acceptable
-INSERT INTO VARCHAR_TBL (f1) VALUES ('1');
+INSERT INTO VARCHAR_TBL_TEMP (f1) VALUES ('1');
 ---END---
 ---START---
-INSERT INTO VARCHAR_TBL (f1) VALUES (2);
+INSERT INTO VARCHAR_TBL_TEMP (f1) VALUES (2);
 ---END---
 ---START---
-INSERT INTO VARCHAR_TBL (f1) VALUES ('3');
+INSERT INTO VARCHAR_TBL_TEMP (f1) VALUES ('3');
 ---END---
 ---START---
 -- zero-length char
-INSERT INTO VARCHAR_TBL (f1) VALUES ('');
+INSERT INTO VARCHAR_TBL_TEMP (f1) VALUES ('');
 ---END---
 ---START---
 -- try varchar's of greater than 1 length
-INSERT INTO VARCHAR_TBL (f1) VALUES ('cd');
+INSERT INTO VARCHAR_TBL_TEMP (f1) VALUES ('cd');
 ---END---
 ---START---
-INSERT INTO VARCHAR_TBL (f1) VALUES ('c     ');
+INSERT INTO VARCHAR_TBL_TEMP (f1) VALUES ('c     ');
 ---END---
 ---START---
-SELECT * FROM VARCHAR_TBL;
+SELECT * FROM VARCHAR_TBL_TEMP;
 ---END---
 ---START---
 SELECT c.*
-   FROM VARCHAR_TBL c
+   FROM VARCHAR_TBL_TEMP c
    WHERE c.f1 <> 'a';
 ---END---
 ---START---
 SELECT c.*
-   FROM VARCHAR_TBL c
+   FROM VARCHAR_TBL_TEMP c
    WHERE c.f1 = 'a';
 ---END---
 ---START---
 SELECT c.*
-   FROM VARCHAR_TBL c
+   FROM VARCHAR_TBL_TEMP c
    WHERE c.f1 < 'a';
 ---END---
 ---START---
 SELECT c.*
-   FROM VARCHAR_TBL c
+   FROM VARCHAR_TBL_TEMP c
    WHERE c.f1 <= 'a';
 ---END---
 ---START---
 SELECT c.*
-   FROM VARCHAR_TBL c
+   FROM VARCHAR_TBL_TEMP c
    WHERE c.f1 > 'a';
 ---END---
 ---START---
 SELECT c.*
-   FROM VARCHAR_TBL c
+   FROM VARCHAR_TBL_TEMP c
    WHERE c.f1 >= 'a';
 ---END---
 ---START---
-DROP TABLE VARCHAR_TBL;
+DROP TABLE VARCHAR_TBL_TEMP;
 ---END---
 ---START---
 --
 -- Now test longer arrays of char
 --
--- This varchar_tbl was already created and filled in test_setup.sql.
+-- This varchar_tbl_TEMP was already created and filled in test_setup.sql.
 -- Here we just try to insert bad values.
 --
 

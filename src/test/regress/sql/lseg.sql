@@ -1,11 +1,5 @@
 ---START---
---
--- LSEG
--- Line segments
---
-
---DROP TABLE LSEG_TBL;
-CREATE TABLE LSEG_TBL (s lseg);
+CREATE TABLE lseg_tbl (_gemini_pk serial PRIMARY KEY, s lseg);
 ---END---
 ---START---
 INSERT INTO LSEG_TBL VALUES ('[(1,2),(3,4)]');

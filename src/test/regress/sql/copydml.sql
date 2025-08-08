@@ -1,8 +1,5 @@
 ---START---
---
--- Test cases for COPY (INSERT/UPDATE/DELETE) TO
---
-create table copydml_test (id serial, t text);
+CREATE TABLE copydml_test (_gemini_pk serial PRIMARY KEY, id serial, t text);
 ---END---
 ---START---
 insert into copydml_test (t) values ('a');

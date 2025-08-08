@@ -1,13 +1,5 @@
 ---START---
---
--- BIT types
---
-
---
--- Build tables for testing
---
-
-CREATE TABLE BIT_TABLE(b BIT(11));
+CREATE TABLE bit_table (_gemini_pk serial PRIMARY KEY, b pg_catalog.bit(11));
 ---END---
 ---START---
 INSERT INTO BIT_TABLE VALUES (B'10');
@@ -33,7 +25,7 @@ INSERT INTO BIT_TABLE VALUES (B'101011111010');
 SELECT * FROM BIT_TABLE;
 ---END---
 ---START---
-CREATE TABLE VARBIT_TABLE(v BIT VARYING(11));
+CREATE TABLE varbit_table (_gemini_pk serial PRIMARY KEY, v bit varying(11));
 ---END---
 ---START---
 INSERT INTO VARBIT_TABLE VALUES (B'');
@@ -110,7 +102,7 @@ SELECT SUBSTRING('01010101'::varbit FROM -10 FOR -2147483646) AS "error";
 DROP TABLE varbit_table;
 ---END---
 ---START---
-CREATE TABLE varbit_table (a BIT VARYING(16), b BIT VARYING(16));
+CREATE TABLE varbit_table (_gemini_pk serial PRIMARY KEY, a bit varying(16), b bit varying(16));
 ---END---
 ---START---
 COPY varbit_table FROM stdin;
@@ -145,7 +137,7 @@ DROP TABLE varbit_table;
 DROP TABLE bit_table;
 ---END---
 ---START---
-CREATE TABLE bit_table (a BIT(16), b BIT(16));
+CREATE TABLE bit_table (_gemini_pk serial PRIMARY KEY, a pg_catalog.bit(16), b pg_catalog.bit(16));
 ---END---
 ---START---
 COPY bit_table FROM stdin;
@@ -346,12 +338,7 @@ SELECT POSITION(B'00000000011101011111010110' IN B'000000000011101011111010110')
 SELECT POSITION(B'0000000000011101011111010110' IN B'000000000011101011111010110');
 ---END---
 ---START---
--- 0
-
-
--- Shifting
-
-CREATE TABLE BIT_SHIFT_TABLE(b BIT(16));
+CREATE TABLE bit_shift_table (_gemini_pk serial PRIMARY KEY, b pg_catalog.bit(16));
 ---END---
 ---START---
 INSERT INTO BIT_SHIFT_TABLE VALUES (B'1101100000000000');
@@ -391,7 +378,7 @@ SELECT b::bit(15), b::bit(15) >> 8 AS bsr8, b::bit(15) << 8 AS bsl8
        FROM BIT_SHIFT_TABLE;
 ---END---
 ---START---
-CREATE TABLE VARBIT_SHIFT_TABLE(v BIT VARYING(20));
+CREATE TABLE varbit_shift_table (_gemini_pk serial PRIMARY KEY, v bit varying(20));
 ---END---
 ---START---
 INSERT INTO VARBIT_SHIFT_TABLE VALUES (B'11011');
@@ -461,13 +448,7 @@ SELECT bit_count(B'0101011100'::bit(10));
 SELECT bit_count(B'1111111111'::bit(10));
 ---END---
 ---START---
--- This table is intentionally left around to exercise pg_dump/pg_upgrade
-CREATE TABLE bit_defaults(
-  b1 bit(4) DEFAULT '1001',
-  b2 bit(4) DEFAULT B'0101',
-  b3 bit varying(5) DEFAULT '1001',
-  b4 bit varying(5) DEFAULT B'0101'
-);
+CREATE TABLE bit_defaults (_gemini_pk serial PRIMARY KEY, b1 pg_catalog.bit(4) DEFAULT '1001', b2 pg_catalog.bit(4) DEFAULT b'0101', b3 bit varying(5) DEFAULT '1001', b4 bit varying(5) DEFAULT b'0101');
 ---END---
 ---START---
 \d bit_defaults

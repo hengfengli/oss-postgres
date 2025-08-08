@@ -44,13 +44,7 @@ SELECT ((SELECT ARRAY[1,2,3]))[2];
 SELECT (((SELECT ARRAY[1,2,3])))[3];
 ---END---
 ---START---
--- Set up some simple test tables
-
-CREATE TABLE SUBSELECT_TBL (
-  f1 integer,
-  f2 integer,
-  f3 float
-);
+CREATE TABLE subselect_tbl (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, f3 double precision);
 ---END---
 ---START---
 INSERT INTO SUBSELECT_TBL VALUES (1, 2, 3);
@@ -249,10 +243,14 @@ select count(distinct ss.ten) from
 -- Luca Pireddu and Michael Fuhr.
 --
 
-CREATE TEMP TABLE foo (id integer);
+DROP TABLE IF EXISTS foo;
+
+CREATE TABLE foo (_gemini_pk serial PRIMARY KEY, id integer);
 ---END---
 ---START---
-CREATE TEMP TABLE bar (id1 integer, id2 integer);
+DROP TABLE IF EXISTS bar;
+
+CREATE TABLE bar (_gemini_pk serial PRIMARY KEY, id1 integer, id2 integer);
 ---END---
 ---START---
 INSERT INTO foo VALUES (1);
@@ -295,16 +293,7 @@ SELECT * FROM foo WHERE id IN
                       SELECT id2 FROM bar) AS s);
 ---END---
 ---START---
---
--- Test case to catch problems with multiply nested sub-SELECTs not getting
--- recalculated properly.  Per bug report from Didier Moens.
---
-
-CREATE TABLE orderstest (
-    approver_ref integer,
-    po_ref integer,
-    ordercanceled boolean
-);
+CREATE TABLE orderstest (_gemini_pk serial PRIMARY KEY, approver_ref integer, po_ref integer, ordercanceled boolean);
 ---END---
 ---START---
 INSERT INTO orderstest VALUES (1, 1, false);
@@ -389,18 +378,14 @@ DROP TABLE orderstest cascade;
 -- hasSubLinks flag correctly.  Per example from Kyle Bateman.
 --
 
-create temp table parts (
-    partnum     text,
-    cost        float8
-);
+DROP TABLE IF EXISTS parts;
+
+CREATE TABLE parts (_gemini_pk serial PRIMARY KEY, partnum text, cost float8);
 ---END---
 ---START---
-create temp table shipped (
-    ttype       char(2),
-    ordnum      int4,
-    partnum     text,
-    value       float8
-);
+DROP TABLE IF EXISTS shipped;
+
+CREATE TABLE shipped (_gemini_pk serial PRIMARY KEY, ttype char(2), ordnum int4, partnum text, value float8);
 ---END---
 ---START---
 create temp view shipped_view as
@@ -466,13 +451,17 @@ select * from (
 -- pointless.)
 --
 
-create temp table numeric_table (num_col numeric);
+DROP TABLE IF EXISTS numeric_table;
+
+CREATE TABLE numeric_table (_gemini_pk serial PRIMARY KEY, num_col numeric);
 ---END---
 ---START---
 insert into numeric_table values (1), (1.000000000000000000001), (2), (3);
 ---END---
 ---START---
-create temp table float_table (float_col float8);
+DROP TABLE IF EXISTS float_table;
+
+CREATE TABLE float_table (_gemini_pk serial PRIMARY KEY, float_col float8);
 ---END---
 ---START---
 insert into float_table values (1), (2), (3);
@@ -490,7 +479,9 @@ select * from numeric_table
 -- Test case for bug #4290: bogus calculation of subplan param sets
 --
 
-create temp table ta (id int primary key, val int);
+DROP TABLE IF EXISTS ta;
+
+create table ta (id int primary key, val int);
 ---END---
 ---START---
 insert into ta values(1,1);
@@ -499,7 +490,9 @@ insert into ta values(1,1);
 insert into ta values(2,2);
 ---END---
 ---START---
-create temp table tb (id int primary key, aval int);
+DROP TABLE IF EXISTS tb;
+
+create table tb (id int primary key, aval int);
 ---END---
 ---START---
 insert into tb values(1,1);
@@ -514,7 +507,9 @@ insert into tb values(3,2);
 insert into tb values(4,2);
 ---END---
 ---START---
-create temp table tc (id int primary key, aid int);
+DROP TABLE IF EXISTS tc;
+
+create table tc (id int primary key, aid int);
 ---END---
 ---START---
 insert into tc values(1,1);
@@ -533,7 +528,9 @@ from tc;
 -- Test case for 8.3 "failed to locate grouping columns" bug
 --
 
-create temp table t1 (f1 numeric(14,0), f2 varchar(30));
+DROP TABLE IF EXISTS t1;
+
+CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, f1 numeric(14, 0), f2 varchar(30));
 ---END---
 ---START---
 select * from
@@ -546,7 +543,9 @@ group by f1,f2,fs;
 -- Test case for bug #5514 (mishandling of whole-row Vars in subselects)
 --
 
-create temp table table_a(id integer);
+DROP TABLE IF EXISTS table_a;
+
+CREATE TABLE table_a (_gemini_pk serial PRIMARY KEY, id integer);
 ---END---
 ---START---
 insert into table_a values (42);
@@ -618,7 +617,9 @@ from
 --
 -- Test case for subselect within UPDATE of INSERT...ON CONFLICT DO UPDATE
 --
-create temp table upsert(key int4 primary key, val text);
+DROP TABLE IF EXISTS upsert;
+
+create table upsert(key int4 primary key, val text);
 ---END---
 ---START---
 insert into upsert values(1, 'val') on conflict (key) do update set val = 'not seen';
@@ -640,7 +641,9 @@ returning *;
 -- Test case for cross-type partial matching in hashed subplan (bug #7597)
 --
 
-create temp table outer_7597 (f1 int4, f2 int4);
+DROP TABLE IF EXISTS outer_7597;
+
+CREATE TABLE outer_7597 (_gemini_pk serial PRIMARY KEY, f1 int4, f2 int4);
 ---END---
 ---START---
 insert into outer_7597 values (0, 0);
@@ -655,7 +658,9 @@ insert into outer_7597 values (0, null);
 insert into outer_7597 values (1, null);
 ---END---
 ---START---
-create temp table inner_7597(c1 int8, c2 int8);
+DROP TABLE IF EXISTS inner_7597;
+
+CREATE TABLE inner_7597 (_gemini_pk serial PRIMARY KEY, c1 int8, c2 int8);
 ---END---
 ---START---
 insert into inner_7597 values(0, null);
@@ -670,7 +675,9 @@ select * from outer_7597 where (f1, f2) not in (select * from inner_7597);
 -- (otherwise it would error in texteq())
 --
 
-create temp table outer_text (f1 text, f2 text);
+DROP TABLE IF EXISTS outer_text;
+
+CREATE TABLE outer_text (_gemini_pk serial PRIMARY KEY, f1 text, f2 text);
 ---END---
 ---START---
 insert into outer_text values ('a', 'a');
@@ -685,7 +692,9 @@ insert into outer_text values ('a', null);
 insert into outer_text values ('b', null);
 ---END---
 ---START---
-create temp table inner_text (c1 text, c2 text);
+DROP TABLE IF EXISTS inner_text;
+
+CREATE TABLE inner_text (_gemini_pk serial PRIMARY KEY, c1 text, c2 text);
 ---END---
 ---START---
 insert into inner_text values ('a', null);
@@ -810,13 +819,19 @@ where (exists(select 1 from tenk1 k where k.unique1 = t.unique2) or ten < 0)
 ---END---
 ---START---
 -- It's possible for the same EXISTS to get resolved both ways
-create temp table exists_tbl (c1 int, c2 int, c3 int) partition by list (c1);
+DROP TABLE IF EXISTS exists_tbl;
+
+CREATE TABLE exists_tbl (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer) PARTITION BY list (c1);
 ---END---
 ---START---
-create temp table exists_tbl_null partition of exists_tbl for values in (null);
+DROP TABLE IF EXISTS exists_tbl_null;
+
+create table exists_tbl_null partition of exists_tbl for values in (null);
 ---END---
 ---START---
-create temp table exists_tbl_def partition of exists_tbl default;
+DROP TABLE IF EXISTS exists_tbl_def;
+
+create table exists_tbl_def partition of exists_tbl default;
 ---END---
 ---START---
 insert into exists_tbl select x, x/2, x+1 from generate_series(0,10) x;
@@ -941,10 +956,14 @@ where o.ten = 1;
 --
 -- Check we don't misoptimize a NOT IN where the subquery returns no rows.
 --
-create temp table notinouter (a int);
+DROP TABLE IF EXISTS notinouter;
+
+CREATE TABLE notinouter (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
-create temp table notininner (b int not null);
+DROP TABLE IF EXISTS notininner;
+
+CREATE TABLE notininner (_gemini_pk serial PRIMARY KEY, b integer NOT NULL);
 ---END---
 ---START---
 insert into notinouter values (null), (1);
@@ -956,7 +975,9 @@ select * from notinouter where a not in (select b from notininner);
 --
 -- Check we behave sanely in corner case of empty SELECT list (bug #8648)
 --
-create temp table nocolumns();
+DROP TABLE IF EXISTS nocolumns;
+
+CREATE TABLE nocolumns (_gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
 select exists(select * from nocolumns);

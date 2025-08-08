@@ -131,13 +131,7 @@ select explain_filter('explain (generic_plan) select unique1 from tenk1 where th
 select explain_filter('explain (analyze, generic_plan) select unique1 from tenk1 where thousand = $1');
 ---END---
 ---START---
--- Test EXPLAIN (GENERIC_PLAN) with partition pruning
--- partitions should be pruned at plan time, based on constants,
--- but there should be no pruning based on parameter placeholders
-create table gen_part (
-  key1 integer not null,
-  key2 integer not null
-) partition by list (key1);
+CREATE TABLE gen_part (_gemini_pk serial PRIMARY KEY, key1 integer NOT NULL, key2 integer NOT NULL) PARTITION BY list (key1);
 ---END---
 ---START---
 create table gen_part_1
@@ -205,7 +199,9 @@ rollback;
 ---END---
 ---START---
 -- Test display of temporary objects
-create temp table t1(f1 float8);
+DROP TABLE IF EXISTS t1;
+
+CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, f1 float8);
 ---END---
 ---START---
 create function pg_temp.mysin(float8) returns float8 language plpgsql

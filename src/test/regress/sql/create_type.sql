@@ -133,7 +133,7 @@ CREATE TYPE text_w_default (
 );
 ---END---
 ---START---
-CREATE TABLE default_test (f1 text_w_default, f2 int42);
+CREATE TABLE default_test (_gemini_pk serial PRIMARY KEY, f1 text_w_default, f2 int42);
 ---END---
 ---START---
 INSERT INTO default_test DEFAULT VALUES;
@@ -251,11 +251,15 @@ DROP TYPE base_type CASCADE;
 -- Check usage of typmod with a user-defined type
 -- (we have borrowed numeric's typmod functions)
 
-CREATE TEMP TABLE mytab (foo widget(42,13,7));
+DROP TABLE IF EXISTS mytab;
+
+CREATE TABLE mytab (_gemini_pk serial PRIMARY KEY, foo widget(42, 13, 7));
 ---END---
 ---START---
 -- should fail
-CREATE TEMP TABLE mytab (foo widget(42,13));
+DROP TABLE IF EXISTS mytab;
+
+CREATE TABLE mytab (_gemini_pk serial PRIMARY KEY, foo widget(42, 13));
 ---END---
 ---START---
 SELECT format_type(atttypid,atttypmod) FROM pg_attribute
@@ -324,12 +328,7 @@ SELECT point '(1,2)' <% widget '(0,0,3)' AS t,
        point '(1,2)' <% widget '(0,0,1)' AS f;
 ---END---
 ---START---
--- exercise city_budget type
-CREATE TABLE city (
-	name		name,
-	location 	box,
-	budget 		city_budget
-);
+CREATE TABLE city (_gemini_pk serial PRIMARY KEY, name name, location box, budget city_budget);
 ---END---
 ---START---
 INSERT INTO city VALUES

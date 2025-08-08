@@ -1,18 +1,13 @@
 ---START---
---
--- TEMP
--- Test temp relations and indexes
---
-
--- test temp table/index masking
-
-CREATE TABLE temptest(col int);
+CREATE TABLE temptest (_gemini_pk serial PRIMARY KEY, col integer);
 ---END---
 ---START---
 CREATE INDEX i_temptest ON temptest(col);
 ---END---
 ---START---
-CREATE TEMP TABLE temptest(tcol int);
+DROP TABLE IF EXISTS temptest;
+
+CREATE TABLE temptest (_gemini_pk serial PRIMARY KEY, tcol integer);
 ---END---
 ---START---
 CREATE INDEX i_temptest ON temptest(tcol);
@@ -36,15 +31,15 @@ DROP INDEX i_temptest;
 DROP TABLE temptest;
 ---END---
 ---START---
--- test temp table selects
-
-CREATE TABLE temptest(col int);
+CREATE TABLE temptest (_gemini_pk serial PRIMARY KEY, col integer);
 ---END---
 ---START---
 INSERT INTO temptest VALUES (1);
 ---END---
 ---START---
-CREATE TEMP TABLE temptest(tcol float);
+DROP TABLE IF EXISTS temptest;
+
+CREATE TABLE temptest (_gemini_pk serial PRIMARY KEY, tcol double precision);
 ---END---
 ---START---
 INSERT INTO temptest VALUES (2.1);
@@ -64,7 +59,9 @@ DROP TABLE temptest;
 ---START---
 -- test temp table deletion
 
-CREATE TEMP TABLE temptest(col int);
+DROP TABLE IF EXISTS temptest;
+
+CREATE TABLE temptest (_gemini_pk serial PRIMARY KEY, col integer);
 ---END---
 ---START---
 \c
@@ -74,7 +71,9 @@ SELECT * FROM temptest;
 ---START---
 -- Test ON COMMIT DELETE ROWS
 
-CREATE TEMP TABLE temptest(col int) ON COMMIT DELETE ROWS;
+DROP TABLE IF EXISTS temptest;
+
+CREATE TABLE temptest (_gemini_pk serial PRIMARY KEY, col integer) ON COMMIT DELETE ROWS;
 ---END---
 ---START---
 -- while we're here, verify successful truncation of index with SQL function
@@ -105,7 +104,9 @@ DROP TABLE temptest;
 BEGIN;
 ---END---
 ---START---
-CREATE TEMP TABLE temptest(col) ON COMMIT DELETE ROWS AS SELECT 1;
+DROP TABLE IF EXISTS temptest;
+
+CREATE TABLE temptest(col) ON COMMIT DELETE ROWS AS SELECT 1;
 ---END---
 ---START---
 SELECT * FROM temptest;
@@ -125,7 +126,9 @@ DROP TABLE temptest;
 BEGIN;
 ---END---
 ---START---
-CREATE TEMP TABLE temptest(col int) ON COMMIT DROP;
+DROP TABLE IF EXISTS temptest;
+
+CREATE TABLE temptest (_gemini_pk serial PRIMARY KEY, col integer) ON COMMIT DROP;
 ---END---
 ---START---
 INSERT INTO temptest VALUES (1);
@@ -146,7 +149,9 @@ SELECT * FROM temptest;
 BEGIN;
 ---END---
 ---START---
-CREATE TEMP TABLE temptest(col) ON COMMIT DROP AS SELECT 1;
+DROP TABLE IF EXISTS temptest;
+
+CREATE TABLE temptest(col) ON COMMIT DROP AS SELECT 1;
 ---END---
 ---START---
 SELECT * FROM temptest;
@@ -158,9 +163,7 @@ COMMIT;
 SELECT * FROM temptest;
 ---END---
 ---START---
--- ON COMMIT is only allowed for TEMP
-
-CREATE TABLE temptest(col int) ON COMMIT DELETE ROWS;
+CREATE TABLE temptest (_gemini_pk serial PRIMARY KEY, col integer) ON COMMIT DELETE ROWS;
 ---END---
 ---START---
 CREATE TABLE temptest(col) ON COMMIT DELETE ROWS AS SELECT 1;
@@ -170,11 +173,14 @@ CREATE TABLE temptest(col) ON COMMIT DELETE ROWS AS SELECT 1;
 BEGIN;
 ---END---
 ---START---
-CREATE TEMP TABLE temptest1(col int PRIMARY KEY);
+DROP TABLE IF EXISTS temptest1;
+
+CREATE TABLE temptest1(col int PRIMARY KEY);
 ---END---
 ---START---
-CREATE TEMP TABLE temptest2(col int REFERENCES temptest1)
-  ON COMMIT DELETE ROWS;
+DROP TABLE IF EXISTS temptest2;
+
+CREATE TABLE temptest2 (_gemini_pk serial PRIMARY KEY, col integer REFERENCES temptest1) ON COMMIT DELETE ROWS;
 ---END---
 ---START---
 INSERT INTO temptest1 VALUES (1);
@@ -195,24 +201,28 @@ SELECT * FROM temptest2;
 BEGIN;
 ---END---
 ---START---
-CREATE TEMP TABLE temptest3(col int PRIMARY KEY) ON COMMIT DELETE ROWS;
+DROP TABLE IF EXISTS temptest3;
+
+CREATE TABLE temptest3(col int PRIMARY KEY) ON COMMIT DELETE ROWS;
 ---END---
 ---START---
-CREATE TEMP TABLE temptest4(col int REFERENCES temptest3);
+DROP TABLE IF EXISTS temptest4;
+
+CREATE TABLE temptest4 (_gemini_pk serial PRIMARY KEY, col integer REFERENCES temptest3);
 ---END---
 ---START---
 COMMIT;
 ---END---
 ---START---
--- Test manipulation of temp schema's placement in search path
-
-create table public.whereami (f1 text);
+CREATE TABLE public.whereami (_gemini_pk serial PRIMARY KEY, f1 text);
 ---END---
 ---START---
 insert into public.whereami values ('public');
 ---END---
 ---START---
-create temp table whereami (f1 text);
+DROP TABLE IF EXISTS whereami;
+
+CREATE TABLE whereami (_gemini_pk serial PRIMARY KEY, f1 text);
 ---END---
 ---START---
 insert into whereami values ('temp');
@@ -286,11 +296,14 @@ reset search_path;
 begin;
 ---END---
 ---START---
-create temp table temp_parted_oncommit (a int)
-  partition by list (a) on commit delete rows;
+DROP TABLE IF EXISTS temp_parted_oncommit;
+
+CREATE TABLE temp_parted_oncommit (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a) ON COMMIT DELETE ROWS;
 ---END---
 ---START---
-create temp table temp_parted_oncommit_1
+DROP TABLE IF EXISTS temp_parted_oncommit_1;
+
+create table temp_parted_oncommit_1
   partition of temp_parted_oncommit
   for values in (1) on commit delete rows;
 ---END---
@@ -314,16 +327,21 @@ drop table temp_parted_oncommit;
 begin;
 ---END---
 ---START---
-create temp table temp_parted_oncommit_test (a int)
-  partition by list (a) on commit drop;
+DROP TABLE IF EXISTS temp_parted_oncommit_test;
+
+CREATE TABLE temp_parted_oncommit_test (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a) ON COMMIT DROP;
 ---END---
 ---START---
-create temp table temp_parted_oncommit_test1
+DROP TABLE IF EXISTS temp_parted_oncommit_test1;
+
+create table temp_parted_oncommit_test1
   partition of temp_parted_oncommit_test
   for values in (1) on commit delete rows;
 ---END---
 ---START---
-create temp table temp_parted_oncommit_test2
+DROP TABLE IF EXISTS temp_parted_oncommit_test2;
+
+create table temp_parted_oncommit_test2
   partition of temp_parted_oncommit_test
   for values in (2) on commit drop;
 ---END---
@@ -343,16 +361,21 @@ select relname from pg_class where relname ~ '^temp_parted_oncommit_test';
 begin;
 ---END---
 ---START---
-create temp table temp_parted_oncommit_test (a int)
-  partition by list (a) on commit delete rows;
+DROP TABLE IF EXISTS temp_parted_oncommit_test;
+
+CREATE TABLE temp_parted_oncommit_test (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a) ON COMMIT DELETE ROWS;
 ---END---
 ---START---
-create temp table temp_parted_oncommit_test1
+DROP TABLE IF EXISTS temp_parted_oncommit_test1;
+
+create table temp_parted_oncommit_test1
   partition of temp_parted_oncommit_test
   for values in (1) on commit preserve rows;
 ---END---
 ---START---
-create temp table temp_parted_oncommit_test2
+DROP TABLE IF EXISTS temp_parted_oncommit_test2;
+
+create table temp_parted_oncommit_test2
   partition of temp_parted_oncommit_test
   for values in (2) on commit drop;
 ---END---
@@ -381,11 +404,14 @@ drop table temp_parted_oncommit_test;
 begin;
 ---END---
 ---START---
-create temp table temp_inh_oncommit_test (a int) on commit drop;
+DROP TABLE IF EXISTS temp_inh_oncommit_test;
+
+CREATE TABLE temp_inh_oncommit_test (_gemini_pk serial PRIMARY KEY, a integer) ON COMMIT DROP;
 ---END---
 ---START---
-create temp table temp_inh_oncommit_test1 ()
-  inherits(temp_inh_oncommit_test) on commit delete rows;
+DROP TABLE IF EXISTS temp_inh_oncommit_test1;
+
+CREATE TABLE temp_inh_oncommit_test1 (_gemini_pk serial PRIMARY KEY) INHERITS (temp_inh_oncommit_test) ON COMMIT DELETE ROWS;
 ---END---
 ---START---
 insert into temp_inh_oncommit_test1 values (1);
@@ -402,11 +428,14 @@ select relname from pg_class where relname ~ '^temp_inh_oncommit_test';
 begin;
 ---END---
 ---START---
-create temp table temp_inh_oncommit_test (a int) on commit delete rows;
+DROP TABLE IF EXISTS temp_inh_oncommit_test;
+
+CREATE TABLE temp_inh_oncommit_test (_gemini_pk serial PRIMARY KEY, a integer) ON COMMIT DELETE ROWS;
 ---END---
 ---START---
-create temp table temp_inh_oncommit_test1 ()
-  inherits(temp_inh_oncommit_test) on commit drop;
+DROP TABLE IF EXISTS temp_inh_oncommit_test1;
+
+CREATE TABLE temp_inh_oncommit_test1 (_gemini_pk serial PRIMARY KEY) INHERITS (temp_inh_oncommit_test) ON COMMIT DROP;
 ---END---
 ---START---
 insert into temp_inh_oncommit_test1 values (1);
@@ -497,7 +526,9 @@ prepare transaction 'twophase_sequence';
 ---END---
 ---START---
 -- Temporary tables cannot be used with two-phase commit.
-create temp table twophase_tab (a int);
+DROP TABLE IF EXISTS twophase_tab;
+
+CREATE TABLE twophase_tab (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 begin;

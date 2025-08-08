@@ -1,7 +1,5 @@
 ---START---
--- tests for tidscans
-
-CREATE TABLE tidscan(id integer);
+CREATE TABLE tidscan (_gemini_pk serial PRIMARY KEY, id integer);
 ---END---
 ---START---
 -- only insert a few rows, we don't want to spill onto a second table page

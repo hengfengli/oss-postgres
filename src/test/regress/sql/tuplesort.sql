@@ -10,12 +10,9 @@ SET max_parallel_workers = 0;
 -- key aborts. One easy way to achieve that is to use uuids that all
 -- have the same prefix, as abbreviated keys for uuids just use the
 -- first sizeof(Datum) bytes.
-CREATE TEMP TABLE abbrev_abort_uuids (
-    id serial not null,
-    abort_increasing uuid,
-    abort_decreasing uuid,
-    noabort_increasing uuid,
-    noabort_decreasing uuid);
+DROP TABLE IF EXISTS abbrev_abort_uuids;
+
+CREATE TABLE abbrev_abort_uuids (_gemini_pk serial PRIMARY KEY, id serial NOT NULL, abort_increasing uuid, abort_decreasing uuid, noabort_increasing uuid, noabort_decreasing uuid);
 ---END---
 ---START---
 INSERT INTO abbrev_abort_uuids (abort_increasing, abort_decreasing, noabort_increasing, noabort_decreasing)
@@ -411,7 +408,9 @@ ROLLBACK;
 -- test tuplesort mark/restore
 ---
 
-CREATE TEMP TABLE test_mark_restore(col1 int, col2 int, col12 int);
+DROP TABLE IF EXISTS test_mark_restore;
+
+CREATE TABLE test_mark_restore (_gemini_pk serial PRIMARY KEY, col1 integer, col2 integer, col12 integer);
 ---END---
 ---START---
 -- need a few duplicates for mark/restore to matter

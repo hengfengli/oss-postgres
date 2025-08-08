@@ -1,9 +1,5 @@
 ---START---
---
--- DATE
---
-
-CREATE TABLE DATE_TBL (f1 date);
+CREATE TABLE date_tbl (_gemini_pk serial PRIMARY KEY, f1 date);
 ---END---
 ---START---
 INSERT INTO DATE_TBL VALUES ('1957-04-09');

@@ -1,18 +1,8 @@
 ---START---
--- regression test for the uuid datatype
--- creating test tables
-CREATE TABLE guid1
-(
-	guid_field UUID,
-	text_field TEXT DEFAULT(now())
-);
+CREATE TABLE guid1 (_gemini_pk serial PRIMARY KEY, guid_field uuid, text_field text DEFAULT now());
 ---END---
 ---START---
-CREATE TABLE guid2
-(
-	guid_field UUID,
-	text_field TEXT DEFAULT(now())
-);
+CREATE TABLE guid2 (_gemini_pk serial PRIMARY KEY, guid_field uuid, text_field text DEFAULT now());
 ---END---
 ---START---
 -- inserting invalid data tests

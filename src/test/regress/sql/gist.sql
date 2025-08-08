@@ -1,11 +1,5 @@
 ---START---
---
--- Test GiST indexes.
---
--- There are other tests to test different GiST opclasses. This is for
--- testing GiST code itself. Vacuuming in particular.
-
-create table gist_point_tbl(id int4, p point);
+CREATE TABLE gist_point_tbl (_gemini_pk serial PRIMARY KEY, id int4, p point);
 ---END---
 ---START---
 create index gist_pointidx on gist_point_tbl using gist(p);
@@ -61,11 +55,7 @@ alter index gist_pointidx SET (fillfactor = 40);
 reindex index gist_pointidx;
 ---END---
 ---START---
---
--- Test Index-only plans on GiST indexes
---
-
-create table gist_tbl (b box, p point, c circle);
+CREATE TABLE gist_tbl (_gemini_pk serial PRIMARY KEY, b box, p point, c circle);
 ---END---
 ---START---
 insert into gist_tbl
@@ -255,8 +245,7 @@ reset enable_indexonlyscan;
 drop table gist_tbl;
 ---END---
 ---START---
--- test an unlogged table, mostly to get coverage of gistbuildempty
-create unlogged table gist_tbl (b box);
+CREATE UNLOGGED TABLE gist_tbl (_gemini_pk serial PRIMARY KEY, b box);
 ---END---
 ---START---
 create index gist_tbl_box_index on gist_tbl using gist (b);

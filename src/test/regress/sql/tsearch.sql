@@ -51,11 +51,7 @@ WHERE
     tt.cfgid IS NULL OR tt.tokid IS NULL;
 ---END---
 ---START---
--- Load some test data
-CREATE TABLE test_tsvector(
-	t text,
-	a tsvector
-);
+CREATE TABLE test_tsvector (_gemini_pk serial PRIMARY KEY, t text, a tsvector);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/tsearch.data';
@@ -915,7 +911,9 @@ select * from test_tsquery, to_tsquery('english', 'new') q where txtsample @@ q;
 ---END---
 ---START---
 -- test finding items in GIN's pending list
-create temp table pendtest (ts tsvector);
+DROP TABLE IF EXISTS pendtest;
+
+CREATE TABLE pendtest (_gemini_pk serial PRIMARY KEY, ts tsvector);
 ---END---
 ---START---
 create index pendtest_idx on pendtest using gin(ts);
@@ -943,7 +941,9 @@ select * from pendtest where 'ipi:*'::tsquery @@ ts;
 ---END---
 ---START---
 --check OP_PHRASE on index
-create temp table phrase_index_test(fts tsvector);
+DROP TABLE IF EXISTS phrase_index_test;
+
+CREATE TABLE phrase_index_test (_gemini_pk serial PRIMARY KEY, fts tsvector);
 ---END---
 ---START---
 insert into phrase_index_test values ('A fat cat has just eaten a rat.');

@@ -1007,10 +1007,7 @@ SELECT text 'text' || char(20) ' and characters' AS "Concat text to char";
 SELECT text 'text' || varchar ' and varchar' AS "Concat text to varchar";
 ---END---
 ---START---
---
--- test substr with toasted text values
---
-CREATE TABLE toasttest(f1 text);
+CREATE TABLE toasttest (_gemini_pk serial PRIMARY KEY, f1 text);
 ---END---
 ---START---
 insert into toasttest values(repeat('1234567890',10000));
@@ -1097,10 +1094,7 @@ SELECT pg_relation_size(reltoastrelid) = 0 AS is_empty
 DROP TABLE toasttest;
 ---END---
 ---START---
---
--- test substr with toasted bytea values
---
-CREATE TABLE toasttest(f1 bytea);
+CREATE TABLE toasttest (_gemini_pk serial PRIMARY KEY, f1 bytea);
 ---END---
 ---START---
 insert into toasttest values(decode(repeat('1234567890',10000),'escape'));
@@ -1144,14 +1138,7 @@ SELECT substr(f1, 99995, 10) from toasttest;
 DROP TABLE toasttest;
 ---END---
 ---START---
--- test internally compressing datums
-
--- this tests compressing a datum to a very small size which exercises a
--- corner case in packed-varlena handling: even though small, the compressed
--- datum must be given a 4-byte header because there are no bits to indicate
--- compression in a 1-byte header
-
-CREATE TABLE toasttest (c char(4096));
+CREATE TABLE toasttest (_gemini_pk serial PRIMARY KEY, c char(4096));
 ---END---
 ---START---
 INSERT INTO toasttest VALUES('x');

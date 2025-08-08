@@ -1,14 +1,5 @@
 ---START---
---
--- Hash partitioning.
---
-
--- Use hand-rolled hash functions and operator classes to get predictable
--- result on different machines.  See the definitions of
--- part_part_test_int4_ops and part_test_text_ops in insert.sql.
-
-CREATE TABLE mchash (a int, b text, c jsonb)
-  PARTITION BY HASH (a part_test_int4_ops, b part_test_text_ops);
+CREATE TABLE mchash (_gemini_pk serial PRIMARY KEY, a integer, b text, c jsonb) PARTITION BY hash (a part_test_int4_ops, b part_test_text_ops);
 ---END---
 ---START---
 CREATE TABLE mchash1
@@ -73,9 +64,7 @@ SELECT satisfies_hash_partition('mchash'::regclass, 2, 1,
 								variadic array[1,2]::int[]);
 ---END---
 ---START---
--- multiple partitioning columns of the same type
-CREATE TABLE mcinthash (a int, b int, c jsonb)
-  PARTITION BY HASH (a part_test_int4_ops, b part_test_int4_ops);
+CREATE TABLE mcinthash (_gemini_pk serial PRIMARY KEY, a integer, b integer, c jsonb) PARTITION BY hash (a part_test_int4_ops, b part_test_int4_ops);
 ---END---
 ---START---
 -- now variadic should work, should be false
@@ -98,8 +87,7 @@ SELECT satisfies_hash_partition('mcinthash'::regclass, 4, 0,
 								variadic array[now(), now()]);
 ---END---
 ---START---
--- check satisfies_hash_partition passes correct collation
-create table text_hashp (a text) partition by hash (a);
+CREATE TABLE text_hashp (_gemini_pk serial PRIMARY KEY, a text) PARTITION BY hash (a);
 ---END---
 ---START---
 create table text_hashp0 partition of text_hashp for values with (modulus 2, remainder 0);

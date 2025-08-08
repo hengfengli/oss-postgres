@@ -1,12 +1,5 @@
 ---START---
---
--- Test GIN indexes.
---
--- There are other tests to test different GIN opclasses. This is for testing
--- GIN itself.
-
--- Create and populate a test table with a GIN index.
-create table gin_test_tbl(i int4[]) with (autovacuum_enabled = off);
+CREATE TABLE gin_test_tbl (_gemini_pk serial PRIMARY KEY, i int4[]) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 create index gin_test_idx on gin_test_tbl using gin (i)
@@ -86,7 +79,9 @@ reset gin_fuzzy_search_limit;
 ---END---
 ---START---
 -- Test optimization of empty queries
-create temp table t_gin_test_tbl(i int4[], j int4[]);
+DROP TABLE IF EXISTS t_gin_test_tbl;
+
+CREATE TABLE t_gin_test_tbl (_gemini_pk serial PRIMARY KEY, i int4[], j int4[]);
 ---END---
 ---START---
 create index on t_gin_test_tbl using gin (i, j);
@@ -257,8 +252,7 @@ reset enable_bitmapscan;
 drop table t_gin_test_tbl;
 ---END---
 ---START---
--- test an unlogged table, mostly to get coverage of ginbuildempty
-create unlogged table t_gin_test_tbl(i int4[], j int4[]);
+CREATE UNLOGGED TABLE t_gin_test_tbl (_gemini_pk serial PRIMARY KEY, i int4[], j int4[]);
 ---END---
 ---START---
 create index on t_gin_test_tbl using gin (i, j);

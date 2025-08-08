@@ -1,9 +1,5 @@
 ---START---
---
--- TIMETZ
---
-
-CREATE TABLE TIMETZ_TBL (f1 time(2) with time zone);
+CREATE TABLE timetz_tbl (_gemini_pk serial PRIMARY KEY, f1 time(2) with time zone);
 ---END---
 ---START---
 INSERT INTO TIMETZ_TBL VALUES ('00:01 PDT');

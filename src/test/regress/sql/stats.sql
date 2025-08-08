@@ -50,20 +50,19 @@ SELECT t.seq_scan, t.seq_tup_read, t.idx_scan, t.idx_tup_fetch,
 COMMIT;
 ---END---
 ---START---
--- test effects of TRUNCATE on n_live_tup/n_dead_tup counters
-CREATE TABLE trunc_stats_test(id serial);
+CREATE TABLE trunc_stats_test (_gemini_pk serial PRIMARY KEY, id serial);
 ---END---
 ---START---
-CREATE TABLE trunc_stats_test1(id serial, stuff text);
+CREATE TABLE trunc_stats_test1 (_gemini_pk serial PRIMARY KEY, id serial, stuff text);
 ---END---
 ---START---
-CREATE TABLE trunc_stats_test2(id serial);
+CREATE TABLE trunc_stats_test2 (_gemini_pk serial PRIMARY KEY, id serial);
 ---END---
 ---START---
-CREATE TABLE trunc_stats_test3(id serial, stuff text);
+CREATE TABLE trunc_stats_test3 (_gemini_pk serial PRIMARY KEY, id serial, stuff text);
 ---END---
 ---START---
-CREATE TABLE trunc_stats_test4(id serial);
+CREATE TABLE trunc_stats_test4 (_gemini_pk serial PRIMARY KEY, id serial);
 ---END---
 ---START---
 -- check that n_live_tup is reset to 0 after truncate
@@ -402,9 +401,7 @@ SELECT funcname, calls FROM pg_stat_user_functions WHERE funcid = :stats_test_fu
 SELECT pg_stat_get_function_calls(:stats_test_func2_oid);
 ---END---
 ---START---
--- Check that stats for relations are dropped. For that we need to access stats
--- by oid after the DROP TABLE. Save oids.
-CREATE TABLE drop_stats_test();
+CREATE TABLE drop_stats_test (_gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
 INSERT INTO drop_stats_test DEFAULT VALUES;
@@ -623,7 +620,9 @@ DROP TABLE prevstats;
 BEGIN;
 ---END---
 ---START---
-CREATE TEMPORARY TABLE test_last_scan(idx_col int primary key, noidx_col int);
+DROP TABLE IF EXISTS test_last_scan;
+
+CREATE TABLE test_last_scan(idx_col int primary key, noidx_col int);
 ---END---
 ---START---
 INSERT INTO test_last_scan(idx_col, noidx_col) VALUES(1, 1);
@@ -854,7 +853,8 @@ SELECT checkpoints_req AS rqst_ckpts_before FROM pg_stat_bgwriter \gset
 -- Test pg_stat_wal (and make a temp table so our temp schema exists)
 SELECT wal_bytes AS wal_bytes_before FROM pg_stat_wal \gset
 
-CREATE TEMP TABLE test_stats_temp AS SELECT 17;
+DROP TABLE IF EXISTS test_stats_temp;
+CREATE TABLE test_stats_temp AS SELECT 17;
 ---END---
 ---START---
 DROP TABLE test_stats_temp;
@@ -1287,7 +1287,9 @@ DROP TABLE test_io_shared;
 SET temp_buffers TO 100;
 ---END---
 ---START---
-CREATE TEMPORARY TABLE test_io_local(a int, b TEXT);
+DROP TABLE IF EXISTS test_io_local;
+
+CREATE TABLE test_io_local (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 SELECT sum(extends) AS extends, sum(evictions) AS evictions, sum(writes) AS writes
@@ -1477,11 +1479,7 @@ DROP TABLE brin_hot;
 DROP FUNCTION wait_for_hot_stats();
 ---END---
 ---START---
--- Test handling of index predicates - updating attributes in precicates
--- should not block HOT when summarizing indexes are involved. We update
--- a row that was not indexed due to the index predicate, and becomes
--- indexable - the HOT-updated tuple is forwarded to the BRIN index.
-CREATE TABLE brin_hot_2 (a int, b int);
+CREATE TABLE brin_hot_2 (_gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 INSERT INTO brin_hot_2 VALUES (1, 100);
@@ -1511,10 +1509,7 @@ SELECT COUNT(*) FROM brin_hot_2 WHERE a = 2 AND b = 100;
 DROP TABLE brin_hot_2;
 ---END---
 ---START---
--- Test that updates to indexed columns are still propagated to the
--- BRIN column.
--- https://postgr.es/m/05ebcb44-f383-86e3-4f31-0a97a55634cf@enterprisedb.com
-CREATE TABLE brin_hot_3 (a int, filler text) WITH (fillfactor = 10);
+CREATE TABLE brin_hot_3 (_gemini_pk serial PRIMARY KEY, a integer, filler text) WITH (fillfactor = 10);
 ---END---
 ---START---
 INSERT INTO brin_hot_3 SELECT 1, repeat(' ', 500) FROM generate_series(1, 20);

@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE test_tablesample (id int, name text) WITH (fillfactor=10);
+CREATE TABLE test_tablesample (_gemini_pk serial PRIMARY KEY, id integer, name text) WITH (fillfactor = 10);
 ---END---
 ---START---
 -- use fillfactor so we don't have to load too much data to get multiple pages
@@ -185,8 +185,7 @@ SELECT * FROM query_select TABLESAMPLE BERNOULLI (5.5) REPEATABLE (1);
 SELECT q.* FROM (SELECT * FROM test_tablesample) as q TABLESAMPLE BERNOULLI (5);
 ---END---
 ---START---
--- check partitioned tables support tablesample
-create table parted_sample (a int) partition by list (a);
+CREATE TABLE parted_sample (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 create table parted_sample_1 partition of parted_sample for values in (1);

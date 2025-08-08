@@ -18,7 +18,7 @@ select * from (select * from tenk1 order by four) t order by four, ten;
 reset work_mem;
 ---END---
 ---START---
-create table t(a integer, b integer);
+CREATE TABLE t (_gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 create or replace function explain_analyze_without_memory(query text)
@@ -353,7 +353,7 @@ set parallel_tuple_cost = 0;
 set max_parallel_workers_per_gather = 2;
 ---END---
 ---START---
-create table t (a int, b int, c int);
+CREATE TABLE t (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer);
 ---END---
 ---START---
 insert into t select mod(i,10),mod(i,10),i from generate_series(1,10000) s(i);

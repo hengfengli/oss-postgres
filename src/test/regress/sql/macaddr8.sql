@@ -86,7 +86,7 @@ SELECT '08:00:2b:01.02:03:04:05'::macaddr8;
 SELECT macaddr8_set7bit('00:08:2b:01:02:03'::macaddr8);
 ---END---
 ---START---
-CREATE TABLE macaddr8_data (a int, b macaddr8);
+CREATE TABLE macaddr8_data (_gemini_pk serial PRIMARY KEY, a integer, b macaddr8);
 ---END---
 ---START---
 INSERT INTO macaddr8_data VALUES (1, '08:00:2b:01:02:03');

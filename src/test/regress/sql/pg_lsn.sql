@@ -1,9 +1,5 @@
 ---START---
---
--- PG_LSN
---
-
-CREATE TABLE PG_LSN_TBL (f1 pg_lsn);
+CREATE TABLE pg_lsn_tbl (_gemini_pk serial PRIMARY KEY, f1 pg_lsn);
 ---END---
 ---START---
 -- Largest and smallest input

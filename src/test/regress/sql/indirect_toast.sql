@@ -20,7 +20,7 @@ CREATE FUNCTION make_tuple_indirect (record)
 SET default_toast_compression = 'pglz';
 ---END---
 ---START---
-CREATE TABLE indtoasttest(descr text, cnt int DEFAULT 0, f1 text, f2 text);
+CREATE TABLE indtoasttest (_gemini_pk serial PRIMARY KEY, descr text, cnt integer DEFAULT 0, f1 text, f2 text);
 ---END---
 ---START---
 INSERT INTO indtoasttest(descr, f1, f2) VALUES('two-compressed', repeat('1234567890',1000), repeat('1234567890',1000));

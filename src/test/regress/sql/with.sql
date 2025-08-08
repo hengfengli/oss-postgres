@@ -168,7 +168,9 @@ WITH RECURSIVE outermost(x) AS (
 --      |         +->D-+->F
 --      +->E-+->G
 
-CREATE TEMP TABLE department (
+DROP TABLE IF EXISTS department;
+
+CREATE TABLE department (
 	id INTEGER PRIMARY KEY,  -- department ID
 	parent_department INTEGER REFERENCES department, -- upper department ID
 	name TEXT -- department name
@@ -348,7 +350,9 @@ WITH RECURSIVE t(i,j) AS (
 --
 -- different tree example
 --
-CREATE TEMPORARY TABLE tree(
+DROP TABLE IF EXISTS tree;
+
+CREATE TABLE tree(
     id INTEGER PRIMARY KEY,
     parent_id INTEGER REFERENCES tree(id)
 );
@@ -403,7 +407,9 @@ SELECT t1.id, t2.path, t2 FROM t AS t1 JOIN t AS t2 ON
 ---START---
 -- SEARCH clause
 
-create temp table graph0( f int, t int, label text );
+DROP TABLE IF EXISTS graph0;
+
+CREATE TABLE graph0 (_gemini_pk serial PRIMARY KEY, f integer, t integer, label text);
 ---END---
 ---START---
 insert into graph0 values
@@ -602,7 +608,9 @@ select * from v_search;
 --
 -- test cycle detection
 --
-create temp table graph( f int, t int, label text );
+DROP TABLE IF EXISTS graph;
+
+CREATE TABLE graph (_gemini_pk serial PRIMARY KEY, f integer, t integer, label text);
 ---END---
 ---START---
 insert into graph values
@@ -944,7 +952,9 @@ WITH RECURSIVE
 -- Test WITH attached to a data-modifying statement
 --
 
-CREATE TEMPORARY TABLE y (a INTEGER);
+DROP TABLE IF EXISTS y;
+
+CREATE TABLE y (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 INSERT INTO y SELECT generate_series(1, 10);
@@ -1019,7 +1029,9 @@ WITH RECURSIVE x(n) AS (SELECT n FROM x UNION ALL SELECT 1)
 	SELECT * FROM x;
 ---END---
 ---START---
-CREATE TEMPORARY TABLE y (a INTEGER);
+DROP TABLE IF EXISTS y;
+
+CREATE TABLE y (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 INSERT INTO y SELECT generate_series(1, 10);
@@ -1146,7 +1158,9 @@ SELECT * FROM foo;
 ---END---
 ---START---
 -- disallow OLD/NEW reference in CTE
-CREATE TEMPORARY TABLE x (n integer);
+DROP TABLE IF EXISTS x;
+
+CREATE TABLE x (_gemini_pk serial PRIMARY KEY, n integer);
 ---END---
 ---START---
 CREATE RULE r2 AS ON UPDATE TO x DO INSTEAD
@@ -1386,7 +1400,9 @@ DROP RULE y_rule ON y;
 ---END---
 ---START---
 -- check merging of outer CTE with CTE in a rule action
-CREATE TEMP TABLE bug6051 AS
+DROP TABLE IF EXISTS bug6051;
+
+CREATE TABLE bug6051 AS
   select i from generate_series(1,3) as t(i);
 ---END---
 ---START---
@@ -1400,7 +1416,9 @@ INSERT INTO bug6051 SELECT * FROM t1;
 SELECT * FROM bug6051;
 ---END---
 ---START---
-CREATE TEMP TABLE bug6051_2 (i int);
+DROP TABLE IF EXISTS bug6051_2;
+
+CREATE TABLE bug6051_2 (_gemini_pk serial PRIMARY KEY, i integer);
 ---END---
 ---START---
 CREATE RULE bug6051_ins AS ON INSERT TO bug6051 DO INSTEAD
@@ -1430,7 +1448,9 @@ INSERT INTO bug6051 SELECT * FROM t1;
 ---END---
 ---START---
 -- silly example to verify that hasModifyingCTE flag is propagated
-CREATE TEMP TABLE bug6051_3 AS
+DROP TABLE IF EXISTS bug6051_3;
+
+CREATE TABLE bug6051_3 AS
   SELECT a FROM generate_series(11,13) AS a;
 ---END---
 ---START---
@@ -1682,7 +1702,9 @@ TRUNCATE TABLE y;
 INSERT INTO y SELECT generate_series(1, 3);
 ---END---
 ---START---
-CREATE TEMPORARY TABLE yy (a INTEGER);
+DROP TABLE IF EXISTS yy;
+
+CREATE TABLE yy (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 WITH RECURSIVE t1 AS (
@@ -1805,13 +1827,19 @@ DROP FUNCTION y_trigger();
 ---START---
 -- WITH attached to inherited UPDATE or DELETE
 
-CREATE TEMP TABLE parent ( id int, val text );
+DROP TABLE IF EXISTS parent;
+
+CREATE TABLE parent (_gemini_pk serial PRIMARY KEY, id integer, val text);
 ---END---
 ---START---
-CREATE TEMP TABLE child1 ( ) INHERITS ( parent );
+DROP TABLE IF EXISTS child1;
+
+CREATE TABLE child1 (_gemini_pk serial PRIMARY KEY) INHERITS (parent);
 ---END---
 ---START---
-CREATE TEMP TABLE child2 ( ) INHERITS ( parent );
+DROP TABLE IF EXISTS child2;
+
+CREATE TABLE child2 (_gemini_pk serial PRIMARY KEY) INHERITS (parent);
 ---END---
 ---START---
 INSERT INTO parent VALUES ( 1, 'p1' );
@@ -1951,7 +1979,9 @@ WITH with_test AS (SELECT 42) INSERT INTO with_test VALUES (1);
 -- check response to attempt to modify table with same name as a CTE (perhaps
 -- surprisingly it works, because CTEs don't hide tables from data-modifying
 -- statements)
-create temp table with_test (i int);
+DROP TABLE IF EXISTS with_test;
+
+CREATE TABLE with_test (_gemini_pk serial PRIMARY KEY, i integer);
 ---END---
 ---START---
 with with_test as (select 42) insert into with_test select * from with_test;

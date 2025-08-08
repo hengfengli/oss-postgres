@@ -41,13 +41,13 @@ CREATE FUNCTION set_ttdummy (int4)
         LANGUAGE C STRICT;
 ---END---
 ---START---
-create table pkeys (pkey1 int4 not null, pkey2 text not null);
+CREATE TABLE pkeys (_gemini_pk serial PRIMARY KEY, pkey1 int4 NOT NULL, pkey2 text NOT NULL);
 ---END---
 ---START---
-create table fkeys (fkey1 int4, fkey2 text, fkey3 int);
+CREATE TABLE fkeys (_gemini_pk serial PRIMARY KEY, fkey1 int4, fkey2 text, fkey3 integer);
 ---END---
 ---START---
-create table fkeys2 (fkey21 int4, fkey22 text, pkey23 int not null);
+CREATE TABLE fkeys2 (_gemini_pk serial PRIMARY KEY, fkey21 int4, fkey22 text, pkey23 integer NOT NULL);
 ---END---
 ---START---
 create index fkeys_i on fkeys (fkey1, fkey2);
@@ -208,8 +208,7 @@ DROP TABLE fkeys;
 DROP TABLE fkeys2;
 ---END---
 ---START---
--- Check behavior when trigger returns unmodified trigtuple
-create table trigtest (f1 int, f2 text);
+CREATE TABLE trigtest (_gemini_pk serial PRIMARY KEY, f1 integer, f2 text);
 ---END---
 ---START---
 create trigger trigger_return_old
@@ -310,11 +309,7 @@ select * from trigtest;
 drop table trigtest;
 ---END---
 ---START---
--- Check behavior with an implicit column default, too (bug #16644)
-create table trigtest (
-  a integer,
-  b bool default true not null,
-  c text default 'xyzzy' not null);
+CREATE TABLE trigtest (_gemini_pk serial PRIMARY KEY, a integer, b bool DEFAULT TRUE NOT NULL, c text DEFAULT 'xyzzy' NOT NULL);
 ---END---
 ---START---
 create trigger trigger_return_old
@@ -358,12 +353,7 @@ drop table trigtest;
 create sequence ttdummy_seq increment 10 start 0 minvalue 0;
 ---END---
 ---START---
-create table tttest (
-	price_id	int4,
-	price_val	int4,
-	price_on	int4,
-	price_off	int4 default 999999
-);
+CREATE TABLE tttest (_gemini_pk serial PRIMARY KEY, price_id int4, price_val int4, price_on int4, price_off int4 DEFAULT 999999);
 ---END---
 ---START---
 create trigger ttdummy
@@ -472,14 +462,10 @@ drop table tttest;
 drop sequence ttdummy_seq;
 ---END---
 ---START---
---
--- tests for per-statement triggers
---
-
-CREATE TABLE log_table (tstamp timestamp default timeofday()::timestamp);
+CREATE TABLE log_table (_gemini_pk serial PRIMARY KEY, tstamp timestamp DEFAULT CAST(timeofday() AS timestamp));
 ---END---
 ---START---
-CREATE TABLE main_table (a int unique, b int);
+CREATE TABLE main_table (_gemini_pk serial PRIMARY KEY, a integer UNIQUE, b integer);
 ---END---
 ---START---
 COPY main_table (a,b) FROM stdin;
@@ -640,8 +626,7 @@ DROP TRIGGER insert_when ON main_table;
 DROP TRIGGER delete_when ON main_table;
 ---END---
 ---START---
--- Test WHEN condition accessing system columns.
-create table table_with_oids(a int);
+CREATE TABLE table_with_oids (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 insert into table_with_oids values (1);
@@ -692,11 +677,7 @@ UPDATE main_table SET a = 50;
 UPDATE main_table SET b = 10;
 ---END---
 ---START---
---
--- Test case for bug with BEFORE trigger followed by AFTER trigger with WHEN
---
-
-CREATE TABLE some_t (some_col boolean NOT NULL);
+CREATE TABLE some_t (_gemini_pk serial PRIMARY KEY, some_col boolean NOT NULL);
 ---END---
 ---START---
 CREATE FUNCTION dummy_update_func() RETURNS trigger AS $$
@@ -798,8 +779,7 @@ rollback;
 create table trigtest (i serial primary key);
 ---END---
 ---START---
--- test that disabling RI triggers works
-create table trigtest2 (i int references trigtest(i) on delete cascade);
+CREATE TABLE trigtest2 (_gemini_pk serial PRIMARY KEY, i integer REFERENCES trigtest (i) ON DELETE CASCADE);
 ---END---
 ---START---
 create function trigtest() returns trigger as $$
@@ -897,11 +877,7 @@ drop table trigtest2;
 drop table trigtest;
 ---END---
 ---START---
--- dump trigger data
-CREATE TABLE trigger_test (
-        i int,
-        v varchar
-);
+CREATE TABLE trigger_test (_gemini_pk serial PRIMARY KEY, i integer, v varchar);
 ---END---
 ---START---
 CREATE OR REPLACE FUNCTION trigger_data()  RETURNS trigger
@@ -980,11 +956,7 @@ DROP FUNCTION trigger_data();
 DROP TABLE trigger_test;
 ---END---
 ---START---
---
--- Test use of row comparisons on OLD/NEW
---
-
-CREATE TABLE trigger_test (f1 int, f2 text, f3 text);
+CREATE TABLE trigger_test (_gemini_pk serial PRIMARY KEY, f1 integer, f2 text, f3 text);
 ---END---
 ---START---
 -- this is the obvious (and wrong...) way to compare rows
@@ -1060,11 +1032,7 @@ end;
 $$;
 ---END---
 ---START---
-CREATE TABLE serializable_update_tab (
-	id int,
-	filler  text,
-	description text
-);
+CREATE TABLE serializable_update_tab (_gemini_pk serial PRIMARY KEY, id integer, filler text, description text);
 ---END---
 ---START---
 CREATE TRIGGER serializable_update_trig BEFORE UPDATE ON serializable_update_tab
@@ -1093,12 +1061,7 @@ SELECT description FROM serializable_update_tab WHERE id = 1;
 DROP TABLE serializable_update_tab;
 ---END---
 ---START---
--- minimal update trigger
-
-CREATE TABLE min_updates_test (
-	f1	text,
-	f2 int,
-	f3 int);
+CREATE TABLE min_updates_test (_gemini_pk serial PRIMARY KEY, f1 text, f2 integer, f3 integer);
 ---END---
 ---START---
 INSERT INTO min_updates_test VALUES ('a',1,2),('b','2',null);
@@ -1687,7 +1650,9 @@ drop function depth_c_tf();
 -- As of 9.2, such cases should be rejected (see bug #6123).
 --
 
-create temp table parent (
+DROP TABLE IF EXISTS parent;
+
+create table parent (
     aid int not null primary key,
     val1 text,
     val2 text,
@@ -1696,7 +1661,9 @@ create temp table parent (
     bcnt int not null default 0);
 ---END---
 ---START---
-create temp table child (
+DROP TABLE IF EXISTS child;
+
+create table child (
     bid int not null primary key,
     aid int not null,
     val1 text);
@@ -1836,7 +1803,9 @@ drop function child_del_func();
 -- similar case, but with a self-referencing FK so that parent and child
 -- rows can be affected by a single operation
 
-create temp table self_ref_trigger (
+DROP TABLE IF EXISTS self_ref_trigger;
+
+create table self_ref_trigger (
     id int primary key,
     parent int references self_ref_trigger,
     data text,
@@ -1914,14 +1883,10 @@ drop function self_ref_trigger_ins_func();
 drop function self_ref_trigger_del_func();
 ---END---
 ---START---
---
--- Check that statement triggers work correctly even with all children excluded
---
-
-create table stmt_trig_on_empty_upd (a int);
+CREATE TABLE stmt_trig_on_empty_upd (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
-create table stmt_trig_on_empty_upd1 () inherits (stmt_trig_on_empty_upd);
+CREATE TABLE stmt_trig_on_empty_upd1 (_gemini_pk serial PRIMARY KEY) INHERITS (stmt_trig_on_empty_upd);
 ---END---
 ---START---
 create function update_stmt_notice() returns trigger as $$
@@ -1956,14 +1921,7 @@ drop table stmt_trig_on_empty_upd cascade;
 drop function update_stmt_notice();
 ---END---
 ---START---
---
--- Check that index creation (or DDL in general) is prohibited in a trigger
---
-
-create table trigger_ddl_table (
-   col1 integer,
-   col2 integer
-);
+CREATE TABLE trigger_ddl_table (_gemini_pk serial PRIMARY KEY, col1 integer, col2 integer);
 ---END---
 ---START---
 create function trigger_ddl_func() returns trigger as $$
@@ -2086,12 +2044,7 @@ drop function upsert_before_func();
 drop function upsert_after_func();
 ---END---
 ---START---
---
--- Verify that triggers with transition tables are not allowed on
--- views
---
-
-create table my_table (i int);
+CREATE TABLE my_table (_gemini_pk serial PRIMARY KEY, i integer);
 ---END---
 ---START---
 create view my_view as select * from my_table;
@@ -2113,10 +2066,7 @@ drop view my_view;
 drop table my_table;
 ---END---
 ---START---
---
--- Verify cases that are unsupported with partitioned tables
---
-create table parted_trig (a int) partition by list (a);
+CREATE TABLE parted_trig (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 create function trigger_nothing() returns trigger
@@ -2135,10 +2085,7 @@ create trigger failed after update on parted_trig
 drop table parted_trig;
 ---END---
 ---START---
---
--- Verify trigger creation for partitioned tables, and drop behavior
---
-create table trigpart (a int, b int) partition by range (a);
+CREATE TABLE trigpart (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a);
 ---END---
 ---START---
 create table trigpart1 partition of trigpart for values from (0) to (1000);
@@ -2150,7 +2097,7 @@ create trigger trg1 after insert on trigpart for each row execute procedure trig
 create table trigpart2 partition of trigpart for values from (1000) to (2000);
 ---END---
 ---START---
-create table trigpart3 (like trigpart);
+CREATE TABLE trigpart3 (_gemini_pk serial PRIMARY KEY, LIKE trigpart);
 ---END---
 ---START---
 alter table trigpart attach partition trigpart3 for values from (2000) to (3000);
@@ -2162,7 +2109,7 @@ create table trigpart4 partition of trigpart for values from (3000) to (4000) pa
 create table trigpart41 partition of trigpart4 for values from (3000) to (3500);
 ---END---
 ---START---
-create table trigpart42 (like trigpart);
+CREATE TABLE trigpart42 (_gemini_pk serial PRIMARY KEY, LIKE trigpart);
 ---END---
 ---START---
 alter table trigpart4 attach partition trigpart42 for values from (3500) to (4000);
@@ -2238,7 +2185,7 @@ select tgrelid::regclass::text, tgname, tgfoid::regproc, tgenabled, tgisinternal
   where tgname ~ '^trg1' order by 1;
 ---END---
 ---START---
-create table trigpart3 (like trigpart);
+CREATE TABLE trigpart3 (_gemini_pk serial PRIMARY KEY, LIKE trigpart);
 ---END---
 ---START---
 create trigger trg1 after insert on trigpart3 for each row execute procedure trigger_nothing();
@@ -2267,10 +2214,7 @@ drop table trigpart;
 drop function trigger_nothing();
 ---END---
 ---START---
---
--- Verify that triggers are fired for partitioned tables
---
-create table parted_stmt_trig (a int) partition by list (a);
+CREATE TABLE parted_stmt_trig (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 create table parted_stmt_trig1 partition of parted_stmt_trig for values in (1);
@@ -2279,7 +2223,7 @@ create table parted_stmt_trig1 partition of parted_stmt_trig for values in (1);
 create table parted_stmt_trig2 partition of parted_stmt_trig for values in (2);
 ---END---
 ---START---
-create table parted2_stmt_trig (a int) partition by list (a);
+CREATE TABLE parted2_stmt_trig (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 create table parted2_stmt_trig1 partition of parted2_stmt_trig for values in (1);
@@ -2429,8 +2373,7 @@ insert into parted_stmt_trig values (1);
 drop table parted_stmt_trig, parted2_stmt_trig;
 ---END---
 ---START---
--- Verify that triggers fire in alphabetical order
-create table parted_trig (a int) partition by range (a);
+CREATE TABLE parted_trig (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 create table parted_trig_1 partition of parted_trig for values from (0) to (1000)
@@ -2464,8 +2407,7 @@ insert into parted_trig values (50), (1500);
 drop table parted_trig;
 ---END---
 ---START---
--- Verify propagation of trigger arguments to partitions
-create table parted_trig (a int) partition by list (a);
+CREATE TABLE parted_trig (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 create table parted_trig1 partition of parted_trig for values in (1);
@@ -2491,7 +2433,7 @@ create trigger aaa after insert on parted_trig
 create table parted_trig2 partition of parted_trig for values in (2);
 ---END---
 ---START---
-create table parted_trig3 (like parted_trig);
+CREATE TABLE parted_trig3 (_gemini_pk serial PRIMARY KEY, LIKE parted_trig);
 ---END---
 ---START---
 alter table parted_trig attach partition parted_trig3 for values in (3);
@@ -2522,16 +2464,14 @@ create or replace function trigger_notice_ab() returns trigger as $$
   $$ language plpgsql;
 ---END---
 ---START---
-create table parted_irreg_ancestor (fd text, b text, fd2 int, fd3 int, a int)
-  partition by range (b);
+CREATE TABLE parted_irreg_ancestor (_gemini_pk serial PRIMARY KEY, fd text, b text, fd2 integer, fd3 integer, a integer) PARTITION BY range (b);
 ---END---
 ---START---
 alter table parted_irreg_ancestor drop column fd,
   drop column fd2, drop column fd3;
 ---END---
 ---START---
-create table parted_irreg (fd int, a int, fd2 int, b text)
-  partition by range (b);
+CREATE TABLE parted_irreg (_gemini_pk serial PRIMARY KEY, fd integer, a integer, fd2 integer, b text) PARTITION BY range (b);
 ---END---
 ---START---
 alter table parted_irreg drop column fd, drop column fd2;
@@ -2541,7 +2481,7 @@ alter table parted_irreg_ancestor attach partition parted_irreg
   for values from ('aaaa') to ('zzzz');
 ---END---
 ---START---
-create table parted1_irreg (b text, fd int, a int);
+CREATE TABLE parted1_irreg (_gemini_pk serial PRIMARY KEY, b text, fd integer, a integer);
 ---END---
 ---START---
 alter table parted1_irreg drop column fd;
@@ -2573,8 +2513,7 @@ insert into parted_irreg_ancestor values ('aasvogel', 3);
 drop table parted_irreg_ancestor;
 ---END---
 ---START---
--- Before triggers and partitions
-create table parted (a int, b int, c text) partition by list (a);
+CREATE TABLE parted (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY list (a);
 ---END---
 ---START---
 create table parted_1 partition of parted for values in (1)
@@ -2698,7 +2637,7 @@ select tableoid::regclass, * from parted;
 drop table parted;
 ---END---
 ---START---
-create table parted (a int, b int, c text) partition by list ((a + b));
+CREATE TABLE parted (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY list ((a + b));
 ---END---
 ---START---
 create or replace function parted_trigfunc() returns trigger language plpgsql as $$
@@ -2737,21 +2676,17 @@ drop table parted;
 drop function parted_trigfunc();
 ---END---
 ---START---
---
--- Constraint triggers and partitioned tables
-create table parted_constr_ancestor (a int, b text)
-  partition by range (b);
+CREATE TABLE parted_constr_ancestor (_gemini_pk serial PRIMARY KEY, a integer, b text) PARTITION BY range (b);
 ---END---
 ---START---
-create table parted_constr (a int, b text)
-  partition by range (b);
+CREATE TABLE parted_constr (_gemini_pk serial PRIMARY KEY, a integer, b text) PARTITION BY range (b);
 ---END---
 ---START---
 alter table parted_constr_ancestor attach partition parted_constr
   for values from ('aaaa') to ('zzzz');
 ---END---
 ---START---
-create table parted1_constr (a int, b text);
+CREATE TABLE parted1_constr (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 alter table parted_constr attach partition parted1_constr
@@ -2810,14 +2745,13 @@ drop table parted_constr_ancestor;
 drop function bark(text);
 ---END---
 ---START---
--- Test that the WHEN clause is set properly to partitions
-create table parted_trigger (a int, b text) partition by range (a);
+CREATE TABLE parted_trigger (_gemini_pk serial PRIMARY KEY, a integer, b text) PARTITION BY range (a);
 ---END---
 ---START---
 create table parted_trigger_1 partition of parted_trigger for values from (0) to (1000);
 ---END---
 ---START---
-create table parted_trigger_2 (drp int, a int, b text);
+CREATE TABLE parted_trigger_2 (_gemini_pk serial PRIMARY KEY, drp integer, a integer, b text);
 ---END---
 ---START---
 alter table parted_trigger_2 drop column drp;
@@ -2830,7 +2764,7 @@ create trigger parted_trigger after update on parted_trigger
   for each row when (new.a % 2 = 1 and length(old.b) >= 2) execute procedure trigger_notice_ab();
 ---END---
 ---START---
-create table parted_trigger_3 (b text, a int) partition by range (length(b));
+CREATE TABLE parted_trigger_3 (_gemini_pk serial PRIMARY KEY, b text, a integer) PARTITION BY range ((length(b)));
 ---END---
 ---START---
 create table parted_trigger_3_1 partition of parted_trigger_3 for values from (1) to (3);
@@ -2855,21 +2789,19 @@ update parted_trigger set a = a + 2;
 drop table parted_trigger;
 ---END---
 ---START---
--- try a constraint trigger, also
-create table parted_referenced (a int);
+CREATE TABLE parted_referenced (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
-create table unparted_trigger (a int, b text);
+CREATE TABLE unparted_trigger (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
--- for comparison purposes
-create table parted_trigger (a int, b text) partition by range (a);
+CREATE TABLE parted_trigger (_gemini_pk serial PRIMARY KEY, a integer, b text) PARTITION BY range (a);
 ---END---
 ---START---
 create table parted_trigger_1 partition of parted_trigger for values from (0) to (1000);
 ---END---
 ---START---
-create table parted_trigger_2 (drp int, a int, b text);
+CREATE TABLE parted_trigger_2 (_gemini_pk serial PRIMARY KEY, drp integer, a integer, b text);
 ---END---
 ---START---
 alter table parted_trigger_2 drop column drp;
@@ -2888,7 +2820,7 @@ create constraint trigger parted_trigger after update on unparted_trigger
   for each row execute procedure trigger_notice_ab();
 ---END---
 ---START---
-create table parted_trigger_3 (b text, a int) partition by range (length(b));
+CREATE TABLE parted_trigger_3 (_gemini_pk serial PRIMARY KEY, b text, a integer) PARTITION BY range ((length(b)));
 ---END---
 ---START---
 create table parted_trigger_3_1 partition of parted_trigger_3 for values from (1) to (3);
@@ -2910,14 +2842,13 @@ select tgname, conname, t.tgrelid::regclass, t.tgconstrrelid::regclass,
 drop table parted_referenced, parted_trigger, unparted_trigger;
 ---END---
 ---START---
--- verify that the "AFTER UPDATE OF columns" event is propagated correctly
-create table parted_trigger (a int, b text) partition by range (a);
+CREATE TABLE parted_trigger (_gemini_pk serial PRIMARY KEY, a integer, b text) PARTITION BY range (a);
 ---END---
 ---START---
 create table parted_trigger_1 partition of parted_trigger for values from (0) to (1000);
 ---END---
 ---START---
-create table parted_trigger_2 (drp int, a int, b text);
+CREATE TABLE parted_trigger_2 (_gemini_pk serial PRIMARY KEY, drp integer, a integer, b text);
 ---END---
 ---START---
 alter table parted_trigger_2 drop column drp;
@@ -2930,7 +2861,7 @@ create trigger parted_trigger after update of b on parted_trigger
   for each row execute procedure trigger_notice_ab();
 ---END---
 ---START---
-create table parted_trigger_3 (b text, a int) partition by range (length(b));
+CREATE TABLE parted_trigger_3 (_gemini_pk serial PRIMARY KEY, b text, a integer) PARTITION BY range ((length(b)));
 ---END---
 ---START---
 create table parted_trigger_3_1 partition of parted_trigger_3 for values from (1) to (4);
@@ -2959,9 +2890,7 @@ drop table parted_trigger;
 drop function trigger_notice_ab();
 ---END---
 ---START---
--- Make sure we don't end up with unnecessary copies of triggers, when
--- cloning them.
-create table trg_clone (a int) partition by range (a);
+CREATE TABLE trg_clone (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 create table trg_clone1 partition of trg_clone for values from (0) to (1000);
@@ -2989,13 +2918,10 @@ select tgrelid::regclass, count(*) from pg_trigger
 drop table trg_clone;
 ---END---
 ---START---
--- Test the interaction between ALTER TABLE .. DISABLE TRIGGER and
--- both kinds of inheritance.  Historically, legacy inheritance has
--- not recursed to children, so that behavior is preserved.
-create table parent (a int);
+CREATE TABLE parent (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
-create table child1 () inherits (parent);
+CREATE TABLE child1 (_gemini_pk serial PRIMARY KEY) INHERITS (parent);
 ---END---
 ---START---
 create function trig_nothing() returns trigger language plpgsql
@@ -3029,7 +2955,7 @@ select tgrelid::regclass, tgname, tgenabled from pg_trigger
 drop table parent, child1;
 ---END---
 ---START---
-create table parent (a int) partition by list (a);
+CREATE TABLE parent (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 create table child1 partition of parent for values in (1);
@@ -3109,8 +3035,7 @@ select tgrelid::regclass, rtrim(tgname, '0123456789') as tgname,
 drop table parent, child1;
 ---END---
 ---START---
--- Verify that firing state propagates correctly on creation, too
-CREATE TABLE trgfire (i int) PARTITION BY RANGE (i);
+CREATE TABLE trgfire (_gemini_pk serial PRIMARY KEY, i integer) PARTITION BY range (i);
 ---END---
 ---START---
 CREATE TABLE trgfire1 PARTITION OF trgfire FOR VALUES FROM (1) TO (10);
@@ -3138,7 +3063,7 @@ CREATE TABLE trgfire2 PARTITION OF trgfire FOR VALUES FROM (10) TO (20);
 INSERT INTO trgfire VALUES (11);
 ---END---
 ---START---
-CREATE TABLE trgfire3 (LIKE trgfire);
+CREATE TABLE trgfire3 (_gemini_pk serial PRIMARY KEY, LIKE trgfire);
 ---END---
 ---START---
 ALTER TABLE trgfire ATTACH PARTITION trgfire3 FOR VALUES FROM (20) TO (30);
@@ -3156,7 +3081,7 @@ CREATE TABLE trgfire4_30 PARTITION OF trgfire4 FOR VALUES IN (30);
 INSERT INTO trgfire VALUES (30);
 ---END---
 ---START---
-CREATE TABLE trgfire5 (LIKE trgfire) PARTITION BY LIST (i);
+CREATE TABLE trgfire5 (_gemini_pk serial PRIMARY KEY, LIKE trgfire) PARTITION BY list (i);
 ---END---
 ---START---
 CREATE TABLE trgfire5_40 PARTITION OF trgfire5 FOR VALUES IN (40);
@@ -3238,22 +3163,14 @@ $$
 $$;
 ---END---
 ---START---
---
--- Verify behavior of statement triggers on partition hierarchy with
--- transition tables.  Tuples should appear to each trigger in the
--- format of the relation the trigger is attached to.
---
-
--- set up a partition hierarchy with some different TupleDescriptors
-create table parent (a text, b int) partition by list (a);
+CREATE TABLE parent (_gemini_pk serial PRIMARY KEY, a text, b integer) PARTITION BY list (a);
 ---END---
 ---START---
 -- a child matching parent
 create table child1 partition of parent for values in ('AAA');
 ---END---
 ---START---
--- a child with a dropped column
-create table child2 (x int, a text, b int);
+CREATE TABLE child2 (_gemini_pk serial PRIMARY KEY, x integer, a text, b integer);
 ---END---
 ---START---
 alter table child2 drop column x;
@@ -3262,8 +3179,7 @@ alter table child2 drop column x;
 alter table parent attach partition child2 for values in ('BBB');
 ---END---
 ---START---
--- a child with a different column order
-create table child3 (b int, a text);
+CREATE TABLE child3 (_gemini_pk serial PRIMARY KEY, b integer, a text);
 ---END---
 ---START---
 alter table parent attach partition child3 for values in ('CCC');
@@ -3457,11 +3373,7 @@ drop table child1, child2, child3, parent;
 drop function intercept_insert();
 ---END---
 ---START---
---
--- Verify prohibition of row triggers with transition triggers on
--- partitions
---
-create table parent (a text, b int) partition by list (a);
+CREATE TABLE parent (_gemini_pk serial PRIMARY KEY, a text, b integer) PARTITION BY list (a);
 ---END---
 ---START---
 create table child partition of parent for values in ('AAA');
@@ -3496,30 +3408,19 @@ alter table parent attach partition child for values in ('AAA');
 drop table child, parent;
 ---END---
 ---START---
---
--- Verify behavior of statement triggers on (non-partition)
--- inheritance hierarchy with transition tables; similar to the
--- partition case, except there is no rerouting on insertion and child
--- tables can have extra columns
---
-
--- set up inheritance hierarchy with different TupleDescriptors
-create table parent (a text, b int);
+CREATE TABLE parent (_gemini_pk serial PRIMARY KEY, a text, b integer);
 ---END---
 ---START---
--- a child matching parent
-create table child1 () inherits (parent);
+CREATE TABLE child1 (_gemini_pk serial PRIMARY KEY) INHERITS (parent);
 ---END---
 ---START---
--- a child with a different column order
-create table child2 (b int, a text);
+CREATE TABLE child2 (_gemini_pk serial PRIMARY KEY, b integer, a text);
 ---END---
 ---START---
 alter table child2 inherit parent;
 ---END---
 ---START---
--- a child with an extra column
-create table child3 (c text) inherits (parent);
+CREATE TABLE child3 (_gemini_pk serial PRIMARY KEY, c text) INHERITS (parent);
 ---END---
 ---START---
 create trigger parent_insert_trig
@@ -3672,14 +3573,10 @@ delete from parent;
 drop table child1, child2, child3, parent;
 ---END---
 ---START---
---
--- Verify prohibition of row triggers with transition triggers on
--- inheritance children
---
-create table parent (a text, b int);
+CREATE TABLE parent (_gemini_pk serial PRIMARY KEY, a text, b integer);
 ---END---
 ---START---
-create table child () inherits (parent);
+CREATE TABLE child (_gemini_pk serial PRIMARY KEY) INHERITS (parent);
 ---END---
 ---START---
 -- adding row trigger with transition table fails
@@ -3711,16 +3608,10 @@ alter table child inherit parent;
 drop table child, parent;
 ---END---
 ---START---
---
--- Verify behavior of queries with wCTEs, where multiple transition
--- tuplestores can be active at the same time because there are
--- multiple DML statements that might fire triggers with transition
--- tables
---
-create table table1 (a int);
+CREATE TABLE table1 (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
-create table table2 (a text);
+CREATE TABLE table2 (_gemini_pk serial PRIMARY KEY, a text);
 ---END---
 ---START---
 create trigger table1_trig
@@ -3869,9 +3760,7 @@ drop table my_table;
 create table refd_table (a int primary key, b text);
 ---END---
 ---START---
-create table trig_table (a int, b text,
-  foreign key (a) references refd_table on update cascade on delete cascade
-);
+CREATE TABLE trig_table (_gemini_pk serial PRIMARY KEY, a integer, b text, FOREIGN KEY (a) REFERENCES refd_table ON DELETE CASCADE ON UPDATE CASCADE);
 ---END---
 ---START---
 create trigger trig_table_before_trig
@@ -3987,7 +3876,7 @@ create trigger merge_target_table_delete_trig
   for each statement execute procedure dump_delete();
 ---END---
 ---START---
-create table merge_source_table (a int, b text);
+CREATE TABLE merge_source_table (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 insert into merge_source_table
@@ -4037,10 +3926,7 @@ drop function dump_update();
 drop function dump_delete();
 ---END---
 ---START---
---
--- Tests for CREATE OR REPLACE TRIGGER
---
-create table my_table (id integer);
+CREATE TABLE my_table (_gemini_pk serial PRIMARY KEY, id integer);
 ---END---
 ---START---
 create function funcA() returns trigger as $$
@@ -4090,8 +3976,7 @@ table my_table;
 drop table my_table;
 ---END---
 ---START---
--- test CREATE OR REPLACE TRIGGER on partition table
-create table parted_trig (a int) partition by range (a);
+CREATE TABLE parted_trig (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 create table parted_trig_1 partition of parted_trig
@@ -4322,7 +4207,7 @@ create table convslot_test_parent (id int primary key, val int)
 partition by range (id);
 ---END---
 ---START---
-create table convslot_test_part (val int, id int not null);
+CREATE TABLE convslot_test_part (_gemini_pk serial PRIMARY KEY, val integer, id integer NOT NULL);
 ---END---
 ---START---
 alter table convslot_test_parent
@@ -4430,11 +4315,10 @@ order by tgname, tgrelid::regclass::text COLLATE "C";
 drop table grandparent;
 ---END---
 ---START---
--- Trigger renaming does not recurse on legacy inheritance
-create table parent (a int);
+CREATE TABLE parent (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
-create table child () inherits (parent);
+CREATE TABLE child (_gemini_pk serial PRIMARY KEY) INHERITS (parent);
 ---END---
 ---START---
 create trigger parenttrig after insert on parent

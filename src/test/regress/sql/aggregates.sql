@@ -10,11 +10,7 @@
 SET extra_float_digits = 0;
 ---END---
 ---START---
--- prepare some test data
-CREATE TABLE aggtest (
-	a 			int2,
-	b			float4
-);
+CREATE TABLE aggtest (_gemini_pk serial PRIMARY KEY, a int2, b float4);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/agg.data';
@@ -434,7 +430,8 @@ select array(select sum(x+y) s
 --
 -- test for bitwise integer aggregates
 --
-CREATE TEMPORARY TABLE bitwise_test(
+DROP TABLE IF EXISTS bitwise_test;
+CREATE TABLE bitwise_test(
   i2 INT2,
   i4 INT4,
   i8 INT8,
@@ -520,11 +517,9 @@ SELECT
   NOT boolor_statefunc(FALSE, FALSE) AS "t";
 ---END---
 ---START---
-CREATE TEMPORARY TABLE bool_test(
-  b1 BOOL,
-  b2 BOOL,
-  b3 BOOL,
-  b4 BOOL);
+DROP TABLE IF EXISTS bool_test;
+
+CREATE TABLE bool_test (_gemini_pk serial PRIMARY KEY, b1 bool, b2 bool, b3 bool, b4 bool);
 ---END---
 ---START---
 -- empty case
@@ -694,17 +689,16 @@ explain (costs off)
 select max(100) from tenk1;
 ---END---
 ---START---
--- try it on an inheritance tree
-create table minmaxtest(f1 int);
+CREATE TABLE minmaxtest (_gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
-create table minmaxtest1() inherits (minmaxtest);
+CREATE TABLE minmaxtest1 (_gemini_pk serial PRIMARY KEY) INHERITS (minmaxtest);
 ---END---
 ---START---
-create table minmaxtest2() inherits (minmaxtest);
+CREATE TABLE minmaxtest2 (_gemini_pk serial PRIMARY KEY) INHERITS (minmaxtest);
 ---END---
 ---START---
-create table minmaxtest3() inherits (minmaxtest);
+CREATE TABLE minmaxtest3 (_gemini_pk serial PRIMARY KEY) INHERITS (minmaxtest);
 ---END---
 ---START---
 create index minmaxtesti on minmaxtest(f1);
@@ -765,13 +759,19 @@ from tenk1 a2(col2);
 -- Test removal of redundant GROUP BY columns
 --
 
-create temp table t1 (a int, b int, c int, d int, primary key (a, b));
+DROP TABLE IF EXISTS t1;
+
+create table t1 (a int, b int, c int, d int, primary key (a, b));
 ---END---
 ---START---
-create temp table t2 (x int, y int, z int, primary key (x, y));
+DROP TABLE IF EXISTS t2;
+
+create table t2 (x int, y int, z int, primary key (x, y));
 ---END---
 ---START---
-create temp table t3 (a int, b int, c int, primary key(a, b) deferrable);
+DROP TABLE IF EXISTS t3;
+
+create table t3 (a int, b int, c int, primary key(a, b) deferrable);
 ---END---
 ---START---
 -- Non-primary-key columns can be removed from GROUP BY
@@ -798,7 +798,9 @@ group by t1.a,t1.b,t1.c,t1.d,t2.x,t2.z;
 explain (costs off) select * from t3 group by a,b,c;
 ---END---
 ---START---
-create temp table t1c () inherits (t1);
+DROP TABLE IF EXISTS t1c;
+
+CREATE TABLE t1c (_gemini_pk serial PRIMARY KEY) INHERITS (t1);
 ---END---
 ---START---
 -- Ensure we don't remove any columns when t1 has a child table
@@ -809,7 +811,9 @@ explain (costs off) select * from t1 group by a,b,c,d;
 explain (costs off) select * from only t1 group by a,b,c,d;
 ---END---
 ---START---
-create temp table p_t1 (
+DROP TABLE IF EXISTS p_t1;
+
+create table p_t1 (
   a int,
   b int,
   c int,
@@ -818,10 +822,14 @@ create temp table p_t1 (
 ) partition by list(a);
 ---END---
 ---START---
-create temp table p_t1_1 partition of p_t1 for values in(1);
+DROP TABLE IF EXISTS p_t1_1;
+
+create table p_t1_1 partition of p_t1 for values in(1);
 ---END---
 ---START---
-create temp table p_t1_2 partition of p_t1 for values in(2);
+DROP TABLE IF EXISTS p_t1_2;
+
+create table p_t1_2 partition of p_t1 for values in(2);
 ---END---
 ---START---
 -- Ensure we can remove non-PK columns for partitioned tables.
@@ -844,10 +852,14 @@ drop table p_t1;
 -- Test GROUP BY matching of join columns that are type-coerced due to USING
 --
 
-create temp table t1(f1 int, f2 int);
+DROP TABLE IF EXISTS t1;
+
+CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer);
 ---END---
 ---START---
-create temp table t2(f1 bigint, f2 oid);
+DROP TABLE IF EXISTS t2;
+
+CREATE TABLE t2 (_gemini_pk serial PRIMARY KEY, f1 bigint, f2 oid);
 ---END---
 ---START---
 select f1 from t1 left join t2 using (f1) group by f1;
@@ -1174,10 +1186,7 @@ select string_agg(distinct f1, ',' order by f1::text) from varchar_tbl;
 select string_agg(distinct f1::text, ',' order by f1::text) from varchar_tbl;
 ---END---
 ---START---
--- ok
-
--- string_agg bytea tests
-create table bytea_test_table(v bytea);
+CREATE TABLE bytea_test_table (_gemini_pk serial PRIMARY KEY, v bytea);
 ---END---
 ---START---
 select string_agg(v, '') from bytea_test_table;
@@ -1204,8 +1213,7 @@ select string_agg(v, decode('ee', 'hex')) from bytea_test_table;
 drop table bytea_test_table;
 ---END---
 ---START---
--- Test parallel string_agg and array_agg
-create table pagg_test (x int, y int);
+CREATE TABLE pagg_test (_gemini_pk serial PRIMARY KEY, x integer, y integer);
 ---END---
 ---START---
 insert into pagg_test

@@ -2,7 +2,7 @@
 CREATE SCHEMA testxmlschema;
 ---END---
 ---START---
-CREATE TABLE testxmlschema.test1 (a int, b text);
+CREATE TABLE testxmlschema.test1 (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 INSERT INTO testxmlschema.test1 VALUES (1, 'one'), (2, 'two'), (-1, null);
@@ -11,10 +11,7 @@ INSERT INTO testxmlschema.test1 VALUES (1, 'one'), (2, 'two'), (-1, null);
 CREATE DOMAIN testxmldomain AS varchar;
 ---END---
 ---START---
-CREATE TABLE testxmlschema.test2 (z int, y varchar(500), x char(6),
-    w numeric(9,2), v smallint, u bigint, t real,
-    s time, stz timetz, r timestamp, rtz timestamptz, q date,
-    p xml, o testxmldomain, n bool, m bytea, aaa text);
+CREATE TABLE testxmlschema.test2 (_gemini_pk serial PRIMARY KEY, z integer, y varchar(500), x char(6), w numeric(9, 2), v smallint, u bigint, t real, s time, stz timetz, r timestamp, rtz timestamptz, q date, p xml, o testxmldomain, n bool, m bytea, aaa text);
 ---END---
 ---START---
 ALTER TABLE testxmlschema.test2 DROP COLUMN aaa;

@@ -10,7 +10,8 @@
 --- test copying in CSV mode with various styles
 --- of embedded line ending characters
 
-create temp table copytest (
+DROP TABLE IF EXISTS copytest;
+create table copytest (
 	style	text,
 	test 	text,
 	filler	int);
@@ -32,11 +33,10 @@ insert into copytest values(E'esc\\ape',E'a\\r\\\r\\\n\\nb',4);
 ---END---
 ---START---
 copy copytest to :'filename' csv;
----END---
----START---
-create temp table copytest2 (like copytest);
----END---
----START---
+
+DROP TABLE IF EXISTS copytest2;
+create table copytest2 (like copytest);
+
 copy copytest2 from :'filename' csv;
 ---END---
 ---START---
@@ -60,7 +60,8 @@ select * from copytest except select * from copytest2;
 
 -- test header line feature
 
-create temp table copytest3 (
+DROP TABLE IF EXISTS copytest3;
+create table copytest3 (
 	c1 int,
 	"col with , comma" text,
 	"col with "" quote"  int);
@@ -74,9 +75,9 @@ this is just a line full of junk that would error out if parsed
 ---END---
 ---START---
 copy copytest3 to stdout csv header;
----END---
----START---
-create temp table copytest4 (
+
+DROP TABLE IF EXISTS copytest4;
+create table copytest4 (
 	c1 int,
 	"colname with tab: 	" text);
 ---END---
@@ -194,16 +195,7 @@ select * from parted_copytest where b = 2;
 drop table parted_copytest;
 ---END---
 ---START---
---
--- Progress reporting for COPY
---
-create table tab_progress_reporting (
-	name text,
-	age int4,
-	location point,
-	salary int4,
-	manager name
-);
+CREATE TABLE tab_progress_reporting (_gemini_pk serial PRIMARY KEY, name text, age int4, location point, salary int4, manager name);
 ---END---
 ---START---
 -- Add a trigger to catch and print the contents of the catalog view

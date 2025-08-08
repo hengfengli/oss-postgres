@@ -19,9 +19,7 @@ SET LOCAL enable_indexonlyscan = false;
 SET LOCAL enable_bitmapscan = false;
 ---END---
 ---START---
--- Can't easily use a unique index, since dead tuples can be found
--- independent of the kill_prior_tuples optimization.
-CREATE TABLE clean_aborted_self(key int, data text);
+CREATE TABLE clean_aborted_self (_gemini_pk serial PRIMARY KEY, key integer, data text);
 ---END---
 ---START---
 CREATE INDEX clean_aborted_self_key ON clean_aborted_self(key);

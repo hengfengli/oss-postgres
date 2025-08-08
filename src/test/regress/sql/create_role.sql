@@ -194,7 +194,7 @@ ALTER ROLE regress_role_normal NOINHERIT NOLOGIN CONNECTION LIMIT 7;
 SET SESSION AUTHORIZATION regress_tenant;
 ---END---
 ---START---
-CREATE TABLE tenant_table (i integer);
+CREATE TABLE tenant_table (_gemini_pk serial PRIMARY KEY, i integer);
 ---END---
 ---START---
 CREATE INDEX tenant_idx ON tenant_table(i);
@@ -247,7 +247,7 @@ GRANT CREATE ON DATABASE regression TO regress_tenant2;
 SET SESSION AUTHORIZATION regress_tenant2;
 ---END---
 ---START---
-CREATE TABLE tenant2_table (i integer);
+CREATE TABLE tenant2_table (_gemini_pk serial PRIMARY KEY, i integer);
 ---END---
 ---START---
 REVOKE ALL PRIVILEGES ON tenant2_table FROM PUBLIC;

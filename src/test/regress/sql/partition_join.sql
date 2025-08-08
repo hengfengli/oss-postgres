@@ -8,10 +8,7 @@
 SET enable_partitionwise_join to true;
 ---END---
 ---START---
---
--- partitioned by a single column
---
-CREATE TABLE prt1 (a int, b int, c varchar) PARTITION BY RANGE(a);
+CREATE TABLE prt1 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c varchar) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE TABLE prt1_p1 PARTITION OF prt1 FOR VALUES FROM (0) TO (250);
@@ -38,7 +35,7 @@ CREATE INDEX iprt1_p3_a on prt1_p3(a);
 ANALYZE prt1;
 ---END---
 ---START---
-CREATE TABLE prt2 (a int, b int, c varchar) PARTITION BY RANGE(b);
+CREATE TABLE prt2 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c varchar) PARTITION BY range (b);
 ---END---
 ---START---
 CREATE TABLE prt2_p1 PARTITION OF prt2 FOR VALUES FROM (0) TO (250);
@@ -196,10 +193,7 @@ RESET enable_partitionwise_aggregate;
 RESET enable_hashjoin;
 ---END---
 ---START---
---
--- partitioned by expression
---
-CREATE TABLE prt1_e (a int, b int, c int) PARTITION BY RANGE(((a + b)/2));
+CREATE TABLE prt1_e (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY range (((a + b) / 2));
 ---END---
 ---START---
 CREATE TABLE prt1_e_p1 PARTITION OF prt1_e FOR VALUES FROM (0) TO (250);
@@ -226,7 +220,7 @@ CREATE INDEX iprt1_e_p3_ab2 on prt1_e_p3(((a+b)/2));
 ANALYZE prt1_e;
 ---END---
 ---START---
-CREATE TABLE prt2_e (a int, b int, c int) PARTITION BY RANGE(((b + a)/2));
+CREATE TABLE prt2_e (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY range (((b + a) / 2));
 ---END---
 ---START---
 CREATE TABLE prt2_e_p1 PARTITION OF prt2_e FOR VALUES FROM (0) TO (250);
@@ -368,10 +362,7 @@ RESET enable_hashjoin;
 RESET enable_nestloop;
 ---END---
 ---START---
---
--- partitioned by multiple columns
---
-CREATE TABLE prt1_m (a int, b int, c int) PARTITION BY RANGE(a, ((a + b)/2));
+CREATE TABLE prt1_m (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY range (a, ((a + b) / 2));
 ---END---
 ---START---
 CREATE TABLE prt1_m_p1 PARTITION OF prt1_m FOR VALUES FROM (0, 0) TO (250, 250);
@@ -389,7 +380,7 @@ INSERT INTO prt1_m SELECT i, i, i % 25 FROM generate_series(0, 599, 2) i;
 ANALYZE prt1_m;
 ---END---
 ---START---
-CREATE TABLE prt2_m (a int, b int, c int) PARTITION BY RANGE(((b + a)/2), b);
+CREATE TABLE prt2_m (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY range (((b + a) / 2), b);
 ---END---
 ---START---
 CREATE TABLE prt2_m_p1 PARTITION OF prt2_m FOR VALUES FROM (0, 0) TO (250, 250);
@@ -414,10 +405,7 @@ SELECT t1.a, t1.c, t2.b, t2.c FROM (SELECT * FROM prt1_m WHERE prt1_m.c = 0) t1 
 SELECT t1.a, t1.c, t2.b, t2.c FROM (SELECT * FROM prt1_m WHERE prt1_m.c = 0) t1 FULL JOIN (SELECT * FROM prt2_m WHERE prt2_m.c = 0) t2 ON (t1.a = (t2.b + t2.a)/2 AND t2.b = (t1.a + t1.b)/2) ORDER BY t1.a, t2.b;
 ---END---
 ---START---
---
--- tests for list partitioned tables.
---
-CREATE TABLE plt1 (a int, b int, c text) PARTITION BY LIST(c);
+CREATE TABLE plt1 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY list (c);
 ---END---
 ---START---
 CREATE TABLE plt1_p1 PARTITION OF plt1 FOR VALUES IN ('0000', '0003', '0004', '0010');
@@ -435,7 +423,7 @@ INSERT INTO plt1 SELECT i, i, to_char(i/50, 'FM0000') FROM generate_series(0, 59
 ANALYZE plt1;
 ---END---
 ---START---
-CREATE TABLE plt2 (a int, b int, c text) PARTITION BY LIST(c);
+CREATE TABLE plt2 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY list (c);
 ---END---
 ---START---
 CREATE TABLE plt2_p1 PARTITION OF plt2 FOR VALUES IN ('0000', '0003', '0004', '0010');
@@ -453,10 +441,7 @@ INSERT INTO plt2 SELECT i, i, to_char(i/50, 'FM0000') FROM generate_series(0, 59
 ANALYZE plt2;
 ---END---
 ---START---
---
--- list partitioned by expression
---
-CREATE TABLE plt1_e (a int, b int, c text) PARTITION BY LIST(ltrim(c, 'A'));
+CREATE TABLE plt1_e (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY list ((ltrim(c, 'A')));
 ---END---
 ---START---
 CREATE TABLE plt1_e_p1 PARTITION OF plt1_e FOR VALUES IN ('0000', '0003', '0004', '0010');
@@ -499,10 +484,7 @@ EXPLAIN (COSTS OFF)
 SELECT t1.a, t1.c, t2.b, t2.c FROM (SELECT * FROM prt1 WHERE a = 1 AND a = 2) t1 FULL JOIN prt2 t2 ON t1.a = t2.b WHERE t2.a = 0 ORDER BY t1.a, t2.b;
 ---END---
 ---START---
---
--- tests for hash partitioned tables.
---
-CREATE TABLE pht1 (a int, b int, c text) PARTITION BY HASH(c);
+CREATE TABLE pht1 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY hash (c);
 ---END---
 ---START---
 CREATE TABLE pht1_p1 PARTITION OF pht1 FOR VALUES WITH (MODULUS 3, REMAINDER 0);
@@ -520,7 +502,7 @@ INSERT INTO pht1 SELECT i, i, to_char(i/50, 'FM0000') FROM generate_series(0, 59
 ANALYZE pht1;
 ---END---
 ---START---
-CREATE TABLE pht2 (a int, b int, c text) PARTITION BY HASH(c);
+CREATE TABLE pht2 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY hash (c);
 ---END---
 ---START---
 CREATE TABLE pht2_p1 PARTITION OF pht2 FOR VALUES WITH (MODULUS 3, REMAINDER 0);
@@ -538,10 +520,7 @@ INSERT INTO pht2 SELECT i, i, to_char(i/50, 'FM0000') FROM generate_series(0, 59
 ANALYZE pht2;
 ---END---
 ---START---
---
--- hash partitioned by expression
---
-CREATE TABLE pht1_e (a int, b int, c text) PARTITION BY HASH(ltrim(c, 'A'));
+CREATE TABLE pht1_e (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY hash ((ltrim(c, 'A')));
 ---END---
 ---START---
 CREATE TABLE pht1_e_p1 PARTITION OF pht1_e FOR VALUES WITH (MODULUS 3, REMAINDER 0);
@@ -613,10 +592,7 @@ EXPLAIN (COSTS OFF)
 SELECT avg(t1.a), avg(t2.b), t1.c, t2.c FROM plt1 t1 RIGHT JOIN plt2 t2 ON t1.c = t2.c WHERE t1.a % 25 = 0 GROUP BY t1.c, t2.c ORDER BY t1.c, t2.c;
 ---END---
 ---START---
---
--- multiple levels of partitioning
---
-CREATE TABLE prt1_l (a int, b int, c varchar) PARTITION BY RANGE(a);
+CREATE TABLE prt1_l (_gemini_pk serial PRIMARY KEY, a integer, b integer, c varchar) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE TABLE prt1_l_p1 PARTITION OF prt1_l FOR VALUES FROM (0) TO (250);
@@ -646,7 +622,7 @@ INSERT INTO prt1_l SELECT i, i % 25, to_char(i % 4, 'FM0000') FROM generate_seri
 ANALYZE prt1_l;
 ---END---
 ---START---
-CREATE TABLE prt2_l (a int, b int, c varchar) PARTITION BY RANGE(b);
+CREATE TABLE prt2_l (_gemini_pk serial PRIMARY KEY, a integer, b integer, c varchar) PARTITION BY range (b);
 ---END---
 ---START---
 CREATE TABLE prt2_l_p1 PARTITION OF prt2_l FOR VALUES FROM (0) TO (250);
@@ -738,10 +714,7 @@ WHERE EXISTS (
     WHERE prt1_l.c IS NULL);
 ---END---
 ---START---
---
--- negative testcases
---
-CREATE TABLE prt1_n (a int, b int, c varchar) PARTITION BY RANGE(c);
+CREATE TABLE prt1_n (_gemini_pk serial PRIMARY KEY, a integer, b integer, c varchar) PARTITION BY range (c);
 ---END---
 ---START---
 CREATE TABLE prt1_n_p1 PARTITION OF prt1_n FOR VALUES FROM ('0000') TO ('0250');
@@ -756,7 +729,7 @@ INSERT INTO prt1_n SELECT i, i, to_char(i, 'FM0000') FROM generate_series(0, 499
 ANALYZE prt1_n;
 ---END---
 ---START---
-CREATE TABLE prt2_n (a int, b int, c text) PARTITION BY LIST(c);
+CREATE TABLE prt2_n (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY list (c);
 ---END---
 ---START---
 CREATE TABLE prt2_n_p1 PARTITION OF prt2_n FOR VALUES IN ('0000', '0003', '0004', '0010', '0006', '0007');
@@ -771,7 +744,7 @@ INSERT INTO prt2_n SELECT i, i, to_char(i/50, 'FM0000') FROM generate_series(0, 
 ANALYZE prt2_n;
 ---END---
 ---START---
-CREATE TABLE prt3_n (a int, b int, c text) PARTITION BY LIST(c);
+CREATE TABLE prt3_n (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY list (c);
 ---END---
 ---START---
 CREATE TABLE prt3_n_p1 PARTITION OF prt3_n FOR VALUES IN ('0000', '0004', '0006', '0007');
@@ -789,7 +762,7 @@ INSERT INTO prt2_n SELECT i, i, to_char(i/50, 'FM0000') FROM generate_series(0, 
 ANALYZE prt3_n;
 ---END---
 ---START---
-CREATE TABLE prt4_n (a int, b int, c text) PARTITION BY RANGE(a);
+CREATE TABLE prt4_n (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE TABLE prt4_n_p1 PARTITION OF prt4_n FOR VALUES FROM (0) TO (300);
@@ -861,30 +834,44 @@ SELECT t1.a, t1.c, t2.b, t2.c FROM prt1_n t1 FULL JOIN prt1 t2 ON (t1.c = t2.c);
 -- Test some other plan types in a partitionwise join (unfortunately,
 -- we need larger tables to get the planner to choose these plan types)
 --
-create temp table prtx1 (a integer, b integer, c integer)
-  partition by range (a);
+DROP TABLE IF EXISTS prtx1;
+
+CREATE TABLE prtx1 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY range (a);
 ---END---
 ---START---
-create temp table prtx1_1 partition of prtx1 for values from (1) to (11);
+DROP TABLE IF EXISTS prtx1_1;
+
+create table prtx1_1 partition of prtx1 for values from (1) to (11);
 ---END---
 ---START---
-create temp table prtx1_2 partition of prtx1 for values from (11) to (21);
+DROP TABLE IF EXISTS prtx1_2;
+
+create table prtx1_2 partition of prtx1 for values from (11) to (21);
 ---END---
 ---START---
-create temp table prtx1_3 partition of prtx1 for values from (21) to (31);
+DROP TABLE IF EXISTS prtx1_3;
+
+create table prtx1_3 partition of prtx1 for values from (21) to (31);
 ---END---
 ---START---
-create temp table prtx2 (a integer, b integer, c integer)
-  partition by range (a);
+DROP TABLE IF EXISTS prtx2;
+
+CREATE TABLE prtx2 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY range (a);
 ---END---
 ---START---
-create temp table prtx2_1 partition of prtx2 for values from (1) to (11);
+DROP TABLE IF EXISTS prtx2_1;
+
+create table prtx2_1 partition of prtx2 for values from (1) to (11);
 ---END---
 ---START---
-create temp table prtx2_2 partition of prtx2 for values from (11) to (21);
+DROP TABLE IF EXISTS prtx2_2;
+
+create table prtx2_2 partition of prtx2 for values from (11) to (21);
 ---END---
 ---START---
-create temp table prtx2_3 partition of prtx2 for values from (21) to (31);
+DROP TABLE IF EXISTS prtx2_3;
+
+create table prtx2_3 partition of prtx2 for values from (21) to (31);
 ---END---
 ---START---
 insert into prtx1 select 1 + i%30, i, i
@@ -933,12 +920,7 @@ where not exists (select 1 from prtx2
   and a<20 and c=91;
 ---END---
 ---START---
---
--- Test advanced partition-matching algorithm for partitioned join
---
-
--- Tests for range-partitioned tables
-CREATE TABLE prt1_adv (a int, b int, c varchar) PARTITION BY RANGE (a);
+CREATE TABLE prt1_adv (_gemini_pk serial PRIMARY KEY, a integer, b integer, c varchar) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE TABLE prt1_adv_p1 PARTITION OF prt1_adv FOR VALUES FROM (100) TO (200);
@@ -959,7 +941,7 @@ INSERT INTO prt1_adv SELECT i, i % 25, to_char(i, 'FM0000') FROM generate_series
 ANALYZE prt1_adv;
 ---END---
 ---START---
-CREATE TABLE prt2_adv (a int, b int, c varchar) PARTITION BY RANGE (b);
+CREATE TABLE prt2_adv (_gemini_pk serial PRIMARY KEY, a integer, b integer, c varchar) PARTITION BY range (b);
 ---END---
 ---START---
 CREATE TABLE prt2_adv_p1 PARTITION OF prt2_adv FOR VALUES FROM (100) TO (150);
@@ -1220,7 +1202,7 @@ DROP TABLE prt2_adv_p3;
 ANALYZE prt2_adv;
 ---END---
 ---START---
-CREATE TABLE prt3_adv (a int, b int, c varchar) PARTITION BY RANGE (a);
+CREATE TABLE prt3_adv (_gemini_pk serial PRIMARY KEY, a integer, b integer, c varchar) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE TABLE prt3_adv_p1 PARTITION OF prt3_adv FOR VALUES FROM (200) TO (300);
@@ -1255,8 +1237,7 @@ DROP TABLE prt2_adv;
 DROP TABLE prt3_adv;
 ---END---
 ---START---
--- Test interaction of partitioned join with partition pruning
-CREATE TABLE prt1_adv (a int, b int, c varchar) PARTITION BY RANGE (a);
+CREATE TABLE prt1_adv (_gemini_pk serial PRIMARY KEY, a integer, b integer, c varchar) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE TABLE prt1_adv_p1 PARTITION OF prt1_adv FOR VALUES FROM (100) TO (200);
@@ -1277,7 +1258,7 @@ INSERT INTO prt1_adv SELECT i, i % 25, to_char(i, 'FM0000') FROM generate_series
 ANALYZE prt1_adv;
 ---END---
 ---START---
-CREATE TABLE prt2_adv (a int, b int, c varchar) PARTITION BY RANGE (b);
+CREATE TABLE prt2_adv (_gemini_pk serial PRIMARY KEY, a integer, b integer, c varchar) PARTITION BY range (b);
 ---END---
 ---START---
 CREATE TABLE prt2_adv_p1 PARTITION OF prt2_adv FOR VALUES FROM (100) TO (200);
@@ -1330,8 +1311,7 @@ DROP TABLE prt1_adv;
 DROP TABLE prt2_adv;
 ---END---
 ---START---
--- Tests for list-partitioned tables
-CREATE TABLE plt1_adv (a int, b int, c text) PARTITION BY LIST (c);
+CREATE TABLE plt1_adv (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY list (c);
 ---END---
 ---START---
 CREATE TABLE plt1_adv_p1 PARTITION OF plt1_adv FOR VALUES IN ('0001', '0003');
@@ -1349,7 +1329,7 @@ INSERT INTO plt1_adv SELECT i, i, to_char(i % 10, 'FM0000') FROM generate_series
 ANALYZE plt1_adv;
 ---END---
 ---START---
-CREATE TABLE plt2_adv (a int, b int, c text) PARTITION BY LIST (c);
+CREATE TABLE plt2_adv (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY list (c);
 ---END---
 ---START---
 CREATE TABLE plt2_adv_p1 PARTITION OF plt2_adv FOR VALUES IN ('0002', '0003');
@@ -1768,7 +1748,7 @@ ALTER TABLE plt2_adv ATTACH PARTITION plt2_adv_p2 FOR VALUES IN ('0004', '0006')
 ANALYZE plt2_adv;
 ---END---
 ---START---
-CREATE TABLE plt3_adv (a int, b int, c text) PARTITION BY LIST (c);
+CREATE TABLE plt3_adv (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY list (c);
 ---END---
 ---START---
 CREATE TABLE plt3_adv_p1 PARTITION OF plt3_adv FOR VALUES IN ('0004', '0006');
@@ -1845,8 +1825,7 @@ DROP TABLE plt2_adv;
 DROP TABLE plt3_adv;
 ---END---
 ---START---
--- Test interaction of partitioned join with partition pruning
-CREATE TABLE plt1_adv (a int, b int, c text) PARTITION BY LIST (c);
+CREATE TABLE plt1_adv (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY list (c);
 ---END---
 ---START---
 CREATE TABLE plt1_adv_p1 PARTITION OF plt1_adv FOR VALUES IN ('0001');
@@ -1870,7 +1849,7 @@ INSERT INTO plt1_adv VALUES (-1, -1, NULL);
 ANALYZE plt1_adv;
 ---END---
 ---START---
-CREATE TABLE plt2_adv (a int, b int, c text) PARTITION BY LIST (c);
+CREATE TABLE plt2_adv (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY list (c);
 ---END---
 ---START---
 CREATE TABLE plt2_adv_p1 PARTITION OF plt2_adv FOR VALUES IN ('0001', '0002');
@@ -1940,8 +1919,7 @@ DROP TABLE plt1_adv;
 DROP TABLE plt2_adv;
 ---END---
 ---START---
--- Test the process_outer_partition() code path
-CREATE TABLE plt1_adv (a int, b int, c text) PARTITION BY LIST (c);
+CREATE TABLE plt1_adv (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY list (c);
 ---END---
 ---START---
 CREATE TABLE plt1_adv_p1 PARTITION OF plt1_adv FOR VALUES IN ('0000', '0001', '0002');
@@ -1956,7 +1934,7 @@ INSERT INTO plt1_adv SELECT i, i, to_char(i % 5, 'FM0000') FROM generate_series(
 ANALYZE plt1_adv;
 ---END---
 ---START---
-CREATE TABLE plt2_adv (a int, b int, c text) PARTITION BY LIST (c);
+CREATE TABLE plt2_adv (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY list (c);
 ---END---
 ---START---
 CREATE TABLE plt2_adv_p1 PARTITION OF plt2_adv FOR VALUES IN ('0002');
@@ -1971,7 +1949,7 @@ INSERT INTO plt2_adv SELECT i, i, to_char(i % 5, 'FM0000') FROM generate_series(
 ANALYZE plt2_adv;
 ---END---
 ---START---
-CREATE TABLE plt3_adv (a int, b int, c text) PARTITION BY LIST (c);
+CREATE TABLE plt3_adv (_gemini_pk serial PRIMARY KEY, a integer, b integer, c text) PARTITION BY list (c);
 ---END---
 ---START---
 CREATE TABLE plt3_adv_p1 PARTITION OF plt3_adv FOR VALUES IN ('0001');
@@ -2006,8 +1984,7 @@ DROP TABLE plt2_adv;
 DROP TABLE plt3_adv;
 ---END---
 ---START---
--- Tests for multi-level partitioned tables
-CREATE TABLE alpha (a double precision, b int, c text) PARTITION BY RANGE (a);
+CREATE TABLE alpha (_gemini_pk serial PRIMARY KEY, a double precision, b integer, c text) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE TABLE alpha_neg PARTITION OF alpha FOR VALUES FROM ('-Infinity') TO (0) PARTITION BY RANGE (b);
@@ -2043,7 +2020,7 @@ INSERT INTO alpha_pos SELECT  1.0, i, to_char(i % 10, 'FM0000') FROM generate_se
 ANALYZE alpha;
 ---END---
 ---START---
-CREATE TABLE beta (a double precision, b int, c text) PARTITION BY RANGE (a);
+CREATE TABLE beta (_gemini_pk serial PRIMARY KEY, a double precision, b integer, c text) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE TABLE beta_neg PARTITION OF beta FOR VALUES FROM (-10.0) TO (0) PARTITION BY RANGE (b);

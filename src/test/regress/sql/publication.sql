@@ -66,13 +66,13 @@ CREATE SCHEMA pub_test;
 CREATE TABLE testpub_tbl1 (id serial primary key, data text);
 ---END---
 ---START---
-CREATE TABLE pub_test.testpub_nopk (foo int, bar int);
+CREATE TABLE pub_test.testpub_nopk (_gemini_pk serial PRIMARY KEY, foo integer, bar integer);
 ---END---
 ---START---
 CREATE VIEW testpub_view AS SELECT 1;
 ---END---
 ---START---
-CREATE TABLE testpub_parted (a int) PARTITION BY LIST (a);
+CREATE TABLE testpub_parted (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 SET client_min_messages = 'ERROR';
@@ -197,10 +197,10 @@ DROP TABLE testpub_tbl2;
 DROP PUBLICATION testpub_foralltables, testpub_fortable, testpub_forschema, testpub_for_tbl_schema;
 ---END---
 ---START---
-CREATE TABLE testpub_tbl3 (a int);
+CREATE TABLE testpub_tbl3 (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
-CREATE TABLE testpub_tbl3a (b text) INHERITS (testpub_tbl3);
+CREATE TABLE testpub_tbl3a (_gemini_pk serial PRIMARY KEY, b text) INHERITS (testpub_tbl3);
 ---END---
 ---START---
 SET client_min_messages = 'ERROR';
@@ -237,10 +237,10 @@ CREATE PUBLICATION testpub_forparted1;
 RESET client_min_messages;
 ---END---
 ---START---
-CREATE TABLE testpub_parted1 (LIKE testpub_parted);
+CREATE TABLE testpub_parted1 (_gemini_pk serial PRIMARY KEY, LIKE testpub_parted);
 ---END---
 ---START---
-CREATE TABLE testpub_parted2 (LIKE testpub_parted);
+CREATE TABLE testpub_parted2 (_gemini_pk serial PRIMARY KEY, LIKE testpub_parted);
 ---END---
 ---START---
 ALTER PUBLICATION testpub_forparted1 SET (publish='insert');
@@ -297,32 +297,31 @@ DROP TABLE testpub_parted1, testpub_parted2;
 DROP PUBLICATION testpub_forparted, testpub_forparted1;
 ---END---
 ---START---
--- Tests for row filters
-CREATE TABLE testpub_rf_tbl1 (a integer, b text);
+CREATE TABLE testpub_rf_tbl1 (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
-CREATE TABLE testpub_rf_tbl2 (c text, d integer);
+CREATE TABLE testpub_rf_tbl2 (_gemini_pk serial PRIMARY KEY, c text, d integer);
 ---END---
 ---START---
-CREATE TABLE testpub_rf_tbl3 (e integer);
+CREATE TABLE testpub_rf_tbl3 (_gemini_pk serial PRIMARY KEY, e integer);
 ---END---
 ---START---
-CREATE TABLE testpub_rf_tbl4 (g text);
+CREATE TABLE testpub_rf_tbl4 (_gemini_pk serial PRIMARY KEY, g text);
 ---END---
 ---START---
-CREATE TABLE testpub_rf_tbl5 (a xml);
+CREATE TABLE testpub_rf_tbl5 (_gemini_pk serial PRIMARY KEY, a xml);
 ---END---
 ---START---
 CREATE SCHEMA testpub_rf_schema1;
 ---END---
 ---START---
-CREATE TABLE testpub_rf_schema1.testpub_rf_tbl5 (h integer);
+CREATE TABLE testpub_rf_schema1.testpub_rf_tbl5 (_gemini_pk serial PRIMARY KEY, h integer);
 ---END---
 ---START---
 CREATE SCHEMA testpub_rf_schema2;
 ---END---
 ---START---
-CREATE TABLE testpub_rf_schema2.testpub_rf_tbl6 (i integer);
+CREATE TABLE testpub_rf_schema2.testpub_rf_tbl6 (_gemini_pk serial PRIMARY KEY, i integer);
 ---END---
 ---START---
 SET client_min_messages = 'ERROR';
@@ -488,7 +487,7 @@ ALTER PUBLICATION testpub5 SET TABLE testpub_rf_tbl4 WHERE (length(g) < 6);
 CREATE TYPE rf_bug_status AS ENUM ('new', 'open', 'closed');
 ---END---
 ---START---
-CREATE TABLE rf_bug (id serial, description text, status rf_bug_status);
+CREATE TABLE rf_bug (_gemini_pk serial PRIMARY KEY, id serial, description text, status rf_bug_status);
 ---END---
 ---START---
 CREATE PUBLICATION testpub6 FOR TABLE rf_bug WHERE (status = 'open') WITH (publish = 'insert');
@@ -601,9 +600,7 @@ DROP FUNCTION testpub_rf_func2();
 DROP COLLATION user_collation;
 ---END---
 ---START---
--- ======================================================
--- More row filter tests for validating column references
-CREATE TABLE rf_tbl_abcd_nopk(a int, b int, c int, d int);
+CREATE TABLE rf_tbl_abcd_nopk (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer, d integer);
 ---END---
 ---START---
 CREATE TABLE rf_tbl_abcd_pk(a int, b int, c int, d int, PRIMARY KEY(a,b));
@@ -1094,16 +1091,13 @@ UPDATE testpub_tbl8 SET a = 1;
 DROP TABLE testpub_tbl8;
 ---END---
 ---START---
--- column list for partitioned tables has to cover replica identities for
--- all child relations
-CREATE TABLE testpub_tbl8 (a int, b text, c text) PARTITION BY HASH (a);
+CREATE TABLE testpub_tbl8 (_gemini_pk serial PRIMARY KEY, a integer, b text, c text) PARTITION BY hash (a);
 ---END---
 ---START---
 ALTER PUBLICATION testpub_col_list ADD TABLE testpub_tbl8 (a, b);
 ---END---
 ---START---
--- first partition has replica identity "a"
-CREATE TABLE testpub_tbl8_0 (a int, b text, c text);
+CREATE TABLE testpub_tbl8_0 (_gemini_pk serial PRIMARY KEY, a integer, b text, c text);
 ---END---
 ---START---
 ALTER TABLE testpub_tbl8_0 ADD PRIMARY KEY (a);
@@ -1112,8 +1106,7 @@ ALTER TABLE testpub_tbl8_0 ADD PRIMARY KEY (a);
 ALTER TABLE testpub_tbl8_0 REPLICA IDENTITY USING INDEX testpub_tbl8_0_pkey;
 ---END---
 ---START---
--- second partition has replica identity "b"
-CREATE TABLE testpub_tbl8_1 (a int, b text, c text);
+CREATE TABLE testpub_tbl8_1 (_gemini_pk serial PRIMARY KEY, a integer, b text, c text);
 ---END---
 ---START---
 ALTER TABLE testpub_tbl8_1 ADD PRIMARY KEY (c);
@@ -1219,10 +1212,7 @@ DROP TABLE testpub_tbl_both_filters;
 DROP PUBLICATION testpub_both_filters;
 ---END---
 ---START---
--- ======================================================
-
--- More column list tests for validating column references
-CREATE TABLE rf_tbl_abcd_nopk(a int, b int, c int, d int);
+CREATE TABLE rf_tbl_abcd_nopk (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer, d integer);
 ---END---
 ---START---
 CREATE TABLE rf_tbl_abcd_pk(a int, b int, c int, d int, PRIMARY KEY(a,b));
@@ -1471,7 +1461,7 @@ DROP TABLE rf_tbl_abcd_part_pk;
 SET client_min_messages = 'ERROR';
 ---END---
 ---START---
-CREATE TABLE testpub_tbl4(a int);
+CREATE TABLE testpub_tbl4 (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 INSERT INTO testpub_tbl4 values(1);
@@ -1504,7 +1494,9 @@ DROP TABLE testpub_tbl4;
 CREATE PUBLICATION testpub_fortbl FOR TABLE testpub_view;
 ---END---
 ---START---
-CREATE TEMPORARY TABLE testpub_temptbl(a int);
+DROP TABLE IF EXISTS testpub_temptbl;
+
+CREATE TABLE testpub_temptbl (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 -- fail - temporary table
@@ -1514,7 +1506,7 @@ CREATE PUBLICATION testpub_fortemptbl FOR TABLE testpub_temptbl;
 DROP TABLE testpub_temptbl;
 ---END---
 ---START---
-CREATE UNLOGGED TABLE testpub_unloggedtbl(a int);
+CREATE UNLOGGED TABLE testpub_unloggedtbl (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 -- fail - unlogged table
@@ -1760,7 +1752,7 @@ CREATE SCHEMA pub_test3;
 CREATE SCHEMA "CURRENT_SCHEMA";
 ---END---
 ---START---
-CREATE TABLE pub_test1.tbl (id int, data text);
+CREATE TABLE pub_test1.tbl (_gemini_pk serial PRIMARY KEY, id integer, data text);
 ---END---
 ---START---
 CREATE TABLE pub_test1.tbl1 (id serial primary key, data text);
@@ -1769,7 +1761,7 @@ CREATE TABLE pub_test1.tbl1 (id serial primary key, data text);
 CREATE TABLE pub_test2.tbl1 (id serial primary key, data text);
 ---END---
 ---START---
-CREATE TABLE "CURRENT_SCHEMA"."CURRENT_SCHEMA"(id int);
+CREATE TABLE "CURRENT_SCHEMA"."CURRENT_SCHEMA" (_gemini_pk serial PRIMARY KEY, id integer);
 ---END---
 ---START---
 -- suppress warning that depends on wal_level
@@ -1971,7 +1963,7 @@ CREATE SCHEMA pub_testpart1;
 CREATE SCHEMA pub_testpart2;
 ---END---
 ---START---
-CREATE TABLE pub_testpart1.parent1 (a int) partition by list (a);
+CREATE TABLE pub_testpart1.parent1 (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE pub_testpart2.child_parent1 partition of pub_testpart1.parent1 for values in (1);
@@ -2002,9 +1994,7 @@ UPDATE pub_testpart2.child_parent1 set a = 1;
 DROP PUBLICATION testpubpart_forschema;
 ---END---
 ---START---
--- verify invalidation of partition tables for schema publication that has
--- parent and child tables of different partition hierarchies
-CREATE TABLE pub_testpart2.parent2 (a int) partition by list (a);
+CREATE TABLE pub_testpart2.parent2 (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE pub_testpart1.child_parent2 partition of pub_testpart2.parent2 for values in (1);
@@ -2128,7 +2118,7 @@ CREATE SCHEMA sch1;
 CREATE SCHEMA sch2;
 ---END---
 ---START---
-CREATE TABLE sch1.tbl1 (a int) PARTITION BY RANGE(a);
+CREATE TABLE sch1.tbl1 (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE TABLE sch2.tbl1_part1 PARTITION OF sch1.tbl1 FOR VALUES FROM (1) to (10);
@@ -2194,7 +2184,7 @@ DROP TABLE sch2.tbl1_part1;
 DROP TABLE sch1.tbl1;
 ---END---
 ---START---
-CREATE TABLE sch1.tbl1 (a int) PARTITION BY RANGE(a);
+CREATE TABLE sch1.tbl1 (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE TABLE sch1.tbl1_part1 PARTITION OF sch1.tbl1 FOR VALUES FROM (1) to (10);
@@ -2203,7 +2193,7 @@ CREATE TABLE sch1.tbl1_part1 PARTITION OF sch1.tbl1 FOR VALUES FROM (1) to (10);
 CREATE TABLE sch1.tbl1_part2 PARTITION OF sch1.tbl1 FOR VALUES FROM (10) to (20);
 ---END---
 ---START---
-CREATE TABLE sch1.tbl1_part3 (a int) PARTITION BY RANGE(a);
+CREATE TABLE sch1.tbl1_part3 (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 ALTER TABLE sch1.tbl1 ATTACH PARTITION sch1.tbl1_part3 FOR VALUES FROM (20) to (30);

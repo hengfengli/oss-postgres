@@ -85,7 +85,7 @@ INNER JOIN tenk1 t2 ON t1.unique1 = t2.thousand
 WHERE t2.unique1 < 1200;', true);
 ---END---
 ---START---
-CREATE TABLE flt (f float);
+CREATE TABLE flt (_gemini_pk serial PRIMARY KEY, f double precision);
 ---END---
 ---START---
 CREATE INDEX flt_f_idx ON flt (f);
@@ -113,9 +113,7 @@ SELECT * FROM flt f1 INNER JOIN flt f2 ON f1.f >= f2.f;', false);
 DROP TABLE flt;
 ---END---
 ---START---
--- Exercise Memoize in binary mode with a large fixed width type and a
--- varlena type.
-CREATE TABLE strtest (n name, t text);
+CREATE TABLE strtest (_gemini_pk serial PRIMARY KEY, n name, t text);
 ---END---
 ---START---
 CREATE INDEX strtest_n_idx ON strtest (n);
@@ -151,7 +149,7 @@ DROP TABLE strtest;
 SET enable_partitionwise_join TO on;
 ---END---
 ---START---
-CREATE TABLE prt (a int) PARTITION BY RANGE(a);
+CREATE TABLE prt (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE TABLE prt_p1 PARTITION OF prt FOR VALUES FROM (0) TO (10);

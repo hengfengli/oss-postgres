@@ -93,10 +93,7 @@ analyze bigger_than_it_looks;
 update pg_class set reltuples = 1000 where relname = 'bigger_than_it_looks';
 ---END---
 ---START---
--- Make a relation whose size we underestimate and that also has a
--- kind of skew that breaks our batching scheme.  We want stats to say
--- 2 rows, but actually there are 20,000 rows with the same key.
-create table extremely_skewed (id int, t text);
+CREATE TABLE extremely_skewed (_gemini_pk serial PRIMARY KEY, id integer, t text);
 ---END---
 ---START---
 alter table extremely_skewed set (autovacuum_enabled = 'false');
@@ -971,10 +968,10 @@ SET parallel_setup_cost = 0;
 SET parallel_tuple_cost = 0;
 ---END---
 ---START---
-CREATE TABLE hjtest_matchbits_t1(id int);
+CREATE TABLE hjtest_matchbits_t1 (_gemini_pk serial PRIMARY KEY, id integer);
 ---END---
 ---START---
-CREATE TABLE hjtest_matchbits_t2(id int);
+CREATE TABLE hjtest_matchbits_t2 (_gemini_pk serial PRIMARY KEY, id integer);
 ---END---
 ---START---
 INSERT INTO hjtest_matchbits_t1 VALUES (1);
@@ -1032,12 +1029,10 @@ SET LOCAL enable_sort = OFF;
 SET LOCAL from_collapse_limit = 1;
 ---END---
 ---START---
--- allows easy changing of join order
-
-CREATE TABLE hjtest_1 (a text, b int, id int, c bool);
+CREATE TABLE hjtest_1 (_gemini_pk serial PRIMARY KEY, a text, b integer, id integer, c bool);
 ---END---
 ---START---
-CREATE TABLE hjtest_2 (a bool, id int, b text, c int);
+CREATE TABLE hjtest_2 (_gemini_pk serial PRIMARY KEY, a bool, id integer, b text, c integer);
 ---END---
 ---START---
 INSERT INTO hjtest_1(a, b, id, c) VALUES ('text', 2, 1, false);

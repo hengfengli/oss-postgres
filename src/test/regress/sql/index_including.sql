@@ -1,13 +1,5 @@
 ---START---
-/*
- * 1.test CREATE INDEX
- *
- * Deliberately avoid dropping objects in this section, to get some pg_dump
- * coverage.
- */
-
--- Regular index with included columns
-CREATE TABLE tbl_include_reg (c1 int, c2 int, c3 int, c4 box);
+CREATE TABLE tbl_include_reg (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer, c4 box);
 ---END---
 ---START---
 INSERT INTO tbl_include_reg SELECT x, 2*x, 3*x, box('4,4,4,4') FROM generate_series(1,10) AS x;
@@ -48,8 +40,7 @@ FROM pg_index i JOIN pg_class c ON i.indexrelid = c.oid
 WHERE i.indrelid = 'tbl_include_unique1'::regclass ORDER BY c.relname;
 ---END---
 ---START---
--- Unique index and unique constraint. Both must fail.
-CREATE TABLE tbl_include_unique2 (c1 int, c2 int, c3 int, c4 box);
+CREATE TABLE tbl_include_unique2 (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer, c4 box);
 ---END---
 ---START---
 INSERT INTO tbl_include_unique2 SELECT 1, 2, 3*x, box('4,4,4,4') FROM generate_series(1,10) AS x;
@@ -61,8 +52,7 @@ CREATE UNIQUE INDEX tbl_include_unique2_idx_unique ON tbl_include_unique2 using 
 ALTER TABLE tbl_include_unique2 add UNIQUE (c1, c2) INCLUDE (c3, c4);
 ---END---
 ---START---
--- PK constraint
-CREATE TABLE tbl_include_pk (c1 int, c2 int, c3 int, c4 box);
+CREATE TABLE tbl_include_pk (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer, c4 box);
 ---END---
 ---START---
 INSERT INTO tbl_include_pk SELECT 1, 2*x, 3*x, box('4,4,4,4') FROM generate_series(1,10) AS x;
@@ -76,7 +66,7 @@ FROM pg_index i JOIN pg_class c ON i.indexrelid = c.oid
 WHERE i.indrelid = 'tbl_include_pk'::regclass ORDER BY c.relname;
 ---END---
 ---START---
-CREATE TABLE tbl_include_box (c1 int, c2 int, c3 int, c4 box);
+CREATE TABLE tbl_include_box (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer, c4 box);
 ---END---
 ---START---
 INSERT INTO tbl_include_box SELECT 1, 2*x, 3*x, box('4,4,4,4') FROM generate_series(1,10) AS x;
@@ -93,8 +83,7 @@ FROM pg_index i JOIN pg_class c ON i.indexrelid = c.oid
 WHERE i.indrelid = 'tbl_include_box'::regclass ORDER BY c.relname;
 ---END---
 ---START---
--- PK constraint. Must fail.
-CREATE TABLE tbl_include_box_pk (c1 int, c2 int, c3 int, c4 box);
+CREATE TABLE tbl_include_box_pk (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer, c4 box);
 ---END---
 ---START---
 INSERT INTO tbl_include_box_pk SELECT 1, 2, 3*x, box('4,4,4,4') FROM generate_series(1,10) AS x;
@@ -103,11 +92,7 @@ INSERT INTO tbl_include_box_pk SELECT 1, 2, 3*x, box('4,4,4,4') FROM generate_se
 ALTER TABLE tbl_include_box_pk add PRIMARY KEY (c1, c2) INCLUDE (c3, c4);
 ---END---
 ---START---
-/*
- * 2. Test CREATE TABLE with constraint
- */
-CREATE TABLE tbl (c1 int,c2 int, c3 int, c4 box,
-				CONSTRAINT covering UNIQUE(c1,c2) INCLUDE(c3,c4));
+CREATE TABLE tbl (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer, c4 box, CONSTRAINT covering UNIQUE (c1, c2) INCLUDE (c3, c4));
 ---END---
 ---START---
 SELECT indexrelid::regclass, indnatts, indnkeyatts, indisunique, indisprimary, indkey, indclass FROM pg_index WHERE indrelid = 'tbl'::regclass::oid;
@@ -167,8 +152,7 @@ DROP TABLE tbl;
 RESET enable_seqscan;
 ---END---
 ---START---
-CREATE TABLE tbl (c1 int,c2 int, c3 int, c4 box,
-				UNIQUE(c1,c2) INCLUDE(c3,c4));
+CREATE TABLE tbl (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer, c4 box, UNIQUE (c1, c2) INCLUDE (c3, c4));
 ---END---
 ---START---
 SELECT indexrelid::regclass, indnatts, indnkeyatts, indisunique, indisprimary, indkey, indclass FROM pg_index WHERE indrelid = 'tbl'::regclass::oid;
@@ -207,8 +191,7 @@ INSERT INTO tbl SELECT x, 2*x, NULL, NULL FROM generate_series(1,10) AS x;
 DROP TABLE tbl;
 ---END---
 ---START---
-CREATE TABLE tbl (c1 int,c2 int, c3 int, c4 box,
-				EXCLUDE USING btree (c1 WITH =) INCLUDE(c3,c4));
+CREATE TABLE tbl (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer, c4 box, EXCLUDE USING btree (c1 WITH OPERATOR(=)) INCLUDE (c3, c4));
 ---END---
 ---START---
 SELECT indexrelid::regclass, indnatts, indnkeyatts, indisunique, indisprimary, indkey, indclass FROM pg_index WHERE indrelid = 'tbl'::regclass::oid;
@@ -227,11 +210,7 @@ INSERT INTO tbl SELECT x, 2*x, NULL, NULL FROM generate_series(1,10) AS x;
 DROP TABLE tbl;
 ---END---
 ---START---
-/*
- * 3.0 Test ALTER TABLE DROP COLUMN.
- * Any column deletion leads to index deletion.
- */
-CREATE TABLE tbl (c1 int,c2 int, c3 int, c4 int);
+CREATE TABLE tbl (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer, c4 integer);
 ---END---
 ---START---
 CREATE UNIQUE INDEX tbl_idx ON tbl using btree(c1, c2, c3, c4);
@@ -249,12 +228,7 @@ SELECT indexdef FROM pg_indexes WHERE tablename = 'tbl' ORDER BY indexname;
 DROP TABLE tbl;
 ---END---
 ---START---
-/*
- * 3.1 Test ALTER TABLE DROP COLUMN.
- * Included column deletion leads to the index deletion,
- * AS well AS key columns deletion. It's explained in documentation.
- */
-CREATE TABLE tbl (c1 int,c2 int, c3 int, c4 box);
+CREATE TABLE tbl (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer, c4 box);
 ---END---
 ---START---
 CREATE UNIQUE INDEX tbl_idx ON tbl using btree(c1, c2) INCLUDE(c3,c4);
@@ -272,12 +246,7 @@ SELECT indexdef FROM pg_indexes WHERE tablename = 'tbl' ORDER BY indexname;
 DROP TABLE tbl;
 ---END---
 ---START---
-/*
- * 3.2 Test ALTER TABLE DROP COLUMN.
- * Included column deletion leads to the index deletion.
- * AS well AS key columns deletion. It's explained in documentation.
- */
-CREATE TABLE tbl (c1 int,c2 int, c3 int, c4 box, UNIQUE(c1, c2) INCLUDE(c3,c4));
+CREATE TABLE tbl (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer, c4 box, UNIQUE (c1, c2) INCLUDE (c3, c4));
 ---END---
 ---START---
 SELECT indexdef FROM pg_indexes WHERE tablename = 'tbl' ORDER BY indexname;
@@ -298,10 +267,7 @@ SELECT indexdef FROM pg_indexes WHERE tablename = 'tbl' ORDER BY indexname;
 DROP TABLE tbl;
 ---END---
 ---START---
-/*
- * 3.3 Test ALTER TABLE SET STATISTICS
- */
-CREATE TABLE tbl (c1 int, c2 int);
+CREATE TABLE tbl (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer);
 ---END---
 ---START---
 CREATE INDEX tbl_idx ON tbl (c1, (c1+0)) INCLUDE (c2);
@@ -322,10 +288,7 @@ ALTER INDEX tbl_idx ALTER COLUMN 4 SET STATISTICS 1000;
 DROP TABLE tbl;
 ---END---
 ---START---
-/*
- * 4. CREATE INDEX CONCURRENTLY
- */
-CREATE TABLE tbl (c1 int,c2 int, c3 int, c4 box, UNIQUE(c1, c2) INCLUDE(c3,c4));
+CREATE TABLE tbl (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer, c4 box, UNIQUE (c1, c2) INCLUDE (c3, c4));
 ---END---
 ---START---
 INSERT INTO tbl SELECT x, 2*x, 3*x, box('4,4,4,4') FROM generate_series(1,1000) AS x;
@@ -340,10 +303,7 @@ SELECT indexdef FROM pg_indexes WHERE tablename = 'tbl' ORDER BY indexname;
 DROP TABLE tbl;
 ---END---
 ---START---
-/*
- * 5. REINDEX
- */
-CREATE TABLE tbl (c1 int,c2 int, c3 int, c4 box, UNIQUE(c1, c2) INCLUDE(c3,c4));
+CREATE TABLE tbl (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer, c4 box, UNIQUE (c1, c2) INCLUDE (c3, c4));
 ---END---
 ---START---
 SELECT indexdef FROM pg_indexes WHERE tablename = 'tbl' ORDER BY indexname;
@@ -370,10 +330,7 @@ SELECT indexdef FROM pg_indexes WHERE tablename = 'tbl' ORDER BY indexname;
 DROP TABLE tbl;
 ---END---
 ---START---
-/*
- * 7. Check various AMs. All but btree, gist and spgist must fail.
- */
-CREATE TABLE tbl (c1 int,c2 int, c3 box, c4 box);
+CREATE TABLE tbl (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 box, c4 box);
 ---END---
 ---START---
 CREATE INDEX on tbl USING brin(c1, c2) INCLUDE (c3, c4);
@@ -400,10 +357,7 @@ CREATE INDEX on tbl USING btree(c1, c2) INCLUDE (c3, c4);
 DROP TABLE tbl;
 ---END---
 ---START---
-/*
- * 8. Update, delete values in indexed table.
- */
-CREATE TABLE tbl (c1 int, c2 int, c3 int, c4 box);
+CREATE TABLE tbl (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer, c4 box);
 ---END---
 ---START---
 INSERT INTO tbl SELECT x, 2*x, 3*x, box('4,4,4,4') FROM generate_series(1,10) AS x;
@@ -431,10 +385,7 @@ DELETE FROM tbl WHERE c1 = 5 OR c3 = 12;
 DROP TABLE tbl;
 ---END---
 ---START---
-/*
- * 9. Alter column type.
- */
-CREATE TABLE tbl (c1 int,c2 int, c3 int, c4 box, UNIQUE(c1, c2) INCLUDE(c3,c4));
+CREATE TABLE tbl (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer, c4 box, UNIQUE (c1, c2) INCLUDE (c3, c4));
 ---END---
 ---START---
 INSERT INTO tbl SELECT x, 2*x, 3*x, box('4,4,4,4') FROM generate_series(1,10) AS x;

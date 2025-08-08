@@ -1,33 +1,5 @@
 ---START---
-CREATE TABLE brintest (byteacol bytea,
-	charcol "char",
-	namecol name,
-	int8col bigint,
-	int2col smallint,
-	int4col integer,
-	textcol text,
-	oidcol oid,
-	tidcol tid,
-	float4col real,
-	float8col double precision,
-	macaddrcol macaddr,
-	inetcol inet,
-	cidrcol cidr,
-	bpcharcol character,
-	datecol date,
-	timecol time without time zone,
-	timestampcol timestamp without time zone,
-	timestamptzcol timestamp with time zone,
-	intervalcol interval,
-	timetzcol time with time zone,
-	bitcol bit(10),
-	varbitcol bit varying(16),
-	numericcol numeric,
-	uuidcol uuid,
-	int4rangecol int4range,
-	lsncol pg_lsn,
-	boxcol box
-) WITH (fillfactor=10, autovacuum_enabled=off);
+CREATE TABLE brintest (_gemini_pk serial PRIMARY KEY, byteacol bytea, charcol "char", namecol name, int8col bigint, int2col smallint, int4col integer, textcol text, oidcol oid, tidcol tid, float4col real, float8col double precision, macaddrcol macaddr, inetcol inet, cidrcol cidr, bpcharcol char, datecol date, timecol time, timestampcol timestamp, timestamptzcol timestamp with time zone, intervalcol interval, timetzcol time with time zone, bitcol pg_catalog.bit(10), varbitcol bit varying(16), numericcol numeric, uuidcol uuid, int4rangecol int4range, lsncol pg_lsn, boxcol box) WITH (fillfactor = 10, autovacuum_enabled = off);
 ---END---
 ---START---
 INSERT INTO brintest SELECT
@@ -103,10 +75,7 @@ CREATE INDEX brinidx ON brintest USING brin (
 ) with (pages_per_range = 1);
 ---END---
 ---START---
-CREATE TABLE brinopers (colname name, typ text,
-	op text[], value text[], matches int[],
-	check (cardinality(op) = cardinality(value)),
-	check (cardinality(op) = cardinality(matches)));
+CREATE TABLE brinopers (_gemini_pk serial PRIMARY KEY, colname name, typ text, op text[], value text[], matches integer[], CHECK (cardinality(op) = cardinality(value)), CHECK (cardinality(op) = cardinality(matches)));
 ---END---
 ---START---
 INSERT INTO brinopers VALUES
@@ -457,10 +426,7 @@ SELECT brin_desummarize_range('brinidx', 0);
 SELECT brin_desummarize_range('brinidx', 100000000);
 ---END---
 ---START---
--- Test brin_summarize_range
-CREATE TABLE brin_summarize (
-    value int
-) WITH (fillfactor=10, autovacuum_enabled=false);
+CREATE TABLE brin_summarize (_gemini_pk serial PRIMARY KEY, value integer) WITH (fillfactor = 10, autovacuum_enabled = 'false');
 ---END---
 ---START---
 CREATE INDEX brin_summarize_idx ON brin_summarize USING brin (value) WITH (pages_per_range=2);
@@ -501,8 +467,7 @@ SELECT brin_summarize_range('brin_summarize_idx', -1);
 SELECT brin_summarize_range('brin_summarize_idx', 4294967296);
 ---END---
 ---START---
--- test value merging in add_value
-CREATE TABLE brintest_2 (n numrange);
+CREATE TABLE brintest_2 (_gemini_pk serial PRIMARY KEY, n numrange);
 ---END---
 ---START---
 CREATE INDEX brinidx_2 ON brintest_2 USING brin (n);
@@ -526,8 +491,7 @@ SELECT brin_summarize_range('brinidx', 0);
 DROP TABLE brintest_2;
 ---END---
 ---START---
--- test brin cost estimates behave sanely based on correlation of values
-CREATE TABLE brin_test (a INT, b INT);
+CREATE TABLE brin_test (_gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 INSERT INTO brin_test SELECT x/100,x%100 FROM generate_series(1,10000) x(x);
@@ -550,8 +514,7 @@ EXPLAIN (COSTS OFF) SELECT * FROM brin_test WHERE a = 1;
 EXPLAIN (COSTS OFF) SELECT * FROM brin_test WHERE b = 1;
 ---END---
 ---START---
--- make sure data are properly de-toasted in BRIN index
-CREATE TABLE brintest_3 (a text, b text, c text, d text);
+CREATE TABLE brintest_3 (_gemini_pk serial PRIMARY KEY, a text, b text, c text, d text);
 ---END---
 ---START---
 -- long random strings (~2000 chars each, so ~6kB for min/max on two
@@ -605,8 +568,7 @@ DROP TABLE brintest_3;
 RESET enable_seqscan;
 ---END---
 ---START---
--- test an unlogged table, mostly to get coverage of brinbuildempty
-CREATE UNLOGGED TABLE brintest_unlogged (n numrange);
+CREATE UNLOGGED TABLE brintest_unlogged (_gemini_pk serial PRIMARY KEY, n numrange);
 ---END---
 ---START---
 CREATE INDEX brinidx_unlogged ON brintest_unlogged USING brin (n);

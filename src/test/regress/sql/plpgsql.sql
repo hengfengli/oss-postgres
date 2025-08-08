@@ -1,95 +1,41 @@
 ---START---
---
--- PLPGSQL
---
--- Scenario:
---
---     A building with a modern TP cable installation where any
---     of the wall connectors can be used to plug in phones,
---     ethernet interfaces or local office hubs. The backside
---     of the wall connectors is wired to one of several patch-
---     fields in the building.
---
---     In the patchfields, there are hubs and all the slots
---     representing the wall connectors. In addition there are
---     slots that can represent a phone line from the central
---     phone system.
---
---     Triggers ensure consistency of the patching information.
---
---     Functions are used to build up powerful views that let
---     you look behind the wall when looking at a patchfield
---     or into a room.
---
-
-
-create table Room (
-    roomno	char(8),
-    comment	text
-);
+CREATE TABLE room (_gemini_pk serial PRIMARY KEY, roomno char(8), comment text);
 ---END---
 ---START---
 create unique index Room_rno on Room using btree (roomno bpchar_ops);
 ---END---
 ---START---
-create table WSlot (
-    slotname	char(20),
-    roomno	char(8),
-    slotlink	char(20),
-    backlink	char(20)
-);
+CREATE TABLE wslot (_gemini_pk serial PRIMARY KEY, slotname char(20), roomno char(8), slotlink char(20), backlink char(20));
 ---END---
 ---START---
 create unique index WSlot_name on WSlot using btree (slotname bpchar_ops);
 ---END---
 ---START---
-create table PField (
-    name	text,
-    comment	text
-);
+CREATE TABLE pfield (_gemini_pk serial PRIMARY KEY, name text, comment text);
 ---END---
 ---START---
 create unique index PField_name on PField using btree (name text_ops);
 ---END---
 ---START---
-create table PSlot (
-    slotname	char(20),
-    pfname	text,
-    slotlink	char(20),
-    backlink	char(20)
-);
+CREATE TABLE pslot (_gemini_pk serial PRIMARY KEY, slotname char(20), pfname text, slotlink char(20), backlink char(20));
 ---END---
 ---START---
 create unique index PSlot_name on PSlot using btree (slotname bpchar_ops);
 ---END---
 ---START---
-create table PLine (
-    slotname	char(20),
-    phonenumber	char(20),
-    comment	text,
-    backlink	char(20)
-);
+CREATE TABLE pline (_gemini_pk serial PRIMARY KEY, slotname char(20), phonenumber char(20), comment text, backlink char(20));
 ---END---
 ---START---
 create unique index PLine_name on PLine using btree (slotname bpchar_ops);
 ---END---
 ---START---
-create table Hub (
-    name	char(14),
-    comment	text,
-    nslots	integer
-);
+CREATE TABLE hub (_gemini_pk serial PRIMARY KEY, name char(14), comment text, nslots integer);
 ---END---
 ---START---
 create unique index Hub_name on Hub using btree (name bpchar_ops);
 ---END---
 ---START---
-create table HSlot (
-    slotname	char(20),
-    hubname	char(14),
-    slotno	integer,
-    slotlink	char(20)
-);
+CREATE TABLE hslot (_gemini_pk serial PRIMARY KEY, slotname char(20), hubname char(14), slotno integer, slotlink char(20));
 ---END---
 ---START---
 create unique index HSlot_name on HSlot using btree (slotname bpchar_ops);
@@ -98,31 +44,19 @@ create unique index HSlot_name on HSlot using btree (slotname bpchar_ops);
 create index HSlot_hubname on HSlot using btree (hubname bpchar_ops);
 ---END---
 ---START---
-create table System (
-    name	text,
-    comment	text
-);
+CREATE TABLE system (_gemini_pk serial PRIMARY KEY, name text, comment text);
 ---END---
 ---START---
 create unique index System_name on System using btree (name text_ops);
 ---END---
 ---START---
-create table IFace (
-    slotname	char(20),
-    sysname	text,
-    ifname	text,
-    slotlink	char(20)
-);
+CREATE TABLE iface (_gemini_pk serial PRIMARY KEY, slotname char(20), sysname text, ifname text, slotlink char(20));
 ---END---
 ---START---
 create unique index IFace_name on IFace using btree (slotname bpchar_ops);
 ---END---
 ---START---
-create table PHone (
-    slotname	char(20),
-    comment	text,
-    slotlink	char(20)
-);
+CREATE TABLE phone (_gemini_pk serial PRIMARY KEY, slotname char(20), comment text, slotlink char(20));
 ---END---
 ---START---
 create unique index PHone_name on PHone using btree (slotname bpchar_ops);
@@ -1840,10 +1774,7 @@ END;' LANGUAGE plpgsql;
 SELECT recursion_test(4,3);
 ---END---
 ---START---
---
--- Test the FOUND magic variable
---
-CREATE TABLE found_test_tbl (a int);
+CREATE TABLE found_test_tbl (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 create function test_found()
@@ -2268,14 +2199,7 @@ select * from duplic(textrange('aaa', 'bbb'));
 drop function duplic(anycompatiblerange);
 ---END---
 ---START---
---
--- test PERFORM
---
-
-create table perform_test (
-	a	INT,
-	b	INT
-);
+CREATE TABLE perform_test (_gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 create function perform_simple_func(int) returns boolean as '
@@ -2324,7 +2248,9 @@ drop table perform_test;
 -- Test proper snapshot handling in simple expressions
 --
 
-create temp table users(login text, id serial);
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (_gemini_pk serial PRIMARY KEY, login text, id serial);
 ---END---
 ---START---
 create function sp_id_user(a_login text) returns int as $$
@@ -2382,10 +2308,7 @@ drop function sp_add_user(text);
 drop function sp_id_user(text);
 ---END---
 ---START---
---
--- tests for refcursors
---
-create table rc_test (a int, b int);
+CREATE TABLE rc_test (_gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 copy rc_test from stdin;
@@ -2769,11 +2692,7 @@ drop function void_return_expr();
 drop function missing_return_expr();
 ---END---
 ---START---
---
--- EXECUTE ... INTO test
---
-
-create table eifoo (i integer, y integer);
+CREATE TABLE eifoo (_gemini_pk serial PRIMARY KEY, i integer, y integer);
 ---END---
 ---START---
 create type eitype as (i integer, y integer);
@@ -2925,7 +2844,9 @@ select multi_datum_use(42);
 -- by default in the planned case, but not in EXECUTE.
 --
 
-create temp table foo (f1 int, f2 int);
+DROP TABLE IF EXISTS foo;
+
+CREATE TABLE foo (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer);
 ---END---
 ---START---
 insert into foo values (1,2), (3,4);
@@ -3377,7 +3298,7 @@ end
 $$;
 ---END---
 ---START---
-create table test_01(a int, b int, c int);
+CREATE TABLE test_01 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer);
 ---END---
 ---START---
 alter table test_01 drop column a;
@@ -3718,7 +3639,9 @@ select forc01();
 ---START---
 -- try updating the cursor's current row
 
-create temp table forc_test as
+DROP TABLE IF EXISTS forc_test;
+
+create table forc_test as
   select n as i, n as j from generate_series(1,10) n;
 ---END---
 ---START---
@@ -3814,9 +3737,7 @@ select * from return_dquery();
 drop function return_dquery();
 ---END---
 ---START---
--- test RETURN QUERY with dropped columns
-
-create table tabwithcols(a int, b int, c int, d int);
+CREATE TABLE tabwithcols (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer, d integer);
 ---END---
 ---START---
 insert into tabwithcols values(10,20,30,40),(50,60,70,80);
@@ -4596,7 +4517,7 @@ end$$;
 BEGIN;
 ---END---
 ---START---
-create table public.stuffs (stuff text);
+CREATE TABLE public.stuffs (_gemini_pk serial PRIMARY KEY, stuff text);
 ---END---
 ---START---
 SAVEPOINT a;
@@ -5111,7 +5032,9 @@ drop type xy_tuple;
 -- Assorted tests for array subscript assignment
 --
 
-create temp table rtype (id int, ar text[]);
+DROP TABLE IF EXISTS rtype;
+
+CREATE TABLE rtype (_gemini_pk serial PRIMARY KEY, id integer, ar text[]);
 ---END---
 ---START---
 create function arrayassign1() returns text[] language plpgsql as $$
@@ -5854,11 +5777,7 @@ UPDATE alter_table_under_transition_tables
   SET id = id;
 ---END---
 ---START---
---
--- Test multiple reference to a transition table
---
-
-CREATE TABLE multi_test (i int);
+CREATE TABLE multi_test (_gemini_pk serial PRIMARY KEY, i integer);
 ---END---
 ---START---
 INSERT INTO multi_test VALUES (1);
@@ -5889,11 +5808,7 @@ DROP TABLE multi_test;
 DROP FUNCTION multi_test_trig();
 ---END---
 ---START---
---
--- Check type parsing and record fetching from partitioned tables
---
-
-CREATE TABLE partitioned_table (a int, b text) PARTITION BY LIST (a);
+CREATE TABLE partitioned_table (_gemini_pk serial PRIMARY KEY, a integer, b text) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE pt_part1 PARTITION OF partitioned_table FOR VALUES IN (1);

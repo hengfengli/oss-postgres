@@ -81,7 +81,9 @@ select amname, prop, pg_indexam_has_property(a.oid, prop) as p
 --
 -- additional checks for pg_index_column_has_property
 --
-CREATE TEMP TABLE foo (f1 int, f2 int, f3 int, f4 int);
+DROP TABLE IF EXISTS foo;
+
+CREATE TABLE foo (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, f3 integer, f4 integer);
 ---END---
 ---START---
 CREATE INDEX fooindex ON foo (f1 desc, f2 asc, f3 nulls first, f4 nulls last);

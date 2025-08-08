@@ -20,10 +20,7 @@ CREATE SCHEMA collate_tests;
 SET search_path = collate_tests;
 ---END---
 ---START---
-CREATE TABLE collate_test1 (
-    a int,
-    b text COLLATE "en-x-icu" NOT NULL
-);
+CREATE TABLE collate_test1 (_gemini_pk serial PRIMARY KEY, a integer, b text COLLATE "en-x-icu" NOT NULL);
 ---END---
 ---START---
 \d collate_test1
@@ -34,21 +31,13 @@ CREATE TABLE collate_test_fail (
 );
 ---END---
 ---START---
-CREATE TABLE collate_test_fail (
-    a int,
-    b text COLLATE "foo-x-icu"
-);
+CREATE TABLE collate_test_fail (_gemini_pk serial PRIMARY KEY, a integer, b text COLLATE "foo-x-icu");
 ---END---
 ---START---
-CREATE TABLE collate_test_fail (
-    a int COLLATE "en-x-icu",
-    b text
-);
+CREATE TABLE collate_test_fail (_gemini_pk serial PRIMARY KEY, a integer COLLATE "en-x-icu", b text);
 ---END---
 ---START---
-CREATE TABLE collate_test_like (
-    LIKE collate_test1
-);
+CREATE TABLE collate_test_like (_gemini_pk serial PRIMARY KEY, LIKE collate_test1);
 ---END---
 ---START---
 \d collate_test_like
@@ -59,10 +48,7 @@ CREATE TABLE collate_test2 (
 );
 ---END---
 ---START---
-CREATE TABLE collate_test3 (
-    a int,
-    b text COLLATE "C"
-);
+CREATE TABLE collate_test3 (_gemini_pk serial PRIMARY KEY, a integer, b text COLLATE "C");
 ---END---
 ---START---
 INSERT INTO collate_test1 VALUES (1, 'abc'), (2, 'äbc'), (3, 'bbc'), (4, 'ABC');
@@ -104,11 +90,7 @@ CREATE DOMAIN testdomain_sv AS text COLLATE "sv-x-icu";
 CREATE DOMAIN testdomain_i AS int COLLATE "sv-x-icu";
 ---END---
 ---START---
--- fails
-CREATE TABLE collate_test4 (
-    a int,
-    b testdomain_sv
-);
+CREATE TABLE collate_test4 (_gemini_pk serial PRIMARY KEY, a integer, b testdomain_sv);
 ---END---
 ---START---
 INSERT INTO collate_test4 SELECT * FROM collate_test1;
@@ -117,10 +99,7 @@ INSERT INTO collate_test4 SELECT * FROM collate_test1;
 SELECT a, b FROM collate_test4 ORDER BY b;
 ---END---
 ---START---
-CREATE TABLE collate_test5 (
-    a int,
-    b testdomain_sv COLLATE "en-x-icu"
-);
+CREATE TABLE collate_test5 (_gemini_pk serial PRIMARY KEY, a integer, b testdomain_sv COLLATE "en-x-icu");
 ---END---
 ---START---
 INSERT INTO collate_test5 SELECT * FROM collate_test1;
@@ -158,13 +137,7 @@ SELECT 'bbc' COLLATE "en-x-icu" > 'äbc' COLLATE "en-x-icu" AS "true";
 SELECT 'bbc' COLLATE "sv-x-icu" > 'äbc' COLLATE "sv-x-icu" AS "false";
 ---END---
 ---START---
--- upper/lower
-
-CREATE TABLE collate_test10 (
-    a int,
-    x text COLLATE "en-x-icu",
-    y text COLLATE "tr-x-icu"
-);
+CREATE TABLE collate_test10 (_gemini_pk serial PRIMARY KEY, a integer, x text COLLATE "en-x-icu", y text COLLATE "tr-x-icu");
 ---END---
 ---START---
 INSERT INTO collate_test10 VALUES (1, 'hij', 'hij'), (2, 'HIJ', 'HIJ');
@@ -235,10 +208,7 @@ SELECT * FROM collate_test1 WHERE b ~* '^abc';
 SELECT * FROM collate_test1 WHERE b ~* 'bc';
 ---END---
 ---START---
-CREATE TABLE collate_test6 (
-    a int,
-    b text COLLATE "en-x-icu"
-);
+CREATE TABLE collate_test6 (_gemini_pk serial PRIMARY KEY, a integer, b text COLLATE "en-x-icu");
 ---END---
 ---START---
 INSERT INTO collate_test6 VALUES (1, 'abc'), (2, 'ABC'), (3, '123'), (4, 'ab1'),
@@ -743,7 +713,7 @@ ALTER DATABASE :"datname" REFRESH COLLATION VERSION;
 CREATE COLLATION test0 FROM "C";
 ---END---
 ---START---
-CREATE TABLE collate_dep_test1 (a int, b text COLLATE test0);
+CREATE TABLE collate_dep_test1 (_gemini_pk serial PRIMARY KEY, a integer, b text COLLATE test0);
 ---END---
 ---START---
 CREATE DOMAIN collate_dep_dom1 AS text COLLATE test0;
@@ -755,7 +725,7 @@ CREATE TYPE collate_dep_test2 AS (x int, y text COLLATE test0);
 CREATE VIEW collate_dep_test3 AS SELECT text 'foo' COLLATE test0 AS foo;
 ---END---
 ---START---
-CREATE TABLE collate_dep_test4t (a int, b text);
+CREATE TABLE collate_dep_test4t (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 CREATE INDEX collate_dep_test4i ON collate_dep_test4t (b COLLATE test0);
@@ -876,7 +846,7 @@ SELECT 'Goldmann' < 'Götz' COLLATE "de-x-icu", 'Goldmann' > 'Götz' COLLATE tes
 CREATE COLLATION testcoll_rules1 (provider = icu, locale = '', rules = '&a < g');
 ---END---
 ---START---
-CREATE TABLE test7 (a text);
+CREATE TABLE test7 (_gemini_pk serial PRIMARY KEY, a text);
 ---END---
 ---START---
 -- example from https://unicode-org.github.io/icu/userguide/collation/customization/#syntax
@@ -903,7 +873,7 @@ CREATE COLLATION ctest_det (provider = icu, locale = '', deterministic = true);
 CREATE COLLATION ctest_nondet (provider = icu, locale = '', deterministic = false);
 ---END---
 ---START---
-CREATE TABLE test6 (a int, b text);
+CREATE TABLE test6 (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 -- same string in different normal forms
@@ -922,8 +892,7 @@ SELECT * FROM test6 WHERE b = 'äbc' COLLATE ctest_det;
 SELECT * FROM test6 WHERE b = 'äbc' COLLATE ctest_nondet;
 ---END---
 ---START---
--- same with arrays
-CREATE TABLE test6a (a int, b text[]);
+CREATE TABLE test6a (_gemini_pk serial PRIMARY KEY, a integer, b text[]);
 ---END---
 ---START---
 INSERT INTO test6a VALUES (1, ARRAY[U&'\00E4bc']);
@@ -966,13 +935,13 @@ CREATE COLLATION lt_upperfirst (provider = icu, locale = 'und-u-kf-upper');
 SELECT 'Z' COLLATE lt_upperfirst < 'z' COLLATE lt_upperfirst;
 ---END---
 ---START---
-CREATE TABLE test1cs (x text COLLATE case_sensitive);
+CREATE TABLE test1cs (_gemini_pk serial PRIMARY KEY, x text COLLATE case_sensitive);
 ---END---
 ---START---
-CREATE TABLE test2cs (x text COLLATE case_sensitive);
+CREATE TABLE test2cs (_gemini_pk serial PRIMARY KEY, x text COLLATE case_sensitive);
 ---END---
 ---START---
-CREATE TABLE test3cs (x text COLLATE case_sensitive);
+CREATE TABLE test3cs (_gemini_pk serial PRIMARY KEY, x text COLLATE case_sensitive);
 ---END---
 ---START---
 INSERT INTO test1cs VALUES ('abc'), ('def'), ('ghi');
@@ -1050,13 +1019,13 @@ SELECT string_to_array('ABC,DEF,GHI' COLLATE case_sensitive, ',', 'abc');
 SELECT string_to_array('ABCDEFGHI' COLLATE case_sensitive, NULL, 'b');
 ---END---
 ---START---
-CREATE TABLE test1ci (x text COLLATE case_insensitive);
+CREATE TABLE test1ci (_gemini_pk serial PRIMARY KEY, x text COLLATE case_insensitive);
 ---END---
 ---START---
-CREATE TABLE test2ci (x text COLLATE case_insensitive);
+CREATE TABLE test2ci (_gemini_pk serial PRIMARY KEY, x text COLLATE case_insensitive);
 ---END---
 ---START---
-CREATE TABLE test3ci (x text COLLATE case_insensitive);
+CREATE TABLE test3ci (_gemini_pk serial PRIMARY KEY, x text COLLATE case_insensitive);
 ---END---
 ---START---
 CREATE INDEX ON test3ci (x text_pattern_ops);
@@ -1138,14 +1107,13 @@ SELECT string_to_array('ABC,DEF,GHI' COLLATE case_insensitive, ',', 'abc');
 SELECT string_to_array('ABCDEFGHI' COLLATE case_insensitive, NULL, 'b');
 ---END---
 ---START---
--- bpchar
-CREATE TABLE test1bpci (x char(3) COLLATE case_insensitive);
+CREATE TABLE test1bpci (_gemini_pk serial PRIMARY KEY, x char(3) COLLATE case_insensitive);
 ---END---
 ---START---
-CREATE TABLE test2bpci (x char(3) COLLATE case_insensitive);
+CREATE TABLE test2bpci (_gemini_pk serial PRIMARY KEY, x char(3) COLLATE case_insensitive);
 ---END---
 ---START---
-CREATE TABLE test3bpci (x char(3) COLLATE case_insensitive);
+CREATE TABLE test3bpci (_gemini_pk serial PRIMARY KEY, x char(3) COLLATE case_insensitive);
 ---END---
 ---START---
 CREATE INDEX ON test3bpci (x bpchar_pattern_ops);
@@ -1227,10 +1195,7 @@ SELECT string_to_array('ABC,DEF,GHI'::char(11) COLLATE case_insensitive, ',', 'a
 SELECT string_to_array('ABCDEFGHI'::char(9) COLLATE case_insensitive, NULL, 'b');
 ---END---
 ---START---
--- This tests the issue described in match_pattern_prefix().  In the
--- absence of that check, the case_insensitive tests below would
--- return no rows where they should logically return one.
-CREATE TABLE test4c (x text COLLATE "C");
+CREATE TABLE test4c (_gemini_pk serial PRIMARY KEY, x text COLLATE "C");
 ---END---
 ---START---
 INSERT INTO test4c VALUES ('abc');
@@ -1287,7 +1252,9 @@ SELECT typname FROM pg_type WHERE typname LIKE 'int_' AND 'INT2'::text <> typnam
 ---END---
 ---START---
 -- test case adapted from subselect.sql
-CREATE TEMP TABLE outer_text (f1 text COLLATE case_insensitive, f2 text);
+DROP TABLE IF EXISTS outer_text;
+
+CREATE TABLE outer_text (_gemini_pk serial PRIMARY KEY, f1 text COLLATE case_insensitive, f2 text);
 ---END---
 ---START---
 INSERT INTO outer_text VALUES ('a', 'a');
@@ -1302,7 +1269,9 @@ INSERT INTO outer_text VALUES ('A', NULL);
 INSERT INTO outer_text VALUES ('B', NULL);
 ---END---
 ---START---
-CREATE TEMP TABLE inner_text (c1 text COLLATE case_insensitive, c2 text);
+DROP TABLE IF EXISTS inner_text;
+
+CREATE TABLE inner_text (_gemini_pk serial PRIMARY KEY, c1 text COLLATE case_insensitive, c2 text);
 ---END---
 ---START---
 INSERT INTO inner_text VALUES ('a', NULL);
@@ -1321,7 +1290,7 @@ CREATE COLLATION ignore_accents (provider = icu, locale = '@colStrength=primary;
 RESET client_min_messages;
 ---END---
 ---START---
-CREATE TABLE test4 (a int, b text);
+CREATE TABLE test4 (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 INSERT INTO test4 VALUES (1, 'cote'), (2, 'côte'), (3, 'coté'), (4, 'côté');
@@ -1349,7 +1318,7 @@ CREATE TABLE test10pk (x text COLLATE case_sensitive PRIMARY KEY);
 INSERT INTO test10pk VALUES ('abc'), ('def'), ('ghi');
 ---END---
 ---START---
-CREATE TABLE test10fk (x text COLLATE case_insensitive REFERENCES test10pk (x) ON UPDATE CASCADE ON DELETE CASCADE);
+CREATE TABLE test10fk (_gemini_pk serial PRIMARY KEY, x text COLLATE case_insensitive REFERENCES test10pk (x) ON DELETE CASCADE ON UPDATE CASCADE);
 ---END---
 ---START---
 INSERT INTO test10fk VALUES ('abc');
@@ -1394,7 +1363,7 @@ CREATE TABLE test11pk (x text COLLATE case_insensitive PRIMARY KEY);
 INSERT INTO test11pk VALUES ('abc'), ('def'), ('ghi');
 ---END---
 ---START---
-CREATE TABLE test11fk (x text COLLATE case_sensitive REFERENCES test11pk (x) ON UPDATE CASCADE ON DELETE CASCADE);
+CREATE TABLE test11fk (_gemini_pk serial PRIMARY KEY, x text COLLATE case_sensitive REFERENCES test11pk (x) ON DELETE CASCADE ON UPDATE CASCADE);
 ---END---
 ---START---
 INSERT INTO test11fk VALUES ('abc');
@@ -1431,8 +1400,7 @@ SELECT * FROM test11pk;
 SELECT * FROM test11fk;
 ---END---
 ---START---
--- partitioning
-CREATE TABLE test20 (a int, b text COLLATE case_insensitive) PARTITION BY LIST (b);
+CREATE TABLE test20 (_gemini_pk serial PRIMARY KEY, a integer, b text COLLATE case_insensitive) PARTITION BY list (b);
 ---END---
 ---START---
 CREATE TABLE test20_1 PARTITION OF test20 FOR VALUES IN ('abc');
@@ -1447,7 +1415,7 @@ INSERT INTO test20 VALUES (2, 'ABC');
 SELECT * FROM test20_1;
 ---END---
 ---START---
-CREATE TABLE test21 (a int, b text COLLATE case_insensitive) PARTITION BY RANGE (b);
+CREATE TABLE test21 (_gemini_pk serial PRIMARY KEY, a integer, b text COLLATE case_insensitive) PARTITION BY range (b);
 ---END---
 ---START---
 CREATE TABLE test21_1 PARTITION OF test21 FOR VALUES FROM ('ABC') TO ('DEF');
@@ -1462,7 +1430,7 @@ INSERT INTO test21 VALUES (2, 'ABC');
 SELECT * FROM test21_1;
 ---END---
 ---START---
-CREATE TABLE test22 (a int, b text COLLATE case_sensitive) PARTITION BY HASH (b);
+CREATE TABLE test22 (_gemini_pk serial PRIMARY KEY, a integer, b text COLLATE case_sensitive) PARTITION BY hash (b);
 ---END---
 ---START---
 CREATE TABLE test22_0 PARTITION OF test22 FOR VALUES WITH (MODULUS 2, REMAINDER 0);
@@ -1481,8 +1449,7 @@ INSERT INTO test22 VALUES (2, 'DEF');
 SELECT (SELECT count(*) FROM test22_0) = (SELECT count(*) FROM test22_1);
 ---END---
 ---START---
--- same with arrays
-CREATE TABLE test22a (a int, b text[] COLLATE case_sensitive) PARTITION BY HASH (b);
+CREATE TABLE test22a (_gemini_pk serial PRIMARY KEY, a integer, b text[] COLLATE case_sensitive) PARTITION BY hash (b);
 ---END---
 ---START---
 CREATE TABLE test22a_0 PARTITION OF test22a FOR VALUES WITH (MODULUS 2, REMAINDER 0);
@@ -1501,7 +1468,7 @@ INSERT INTO test22a VALUES (2, ARRAY['DEF']);
 SELECT (SELECT count(*) FROM test22a_0) = (SELECT count(*) FROM test22a_1);
 ---END---
 ---START---
-CREATE TABLE test23 (a int, b text COLLATE case_insensitive) PARTITION BY HASH (b);
+CREATE TABLE test23 (_gemini_pk serial PRIMARY KEY, a integer, b text COLLATE case_insensitive) PARTITION BY hash (b);
 ---END---
 ---START---
 CREATE TABLE test23_0 PARTITION OF test23 FOR VALUES WITH (MODULUS 2, REMAINDER 0);
@@ -1520,8 +1487,7 @@ INSERT INTO test23 VALUES (2, 'DEF');
 SELECT (SELECT count(*) FROM test23_0) <> (SELECT count(*) FROM test23_1);
 ---END---
 ---START---
--- same with arrays
-CREATE TABLE test23a (a int, b text[] COLLATE case_insensitive) PARTITION BY HASH (b);
+CREATE TABLE test23a (_gemini_pk serial PRIMARY KEY, a integer, b text[] COLLATE case_insensitive) PARTITION BY hash (b);
 ---END---
 ---START---
 CREATE TABLE test23a_0 PARTITION OF test23a FOR VALUES WITH (MODULUS 2, REMAINDER 0);
@@ -1540,7 +1506,7 @@ INSERT INTO test23a VALUES (2, ARRAY['DEF']);
 SELECT (SELECT count(*) FROM test23a_0) <> (SELECT count(*) FROM test23a_1);
 ---END---
 ---START---
-CREATE TABLE test30 (a int, b char(3) COLLATE case_insensitive) PARTITION BY LIST (b);
+CREATE TABLE test30 (_gemini_pk serial PRIMARY KEY, a integer, b char(3) COLLATE case_insensitive) PARTITION BY list (b);
 ---END---
 ---START---
 CREATE TABLE test30_1 PARTITION OF test30 FOR VALUES IN ('abc');
@@ -1555,7 +1521,7 @@ INSERT INTO test30 VALUES (2, 'ABC');
 SELECT * FROM test30_1;
 ---END---
 ---START---
-CREATE TABLE test31 (a int, b char(3) COLLATE case_insensitive) PARTITION BY RANGE (b);
+CREATE TABLE test31 (_gemini_pk serial PRIMARY KEY, a integer, b char(3) COLLATE case_insensitive) PARTITION BY range (b);
 ---END---
 ---START---
 CREATE TABLE test31_1 PARTITION OF test31 FOR VALUES FROM ('ABC') TO ('DEF');
@@ -1570,7 +1536,7 @@ INSERT INTO test31 VALUES (2, 'ABC');
 SELECT * FROM test31_1;
 ---END---
 ---START---
-CREATE TABLE test32 (a int, b char(3) COLLATE case_sensitive) PARTITION BY HASH (b);
+CREATE TABLE test32 (_gemini_pk serial PRIMARY KEY, a integer, b char(3) COLLATE case_sensitive) PARTITION BY hash (b);
 ---END---
 ---START---
 CREATE TABLE test32_0 PARTITION OF test32 FOR VALUES WITH (MODULUS 2, REMAINDER 0);
@@ -1589,7 +1555,7 @@ INSERT INTO test32 VALUES (2, 'DEF');
 SELECT (SELECT count(*) FROM test32_0) = (SELECT count(*) FROM test32_1);
 ---END---
 ---START---
-CREATE TABLE test33 (a int, b char(3) COLLATE case_insensitive) PARTITION BY HASH (b);
+CREATE TABLE test33 (_gemini_pk serial PRIMARY KEY, a integer, b char(3) COLLATE case_insensitive) PARTITION BY hash (b);
 ---END---
 ---START---
 CREATE TABLE test33_0 PARTITION OF test33 FOR VALUES WITH (MODULUS 2, REMAINDER 0);

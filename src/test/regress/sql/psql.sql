@@ -233,7 +233,9 @@ rollback;
 ---START---
 -- \gexec
 
-create temporary table gexec_test(a int, b text, c date, d float);
+DROP TABLE IF EXISTS gexec_test;
+
+CREATE TABLE gexec_test (_gemini_pk serial PRIMARY KEY, a integer, b text, c date, d double precision);
 ---END---
 ---START---
 select format('create index on gexec_test(%I)', attname)
@@ -757,11 +759,10 @@ CREATE ACCESS METHOD heap_psql TYPE TABLE HANDLER heap_tableam_handler;
 SET ROLE TO regress_display_role;
 ---END---
 ---START---
--- Use only relations with a physical size of zero.
-CREATE TABLE tbl_heap_psql(f1 int, f2 char(100)) using heap_psql;
+CREATE TABLE tbl_heap_psql (_gemini_pk serial PRIMARY KEY, f1 integer, f2 char(100)) USING heap_psql;
 ---END---
 ---START---
-CREATE TABLE tbl_heap(f1 int, f2 char(100)) using heap;
+CREATE TABLE tbl_heap (_gemini_pk serial PRIMARY KEY, f1 integer, f2 char(100)) USING heap;
 ---END---
 ---START---
 CREATE VIEW view_heap_psql AS SELECT f1 from tbl_heap_psql;
@@ -1756,7 +1757,8 @@ DROP FUNCTION warn(TEXT);
 \getenv abs_builddir PG_ABS_BUILDDIR
 \set g_out_file :abs_builddir '/results/psql-output1'
 
-CREATE TEMPORARY TABLE reload_output(
+DROP TABLE IF EXISTS reload_output;
+CREATE TABLE reload_output(
   lineno int NOT NULL GENERATED ALWAYS AS IDENTITY,
   line text
 );
@@ -1961,11 +1963,10 @@ $$ LANGUAGE plpgsql;
 BEGIN;
 ---END---
 ---START---
-CREATE TABLE bla(s NO_SUCH_TYPE);
+CREATE TABLE bla (_gemini_pk serial PRIMARY KEY, s no_such_type);
 ---END---
 ---START---
--- fails
-CREATE TABLE bla(s TEXT);
+CREATE TABLE bla (_gemini_pk serial PRIMARY KEY, s text);
 ---END---
 ---START---
 -- succeeds

@@ -1,44 +1,20 @@
 ---START---
---
--- CREATE_MISC
---
-
---
--- a is the type root
--- b and c inherit from a (one-level single inheritance)
--- d inherits from b and c (two-level multiple inheritance)
--- e inherits from c (two-level single inheritance)
--- f inherits from e (three-level single inheritance)
---
-CREATE TABLE a_star (
-	class		char,
-	a 			int4
-);
+CREATE TABLE a_star (_gemini_pk serial PRIMARY KEY, class char, a int4);
 ---END---
 ---START---
-CREATE TABLE b_star (
-	b 			text
-) INHERITS (a_star);
+CREATE TABLE b_star (_gemini_pk serial PRIMARY KEY, b text) INHERITS (a_star);
 ---END---
 ---START---
-CREATE TABLE c_star (
-	c 			name
-) INHERITS (a_star);
+CREATE TABLE c_star (_gemini_pk serial PRIMARY KEY, c name) INHERITS (a_star);
 ---END---
 ---START---
-CREATE TABLE d_star (
-	d 			float8
-) INHERITS (b_star, c_star);
+CREATE TABLE d_star (_gemini_pk serial PRIMARY KEY, d float8) INHERITS (b_star, c_star);
 ---END---
 ---START---
-CREATE TABLE e_star (
-	e 			int2
-) INHERITS (c_star);
+CREATE TABLE e_star (_gemini_pk serial PRIMARY KEY, e int2) INHERITS (c_star);
 ---END---
 ---START---
-CREATE TABLE f_star (
-	f 			polygon
-) INHERITS (e_star);
+CREATE TABLE f_star (_gemini_pk serial PRIMARY KEY, f polygon) INHERITS (e_star);
 ---END---
 ---START---
 INSERT INTO a_star (class, a) VALUES ('a', 1);

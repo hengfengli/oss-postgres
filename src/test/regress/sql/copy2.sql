@@ -1,11 +1,7 @@
 ---START---
-CREATE TEMP TABLE x (
-	a serial,
-	b int,
-	c text not null default 'stuff',
-	d text,
-	e text
-);
+DROP TABLE IF EXISTS x;
+
+CREATE TABLE x (_gemini_pk serial PRIMARY KEY, a serial, b integer, c text NOT NULL DEFAULT 'stuff', d text, e text);
 ---END---
 ---START---
 CREATE FUNCTION fn_x_before () RETURNS TRIGGER AS '
@@ -172,7 +168,8 @@ COPY x TO stdout;
 COPY x (c, e) TO stdout;
 COPY x (b, e) TO stdout WITH NULL 'I''m null';
 
-CREATE TEMP TABLE y (
+DROP TABLE IF EXISTS y;
+CREATE TABLE y (
 	col1 text,
 	col2 text
 );
@@ -200,7 +197,8 @@ COPY y TO stdout (FORMAT CSV, FORCE_QUOTE *);
 
 --test that we read consecutive LFs properly
 
-CREATE TEMP TABLE testnl (a int, b text, c int);
+DROP TABLE IF EXISTS testnl;
+CREATE TABLE testnl (a int, b text, c int);
 
 COPY testnl FROM stdin CSV;
 1,"a field with two LFs
@@ -210,7 +208,8 @@ inside",2
 ---END---
 ---START---
 copy marker
-CREATE TEMP TABLE testeoc (a text);
+DROP TABLE IF EXISTS testeoc;
+CREATE TABLE testeoc (a text);
 
 COPY testeoc FROM stdin CSV;
 a\.
@@ -224,7 +223,8 @@ COPY testeoc TO stdout CSV;
 
 -- test handling of nonstandard null marker that violates escaping rules
 
-CREATE TEMP TABLE testnull(a int, b text);
+DROP TABLE IF EXISTS testnull;
+CREATE TABLE testnull(a int, b text);
 INSERT INTO testnull VALUES (1, E'\\0'), (NULL, NULL);
 
 COPY testnull TO stdout WITH NULL AS E'\\0';
@@ -241,7 +241,7 @@ SELECT * FROM testnull;
 BEGIN;
 ---END---
 ---START---
-CREATE TABLE vistest (LIKE testeoc);
+CREATE TABLE vistest (_gemini_pk serial PRIMARY KEY, LIKE testeoc);
 ---END---
 ---START---
 COPY vistest FROM stdin CSV;
@@ -433,13 +433,9 @@ SELECT * FROM vistest;
 ---END---
 ---START---
 -- Test FORCE_NOT_NULL and FORCE_NULL options
-CREATE TEMP TABLE forcetest (
-    a INT NOT NULL,
-    b TEXT NOT NULL,
-    c TEXT,
-    d TEXT,
-    e TEXT
-);
+DROP TABLE IF EXISTS forcetest;
+
+CREATE TABLE forcetest (_gemini_pk serial PRIMARY KEY, a integer NOT NULL, b text NOT NULL, c text, d text, e text);
 ---END---
 ---START---
 \pset null NULL
@@ -526,7 +522,7 @@ CREATE ROLE regress_rls_copy_user;
 CREATE ROLE regress_rls_copy_user_colperms;
 ---END---
 ---START---
-CREATE TABLE rls_t1 (a int, b int, c int);
+CREATE TABLE rls_t1 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer);
 ---END---
 ---START---
 COPY rls_t1 (a, b, c) from stdin;
@@ -685,7 +681,8 @@ DROP FUNCTION fun_instead_of_insert_tbl();
 COPY FROM ... DEFAULT
 --
 
-create temp table copy_default (
+DROP TABLE IF EXISTS copy_default;
+create table copy_default (
 	id integer primary key,
 	text_value text not null default 'test',
 	ts_value timestamp without time zone not null default '2022-07-05'

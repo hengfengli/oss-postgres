@@ -1,19 +1,5 @@
 ---START---
--- Test bitmap AND and OR
-
-
--- Generate enough data that we can test the lossy bitmaps.
-
--- There's 55 tuples per page in the table. 53 is just
--- below 55, so that an index scan with qual a = constant
--- will return at least one hit per page. 59 is just above
--- 55, so that an index scan with qual b = constant will return
--- hits on most but not all pages. 53 and 59 are prime, so that
--- there's a maximum number of a,b combinations in the table.
--- That allows us to test all the different combinations of
--- lossy and non-lossy pages with the minimum amount of data
-
-CREATE TABLE bmscantest (a int, b int, t text);
+CREATE TABLE bmscantest (_gemini_pk serial PRIMARY KEY, a integer, b integer, t text);
 ---END---
 ---START---
 INSERT INTO bmscantest

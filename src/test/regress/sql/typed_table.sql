@@ -1,14 +1,14 @@
 ---START---
-CREATE TABLE ttable1 OF nothing;
+CREATE TABLE ttable1 OF nothing (_gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
 CREATE TYPE person_type AS (id int, name text);
 ---END---
 ---START---
-CREATE TABLE persons OF person_type;
+CREATE TABLE persons OF person_type (_gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
-CREATE TABLE IF NOT EXISTS persons OF person_type;
+CREATE TABLE IF NOT EXISTS persons OF person_type (_gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
 SELECT * FROM persons;
@@ -39,13 +39,13 @@ ALTER TABLE persons RENAME COLUMN id TO num;
 ALTER TABLE persons ALTER COLUMN name TYPE varchar;
 ---END---
 ---START---
-CREATE TABLE stuff (id int);
+CREATE TABLE stuff (_gemini_pk serial PRIMARY KEY, id integer);
 ---END---
 ---START---
 ALTER TABLE persons INHERIT stuff;
 ---END---
 ---START---
-CREATE TABLE personsx OF person_type (myname WITH OPTIONS NOT NULL);
+CREATE TABLE personsx OF person_type (_gemini_pk serial PRIMARY KEY, myname WITH OPTIONS NOT NULL);
 ---END---
 ---START---
 -- error
@@ -78,7 +78,7 @@ DROP TYPE person_type RESTRICT;
 DROP TYPE person_type CASCADE;
 ---END---
 ---START---
-CREATE TABLE persons5 OF stuff;
+CREATE TABLE persons5 OF stuff (_gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
 -- only CREATE TYPE AS types may be used
@@ -91,7 +91,7 @@ DROP TABLE stuff;
 CREATE TYPE person_type AS (id int, name text);
 ---END---
 ---START---
-CREATE TABLE persons OF person_type;
+CREATE TABLE persons OF person_type (_gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
 INSERT INTO persons VALUES (1, 'test');

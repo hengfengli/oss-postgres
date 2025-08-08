@@ -20,8 +20,7 @@ SELECT pg_partition_root(NULL);
 SELECT pg_partition_root(0);
 ---END---
 ---START---
--- Test table partition trees
-CREATE TABLE ptif_test (a int, b int) PARTITION BY range (a);
+CREATE TABLE ptif_test (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE TABLE ptif_test0 PARTITION OF ptif_test
@@ -188,8 +187,7 @@ SELECT * FROM pg_partition_ancestors('ptif_test_index');
 DROP TABLE ptif_test;
 ---END---
 ---START---
--- Table that is not part of any partition tree is not listed.
-CREATE TABLE ptif_normal_table(a int);
+CREATE TABLE ptif_normal_table (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 SELECT relid, parentrelid, level, isleaf
@@ -214,10 +212,10 @@ CREATE VIEW ptif_test_view AS SELECT 1;
 CREATE MATERIALIZED VIEW ptif_test_matview AS SELECT 1;
 ---END---
 ---START---
-CREATE TABLE ptif_li_parent ();
+CREATE TABLE ptif_li_parent (_gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
-CREATE TABLE ptif_li_child () INHERITS (ptif_li_parent);
+CREATE TABLE ptif_li_child (_gemini_pk serial PRIMARY KEY) INHERITS (ptif_li_parent);
 ---END---
 ---START---
 SELECT * FROM pg_partition_tree('ptif_test_view');

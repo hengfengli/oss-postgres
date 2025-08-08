@@ -41,8 +41,7 @@ SELECT * FROM DEFAULT_TBL;
 CREATE SEQUENCE DEFAULT_SEQ;
 ---END---
 ---START---
-CREATE TABLE DEFAULTEXPR_TBL (i1 int DEFAULT 100 + (200-199) * 2,
-	i2 int DEFAULT nextval('default_seq'));
+CREATE TABLE defaultexpr_tbl (_gemini_pk serial PRIMARY KEY, i1 integer DEFAULT 100 + ((200 - 199) * 2), i2 integer DEFAULT nextval('default_seq'));
 ---END---
 ---START---
 INSERT INTO DEFAULTEXPR_TBL VALUES (-1, -2);
@@ -71,19 +70,13 @@ CREATE TABLE error_tbl (i int DEFAULT (100, ));
 CREATE TABLE error_tbl (b1 bool DEFAULT 1 IN (1, 2));
 ---END---
 ---START---
---  this should work, however:
-CREATE TABLE error_tbl (b1 bool DEFAULT (1 IN (1, 2)));
+CREATE TABLE error_tbl (_gemini_pk serial PRIMARY KEY, b1 bool DEFAULT (1 IN (1, 2)));
 ---END---
 ---START---
 DROP TABLE error_tbl;
 ---END---
 ---START---
---
--- CHECK syntax
---
-
-CREATE TABLE CHECK_TBL (x int,
-	CONSTRAINT CHECK_CON CHECK (x > 3));
+CREATE TABLE check_tbl (_gemini_pk serial PRIMARY KEY, x integer, CONSTRAINT check_con CHECK (x > 3));
 ---END---
 ---START---
 INSERT INTO CHECK_TBL VALUES (5);
@@ -110,9 +103,7 @@ SELECT * FROM CHECK_TBL;
 CREATE SEQUENCE CHECK_SEQ;
 ---END---
 ---START---
-CREATE TABLE CHECK2_TBL (x int, y text, z int,
-	CONSTRAINT SEQUENCE_CON
-	CHECK (x > 3 and y <> 'check failed' and z < 8));
+CREATE TABLE check2_tbl (_gemini_pk serial PRIMARY KEY, x integer, y text, z integer, CONSTRAINT sequence_con CHECK (x > 3 AND y <> 'check failed' AND z < 8));
 ---END---
 ---START---
 INSERT INTO CHECK2_TBL VALUES (4, 'check ok', -2);
@@ -143,11 +134,7 @@ SELECT * from CHECK2_TBL;
 CREATE SEQUENCE INSERT_SEQ;
 ---END---
 ---START---
-CREATE TABLE INSERT_TBL (x INT DEFAULT nextval('insert_seq'),
-	y TEXT DEFAULT '-NULL-',
-	z INT DEFAULT -1 * currval('insert_seq'),
-	CONSTRAINT INSERT_TBL_CON CHECK (x >= 3 AND y <> 'check failed' AND x < 8),
-	CHECK (x + z = 0));
+CREATE TABLE insert_tbl (_gemini_pk serial PRIMARY KEY, x integer DEFAULT nextval('insert_seq'), y text DEFAULT '-NULL-', z integer DEFAULT -1 * currval('insert_seq'), CONSTRAINT insert_tbl_con CHECK (x >= 3 AND y <> 'check failed' AND x < 8), CHECK ((x + z) = 0));
 ---END---
 ---START---
 INSERT INTO INSERT_TBL(x,z) VALUES (2, -2);
@@ -216,13 +203,7 @@ INSERT INTO INSERT_TBL VALUES (null, null, null);
 SELECT * FROM INSERT_TBL;
 ---END---
 ---START---
---
--- Check constraints on system columns
---
-
-CREATE TABLE SYS_COL_CHECK_TBL (city text, state text, is_capital bool,
-                  altitude int,
-                  CHECK (NOT (is_capital AND tableoid::regclass::text = 'sys_col_check_tbl')));
+CREATE TABLE sys_col_check_tbl (_gemini_pk serial PRIMARY KEY, city text, state text, is_capital bool, altitude integer, CHECK (NOT(is_capital AND CAST(CAST(tableoid AS regclass) AS text) = 'sys_col_check_tbl')));
 ---END---
 ---START---
 INSERT INTO SYS_COL_CHECK_TBL VALUES ('Seattle', 'Washington', false, 100);
@@ -237,21 +218,10 @@ SELECT *, tableoid::regclass::text FROM SYS_COL_CHECK_TBL;
 DROP TABLE SYS_COL_CHECK_TBL;
 ---END---
 ---START---
---
--- Check constraints on system columns other then TableOid should return error
---
-CREATE TABLE SYS_COL_CHECK_TBL (city text, state text, is_capital bool,
-                  altitude int,
-				  CHECK (NOT (is_capital AND ctid::text = 'sys_col_check_tbl')));
+CREATE TABLE sys_col_check_tbl (_gemini_pk serial PRIMARY KEY, city text, state text, is_capital bool, altitude integer, CHECK (NOT(is_capital AND CAST(ctid AS text) = 'sys_col_check_tbl')));
 ---END---
 ---START---
---
--- Check inheritance of defaults and constraints
---
-
-CREATE TABLE INSERT_CHILD (cx INT default 42,
-	cy INT CHECK (cy > x))
-	INHERITS (INSERT_TBL);
+CREATE TABLE insert_child (_gemini_pk serial PRIMARY KEY, cx integer DEFAULT 42, cy integer CHECK (cy > x)) INHERITS (insert_tbl);
 ---END---
 ---START---
 INSERT INTO INSERT_CHILD(x,z,cy) VALUES (7,-7,11);
@@ -272,15 +242,10 @@ SELECT * FROM INSERT_CHILD;
 DROP TABLE INSERT_CHILD;
 ---END---
 ---START---
---
--- Check NO INHERIT type of constraints and inheritance
---
-
-CREATE TABLE ATACC1 (TEST INT
-	CHECK (TEST > 0) NO INHERIT);
+CREATE TABLE atacc1 (_gemini_pk serial PRIMARY KEY, test integer CHECK (test > 0) NO INHERIT);
 ---END---
 ---START---
-CREATE TABLE ATACC2 (TEST2 INT) INHERITS (ATACC1);
+CREATE TABLE atacc2 (_gemini_pk serial PRIMARY KEY, test2 integer) INHERITS (atacc1);
 ---END---
 ---START---
 -- check constraint is not there on child
@@ -294,11 +259,10 @@ INSERT INTO ATACC1 (TEST) VALUES (-3);
 DROP TABLE ATACC1 CASCADE;
 ---END---
 ---START---
-CREATE TABLE ATACC1 (TEST INT, TEST2 INT
-	CHECK (TEST > 0), CHECK (TEST2 > 10) NO INHERIT);
+CREATE TABLE atacc1 (_gemini_pk serial PRIMARY KEY, test integer, test2 integer CHECK (test > 0), CHECK (test2 > 10) NO INHERIT);
 ---END---
 ---START---
-CREATE TABLE ATACC2 () INHERITS (ATACC1);
+CREATE TABLE atacc2 (_gemini_pk serial PRIMARY KEY) INHERITS (atacc1);
 ---END---
 ---START---
 -- check constraint is there on child
@@ -330,7 +294,9 @@ DELETE FROM INSERT_TBL;
 ALTER SEQUENCE INSERT_SEQ RESTART WITH 4;
 ---END---
 ---START---
-CREATE TEMP TABLE tmp (xd INT, yd TEXT, zd INT);
+DROP TABLE IF EXISTS tmp;
+
+CREATE TABLE tmp (_gemini_pk serial PRIMARY KEY, xd integer, yd text, zd integer);
 ---END---
 ---START---
 INSERT INTO tmp VALUES (null, 'Y', null);
@@ -382,15 +348,7 @@ UPDATE INSERT_TBL SET x = z, z = x;
 SELECT * FROM INSERT_TBL;
 ---END---
 ---START---
--- DROP TABLE INSERT_TBL;
-
---
--- Check constraints on COPY FROM
---
-
-CREATE TABLE COPY_TBL (x INT, y TEXT, z INT,
-	CONSTRAINT COPY_CON
-	CHECK (x > 3 AND y <> 'check failed' AND x < 7 ));
+CREATE TABLE copy_tbl (_gemini_pk serial PRIMARY KEY, x integer, y text, z integer, CONSTRAINT copy_con CHECK (x > 3 AND y <> 'check failed' AND x < 7));
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/constro.data'
@@ -466,11 +424,7 @@ SELECT * FROM PRIMARY_TBL;
 DROP TABLE PRIMARY_TBL;
 ---END---
 ---START---
---
--- Unique keys
---
-
-CREATE TABLE UNIQUE_TBL (i int UNIQUE, t text);
+CREATE TABLE unique_tbl (_gemini_pk serial PRIMARY KEY, i integer UNIQUE, t text);
 ---END---
 ---START---
 INSERT INTO UNIQUE_TBL VALUES (1, 'one');
@@ -510,7 +464,7 @@ SELECT * FROM UNIQUE_TBL;
 DROP TABLE UNIQUE_TBL;
 ---END---
 ---START---
-CREATE TABLE UNIQUE_TBL (i int UNIQUE NULLS NOT DISTINCT, t text);
+CREATE TABLE unique_tbl (_gemini_pk serial PRIMARY KEY, i integer UNIQUE NULLS NOT DISTINCT, t text);
 ---END---
 ---START---
 INSERT INTO UNIQUE_TBL VALUES (1, 'one');
@@ -547,8 +501,7 @@ SELECT * FROM UNIQUE_TBL;
 DROP TABLE UNIQUE_TBL;
 ---END---
 ---START---
-CREATE TABLE UNIQUE_TBL (i int, t text,
-	UNIQUE(i,t));
+CREATE TABLE unique_tbl (_gemini_pk serial PRIMARY KEY, i integer, t text, UNIQUE (i, t));
 ---END---
 ---START---
 INSERT INTO UNIQUE_TBL VALUES (1, 'one');
@@ -575,11 +528,7 @@ SELECT * FROM UNIQUE_TBL;
 DROP TABLE UNIQUE_TBL;
 ---END---
 ---START---
---
--- Deferrable unique constraints
---
-
-CREATE TABLE unique_tbl (i int UNIQUE DEFERRABLE, t text);
+CREATE TABLE unique_tbl (_gemini_pk serial PRIMARY KEY, i integer UNIQUE DEFERRABLE, t text);
 ---END---
 ---START---
 INSERT INTO unique_tbl VALUES (0, 'one');
@@ -720,8 +669,7 @@ SET CONSTRAINTS ALL IMMEDIATE;
 COMMIT;
 ---END---
 ---START---
--- test deferrable UNIQUE with a partitioned table
-CREATE TABLE parted_uniq_tbl (i int UNIQUE DEFERRABLE) partition by range (i);
+CREATE TABLE parted_uniq_tbl (_gemini_pk serial PRIMARY KEY, i integer UNIQUE DEFERRABLE) PARTITION BY range (i);
 ---END---
 ---START---
 CREATE TABLE parted_uniq_tbl_1 PARTITION OF parted_uniq_tbl FOR VALUES FROM (0) TO (10);
@@ -840,17 +788,7 @@ SELECT * FROM unique_tbl;
 DROP TABLE unique_tbl;
 ---END---
 ---START---
---
--- EXCLUDE constraints
---
-
-CREATE TABLE circles (
-  c1 CIRCLE,
-  c2 TEXT,
-  EXCLUDE USING gist
-    (c1 WITH &&, (c2::circle) WITH &&)
-    WHERE (circle_center(c1) <> '(0,0)')
-);
+CREATE TABLE circles (_gemini_pk serial PRIMARY KEY, c1 circle, c2 text, EXCLUDE USING gist (c1 WITH OPERATOR(&&), (CAST(c2 AS circle)) WITH OPERATOR(&&)) WHERE (circle_center(c1) <> '(0,0)'));
 ---END---
 ---START---
 -- these should succeed because they don't match the index predicate
@@ -898,13 +836,7 @@ REINDEX INDEX circles_c1_c2_excl;
 DROP TABLE circles;
 ---END---
 ---START---
--- Check deferred exclusion constraint
-
-CREATE TABLE deferred_excl (
-  f1 int,
-  f2 int,
-  CONSTRAINT deferred_excl_con EXCLUDE (f1 WITH =) INITIALLY DEFERRED
-);
+CREATE TABLE deferred_excl (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, CONSTRAINT deferred_excl_con EXCLUDE USING btree (f1 WITH OPERATOR(=)) DEFERRABLE INITIALLY DEFERRED);
 ---END---
 ---START---
 INSERT INTO deferred_excl VALUES(1);
@@ -991,7 +923,7 @@ CREATE ROLE regress_constraint_comments;
 SET SESSION AUTHORIZATION regress_constraint_comments;
 ---END---
 ---START---
-CREATE TABLE constraint_comments_tbl (a int CONSTRAINT the_constraint CHECK (a > 0));
+CREATE TABLE constraint_comments_tbl (_gemini_pk serial PRIMARY KEY, a integer CONSTRAINT the_constraint CHECK (a > 0));
 ---END---
 ---START---
 CREATE DOMAIN constraint_comments_dom AS int CONSTRAINT the_constraint CHECK (value > 0);

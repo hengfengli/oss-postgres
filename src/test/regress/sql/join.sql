@@ -1,20 +1,8 @@
 ---START---
---
--- JOIN
--- Test JOIN clauses
---
-
-CREATE TABLE J1_TBL (
-  i integer,
-  j integer,
-  t text
-);
+CREATE TABLE j1_tbl (_gemini_pk serial PRIMARY KEY, i integer, j integer, t text);
 ---END---
 ---START---
-CREATE TABLE J2_TBL (
-  i integer,
-  k integer
-);
+CREATE TABLE j2_tbl (_gemini_pk serial PRIMARY KEY, i integer, k integer);
 ---END---
 ---START---
 INSERT INTO J1_TBL VALUES (1, 4, 'one');
@@ -78,7 +66,9 @@ INSERT INTO J2_TBL VALUES (NULL, 0);
 ---END---
 ---START---
 -- useful in some tests below
-create temp table onerow();
+DROP TABLE IF EXISTS onerow;
+
+CREATE TABLE onerow (_gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
 insert into onerow default values;
@@ -316,21 +306,13 @@ where exists(select * from tenk1 b
       and i4.f1 = a.tenthous;
 ---END---
 ---START---
---
--- More complicated constructs
---
-
---
--- Multiway full join
---
-
-CREATE TABLE t1 (name TEXT, n INTEGER);
+CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, name text, n integer);
 ---END---
 ---START---
-CREATE TABLE t2 (name TEXT, n INTEGER);
+CREATE TABLE t2 (_gemini_pk serial PRIMARY KEY, name text, n integer);
 ---END---
 ---START---
-CREATE TABLE t3 (name TEXT, n INTEGER);
+CREATE TABLE t3 (_gemini_pk serial PRIMARY KEY, name text, n integer);
 ---END---
 ---START---
 INSERT INTO t1 VALUES ( 'bb', 11 );
@@ -449,7 +431,9 @@ ON (s1_n = s2_n);
 ---START---
 -- Test for propagation of nullability constraints into sub-joins
 
-create temp table x (x1 int, x2 int);
+DROP TABLE IF EXISTS x;
+
+CREATE TABLE x (_gemini_pk serial PRIMARY KEY, x1 integer, x2 integer);
 ---END---
 ---START---
 insert into x values (1,11);
@@ -467,7 +451,9 @@ insert into x values (4,44);
 insert into x values (5,null);
 ---END---
 ---START---
-create temp table y (y1 int, y2 int);
+DROP TABLE IF EXISTS y;
+
+CREATE TABLE y (_gemini_pk serial PRIMARY KEY, y1 integer, y2 integer);
 ---END---
 ---START---
 insert into y values (1,111);
@@ -835,13 +821,19 @@ DROP TABLE J2_TBL;
 -- Both DELETE and UPDATE allow the specification of additional tables
 -- to "join" against to determine which rows should be modified.
 
-CREATE TEMP TABLE t1 (a int, b int);
+DROP TABLE IF EXISTS t1;
+
+CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
-CREATE TEMP TABLE t2 (a int, b int);
+DROP TABLE IF EXISTS t2;
+
+CREATE TABLE t2 (_gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
-CREATE TEMP TABLE t3 (x int, y int);
+DROP TABLE IF EXISTS t3;
+
+CREATE TABLE t3 (_gemini_pk serial PRIMARY KEY, x integer, y integer);
 ---END---
 ---START---
 INSERT INTO t1 VALUES (5, 10);
@@ -891,7 +883,9 @@ SELECT * FROM t3;
 ---START---
 -- Test join against inheritance tree
 
-create temp table t2a () inherits (t2);
+DROP TABLE IF EXISTS t2a;
+
+CREATE TABLE t2a (_gemini_pk serial PRIMARY KEY) INHERITS (t2);
 ---END---
 ---START---
 insert into t2a values (200, 2001);
@@ -936,7 +930,9 @@ select bar.*, unnamed_join.* from
 -- regression test for 8.1 merge right join bug
 --
 
-CREATE TEMP TABLE tt1 ( tt1_id int4, joincol int4 );
+DROP TABLE IF EXISTS tt1;
+
+CREATE TABLE tt1 (_gemini_pk serial PRIMARY KEY, tt1_id int4, joincol int4);
 ---END---
 ---START---
 INSERT INTO tt1 VALUES (1, 11);
@@ -945,7 +941,9 @@ INSERT INTO tt1 VALUES (1, 11);
 INSERT INTO tt1 VALUES (2, NULL);
 ---END---
 ---START---
-CREATE TEMP TABLE tt2 ( tt2_id int4, joincol int4 );
+DROP TABLE IF EXISTS tt2;
+
+CREATE TABLE tt2 (_gemini_pk serial PRIMARY KEY, tt2_id int4, joincol int4);
 ---END---
 ---START---
 INSERT INTO tt2 VALUES (21, 11);
@@ -1009,7 +1007,9 @@ reset enable_memoize;
 -- regression test for 8.2 bug with improper re-ordering of left joins
 --
 
-create temp table tt3(f1 int, f2 text);
+DROP TABLE IF EXISTS tt3;
+
+CREATE TABLE tt3 (_gemini_pk serial PRIMARY KEY, f1 integer, f2 text);
 ---END---
 ---START---
 insert into tt3 select x, repeat('xyzzy', 100) from generate_series(1,10000) x;
@@ -1018,7 +1018,9 @@ insert into tt3 select x, repeat('xyzzy', 100) from generate_series(1,10000) x;
 analyze tt3;
 ---END---
 ---START---
-create temp table tt4(f1 int);
+DROP TABLE IF EXISTS tt4;
+
+CREATE TABLE tt4 (_gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
 insert into tt4 values (0),(1),(9999);
@@ -1090,7 +1092,9 @@ where b.unique2 is null;
 -- regression test for proper handling of outer joins within antijoins
 --
 
-create temp table tt4x(c1 int, c2 int, c3 int);
+DROP TABLE IF EXISTS tt4x;
+
+CREATE TABLE tt4x (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer);
 ---END---
 ---START---
 explain (costs off)
@@ -1109,10 +1113,14 @@ where not exists (
 -- regression test for problems of the sort depicted in bug #3494
 --
 
-create temp table tt5(f1 int, f2 int);
+DROP TABLE IF EXISTS tt5;
+
+CREATE TABLE tt5 (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer);
 ---END---
 ---START---
-create temp table tt6(f1 int, f2 int);
+DROP TABLE IF EXISTS tt6;
+
+CREATE TABLE tt6 (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer);
 ---END---
 ---START---
 insert into tt5 values(1, 10);
@@ -1137,10 +1145,14 @@ select * from tt5,tt6 where tt5.f1 = tt6.f1 and tt5.f1 = tt5.f2 - tt6.f2;
 -- regression test for problems of the sort depicted in bug #3588
 --
 
-create temp table xx (pkxx int);
+DROP TABLE IF EXISTS xx;
+
+CREATE TABLE xx (_gemini_pk serial PRIMARY KEY, pkxx integer);
 ---END---
 ---START---
-create temp table yy (pkyy int, pkxx int);
+DROP TABLE IF EXISTS yy;
+
+CREATE TABLE yy (_gemini_pk serial PRIMARY KEY, pkyy integer, pkxx integer);
 ---END---
 ---START---
 insert into xx values (1);
@@ -1174,13 +1186,19 @@ from yy
 -- (as seen in early 8.2.x releases)
 --
 
-create temp table zt1 (f1 int primary key);
+DROP TABLE IF EXISTS zt1;
+
+create table zt1 (f1 int primary key);
 ---END---
 ---START---
-create temp table zt2 (f2 int primary key);
+DROP TABLE IF EXISTS zt2;
+
+create table zt2 (f2 int primary key);
 ---END---
 ---START---
-create temp table zt3 (f3 int primary key);
+DROP TABLE IF EXISTS zt3;
+
+create table zt3 (f3 int primary key);
 ---END---
 ---START---
 insert into zt1 values(53);
@@ -1246,10 +1264,14 @@ set enable_hashjoin = 0;
 set enable_nestloop = 0;
 ---END---
 ---START---
-create temp table a (i integer);
+DROP TABLE IF EXISTS a;
+
+CREATE TABLE a (_gemini_pk serial PRIMARY KEY, i integer);
 ---END---
 ---START---
-create temp table b (x integer, y integer);
+DROP TABLE IF EXISTS b;
+
+CREATE TABLE b (_gemini_pk serial PRIMARY KEY, x integer, y integer);
 ---END---
 ---START---
 select * from a left join b on i = x and i = y and x = i;
@@ -1267,7 +1289,9 @@ begin;
 create type mycomptype as (id int, v bigint);
 ---END---
 ---START---
-create temp table tidv (idv mycomptype);
+DROP TABLE IF EXISTS tidv;
+
+CREATE TABLE tidv (_gemini_pk serial PRIMARY KEY, idv mycomptype);
 ---END---
 ---START---
 create index on tidv (idv);
@@ -1321,20 +1345,26 @@ group by t1.q2 order by 1;
 begin;
 ---END---
 ---START---
-create temp table a (
+DROP TABLE IF EXISTS a;
+
+create table a (
      code char not null,
      constraint a_pk primary key (code)
 );
 ---END---
 ---START---
-create temp table b (
+DROP TABLE IF EXISTS b;
+
+create table b (
      a char not null,
      num integer not null,
      constraint b_pk primary key (a, num)
 );
 ---END---
 ---START---
-create temp table c (
+DROP TABLE IF EXISTS c;
+
+create table c (
      name char not null,
      a char,
      constraint c_pk primary key (name)
@@ -1442,14 +1472,18 @@ SELECT qq, unique1
 -- nested nestloops can require nested PlaceHolderVars
 --
 
-create temp table nt1 (
+DROP TABLE IF EXISTS nt1;
+
+create table nt1 (
   id int primary key,
   a1 boolean,
   a2 boolean
 );
 ---END---
 ---START---
-create temp table nt2 (
+DROP TABLE IF EXISTS nt2;
+
+create table nt2 (
   id int primary key,
   nt1_id int,
   b1 boolean,
@@ -1458,7 +1492,9 @@ create temp table nt2 (
 );
 ---END---
 ---START---
-create temp table nt3 (
+DROP TABLE IF EXISTS nt3;
+
+create table nt3 (
   id int primary key,
   nt2_id int,
   c1 boolean,
@@ -1585,10 +1621,14 @@ select * from int4_tbl a full join int4_tbl b on false;
 -- test for ability to use a cartesian join when necessary
 --
 
-create temp table q1 as select 1 as q1;
+DROP TABLE IF EXISTS q1;
+
+create table q1 as select 1 as q1;
 ---END---
 ---START---
-create temp table q2 as select 0 as q2;
+DROP TABLE IF EXISTS q2;
+
+create table q2 as select 0 as q2;
 ---END---
 ---START---
 analyze q1;
@@ -2292,7 +2332,9 @@ select 1 from
 begin;
 ---END---
 ---START---
-create temp table t (a int unique);
+DROP TABLE IF EXISTS t;
+
+CREATE TABLE t (_gemini_pk serial PRIMARY KEY, a integer UNIQUE);
 ---END---
 ---START---
 explain (costs off)
@@ -2476,16 +2518,24 @@ on true;
 begin;
 ---END---
 ---START---
-CREATE TEMP TABLE a (id int PRIMARY KEY, b_id int);
+DROP TABLE IF EXISTS a;
+
+CREATE TABLE a (id int PRIMARY KEY, b_id int);
 ---END---
 ---START---
-CREATE TEMP TABLE b (id int PRIMARY KEY, c_id int);
+DROP TABLE IF EXISTS b;
+
+CREATE TABLE b (id int PRIMARY KEY, c_id int);
 ---END---
 ---START---
-CREATE TEMP TABLE c (id int PRIMARY KEY);
+DROP TABLE IF EXISTS c;
+
+CREATE TABLE c (id int PRIMARY KEY);
 ---END---
 ---START---
-CREATE TEMP TABLE d (a int, b int);
+DROP TABLE IF EXISTS d;
+
+CREATE TABLE d (_gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 INSERT INTO a VALUES (0, 0), (1, NULL);
@@ -2681,10 +2731,14 @@ select c.id, ss.a from c
   on c.id = ss.a;
 ---END---
 ---START---
-CREATE TEMP TABLE parted_b (id int PRIMARY KEY) partition by range(id);
+DROP TABLE IF EXISTS parted_b;
+
+CREATE TABLE parted_b (id int PRIMARY KEY) partition by range(id);
 ---END---
 ---START---
-CREATE TEMP TABLE parted_b1 partition of parted_b for values from (0) to (10);
+DROP TABLE IF EXISTS parted_b1;
+
+CREATE TABLE parted_b1 partition of parted_b for values from (0) to (10);
 ---END---
 ---START---
 -- test join removals on a partitioned table
@@ -2695,10 +2749,14 @@ select a.* from a left join parted_b pb on a.b_id = pb.id;
 rollback;
 ---END---
 ---START---
-create temp table parent (k int primary key, pd int);
+DROP TABLE IF EXISTS parent;
+
+create table parent (k int primary key, pd int);
 ---END---
 ---START---
-create temp table child (k int unique, cd int);
+DROP TABLE IF EXISTS child;
+
+CREATE TABLE child (_gemini_pk serial PRIMARY KEY, k integer UNIQUE, cd integer);
 ---END---
 ---START---
 insert into parent values (1, 10), (2, 20), (3, 30);
@@ -2754,10 +2812,14 @@ select p.* from
 begin;
 ---END---
 ---START---
-CREATE TEMP TABLE a (id int PRIMARY KEY);
+DROP TABLE IF EXISTS a;
+
+CREATE TABLE a (id int PRIMARY KEY);
 ---END---
 ---START---
-CREATE TEMP TABLE b (id int PRIMARY KEY, a_id int);
+DROP TABLE IF EXISTS b;
+
+CREATE TABLE b (id int PRIMARY KEY, a_id int);
 ---END---
 ---START---
 INSERT INTO a VALUES (0), (1);
@@ -2779,7 +2841,9 @@ rollback;
 begin;
 ---END---
 ---START---
-create temp table innertab (id int8 primary key, dat1 int8);
+DROP TABLE IF EXISTS innertab;
+
+create table innertab (id int8 primary key, dat1 int8);
 ---END---
 ---START---
 insert into innertab values(123, 42);
@@ -2826,7 +2890,9 @@ rollback;
 begin;
 ---END---
 ---START---
-create temp table uniquetbl (f1 text unique);
+DROP TABLE IF EXISTS uniquetbl;
+
+CREATE TABLE uniquetbl (_gemini_pk serial PRIMARY KEY, f1 text UNIQUE);
 ---END---
 ---START---
 explain (costs off)
@@ -2872,7 +2938,9 @@ rollback;
 begin;
 ---END---
 ---START---
-create temp table t (a int unique);
+DROP TABLE IF EXISTS t;
+
+CREATE TABLE t (_gemini_pk serial PRIMARY KEY, a integer UNIQUE);
 ---END---
 ---START---
 insert into t values (1);
@@ -2902,7 +2970,9 @@ rollback;
 begin;
 ---END---
 ---START---
-create temp table t (a int unique, b int);
+DROP TABLE IF EXISTS t;
+
+CREATE TABLE t (_gemini_pk serial PRIMARY KEY, a integer UNIQUE, b integer);
 ---END---
 ---START---
 insert into t values (1,1), (2,2);
@@ -2960,10 +3030,14 @@ where q2 = 456;
 ---START---
 -- and check a related issue where we miscompute required relids for
 -- a PHV that's been translated to a child rel
-create temp table parttbl (a integer primary key) partition by range (a);
+DROP TABLE IF EXISTS parttbl;
+
+create table parttbl (a integer primary key) partition by range (a);
 ---END---
 ---START---
-create temp table parttbl1 partition of parttbl for values from (1) to (100);
+DROP TABLE IF EXISTS parttbl1;
+
+create table parttbl1 partition of parttbl for values from (1) to (100);
 ---END---
 ---START---
 insert into parttbl values (11), (12);
@@ -3422,7 +3496,9 @@ select 1 from tenk1 a, lateral (select max(a.unique1) from int4_tbl b) ss;
 ---START---
 -- check behavior of LATERAL in UPDATE/DELETE
 
-create temp table xx1 as select f1 as x1, -f1 as x2 from int4_tbl;
+DROP TABLE IF EXISTS xx1;
+
+create table xx1 as select f1 as x1, -f1 as x2 from int4_tbl;
 ---END---
 ---START---
 -- error, can't do this:
@@ -3450,11 +3526,7 @@ delete from xx1 using (select * from int4_tbl where f1 = xx1.x1) ss;
 delete from xx1 using lateral (select * from int4_tbl where f1 = x1) ss;
 ---END---
 ---START---
---
--- test LATERAL reference propagation down a multi-level inheritance hierarchy
--- produced for a multi-level partitioned table hierarchy.
---
-create table join_pt1 (a int, b int, c varchar) partition by range(a);
+CREATE TABLE join_pt1 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c varchar) PARTITION BY range (a);
 ---END---
 ---START---
 create table join_pt1p1 partition of join_pt1 for values from (0) to (100) partition by range(b);
@@ -3469,7 +3541,7 @@ create table join_pt1p1p1 partition of join_pt1p1 for values from (0) to (100);
 insert into join_pt1 values (1, 1, 'x'), (101, 101, 'y');
 ---END---
 ---START---
-create table join_ut1 (a int, b int, c varchar);
+CREATE TABLE join_ut1 (_gemini_pk serial PRIMARY KEY, a integer, b integer, c varchar);
 ---END---
 ---START---
 insert into join_ut1 values (101, 101, 'y'), (2, 2, 'z');
@@ -3501,7 +3573,7 @@ drop table join_ut1;
 begin;
 ---END---
 ---START---
-create table fkest (x integer, x10 integer, x10b integer, x100 integer);
+CREATE TABLE fkest (_gemini_pk serial PRIMARY KEY, x integer, x10 integer, x10b integer, x100 integer);
 ---END---
 ---START---
 insert into fkest select x, x/10, x/10, x/100 from generate_series(1,1000) x;
@@ -3585,7 +3657,7 @@ create table j1 (id int primary key);
 create table j2 (id int primary key);
 ---END---
 ---START---
-create table j3 (id int);
+CREATE TABLE j3 (_gemini_pk serial PRIMARY KEY, id integer);
 ---END---
 ---START---
 insert into j1 values(1),(2),(3);

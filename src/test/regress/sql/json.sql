@@ -289,7 +289,9 @@ FROM (SELECT $$a$$ || x AS b,
            generate_series(4,5) y) q;
 ---END---
 ---START---
-CREATE TEMP TABLE rows AS
+DROP TABLE IF EXISTS rows;
+
+CREATE TABLE rows AS
 SELECT x, 'txt' || x as y
 FROM generate_series(1,3) AS x;
 ---END---
@@ -398,10 +400,9 @@ FROM (SELECT '{"a":1,"b": [2,3,4,"d","e","f"],"c":{"p":1,"q":2}}'::json AS "json
 ---START---
 -- json extraction functions
 
-CREATE TEMP TABLE test_json (
-       json_type text,
-       test_json json
-);
+DROP TABLE IF EXISTS test_json;
+
+CREATE TABLE test_json (_gemini_pk serial PRIMARY KEY, json_type text, test_json pg_catalog.json);
 ---END---
 ---START---
 INSERT INTO test_json VALUES
@@ -1218,7 +1219,9 @@ select * from json_populate_recordset(row(1000000000::int,50::int),'[{"b":"2"},{
 ---END---
 ---START---
 -- test type info caching in json_populate_record()
-CREATE TEMP TABLE jspoptest (js json);
+DROP TABLE IF EXISTS jspoptest;
+
+CREATE TABLE jspoptest (_gemini_pk serial PRIMARY KEY, js pg_catalog.json);
 ---END---
 ---START---
 INSERT INTO jspoptest
@@ -1394,7 +1397,9 @@ SELECT json_build_object(json '{"a":1,"b":2}', 3);
 SELECT json_build_object('{1,2,3}'::int[], 3);
 ---END---
 ---START---
-CREATE TEMP TABLE foo (serial_num int, name text, type text);
+DROP TABLE IF EXISTS foo;
+
+CREATE TABLE foo (_gemini_pk serial PRIMARY KEY, serial_num integer, name text, type text);
 ---END---
 ---START---
 INSERT INTO foo VALUES (847001,'t15','GE1043');

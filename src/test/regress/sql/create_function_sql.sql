@@ -298,8 +298,7 @@ SELECT false;
 END;
 ---END---
 ---START---
--- check display of function arguments in sub-SELECT
-CREATE TABLE functest1 (i int);
+CREATE TABLE functest1 (_gemini_pk serial PRIMARY KEY, i integer);
 ---END---
 ---START---
 CREATE FUNCTION functest_S_16(a int, b int) RETURNS void
@@ -382,8 +381,7 @@ SELECT pg_get_functiondef('functest_S_16'::regproc);
 DROP TABLE functest1 CASCADE;
 ---END---
 ---START---
--- test with views
-CREATE TABLE functest3 (a int);
+CREATE TABLE functest3 (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 INSERT INTO functest3 VALUES (1), (2);
@@ -454,7 +452,7 @@ CREATE FUNCTION functest_IS_6()
     RETURN nextval('functest1');
 ---END---
 ---START---
-CREATE TABLE functest2 (a int, b int);
+CREATE TABLE functest2 (_gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 CREATE FUNCTION functest_IS_7()
@@ -528,9 +526,7 @@ CREATE OR REPLACE PROCEDURE functest1(a int) LANGUAGE SQL AS 'SELECT $1';
 DROP FUNCTION functest1(a int);
 ---END---
 ---START---
--- inlining of set-returning functions
-
-CREATE TABLE functest3 (a int);
+CREATE TABLE functest3 (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 INSERT INTO functest3 VALUES (1), (2), (3);
@@ -589,7 +585,9 @@ SELECT voidtest2(11,22);
 EXPLAIN (verbose, costs off) SELECT voidtest2(11,22);
 ---END---
 ---START---
-CREATE TEMP TABLE sometable(f1 int);
+DROP TABLE IF EXISTS sometable;
+
+CREATE TABLE sometable (_gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
 CREATE FUNCTION voidtest3(a int) RETURNS VOID LANGUAGE SQL AS

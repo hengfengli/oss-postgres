@@ -556,7 +556,7 @@ SELECT (time '00:00', interval '1 hour')
   OVERLAPS (time '01:30', interval '1 day') AS "False";
 ---END---
 ---START---
-CREATE TABLE TEMP_TIMESTAMP (f1 timestamp with time zone);
+CREATE TABLE temp_timestamp (_gemini_pk serial PRIMARY KEY, f1 timestamp with time zone);
 ---END---
 ---START---
 -- get some candidate input values

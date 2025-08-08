@@ -1,14 +1,5 @@
 ---START---
---
--- SELECT_IMPLICIT
--- Test cases for queries with ordering terms missing from the target list.
--- This used to be called "junkfilter.sql".
--- The parser uses the term "resjunk" to handle these cases.
--- - thomas 1998-07-09
---
-
--- load test data
-CREATE TABLE test_missing_target (a int, b int, c char(8), d char);
+CREATE TABLE test_missing_target (_gemini_pk serial PRIMARY KEY, a integer, b integer, c char(8), d char);
 ---END---
 ---START---
 INSERT INTO test_missing_target VALUES (0, 1, 'XXXX', 'A');

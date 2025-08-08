@@ -86,7 +86,9 @@ DROP TABLE tmp;
 COPY onek TO :'filename';
 ---END---
 ---START---
-CREATE TEMP TABLE onek_copy (LIKE onek);
+DROP TABLE IF EXISTS onek_copy;
+
+CREATE TABLE onek_copy (_gemini_pk serial PRIMARY KEY, LIKE onek);
 ---END---
 ---START---
 COPY onek_copy FROM :'filename';
@@ -102,7 +104,9 @@ SELECT * FROM onek_copy EXCEPT ALL SELECT * FROM onek;
 COPY BINARY stud_emp TO :'filename';
 ---END---
 ---START---
-CREATE TEMP TABLE stud_emp_copy (LIKE stud_emp);
+DROP TABLE IF EXISTS stud_emp_copy;
+
+CREATE TABLE stud_emp_copy (_gemini_pk serial PRIMARY KEY, LIKE stud_emp);
 ---END---
 ---START---
 COPY BINARY stud_emp_copy FROM :'filename';
@@ -111,20 +115,10 @@ COPY BINARY stud_emp_copy FROM :'filename';
 SELECT * FROM stud_emp_copy;
 ---END---
 ---START---
---
--- test data for postquel functions
---
-
-CREATE TABLE hobbies_r (
-	name		text,
-	person 		text
-);
+CREATE TABLE hobbies_r (_gemini_pk serial PRIMARY KEY, name text, person text);
 ---END---
 ---START---
-CREATE TABLE equipment_r (
-	name 		text,
-	hobby		text
-);
+CREATE TABLE equipment_r (_gemini_pk serial PRIMARY KEY, name text, hobby text);
 ---END---
 ---START---
 INSERT INTO hobbies_r (name, person)

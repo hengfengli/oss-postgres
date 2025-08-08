@@ -3,12 +3,9 @@
 -- WINDOW FUNCTIONS
 --
 
-CREATE TEMPORARY TABLE empsalary (
-    depname varchar,
-    empno bigint,
-    salary int,
-    enroll_date date
-);
+DROP TABLE IF EXISTS empsalary;
+
+CREATE TABLE empsalary (_gemini_pk serial PRIMARY KEY, depname varchar, empno bigint, salary integer, enroll_date date);
 ---END---
 ---START---
 INSERT INTO empsalary VALUES
@@ -714,12 +711,9 @@ from generate_series(-9223372036854775806, -9223372036854775804) x;
 ---START---
 -- Test in_range for other numeric datatypes
 
-create temp table numerics(
-    id int,
-    f_float4 float4,
-    f_float8 float8,
-    f_numeric numeric
-);
+DROP TABLE IF EXISTS numerics;
+
+CREATE TABLE numerics (_gemini_pk serial PRIMARY KEY, id integer, f_float4 float4, f_float8 float8, f_numeric numeric);
 ---END---
 ---START---
 insert into numerics values
@@ -858,14 +852,9 @@ window w as (order by f_numeric range between
 
 -- Test in_range for other datetime datatypes
 
-create temp table datetimes(
-    id int,
-    f_time time,
-    f_timetz timetz,
-    f_interval interval,
-    f_timestamptz timestamptz,
-    f_timestamp timestamp
-);
+DROP TABLE IF EXISTS datetimes;
+
+CREATE TABLE datetimes (_gemini_pk serial PRIMARY KEY, id integer, f_time time, f_timetz timetz, f_interval interval, f_timestamptz timestamptz, f_timestamp timestamp);
 ---END---
 ---START---
 insert into datetimes values
@@ -1138,7 +1127,9 @@ SELECT count(*) OVER (PARTITION BY four) FROM (SELECT * FROM tenk1 UNION ALL SEL
 ---END---
 ---START---
 -- check some degenerate cases
-create temp table t1 (f1 int, f2 int8);
+DROP TABLE IF EXISTS t1;
+
+CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, f1 integer, f2 int8);
 ---END---
 ---START---
 insert into t1 values (1,1),(1,2),(2,2);

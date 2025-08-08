@@ -1,8 +1,5 @@
 ---START---
---
--- insert with DEFAULT in the target_list
---
-create table inserttest (col1 int4, col2 int4 NOT NULL, col3 text default 'testing');
+CREATE TABLE inserttest (_gemini_pk serial PRIMARY KEY, col1 int4, col2 int4 NOT NULL, col3 text DEFAULT 'testing');
 ---END---
 ---START---
 insert into inserttest (col1, col2, col3) values (DEFAULT, DEFAULT, DEFAULT);
@@ -63,10 +60,7 @@ select col1, col2, char_length(col3) from inserttest;
 drop table inserttest;
 ---END---
 ---START---
---
--- tuple larger than fillfactor
---
-CREATE TABLE large_tuple_test (a int, b text) WITH (fillfactor = 10);
+CREATE TABLE large_tuple_test (_gemini_pk serial PRIMARY KEY, a integer, b text) WITH (fillfactor = 10);
 ---END---
 ---START---
 ALTER TABLE large_tuple_test ALTER COLUMN b SET STORAGE plain;
@@ -104,8 +98,7 @@ DROP TABLE large_tuple_test;
 create type insert_test_type as (if1 int, if2 text[]);
 ---END---
 ---START---
-create table inserttest (f1 int, f2 int[],
-                         f3 insert_test_type, f4 insert_test_type[]);
+CREATE TABLE inserttest (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer[], f3 insert_test_type, f4 insert_test_type[]);
 ---END---
 ---START---
 insert into inserttest (f2[1], f2[2]) values (1,2);
@@ -157,8 +150,7 @@ insert into inserttest (f4[1].if2[1], f4[1].if2[2]) select 'bear', 'beer';
 select * from inserttest;
 ---END---
 ---START---
--- also check reverse-listing
-create table inserttest2 (f1 bigint, f2 text);
+CREATE TABLE inserttest2 (_gemini_pk serial PRIMARY KEY, f1 bigint, f2 text);
 ---END---
 ---START---
 create rule irule1 as on insert to inserttest2 do also
@@ -187,11 +179,7 @@ drop table inserttest;
 drop type insert_test_type;
 ---END---
 ---START---
--- direct partition inserts should check partition bound constraint
-create table range_parted (
-	a text,
-	b int
-) partition by range (a, (b+0));
+CREATE TABLE range_parted (_gemini_pk serial PRIMARY KEY, a text, b integer) PARTITION BY range (a, (b + 0));
 ---END---
 ---START---
 -- no partitions, so fail
@@ -240,10 +228,7 @@ insert into part1 values (null);
 insert into part1 values (1);
 ---END---
 ---START---
-create table list_parted (
-	a text,
-	b int
-) partition by list (lower(a));
+CREATE TABLE list_parted (_gemini_pk serial PRIMARY KEY, a text, b integer) PARTITION BY list ((lower(a)));
 ---END---
 ---START---
 create table part_aa_bb partition of list_parted FOR VALUES IN ('aa', 'bb');
@@ -482,11 +467,7 @@ insert into list_parted (b) values (1);
 select tableoid::regclass::text, a, min(b) as min_b, max(b) as max_b from list_parted group by 1, 2 order by 1;
 ---END---
 ---START---
--- direct partition inserts should check hash partition bound constraint
-
-create table hash_parted (
-	a int
-) partition by hash (a part_test_int4_ops);
+CREATE TABLE hash_parted (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY hash (a part_test_int4_ops);
 ---END---
 ---START---
 create table hpart0 partition of hash_parted for values with (modulus 4, remainder 0);
@@ -532,9 +513,7 @@ drop table range_parted, list_parted;
 drop table hash_parted;
 ---END---
 ---START---
--- test that a default partition added as the first partition accepts any value
--- including null
-create table list_parted (a int) partition by list (a);
+CREATE TABLE list_parted (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 create table part_default partition of list_parted default;
@@ -557,14 +536,13 @@ select tableoid::regclass, a from list_parted;
 drop table list_parted;
 ---END---
 ---START---
--- more tests for certain multi-level partitioning scenarios
-create table mlparted (a int, b int) partition by range (a, b);
+CREATE TABLE mlparted (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a, b);
 ---END---
 ---START---
-create table mlparted1 (b int not null, a int not null) partition by range ((b+0));
+CREATE TABLE mlparted1 (_gemini_pk serial PRIMARY KEY, b integer NOT NULL, a integer NOT NULL) PARTITION BY range ((b + 0));
 ---END---
 ---START---
-create table mlparted11 (like mlparted1);
+CREATE TABLE mlparted11 (_gemini_pk serial PRIMARY KEY, LIKE mlparted1);
 ---END---
 ---START---
 alter table mlparted11 drop a;
@@ -646,8 +624,7 @@ drop function mlparted11_trig_fn();
 insert into mlparted1 (a, b) values (2, 3);
 ---END---
 ---START---
--- check routing error through a list partitioned table when the key is null
-create table lparted_nonullpart (a int, b char) partition by list (b);
+CREATE TABLE lparted_nonullpart (_gemini_pk serial PRIMARY KEY, a integer, b char) PARTITION BY list (b);
 ---END---
 ---START---
 create table lparted_nonullpart_a partition of lparted_nonullpart for values in ('a');
@@ -666,7 +643,7 @@ alter table mlparted drop constraint check_b;
 create table mlparted12 partition of mlparted1 for values from (5) to (10);
 ---END---
 ---START---
-create table mlparted2 (b int not null, a int not null);
+CREATE TABLE mlparted2 (_gemini_pk serial PRIMARY KEY, b integer NOT NULL, a integer NOT NULL);
 ---END---
 ---START---
 alter table mlparted attach partition mlparted2 for values from (1, 10) to (1, 20);
@@ -675,7 +652,7 @@ alter table mlparted attach partition mlparted2 for values from (1, 10) to (1, 2
 create table mlparted3 partition of mlparted for values from (1, 20) to (1, 30);
 ---END---
 ---START---
-create table mlparted4 (like mlparted);
+CREATE TABLE mlparted4 (_gemini_pk serial PRIMARY KEY, LIKE mlparted);
 ---END---
 ---START---
 alter table mlparted4 drop a;
@@ -695,10 +672,10 @@ with ins (a, b, c) as
 alter table mlparted add c text;
 ---END---
 ---START---
-create table mlparted5 (c text, a int not null, b int not null) partition by list (c);
+CREATE TABLE mlparted5 (_gemini_pk serial PRIMARY KEY, c text, a integer NOT NULL, b integer NOT NULL) PARTITION BY list (c);
 ---END---
 ---START---
-create table mlparted5a (a int not null, c text, b int not null);
+CREATE TABLE mlparted5a (_gemini_pk serial PRIMARY KEY, a integer NOT NULL, c text, b integer NOT NULL);
 ---END---
 ---START---
 alter table mlparted5 attach partition mlparted5a for values in ('a');
@@ -791,7 +768,7 @@ create table mlparted5_cd partition of mlparted5
 create table mlparted5_a partition of mlparted5_ab for values in ('a');
 ---END---
 ---START---
-create table mlparted5_b (d int, b int, c text, a int);
+CREATE TABLE mlparted5_b (_gemini_pk serial PRIMARY KEY, d integer, b integer, c text, a integer);
 ---END---
 ---START---
 alter table mlparted5_ab attach partition mlparted5_b for values in ('b');
@@ -863,9 +840,7 @@ alter table mlparted drop d;
 drop table mlparted5;
 ---END---
 ---START---
--- check that message shown after failure to find a partition shows the
--- appropriate key description (or none) in various situations
-create table key_desc (a int, b int) partition by list ((a+0));
+CREATE TABLE key_desc (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY list ((a + 0));
 ---END---
 ---START---
 create table key_desc_1 partition of key_desc for values in (1) partition by range (b);
@@ -919,8 +894,7 @@ drop role regress_insert_other_user;
 drop table key_desc, key_desc_1;
 ---END---
 ---START---
--- test minvalue/maxvalue restrictions
-create table mcrparted (a int, b int, c int) partition by range (a, abs(b), c);
+CREATE TABLE mcrparted (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer) PARTITION BY range (a, (abs(b)), c);
 ---END---
 ---START---
 create table mcrparted0 partition of mcrparted for values from (minvalue, 0, 0) to (1, maxvalue, maxvalue);
@@ -1022,8 +996,7 @@ select tableoid::regclass::text, * from mcrparted order by 1;
 drop table mcrparted;
 ---END---
 ---START---
--- check that a BR constraint can't make partition contain violating rows
-create table brtrigpartcon (a int, b text) partition by list (a);
+CREATE TABLE brtrigpartcon (_gemini_pk serial PRIMARY KEY, a integer, b text) PARTITION BY list (a);
 ---END---
 ---START---
 create table brtrigpartcon1 partition of brtrigpartcon for values in (1);
@@ -1041,9 +1014,7 @@ insert into brtrigpartcon values (1, 'hi there');
 insert into brtrigpartcon1 values (1, 'hi there');
 ---END---
 ---START---
--- check that the message shows the appropriate column description in a
--- situation where the partitioned table is not the primary ModifyTable node
-create table inserttest3 (f1 text default 'foo', f2 text default 'bar', f3 int);
+CREATE TABLE inserttest3 (_gemini_pk serial PRIMARY KEY, f1 text DEFAULT 'foo', f2 text DEFAULT 'bar', f3 integer);
 ---END---
 ---START---
 create role regress_coldesc_role;
@@ -1087,14 +1058,13 @@ drop table brtrigpartcon;
 drop function brtrigpartcon1trigf();
 ---END---
 ---START---
--- check that "do nothing" BR triggers work with tuple-routing
-create table donothingbrtrig_test (a int, b text) partition by list (a);
+CREATE TABLE donothingbrtrig_test (_gemini_pk serial PRIMARY KEY, a integer, b text) PARTITION BY list (a);
 ---END---
 ---START---
-create table donothingbrtrig_test1 (b text, a int);
+CREATE TABLE donothingbrtrig_test1 (_gemini_pk serial PRIMARY KEY, b text, a integer);
 ---END---
 ---START---
-create table donothingbrtrig_test2 (c text, b text, a int);
+CREATE TABLE donothingbrtrig_test2 (_gemini_pk serial PRIMARY KEY, c text, b text, a integer);
 ---END---
 ---START---
 alter table donothingbrtrig_test2 drop column c;
@@ -1134,8 +1104,7 @@ drop table donothingbrtrig_test;
 drop function donothingbrtrig_func();
 ---END---
 ---START---
--- check multi-column range partitioning with minvalue/maxvalue constraints
-create table mcrparted (a text, b int) partition by range(a, b);
+CREATE TABLE mcrparted (_gemini_pk serial PRIMARY KEY, a text, b integer) PARTITION BY range (a, b);
 ---END---
 ---START---
 create table mcrparted1_lt_b partition of mcrparted for values from (minvalue, minvalue) to ('b', minvalue);
@@ -1183,8 +1152,7 @@ select tableoid::regclass, * from mcrparted order by a, b;
 drop table mcrparted;
 ---END---
 ---START---
--- check that wholerow vars in the RETURNING list work with partitioned tables
-create table returningwrtest (a int) partition by list (a);
+CREATE TABLE returningwrtest (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 create table returningwrtest1 partition of returningwrtest for values in (1);
@@ -1197,7 +1165,7 @@ insert into returningwrtest values (1) returning returningwrtest;
 alter table returningwrtest add b text;
 ---END---
 ---START---
-create table returningwrtest2 (b text, c int, a int);
+CREATE TABLE returningwrtest2 (_gemini_pk serial PRIMARY KEY, b text, c integer, a integer);
 ---END---
 ---START---
 alter table returningwrtest2 drop c;

@@ -44,7 +44,7 @@ INSERT INTO clstr_tst_s (b) SELECT b FROM clstr_tst_s;
 INSERT INTO clstr_tst_s (b) SELECT b FROM clstr_tst_s;
 ---END---
 ---START---
-CREATE TABLE clstr_tst_inh () INHERITS (clstr_tst);
+CREATE TABLE clstr_tst_inh (_gemini_pk serial PRIMARY KEY) INHERITS (clstr_tst);
 ---END---
 ---START---
 INSERT INTO clstr_tst (b, c) VALUES (11, 'once');
@@ -384,7 +384,9 @@ SELECT * FROM clustertest;
 ---END---
 ---START---
 -- check that temp tables can be clustered
-create temp table clstr_temp (col1 int primary key, col2 text);
+DROP TABLE IF EXISTS clstr_temp;
+
+create table clstr_temp (col1 int primary key, col2 text);
 ---END---
 ---START---
 insert into clstr_temp values (2, 'two'), (1, 'one');
@@ -415,8 +417,7 @@ CLUSTER clustertest USING clustertest_pkey;
 CLUSTER clustertest;
 ---END---
 ---START---
--- Check that partitioned tables can be clustered
-CREATE TABLE clstrpart (a int) PARTITION BY RANGE (a);
+CREATE TABLE clstrpart (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY range (a);
 ---END---
 ---START---
 CREATE TABLE clstrpart1 PARTITION OF clstrpart FOR VALUES FROM (1) TO (10) PARTITION BY RANGE (a);
@@ -451,13 +452,17 @@ CREATE INDEX clstrpart_idx ON clstrpart (a);
 ---END---
 ---START---
 -- Check that clustering sets new relfilenodes:
-CREATE TEMP TABLE old_cluster_info AS SELECT relname, level, relfilenode, relkind FROM pg_partition_tree('clstrpart'::regclass) AS tree JOIN pg_class c ON c.oid=tree.relid;
+DROP TABLE IF EXISTS old_cluster_info;
+
+CREATE TABLE old_cluster_info AS SELECT relname, level, relfilenode, relkind FROM pg_partition_tree('clstrpart'::regclass) AS tree JOIN pg_class c ON c.oid=tree.relid;
 ---END---
 ---START---
 CLUSTER clstrpart USING clstrpart_idx;
 ---END---
 ---START---
-CREATE TEMP TABLE new_cluster_info AS SELECT relname, level, relfilenode, relkind FROM pg_partition_tree('clstrpart'::regclass) AS tree JOIN pg_class c ON c.oid=tree.relid;
+DROP TABLE IF EXISTS new_cluster_info;
+
+CREATE TABLE new_cluster_info AS SELECT relname, level, relfilenode, relkind FROM pg_partition_tree('clstrpart'::regclass) AS tree JOIN pg_class c ON c.oid=tree.relid;
 ---END---
 ---START---
 SELECT relname, old.level, old.relkind, old.relfilenode = new.relfilenode FROM old_cluster_info AS old JOIN new_cluster_info AS new USING (relname) ORDER BY relname COLLATE "C";
@@ -477,8 +482,7 @@ ALTER TABLE clstrpart CLUSTER ON clstrpart_idx;
 DROP TABLE clstrpart;
 ---END---
 ---START---
--- Ownership of partitions is checked
-CREATE TABLE ptnowner(i int unique) PARTITION BY LIST (i);
+CREATE TABLE ptnowner (_gemini_pk serial PRIMARY KEY, i integer UNIQUE) PARTITION BY list (i);
 ---END---
 ---START---
 CREATE INDEX ptnowner_i_idx ON ptnowner(i);
@@ -499,7 +503,9 @@ ALTER TABLE ptnowner1 OWNER TO regress_ptnowner;
 ALTER TABLE ptnowner OWNER TO regress_ptnowner;
 ---END---
 ---START---
-CREATE TEMP TABLE ptnowner_oldnodes AS
+DROP TABLE IF EXISTS ptnowner_oldnodes;
+
+CREATE TABLE ptnowner_oldnodes AS
   SELECT oid, relname, relfilenode FROM pg_partition_tree('ptnowner') AS tree
   JOIN pg_class AS c ON c.oid=tree.relid;
 ---END---

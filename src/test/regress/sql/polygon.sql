@@ -1,11 +1,5 @@
 ---START---
---
--- POLYGON
---
--- polygon logic
---
-
-CREATE TABLE POLYGON_TBL(f1 polygon);
+CREATE TABLE polygon_tbl (_gemini_pk serial PRIMARY KEY, f1 polygon);
 ---END---
 ---START---
 INSERT INTO POLYGON_TBL(f1) VALUES ('(2.0,0.0),(2.0,4.0),(0.0,0.0)');
@@ -50,11 +44,7 @@ INSERT INTO POLYGON_TBL(f1) VALUES ('asdf');
 SELECT * FROM POLYGON_TBL;
 ---END---
 ---START---
---
--- Test the SP-GiST index
---
-
-CREATE TABLE quad_poly_tbl (id int, p polygon);
+CREATE TABLE quad_poly_tbl (_gemini_pk serial PRIMARY KEY, id integer, p polygon);
 ---END---
 ---START---
 INSERT INTO quad_poly_tbl
@@ -88,7 +78,9 @@ SET enable_indexscan = OFF;
 SET enable_bitmapscan = OFF;
 ---END---
 ---START---
-CREATE TEMP TABLE quad_poly_tbl_ord_seq2 AS
+DROP TABLE IF EXISTS quad_poly_tbl_ord_seq2;
+
+CREATE TABLE quad_poly_tbl_ord_seq2 AS
 SELECT rank() OVER (ORDER BY p <-> point '123,456') n, p <-> point '123,456' dist, id
 FROM quad_poly_tbl WHERE p <@ polygon '((300,300),(400,600),(600,500),(700,200))';
 ---END---
@@ -199,7 +191,9 @@ SELECT rank() OVER (ORDER BY p <-> point '123,456') n, p <-> point '123,456' dis
 FROM quad_poly_tbl WHERE p <@ polygon '((300,300),(400,600),(600,500),(700,200))';
 ---END---
 ---START---
-CREATE TEMP TABLE quad_poly_tbl_ord_idx2 AS
+DROP TABLE IF EXISTS quad_poly_tbl_ord_idx2;
+
+CREATE TABLE quad_poly_tbl_ord_idx2 AS
 SELECT rank() OVER (ORDER BY p <-> point '123,456') n, p <-> point '123,456' dist, id
 FROM quad_poly_tbl WHERE p <@ polygon '((300,300),(400,600),(600,500),(700,200))';
 ---END---

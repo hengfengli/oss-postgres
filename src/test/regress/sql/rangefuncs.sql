@@ -1,5 +1,5 @@
 ---START---
-CREATE TABLE rngfunc2(rngfuncid int, f2 int);
+CREATE TABLE rngfunc2 (_gemini_pk serial PRIMARY KEY, rngfuncid integer, f2 integer);
 ---END---
 ---START---
 INSERT INTO rngfunc2 VALUES(1, 11);
@@ -957,7 +957,9 @@ DROP FUNCTION rngfunc();
 -- some tests on SQL functions with RETURNING
 --
 
-create temp table tt(f1 serial, data text);
+DROP TABLE IF EXISTS tt;
+
+CREATE TABLE tt (_gemini_pk serial PRIMARY KEY, f1 serial, data text);
 ---END---
 ---START---
 create function insert_tt(text) returns int as
@@ -1027,7 +1029,9 @@ select * from tt;
 ---END---
 ---START---
 -- and rules work
-create temp table tt_log(f1 int, data text);
+DROP TABLE IF EXISTS tt_log;
+
+CREATE TABLE tt_log (_gemini_pk serial PRIMARY KEY, f1 integer, data text);
 ---END---
 ---START---
 create rule insert_tt_rule as on insert to tt do also
@@ -1122,7 +1126,9 @@ explain (verbose, costs off)
   select * from array_to_set(array['one', 'two']) as t(f1 numeric(4,2),f2 text);
 ---END---
 ---START---
-create temp table rngfunc(f1 int8, f2 int8);
+DROP TABLE IF EXISTS rngfunc;
+
+CREATE TABLE rngfunc (_gemini_pk serial PRIMARY KEY, f1 int8, f2 int8);
 ---END---
 ---START---
 create function testrngfunc() returns record as $$
@@ -1286,7 +1292,9 @@ drop type rngfunc_type cascade;
 -- Check some cases involving added/dropped columns in a rowtype result
 --
 
-create temp table users (userid text, seq int, email text, todrop bool, moredrop int, enabled bool);
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (_gemini_pk serial PRIMARY KEY, userid text, seq integer, email text, todrop bool, moredrop integer, enabled bool);
 ---END---
 ---START---
 insert into users values ('id',1,'email',true,11,true);

@@ -332,8 +332,7 @@ SELECT * FROM mvtest_boxmv ORDER BY id;
 DROP TABLE mvtest_boxes CASCADE;
 ---END---
 ---START---
--- make sure that column names are handled correctly
-CREATE TABLE mvtest_v (i int, j int);
+CREATE TABLE mvtest_v (_gemini_pk serial PRIMARY KEY, i integer, j integer);
 ---END---
 ---START---
 CREATE MATERIALIZED VIEW mvtest_mv_v (ii, jj, kk) AS SELECT i, j FROM mvtest_v;

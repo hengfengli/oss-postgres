@@ -1,10 +1,5 @@
 ---START---
---
--- SELECT_HAVING
---
-
--- load test data
-CREATE TABLE test_having (a int, b int, c char(8), d char);
+CREATE TABLE test_having (_gemini_pk serial PRIMARY KEY, a integer, b integer, c char(8), d char);
 ---END---
 ---START---
 INSERT INTO test_having VALUES (0, 1, 'XXXX', 'A');

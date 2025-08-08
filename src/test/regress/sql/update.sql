@@ -1,13 +1,5 @@
 ---START---
---
--- UPDATE syntax tests
---
-
-CREATE TABLE update_test (
-    a   INT DEFAULT 10,
-    b   INT,
-    c   TEXT
-);
+CREATE TABLE update_test (_gemini_pk serial PRIMARY KEY, a integer DEFAULT 10, b integer, c text);
 ---END---
 ---START---
 CREATE TABLE upsert_test (
@@ -232,36 +224,16 @@ WITH aaa AS (SELECT 1 AS ctea, ' Foo' AS cteb) INSERT INTO upsert_test
 DROP TABLE upsert_test;
 ---END---
 ---START---
----------------------------
--- UPDATE with row movement
----------------------------
-
--- When a partitioned table receives an UPDATE to the partitioned key and the
--- new values no longer meet the partition's bound, the row must be moved to
--- the correct partition for the new partition key (if one exists). We must
--- also ensure that updatable views on partitioned tables properly enforce any
--- WITH CHECK OPTION that is defined. The situation with triggers in this case
--- also requires thorough testing as partition key updates causing row
--- movement convert UPDATEs into DELETE+INSERT.
-
-CREATE TABLE range_parted (
-	a text,
-	b bigint,
-	c numeric,
-	d int,
-	e varchar
-) PARTITION BY RANGE (a, b);
+CREATE TABLE range_parted (_gemini_pk serial PRIMARY KEY, a text, b bigint, c numeric, d integer, e varchar) PARTITION BY range (a, b);
 ---END---
 ---START---
--- Create partitions intentionally in descending bound order, so as to test
--- that update-row-movement works with the leaf partitions not in bound order.
-CREATE TABLE part_b_20_b_30 (e varchar, c numeric, a text, b bigint, d int);
+CREATE TABLE part_b_20_b_30 (_gemini_pk serial PRIMARY KEY, e varchar, c numeric, a text, b bigint, d integer);
 ---END---
 ---START---
 ALTER TABLE range_parted ATTACH PARTITION part_b_20_b_30 FOR VALUES FROM ('b', 20) TO ('b', 30);
 ---END---
 ---START---
-CREATE TABLE part_b_10_b_20 (e varchar, c numeric, a text, b bigint, d int) PARTITION BY RANGE (c);
+CREATE TABLE part_b_10_b_20 (_gemini_pk serial PRIMARY KEY, e varchar, c numeric, a text, b bigint, d integer) PARTITION BY range (c);
 ---END---
 ---START---
 CREATE TABLE part_b_1_b_10 PARTITION OF range_parted FOR VALUES FROM ('b', 1) TO ('b', 10);
@@ -281,10 +253,7 @@ CREATE TABLE part_a_1_a_10 PARTITION OF range_parted FOR VALUES FROM ('a', 1) TO
 UPDATE part_b_10_b_20 set b = b - 6;
 ---END---
 ---START---
--- Create some more partitions following the above pattern of descending bound
--- order, but let's make the situation a bit more complex by having the
--- attribute numbers of the columns vary from their parent partition.
-CREATE TABLE part_c_100_200 (e varchar, c numeric, a text, b bigint, d int) PARTITION BY range (abs(d));
+CREATE TABLE part_c_100_200 (_gemini_pk serial PRIMARY KEY, e varchar, c numeric, a text, b bigint, d integer) PARTITION BY range ((abs(d)));
 ---END---
 ---START---
 ALTER TABLE part_c_100_200 DROP COLUMN e, DROP COLUMN c, DROP COLUMN a;
@@ -308,7 +277,7 @@ CREATE TABLE part_d_15_20 PARTITION OF part_c_100_200 FOR VALUES FROM (15) TO (2
 ALTER TABLE part_b_10_b_20 ATTACH PARTITION part_c_100_200 FOR VALUES FROM (100) TO (200);
 ---END---
 ---START---
-CREATE TABLE part_c_1_100 (e varchar, d int, c numeric, b bigint, a text);
+CREATE TABLE part_c_1_100 (_gemini_pk serial PRIMARY KEY, e varchar, d integer, c numeric, b bigint, a text);
 ---END---
 ---START---
 ALTER TABLE part_b_10_b_20 ATTACH PARTITION part_c_1_100 FOR VALUES FROM (1) TO (100);
@@ -356,8 +325,7 @@ UPDATE part_b_10_b_20 set b = b - 6 WHERE c > 116 returning *;
 UPDATE range_parted set b = b - 6 WHERE c > 116 returning a, b + c;
 ---END---
 ---START---
--- Common table needed for multiple test scenarios.
-CREATE TABLE mintab(c1 int);
+CREATE TABLE mintab (_gemini_pk serial PRIMARY KEY, c1 integer);
 ---END---
 ---START---
 INSERT into mintab VALUES (120);
@@ -766,10 +734,7 @@ UPDATE range_parted set a = 'b' WHERE a = 'bd';
 DROP TABLE range_parted;
 ---END---
 ---START---
-CREATE TABLE list_parted (
-	a text,
-	b int
-) PARTITION BY list (a);
+CREATE TABLE list_parted (_gemini_pk serial PRIMARY KEY, a text, b integer) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE list_part1  PARTITION OF list_parted for VALUES in ('a', 'b');
@@ -795,16 +760,13 @@ UPDATE list_default set a = 'x' WHERE a = 'd';
 DROP TABLE list_parted;
 ---END---
 ---START---
--- Test retrieval of system columns with non-consistent partition row types.
--- This is only partially supported, as seen in the results.
-
-create table utrtest (a int, b text) partition by list (a);
+CREATE TABLE utrtest (_gemini_pk serial PRIMARY KEY, a integer, b text) PARTITION BY list (a);
 ---END---
 ---START---
-create table utr1 (a int check (a in (1)), q text, b text);
+CREATE TABLE utr1 (_gemini_pk serial PRIMARY KEY, a integer CHECK (a IN (1)), q text, b text);
 ---END---
 ---START---
-create table utr2 (a int check (a in (2)), b text);
+CREATE TABLE utr2 (_gemini_pk serial PRIMARY KEY, a integer CHECK (a IN (2)), b text);
 ---END---
 ---START---
 alter table utr1 drop column q;
@@ -850,31 +812,25 @@ delete from utrtest
 drop table utrtest;
 ---END---
 ---START---
---------------
--- Some more update-partition-key test scenarios below. This time use list
--- partitions.
---------------
-
--- Setup for list partitions
-CREATE TABLE list_parted (a numeric, b int, c int8) PARTITION BY list (a);
+CREATE TABLE list_parted (_gemini_pk serial PRIMARY KEY, a numeric, b integer, c int8) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE sub_parted PARTITION OF list_parted for VALUES in (1) PARTITION BY list (b);
 ---END---
 ---START---
-CREATE TABLE sub_part1(b int, c int8, a numeric);
+CREATE TABLE sub_part1 (_gemini_pk serial PRIMARY KEY, b integer, c int8, a numeric);
 ---END---
 ---START---
 ALTER TABLE sub_parted ATTACH PARTITION sub_part1 for VALUES in (1);
 ---END---
 ---START---
-CREATE TABLE sub_part2(b int, c int8, a numeric);
+CREATE TABLE sub_part2 (_gemini_pk serial PRIMARY KEY, b integer, c int8, a numeric);
 ---END---
 ---START---
 ALTER TABLE sub_parted ATTACH PARTITION sub_part2 for VALUES in (2);
 ---END---
 ---START---
-CREATE TABLE list_part1(a numeric, b int, c int8);
+CREATE TABLE list_part1 (_gemini_pk serial PRIMARY KEY, a numeric, b integer, c int8);
 ---END---
 ---START---
 ALTER TABLE list_parted ATTACH PARTITION list_part1 for VALUES in (2,3);
@@ -966,10 +922,7 @@ SELECT tableoid::regclass::text, * FROM list_parted ORDER BY 1, 2, 3, 4;
 DROP FUNCTION func_parted_mod_b();
 ---END---
 ---START---
--- UPDATE partition-key with FROM clause. If join produces multiple output
--- rows for the same row to be modified, we should tuple-route the row only
--- once. There should not be any rows inserted.
-CREATE TABLE non_parted (id int);
+CREATE TABLE non_parted (_gemini_pk serial PRIMARY KEY, id integer);
 ---END---
 ---START---
 INSERT into non_parted VALUES (1), (1), (1), (2), (2), (2), (3), (3), (3);
@@ -998,10 +951,7 @@ create operator class custom_opclass for type int4 using hash as
 operator 1 = , function 2 dummy_hashint4(int4, int8);
 ---END---
 ---START---
-create table hash_parted (
-	a int,
-	b int
-) partition by hash (a custom_opclass, b custom_opclass);
+CREATE TABLE hash_parted (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY hash (a custom_opclass, b custom_opclass);
 ---END---
 ---START---
 create table hpart1 partition of hash_parted for values with (modulus 2, remainder 1);

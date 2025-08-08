@@ -106,8 +106,7 @@ language sql stable;
 select sp_test_func() order by 1;
 ---END---
 ---START---
--- Parallel Append is not to be used when the subpath depends on the outer param
-create table part_pa_test(a int, b int) partition by range(a);
+CREATE TABLE part_pa_test (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY range (a);
 ---END---
 ---START---
 create table part_pa_test_p1 partition of part_pa_test for values from (minvalue) to (0);
@@ -381,7 +380,7 @@ explain (costs off)
 select count(*) from tenk1, tenk2 where tenk1.hundred > 1 and tenk2.thousand=0;
 ---END---
 ---START---
-create table bmscantest (a int, t text);
+CREATE TABLE bmscantest (_gemini_pk serial PRIMARY KEY, a integer, t text);
 ---END---
 ---START---
 insert into bmscantest select r, 'fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo' FROM generate_series(1,100000) r;
@@ -758,7 +757,7 @@ $$declare x int[];
   end$$ language plpgsql parallel safe;
 ---END---
 ---START---
-CREATE TABLE fooarr(f1 text, f2 int[], f3 text);
+CREATE TABLE fooarr (_gemini_pk serial PRIMARY KEY, f1 text, f2 integer[], f3 text);
 ---END---
 ---START---
 INSERT INTO fooarr VALUES('1', ARRAY[1,2], 'one');

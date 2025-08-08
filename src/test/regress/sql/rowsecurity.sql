@@ -434,7 +434,7 @@ COPY t1 FROM stdin WITH ;
 \.
 ---END---
 ---START---
-CREATE TABLE t2 (c float) INHERITS (t1);
+CREATE TABLE t2 (_gemini_pk serial PRIMARY KEY, c double precision) INHERITS (t1);
 ---END---
 ---START---
 GRANT ALL ON t2 TO public;
@@ -561,13 +561,7 @@ EXPLAIN (COSTS OFF) SELECT * FROM t1 WHERE f_leak(b);
 SET SESSION AUTHORIZATION regress_rls_alice;
 ---END---
 ---START---
-CREATE TABLE part_document (
-    did         int,
-    cid         int,
-    dlevel      int not null,
-    dauthor     name,
-    dtitle      text
-) PARTITION BY RANGE (cid);
+CREATE TABLE part_document (_gemini_pk serial PRIMARY KEY, did integer, cid integer, dlevel integer NOT NULL, dauthor name, dtitle text) PARTITION BY range (cid);
 ---END---
 ---START---
 GRANT ALL ON part_document TO public;
@@ -838,10 +832,10 @@ SET SESSION AUTHORIZATION regress_rls_alice;
 SET row_security TO ON;
 ---END---
 ---START---
-CREATE TABLE dependee (x integer, y integer);
+CREATE TABLE dependee (_gemini_pk serial PRIMARY KEY, x integer, y integer);
 ---END---
 ---START---
-CREATE TABLE dependent (x integer, y integer);
+CREATE TABLE dependent (_gemini_pk serial PRIMARY KEY, x integer, y integer);
 ---END---
 ---START---
 CREATE POLICY d1 ON dependent FOR ALL
@@ -870,7 +864,7 @@ EXPLAIN (COSTS OFF) SELECT * FROM dependent;
 SET SESSION AUTHORIZATION regress_rls_alice;
 ---END---
 ---START---
-CREATE TABLE rec1 (x integer, y integer);
+CREATE TABLE rec1 (_gemini_pk serial PRIMARY KEY, x integer, y integer);
 ---END---
 ---START---
 CREATE POLICY r1 ON rec1 USING (x = (SELECT r.x FROM rec1 r WHERE y = r.y));
@@ -893,7 +887,7 @@ SELECT * FROM rec1;
 SET SESSION AUTHORIZATION regress_rls_alice;
 ---END---
 ---START---
-CREATE TABLE rec2 (a integer, b integer);
+CREATE TABLE rec2 (_gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 ALTER POLICY r1 ON rec1 USING (x = (SELECT a FROM rec2 WHERE b = y));
@@ -980,13 +974,13 @@ SELECT * FROM rec1;
 SET SESSION AUTHORIZATION regress_rls_alice;
 ---END---
 ---START---
-CREATE TABLE s1 (a int, b text);
+CREATE TABLE s1 (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 INSERT INTO s1 (SELECT x, public.fipshash(x::text) FROM generate_series(-10,10) x);
 ---END---
 ---START---
-CREATE TABLE s2 (x int, y text);
+CREATE TABLE s2 (_gemini_pk serial PRIMARY KEY, x integer, y text);
 ---END---
 ---START---
 INSERT INTO s2 (SELECT x, public.fipshash(x::text) FROM generate_series(-6,6) x);
@@ -1241,7 +1235,7 @@ DELETE FROM t1 WHERE f_leak(b) RETURNING tableoid::regclass, *, t1;
 SET SESSION AUTHORIZATION regress_rls_alice;
 ---END---
 ---START---
-CREATE TABLE b1 (a int, b text);
+CREATE TABLE b1 (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 INSERT INTO b1 (SELECT x, public.fipshash(x::text) FROM generate_series(-10,10) x);
@@ -1714,10 +1708,10 @@ SELECT * FROM document;
 SET SESSION AUTHORIZATION regress_rls_alice;
 ---END---
 ---START---
-CREATE TABLE z1 (a int, b text);
+CREATE TABLE z1 (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
-CREATE TABLE z2 (a int, b text);
+CREATE TABLE z2 (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 GRANT SELECT ON z1,z2 TO regress_rls_group1, regress_rls_group2,
@@ -1922,7 +1916,7 @@ EXPLAIN (COSTS OFF) SELECT * FROM rls_view;
 SET SESSION AUTHORIZATION regress_rls_alice;
 ---END---
 ---START---
-CREATE TABLE z1_blacklist (a int);
+CREATE TABLE z1_blacklist (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 INSERT INTO z1_blacklist VALUES (3), (4);
@@ -2182,7 +2176,7 @@ DROP VIEW rls_view;
 SET SESSION AUTHORIZATION regress_rls_alice;
 ---END---
 ---START---
-CREATE TABLE x1 (a int, b text, c text);
+CREATE TABLE x1 (_gemini_pk serial PRIMARY KEY, a integer, b text, c text);
 ---END---
 ---START---
 GRANT ALL ON x1 TO PUBLIC;
@@ -2244,10 +2238,10 @@ DELETE FROM x1 WHERE f_leak(b) RETURNING *;
 SET SESSION AUTHORIZATION regress_rls_alice;
 ---END---
 ---START---
-CREATE TABLE y1 (a int, b text);
+CREATE TABLE y1 (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
-CREATE TABLE y2 (a int, b text);
+CREATE TABLE y2 (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 GRANT ALL ON y1, y2 TO regress_rls_bob;
@@ -2338,9 +2332,7 @@ SELECT * FROM y2 WHERE f_leak('abc');
 EXPLAIN (COSTS OFF) SELECT * FROM y2 WHERE f_leak('abc');
 ---END---
 ---START---
-CREATE TABLE test_qual_pushdown (
-    abc text
-);
+CREATE TABLE test_qual_pushdown (_gemini_pk serial PRIMARY KEY, abc text);
 ---END---
 ---START---
 INSERT INTO test_qual_pushdown VALUES ('abc'),('def');
@@ -2370,7 +2362,7 @@ RESET SESSION AUTHORIZATION;
 DROP TABLE t1 CASCADE;
 ---END---
 ---START---
-CREATE TABLE t1 (a integer);
+CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 GRANT SELECT ON t1 TO regress_rls_bob, regress_rls_carol;
@@ -2421,7 +2413,7 @@ RESET SESSION AUTHORIZATION;
 DROP TABLE t1 CASCADE;
 ---END---
 ---START---
-CREATE TABLE t1 (a integer, b text);
+CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 CREATE POLICY p1 ON t1 USING (a % 2 = 0);
@@ -2498,7 +2490,7 @@ SELECT polname, relname
 SET SESSION AUTHORIZATION regress_rls_bob;
 ---END---
 ---START---
-CREATE TABLE t2 (a integer, b text);
+CREATE TABLE t2 (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 INSERT INTO t2 (SELECT * FROM t1);
@@ -2531,10 +2523,10 @@ SELECT * FROM t4;
 SET SESSION AUTHORIZATION regress_rls_alice;
 ---END---
 ---START---
-CREATE TABLE blog (id integer, author text, post text);
+CREATE TABLE blog (_gemini_pk serial PRIMARY KEY, id integer, author text, post text);
 ---END---
 ---START---
-CREATE TABLE comment (blog_id integer, message text);
+CREATE TABLE comment (_gemini_pk serial PRIMARY KEY, blog_id integer, message text);
 ---END---
 ---START---
 GRANT ALL ON blog, comment TO regress_rls_bob;
@@ -2841,7 +2833,7 @@ DROP TABLE copy_rel_to CASCADE;
 SET SESSION AUTHORIZATION regress_rls_alice;
 ---END---
 ---START---
-CREATE TABLE current_check (currentid int, payload text, rlsuser text);
+CREATE TABLE current_check (_gemini_pk serial PRIMARY KEY, currentid integer, payload text, rlsuser text);
 ---END---
 ---START---
 GRANT ALL ON current_check TO PUBLIC;
@@ -3110,10 +3102,10 @@ ROLLBACK;
 SET SESSION AUTHORIZATION regress_rls_alice;
 ---END---
 ---START---
-CREATE TABLE r1 (a int);
+CREATE TABLE r1 (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
-CREATE TABLE r2 (a int);
+CREATE TABLE r2 (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 INSERT INTO r1 VALUES (10), (20);
@@ -3206,7 +3198,7 @@ SET SESSION AUTHORIZATION regress_rls_alice;
 SET row_security = on;
 ---END---
 ---START---
-CREATE TABLE r1 (a int);
+CREATE TABLE r1 (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 INSERT INTO r1 VALUES (10), (20);
@@ -3271,7 +3263,7 @@ SET row_security = on;
 CREATE TABLE r1 (a int PRIMARY KEY);
 ---END---
 ---START---
-CREATE TABLE r2 (a int REFERENCES r1);
+CREATE TABLE r2 (_gemini_pk serial PRIMARY KEY, a integer REFERENCES r1);
 ---END---
 ---START---
 INSERT INTO r1 VALUES (10), (20);
@@ -3338,7 +3330,7 @@ DROP TABLE r1;
 CREATE TABLE r1 (a int PRIMARY KEY);
 ---END---
 ---START---
-CREATE TABLE r2 (a int REFERENCES r1 ON DELETE CASCADE);
+CREATE TABLE r2 (_gemini_pk serial PRIMARY KEY, a integer REFERENCES r1 ON DELETE CASCADE);
 ---END---
 ---START---
 INSERT INTO r1 VALUES (10), (20);
@@ -3382,7 +3374,7 @@ DROP TABLE r1;
 CREATE TABLE r1 (a int PRIMARY KEY);
 ---END---
 ---START---
-CREATE TABLE r2 (a int REFERENCES r1 ON UPDATE CASCADE);
+CREATE TABLE r2 (_gemini_pk serial PRIMARY KEY, a integer REFERENCES r1 ON UPDATE CASCADE);
 ---END---
 ---START---
 INSERT INTO r1 VALUES (10), (20);
@@ -3432,7 +3424,7 @@ SET SESSION AUTHORIZATION regress_rls_alice;
 SET row_security = on;
 ---END---
 ---START---
-CREATE TABLE r1 (a int);
+CREATE TABLE r1 (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 CREATE POLICY p1 ON r1 FOR SELECT USING (false);
@@ -3551,10 +3543,10 @@ DROP TABLE r1;
 RESET SESSION AUTHORIZATION;
 ---END---
 ---START---
-CREATE TABLE dep1 (c1 int);
+CREATE TABLE dep1 (_gemini_pk serial PRIMARY KEY, c1 integer);
 ---END---
 ---START---
-CREATE TABLE dep2 (c1 int);
+CREATE TABLE dep2 (_gemini_pk serial PRIMARY KEY, c1 integer);
 ---END---
 ---START---
 CREATE POLICY dep_p1 ON dep1 TO regress_rls_bob USING (c1 > (select max(dep2.c1) from dep2));
@@ -3600,10 +3592,10 @@ CREATE ROLE regress_rls_dob_role1;
 CREATE ROLE regress_rls_dob_role2;
 ---END---
 ---START---
-CREATE TABLE dob_t1 (c1 int);
+CREATE TABLE dob_t1 (_gemini_pk serial PRIMARY KEY, c1 integer);
 ---END---
 ---START---
-CREATE TABLE dob_t2 (c1 int) PARTITION BY RANGE (c1);
+CREATE TABLE dob_t2 (_gemini_pk serial PRIMARY KEY, c1 integer) PARTITION BY range (c1);
 ---END---
 ---START---
 CREATE POLICY p1 ON dob_t1 TO regress_rls_dob_role1 USING (true);
@@ -3669,14 +3661,13 @@ DROP USER regress_rls_dob_role1;
 DROP USER regress_rls_dob_role2;
 ---END---
 ---START---
--- Bug #15708: view + table with RLS should check policies as view owner
-CREATE TABLE ref_tbl (a int);
+CREATE TABLE ref_tbl (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 INSERT INTO ref_tbl VALUES (1);
 ---END---
 ---START---
-CREATE TABLE rls_tbl (a int);
+CREATE TABLE rls_tbl (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 INSERT INTO rls_tbl VALUES (10);
@@ -3730,8 +3721,7 @@ DROP TABLE rls_tbl;
 DROP TABLE ref_tbl;
 ---END---
 ---START---
--- Leaky operator test
-CREATE TABLE rls_tbl (a int);
+CREATE TABLE rls_tbl (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 INSERT INTO rls_tbl SELECT x/10 FROM generate_series(1, 100) x;
@@ -3777,7 +3767,7 @@ DROP TABLE rls_tbl;
 SET SESSION AUTHORIZATION regress_rls_alice;
 ---END---
 ---START---
-CREATE TABLE rls_tbl (a int, b int, c int);
+CREATE TABLE rls_tbl (_gemini_pk serial PRIMARY KEY, a integer, b integer, c integer);
 ---END---
 ---START---
 CREATE POLICY p1 ON rls_tbl USING (rls_tbl >= ROW(1,1,1));
@@ -3810,8 +3800,7 @@ DROP TABLE rls_tbl;
 RESET SESSION AUTHORIZATION;
 ---END---
 ---START---
--- CVE-2023-2455: inlining an SRF may introduce an RLS dependency
-create table rls_t (c text);
+CREATE TABLE rls_t (_gemini_pk serial PRIMARY KEY, c text);
 ---END---
 ---START---
 insert into rls_t values ('invisible to bob');
@@ -3893,7 +3882,7 @@ DROP ROLE regress_rls_group2;
 CREATE SCHEMA regress_rls_schema;
 ---END---
 ---START---
-CREATE TABLE rls_tbl (c1 int);
+CREATE TABLE rls_tbl (_gemini_pk serial PRIMARY KEY, c1 integer);
 ---END---
 ---START---
 ALTER TABLE rls_tbl ENABLE ROW LEVEL SECURITY;
@@ -3911,7 +3900,7 @@ CREATE POLICY p3 ON rls_tbl FOR UPDATE USING (c1 <= 3) WITH CHECK (c1 > 5);
 CREATE POLICY p4 ON rls_tbl FOR DELETE USING (c1 <= 3);
 ---END---
 ---START---
-CREATE TABLE rls_tbl_force (c1 int);
+CREATE TABLE rls_tbl_force (_gemini_pk serial PRIMARY KEY, c1 integer);
 ---END---
 ---START---
 ALTER TABLE rls_tbl_force ENABLE ROW LEVEL SECURITY;

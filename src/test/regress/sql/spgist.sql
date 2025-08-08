@@ -1,11 +1,5 @@
 ---START---
---
--- Test SP-GiST indexes.
---
--- There are other tests to test different SP-GiST opclasses. This is for
--- testing SP-GiST code itself.
-
-create table spgist_point_tbl(id int4, p point);
+CREATE TABLE spgist_point_tbl (_gemini_pk serial PRIMARY KEY, id int4, p point);
 ---END---
 ---START---
 create index spgist_point_idx on spgist_point_tbl using spgist(p) with (fillfactor = 75);
@@ -45,11 +39,7 @@ delete from spgist_point_tbl where id < 10000;
 vacuum spgist_point_tbl;
 ---END---
 ---START---
--- Test rescan paths (cf. bug #15378)
--- use box and && rather than point, so that rescan happens when the
--- traverse stack is non-empty
-
-create table spgist_box_tbl(id serial, b box);
+CREATE TABLE spgist_box_tbl (_gemini_pk serial PRIMARY KEY, id serial, b box);
 ---END---
 ---START---
 insert into spgist_box_tbl(b)
@@ -67,11 +57,7 @@ select count(*)
  where exists(select * from spgist_box_tbl b where b.b && box(v.p,v.p));
 ---END---
 ---START---
--- The point opclass's choose method only uses the spgMatchNode action,
--- so the other actions are not tested by the above. Create an index using
--- text opclass, which uses the others actions.
-
-create table spgist_text_tbl(id int4, t text);
+CREATE TABLE spgist_text_tbl (_gemini_pk serial PRIMARY KEY, id int4, t text);
 ---END---
 ---START---
 create index spgist_text_idx on spgist_text_tbl using spgist(t);
@@ -108,7 +94,7 @@ reindex index spgist_point_idx;
 create domain spgist_text as varchar;
 ---END---
 ---START---
-create table spgist_domain_tbl (f1 spgist_text);
+CREATE TABLE spgist_domain_tbl (_gemini_pk serial PRIMARY KEY, f1 spgist_text);
 ---END---
 ---START---
 create index spgist_domain_idx on spgist_domain_tbl using spgist(f1);
@@ -124,8 +110,7 @@ select * from spgist_domain_tbl where f1 = 'fo';
 select * from spgist_domain_tbl where f1 = 'fo';
 ---END---
 ---START---
--- test an unlogged table, mostly to get coverage of spgistbuildempty
-create unlogged table spgist_unlogged_tbl(id serial, b box);
+CREATE UNLOGGED TABLE spgist_unlogged_tbl (_gemini_pk serial PRIMARY KEY, id serial, b box);
 ---END---
 ---START---
 create index spgist_unlogged_idx on spgist_unlogged_tbl using spgist (b);

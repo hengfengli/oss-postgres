@@ -370,9 +370,7 @@ EXPLAIN (costs off) UPDATE rw_view1 SET a=6 WHERE a=5;
 EXPLAIN (costs off) DELETE FROM rw_view1 WHERE a=5;
 ---END---
 ---START---
--- it's still updatable if we add a DO ALSO rule
-
-CREATE TABLE base_tbl_hist(ts timestamptz default now(), a int, b text);
+CREATE TABLE base_tbl_hist (_gemini_pk serial PRIMARY KEY, ts timestamptz DEFAULT now(), a integer, b text);
 ---END---
 ---START---
 CREATE RULE base_tbl_log AS ON INSERT TO rw_view1 DO ALSO
@@ -775,7 +773,7 @@ CREATE USER regress_view_user3;
 SET SESSION AUTHORIZATION regress_view_user1;
 ---END---
 ---START---
-CREATE TABLE base_tbl(a int, b text, c float);
+CREATE TABLE base_tbl (_gemini_pk serial PRIMARY KEY, a integer, b text, c double precision);
 ---END---
 ---START---
 INSERT INTO base_tbl VALUES (1, 'Row 1', 1.0);
@@ -964,9 +962,7 @@ RESET SESSION AUTHORIZATION;
 DROP TABLE base_tbl CASCADE;
 ---END---
 ---START---
--- nested-view permissions
-
-CREATE TABLE base_tbl(a int, b text, c float);
+CREATE TABLE base_tbl (_gemini_pk serial PRIMARY KEY, a integer, b text, c double precision);
 ---END---
 ---START---
 INSERT INTO base_tbl VALUES (1, 'Row 1', 1.0);
@@ -1166,7 +1162,7 @@ DROP TABLE base_tbl CASCADE;
 SET SESSION AUTHORIZATION regress_view_user1;
 ---END---
 ---START---
-CREATE TABLE base_tbl(a int, b text, c float);
+CREATE TABLE base_tbl (_gemini_pk serial PRIMARY KEY, a integer, b text, c double precision);
 ---END---
 ---START---
 INSERT INTO base_tbl VALUES (1, 'Row 1', 1.0);
@@ -1339,9 +1335,7 @@ RESET SESSION AUTHORIZATION;
 DROP TABLE base_tbl CASCADE;
 ---END---
 ---START---
--- ordinary view on top of security invoker view permissions
-
-CREATE TABLE base_tbl(a int, b text, c float);
+CREATE TABLE base_tbl (_gemini_pk serial PRIMARY KEY, a integer, b text, c double precision);
 ---END---
 ---START---
 INSERT INTO base_tbl VALUES (1, 'Row 1', 1.0);
@@ -1744,9 +1738,7 @@ DROP FUNCTION rw_view1_trig_fn();
 DROP TABLE base_tbl;
 ---END---
 ---START---
--- view with ORDER BY
-
-CREATE TABLE base_tbl (a int, b int);
+CREATE TABLE base_tbl (_gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 INSERT INTO base_tbl VALUES (1,2), (4,5), (3,-3);
@@ -1776,9 +1768,7 @@ SELECT * FROM rw_view1;
 DROP TABLE base_tbl CASCADE;
 ---END---
 ---START---
--- multiple array-column updates
-
-CREATE TABLE base_tbl (a int, arr int[]);
+CREATE TABLE base_tbl (_gemini_pk serial PRIMARY KEY, a integer, arr integer[]);
 ---END---
 ---START---
 INSERT INTO base_tbl VALUES (1,ARRAY[2]), (3,ARRAY[4]);
@@ -1796,9 +1786,7 @@ SELECT * FROM rw_view1;
 DROP TABLE base_tbl CASCADE;
 ---END---
 ---START---
--- views with updatable and non-updatable columns
-
-CREATE TABLE base_tbl(a float);
+CREATE TABLE base_tbl (_gemini_pk serial PRIMARY KEY, a double precision);
 ---END---
 ---START---
 INSERT INTO base_tbl SELECT i/10.0 FROM generate_series(1,10) g(i);
@@ -1921,9 +1909,7 @@ SELECT events & 4 != 0 AS upd,
 DROP TABLE base_tbl CASCADE;
 ---END---
 ---START---
--- view on table with GENERATED columns
-
-CREATE TABLE base_tbl (id int, idplus1 int GENERATED ALWAYS AS (id + 1) STORED);
+CREATE TABLE base_tbl (_gemini_pk serial PRIMARY KEY, id integer, idplus1 integer GENERATED ALWAYS AS (id + 1) STORED);
 ---END---
 ---START---
 CREATE VIEW rw_view1 AS SELECT * FROM base_tbl;
@@ -1965,12 +1951,10 @@ SELECT * FROM base_tbl;
 DROP TABLE base_tbl CASCADE;
 ---END---
 ---START---
--- inheritance tests
-
-CREATE TABLE base_tbl_parent (a int);
+CREATE TABLE base_tbl_parent (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
-CREATE TABLE base_tbl_child (CHECK (a > 0)) INHERITS (base_tbl_parent);
+CREATE TABLE base_tbl_child (_gemini_pk serial PRIMARY KEY, CHECK (a > 0)) INHERITS (base_tbl_parent);
 ---END---
 ---START---
 INSERT INTO base_tbl_parent SELECT * FROM generate_series(-8, -1);
@@ -2040,10 +2024,10 @@ SELECT * FROM ONLY base_tbl_parent ORDER BY a;
 SELECT * FROM base_tbl_child ORDER BY a;
 ---END---
 ---START---
-CREATE TABLE other_tbl_parent (id int);
+CREATE TABLE other_tbl_parent (_gemini_pk serial PRIMARY KEY, id integer);
 ---END---
 ---START---
-CREATE TABLE other_tbl_child () INHERITS (other_tbl_parent);
+CREATE TABLE other_tbl_child (_gemini_pk serial PRIMARY KEY) INHERITS (other_tbl_parent);
 ---END---
 ---START---
 INSERT INTO other_tbl_parent VALUES (7),(200);
@@ -2071,9 +2055,7 @@ DROP TABLE base_tbl_parent, base_tbl_child CASCADE;
 DROP TABLE other_tbl_parent CASCADE;
 ---END---
 ---START---
--- simple WITH CHECK OPTION
-
-CREATE TABLE base_tbl (a int, b int DEFAULT 10);
+CREATE TABLE base_tbl (_gemini_pk serial PRIMARY KEY, a integer, b integer DEFAULT 10);
 ---END---
 ---START---
 INSERT INTO base_tbl VALUES (1,2), (2,3), (1,-1);
@@ -2121,9 +2103,7 @@ SELECT * FROM base_tbl;
 DROP TABLE base_tbl CASCADE;
 ---END---
 ---START---
--- WITH LOCAL/CASCADED CHECK OPTION
-
-CREATE TABLE base_tbl (a int);
+CREATE TABLE base_tbl (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 CREATE VIEW rw_view1 AS SELECT * FROM base_tbl WHERE a > 0;
@@ -2214,9 +2194,7 @@ SELECT * FROM base_tbl;
 DROP TABLE base_tbl CASCADE;
 ---END---
 ---START---
--- WITH CHECK OPTION with no local view qual
-
-CREATE TABLE base_tbl (a int);
+CREATE TABLE base_tbl (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 CREATE VIEW rw_view1 AS SELECT * FROM base_tbl WITH CHECK OPTION;
@@ -2259,9 +2237,7 @@ INSERT INTO rw_view3 VALUES (3);
 DROP TABLE base_tbl CASCADE;
 ---END---
 ---START---
--- WITH CHECK OPTION with scalar array ops
-
-CREATE TABLE base_tbl (a int, b int[]);
+CREATE TABLE base_tbl (_gemini_pk serial PRIMARY KEY, a integer, b integer[]);
 ---END---
 ---START---
 CREATE VIEW rw_view1 AS SELECT * FROM base_tbl WHERE a = ANY (b)
@@ -2303,9 +2279,7 @@ DEALLOCATE PREPARE ins;
 DROP TABLE base_tbl CASCADE;
 ---END---
 ---START---
--- WITH CHECK OPTION with subquery
-
-CREATE TABLE base_tbl (a int);
+CREATE TABLE base_tbl (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 CREATE TABLE ref_tbl (a int PRIMARY KEY);
@@ -2347,9 +2321,7 @@ EXPLAIN (costs off) UPDATE rw_view1 SET a = a + 5;
 DROP TABLE base_tbl, ref_tbl CASCADE;
 ---END---
 ---START---
--- WITH CHECK OPTION with BEFORE trigger on base table
-
-CREATE TABLE base_tbl (a int, b int);
+CREATE TABLE base_tbl (_gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 CREATE FUNCTION base_tbl_trig_fn()
@@ -2389,9 +2361,7 @@ DROP TABLE base_tbl CASCADE;
 DROP FUNCTION base_tbl_trig_fn();
 ---END---
 ---START---
--- WITH LOCAL CHECK OPTION with INSTEAD OF trigger on base view
-
-CREATE TABLE base_tbl (a int, b int);
+CREATE TABLE base_tbl (_gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 CREATE VIEW rw_view1 AS SELECT a FROM base_tbl WHERE a < b;
@@ -2506,7 +2476,7 @@ DROP TABLE base_tbl CASCADE;
 DROP FUNCTION rw_view1_trig_fn();
 ---END---
 ---START---
-CREATE TABLE base_tbl (a int);
+CREATE TABLE base_tbl (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 CREATE VIEW rw_view1 AS SELECT a,10 AS b FROM base_tbl;
@@ -2527,9 +2497,7 @@ INSERT INTO rw_view2 VALUES (2,3);
 DROP TABLE base_tbl CASCADE;
 ---END---
 ---START---
--- security barrier view
-
-CREATE TABLE base_tbl (person text, visibility text);
+CREATE TABLE base_tbl (_gemini_pk serial PRIMARY KEY, person text, visibility text);
 ---END---
 ---START---
 INSERT INTO base_tbl VALUES ('Tom', 'public'),
@@ -2695,8 +2663,7 @@ SELECT * FROM base_tbl;
 DROP TABLE base_tbl CASCADE;
 ---END---
 ---START---
--- security barrier view based on inheritance set
-CREATE TABLE t1 (a int, b float, c text);
+CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, a integer, b double precision, c text);
 ---END---
 ---START---
 CREATE INDEX t1_a_idx ON t1(a);
@@ -2709,7 +2676,7 @@ SELECT i,i,'t1' FROM generate_series(1,10) g(i);
 ANALYZE t1;
 ---END---
 ---START---
-CREATE TABLE t11 (d text) INHERITS (t1);
+CREATE TABLE t11 (_gemini_pk serial PRIMARY KEY, d text) INHERITS (t1);
 ---END---
 ---START---
 CREATE INDEX t11_a_idx ON t11(a);
@@ -2722,7 +2689,7 @@ SELECT i,i,'t11','t11d' FROM generate_series(1,10) g(i);
 ANALYZE t11;
 ---END---
 ---START---
-CREATE TABLE t12 (e int[]) INHERITS (t1);
+CREATE TABLE t12 (_gemini_pk serial PRIMARY KEY, e integer[]) INHERITS (t1);
 ---END---
 ---START---
 CREATE INDEX t12_a_idx ON t12(a);
@@ -2735,7 +2702,7 @@ SELECT i,i,'t12','{1,2}'::int[] FROM generate_series(1,10) g(i);
 ANALYZE t12;
 ---END---
 ---START---
-CREATE TABLE t111 () INHERITS (t11, t12);
+CREATE TABLE t111 (_gemini_pk serial PRIMARY KEY) INHERITS (t11, t12);
 ---END---
 ---START---
 CREATE INDEX t111_a_idx ON t111(a);
@@ -2806,13 +2773,13 @@ DROP FUNCTION snoop(anyelement);
 DROP FUNCTION leakproof(anyelement);
 ---END---
 ---START---
-CREATE TABLE tx1 (a integer);
+CREATE TABLE tx1 (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
-CREATE TABLE tx2 (b integer);
+CREATE TABLE tx2 (_gemini_pk serial PRIMARY KEY, b integer);
 ---END---
 ---START---
-CREATE TABLE tx3 (c integer);
+CREATE TABLE tx3 (_gemini_pk serial PRIMARY KEY, c integer);
 ---END---
 ---START---
 CREATE VIEW vx1 AS SELECT a FROM tx1 WHERE EXISTS(SELECT 1 FROM tx2 JOIN tx3 ON b=c);
@@ -2839,13 +2806,13 @@ DROP TABLE tx2;
 DROP TABLE tx3;
 ---END---
 ---START---
-CREATE TABLE tx1 (a integer);
+CREATE TABLE tx1 (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
-CREATE TABLE tx2 (b integer);
+CREATE TABLE tx2 (_gemini_pk serial PRIMARY KEY, b integer);
 ---END---
 ---START---
-CREATE TABLE tx3 (c integer);
+CREATE TABLE tx3 (_gemini_pk serial PRIMARY KEY, c integer);
 ---END---
 ---START---
 CREATE VIEW vx1 AS SELECT a FROM tx1 WHERE EXISTS(SELECT 1 FROM tx2 JOIN tx3 ON b=c);
@@ -2875,13 +2842,13 @@ DROP TABLE tx2;
 DROP TABLE tx3;
 ---END---
 ---START---
-CREATE TABLE tx1 (a integer, b integer);
+CREATE TABLE tx1 (_gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
-CREATE TABLE tx2 (b integer, c integer);
+CREATE TABLE tx2 (_gemini_pk serial PRIMARY KEY, b integer, c integer);
 ---END---
 ---START---
-CREATE TABLE tx3 (c integer, d integer);
+CREATE TABLE tx3 (_gemini_pk serial PRIMARY KEY, c integer, d integer);
 ---END---
 ---START---
 ALTER TABLE tx1 DROP COLUMN b;
@@ -2920,17 +2887,13 @@ DROP TABLE tx2;
 DROP TABLE tx3;
 ---END---
 ---START---
---
--- Test handling of vars from correlated subqueries in quals from outer
--- security barrier views, per bug #13988
---
-CREATE TABLE t1 (a int, b text, c int);
+CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, a integer, b text, c integer);
 ---END---
 ---START---
 INSERT INTO t1 VALUES (1, 'one', 10);
 ---END---
 ---START---
-CREATE TABLE t2 (cc int);
+CREATE TABLE t2 (_gemini_pk serial PRIMARY KEY, cc integer);
 ---END---
 ---START---
 INSERT INTO t2 VALUES (10), (20);
@@ -2991,10 +2954,7 @@ DROP TABLE t2;
 DROP TABLE t1;
 ---END---
 ---START---
---
--- Test sub-select in nested security barrier views, per bug #17972
---
-CREATE TABLE t1 (a int);
+CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 CREATE VIEW v1 WITH (security_barrier = true) AS
@@ -3021,11 +2981,7 @@ DROP VIEW v1;
 DROP TABLE t1;
 ---END---
 ---START---
---
--- Test CREATE OR REPLACE VIEW turning a non-updatable view into an
--- auto-updatable view and adding check options in a single step
---
-CREATE TABLE t1 (a int, b text);
+CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 CREATE VIEW v1 AS SELECT null::int AS a;
@@ -3049,14 +3005,13 @@ DROP VIEW v1;
 DROP TABLE t1;
 ---END---
 ---START---
--- check that an auto-updatable view on a partitioned table works correctly
-create table uv_pt (a int, b int, v varchar) partition by range (a, b);
+CREATE TABLE uv_pt (_gemini_pk serial PRIMARY KEY, a integer, b integer, v varchar) PARTITION BY range (a, b);
 ---END---
 ---START---
-create table uv_pt1 (b int not null, v varchar, a int not null) partition by range (b);
+CREATE TABLE uv_pt1 (_gemini_pk serial PRIMARY KEY, b integer NOT NULL, v varchar, a integer NOT NULL) PARTITION BY range (b);
 ---END---
 ---START---
-create table uv_pt11 (like uv_pt1);
+CREATE TABLE uv_pt11 (_gemini_pk serial PRIMARY KEY, LIKE uv_pt1);
 ---END---
 ---START---
 alter table uv_pt11 drop a;
@@ -3118,9 +3073,7 @@ drop view uv_ptv, uv_ptv_wco;
 drop table uv_pt, uv_pt1, uv_pt11;
 ---END---
 ---START---
--- check that wholerow vars appearing in WITH CHECK OPTION constraint expressions
--- work fine with partitioned tables
-create table wcowrtest (a int) partition by list (a);
+CREATE TABLE wcowrtest (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 create table wcowrtest1 partition of wcowrtest for values in (1);
@@ -3135,7 +3088,7 @@ insert into wcowrtest_v values (1);
 alter table wcowrtest add b text;
 ---END---
 ---START---
-create table wcowrtest2 (b text, c int, a int);
+CREATE TABLE wcowrtest2 (_gemini_pk serial PRIMARY KEY, b text, c integer, a integer);
 ---END---
 ---START---
 alter table wcowrtest2 drop c;
@@ -3144,7 +3097,7 @@ alter table wcowrtest2 drop c;
 alter table wcowrtest attach partition wcowrtest2 for values in (2);
 ---END---
 ---START---
-create table sometable (a int, b text);
+CREATE TABLE sometable (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 insert into sometable values (1, 'a'), (2, 'b');
@@ -3168,9 +3121,7 @@ drop view wcowrtest_v, wcowrtest_v2;
 drop table wcowrtest, sometable;
 ---END---
 ---START---
--- Check INSERT .. ON CONFLICT DO UPDATE works correctly when the view's
--- columns are named and ordered differently than the underlying table's.
-create table uv_iocu_tab (a text unique, b float);
+CREATE TABLE uv_iocu_tab (_gemini_pk serial PRIMARY KEY, a text UNIQUE, b double precision);
 ---END---
 ---START---
 insert into uv_iocu_tab values ('xyxyxy', 0);
@@ -3221,8 +3172,7 @@ drop view uv_iocu_view;
 drop table uv_iocu_tab;
 ---END---
 ---START---
--- Test whole-row references to the view
-create table uv_iocu_tab (a int unique, b text);
+CREATE TABLE uv_iocu_tab (_gemini_pk serial PRIMARY KEY, a integer UNIQUE, b text);
 ---END---
 ---START---
 create view uv_iocu_view as
@@ -3305,7 +3255,7 @@ create user regress_view_user2;
 set session authorization regress_view_user1;
 ---END---
 ---START---
-create table base_tbl(a int unique, b text, c float);
+CREATE TABLE base_tbl (_gemini_pk serial PRIMARY KEY, a integer UNIQUE, b text, c double precision);
 ---END---
 ---START---
 insert into base_tbl values (1,'xxx',1.0);
@@ -3443,10 +3393,7 @@ drop user regress_view_user1;
 drop user regress_view_user2;
 ---END---
 ---START---
--- Test single- and multi-row inserts with table and view defaults.
--- Table defaults should be used, unless overridden by view defaults.
-create table base_tab_def (a int, b text default 'Table default',
-                           c text default 'Table default', d text, e text);
+CREATE TABLE base_tab_def (_gemini_pk serial PRIMARY KEY, a integer, b text DEFAULT 'Table default', c text DEFAULT 'Table default', d text, e text);
 ---END---
 ---START---
 create view base_tab_def_view as select * from base_tab_def;
@@ -3663,8 +3610,7 @@ drop view base_tab_def_view;
 drop table base_tab_def;
 ---END---
 ---START---
--- Test defaults with array assignments
-create table base_tab (a serial, b int[], c text, d text default 'Table default');
+CREATE TABLE base_tab (_gemini_pk serial PRIMARY KEY, a serial, b integer[], c text, d text DEFAULT 'Table default');
 ---END---
 ---START---
 create view base_tab_view as select c, a, b from base_tab;

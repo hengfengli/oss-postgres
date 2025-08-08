@@ -1,9 +1,5 @@
 ---START---
---
--- TIMESTAMPTZ
---
-
-CREATE TABLE TIMESTAMPTZ_TBL (d1 timestamp(2) with time zone);
+CREATE TABLE timestamptz_tbl (_gemini_pk serial PRIMARY KEY, d1 timestamp(2) with time zone);
 ---END---
 ---START---
 -- Test shorthand input values
@@ -751,7 +747,7 @@ SELECT to_char(now(), 'of') as "of", to_char(now(), 'tzh:tzm') as "tzh:tzm";
 RESET timezone;
 ---END---
 ---START---
-CREATE TABLE TIMESTAMPTZ_TST (a int , b timestamptz);
+CREATE TABLE timestamptz_tst (_gemini_pk serial PRIMARY KEY, a integer, b timestamptz);
 ---END---
 ---START---
 -- Test year field value with len > 4
@@ -1224,7 +1220,9 @@ SELECT '2014-10-25 23:00:00 UTC'::timestamptz AT TIME ZONE 'MSK';
 --
 -- Test that AT TIME ZONE isn't misoptimized when using an index (bug #14504)
 --
-create temp table tmptz (f1 timestamptz primary key);
+DROP TABLE IF EXISTS tmptz;
+
+create table tmptz (f1 timestamptz primary key);
 ---END---
 ---START---
 insert into tmptz values ('2017-01-18 00:00+00');

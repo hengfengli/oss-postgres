@@ -9,7 +9,7 @@ SET search_path = fast_default;
 CREATE SCHEMA fast_default;
 ---END---
 ---START---
-CREATE TABLE m(id OID);
+CREATE TABLE m (_gemini_pk serial PRIMARY KEY, id oid);
 ---END---
 ---START---
 INSERT INTO m VALUES (NULL::OID);
@@ -732,7 +732,7 @@ DROP TABLE t;
 CREATE TABLE leader (a int PRIMARY KEY, b int);
 ---END---
 ---START---
-CREATE TABLE follower (a int REFERENCES leader ON DELETE CASCADE, b int);
+CREATE TABLE follower (_gemini_pk serial PRIMARY KEY, a integer REFERENCES leader ON DELETE CASCADE, b integer);
 ---END---
 ---START---
 INSERT INTO leader VALUES (1, 1), (2, 2);
@@ -747,9 +747,7 @@ ALTER TABLE leader DROP c;
 DELETE FROM leader;
 ---END---
 ---START---
--- check that ALTER TABLE ... ALTER TYPE does the right thing
-
-CREATE TABLE vtype( a integer);
+CREATE TABLE vtype (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 INSERT INTO vtype VALUES (1);
@@ -772,9 +770,7 @@ ALTER TABLE vtype
 SELECT * FROM vtype;
 ---END---
 ---START---
--- also check the case that doesn't rewrite the table
-
-CREATE TABLE vtype2 (a int);
+CREATE TABLE vtype2 (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 INSERT INTO vtype2 VALUES (1);
@@ -801,7 +797,7 @@ SELECT * FROM vtype2;
 BEGIN;
 ---END---
 ---START---
-CREATE TABLE t();
+CREATE TABLE t (_gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
 INSERT INTO t DEFAULT VALUES;
@@ -910,7 +906,7 @@ DROP SCHEMA fast_default;
 set search_path = public;
 ---END---
 ---START---
-create table has_fast_default(f1 int);
+CREATE TABLE has_fast_default (_gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
 insert into has_fast_default values(1);

@@ -1,9 +1,5 @@
 ---START---
---
--- TIMESTAMP
---
-
-CREATE TABLE TIMESTAMP_TBL (d1 timestamp(2) without time zone);
+CREATE TABLE timestamp_tbl (_gemini_pk serial PRIMARY KEY, d1 timestamp(2));
 ---END---
 ---START---
 -- Test shorthand input values

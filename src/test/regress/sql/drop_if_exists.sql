@@ -11,7 +11,7 @@ DROP TABLE test_exists;
 DROP TABLE IF EXISTS test_exists;
 ---END---
 ---START---
-CREATE TABLE test_exists (a int, b text);
+CREATE TABLE test_exists (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 -- view

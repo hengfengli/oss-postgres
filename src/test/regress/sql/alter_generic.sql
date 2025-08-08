@@ -991,7 +991,7 @@ DROP OPERATOR FAMILY alt_opf19 USING btree;
 SET SESSION AUTHORIZATION regress_alter_generic_user1;
 ---END---
 ---START---
-CREATE TABLE alt_regress_1 (a INTEGER, b INTEGER);
+CREATE TABLE alt_regress_1 (_gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 CREATE STATISTICS alt_stat1 ON a, b FROM alt_regress_1;
@@ -1024,7 +1024,7 @@ ALTER STATISTICS alt_stat2 SET SCHEMA alt_nsp2;
 SET SESSION AUTHORIZATION regress_alter_generic_user2;
 ---END---
 ---START---
-CREATE TABLE alt_regress_2 (a INTEGER, b INTEGER);
+CREATE TABLE alt_regress_2 (_gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 CREATE STATISTICS alt_stat1 ON a, b FROM alt_regress_2;

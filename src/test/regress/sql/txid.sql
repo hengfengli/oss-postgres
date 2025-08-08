@@ -27,10 +27,9 @@ select '12:13:0'::txid_snapshot;
 select '12:16:14,13'::txid_snapshot;
 ---END---
 ---START---
-create temp table snapshot_test (
-	nr	integer,
-	snap	txid_snapshot
-);
+DROP TABLE IF EXISTS snapshot_test;
+
+CREATE TABLE snapshot_test (_gemini_pk serial PRIMARY KEY, nr integer, snap txid_snapshot);
 ---END---
 ---START---
 insert into snapshot_test values (1, '12:13:');

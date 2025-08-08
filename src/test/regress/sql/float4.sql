@@ -1,9 +1,5 @@
 ---START---
---
--- FLOAT4
---
-
-CREATE TABLE FLOAT4_TBL (f1  float4);
+CREATE TABLE float4_tbl (_gemini_pk serial PRIMARY KEY, f1 float4);
 ---END---
 ---START---
 INSERT INTO FLOAT4_TBL(f1) VALUES ('    0.0');

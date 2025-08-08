@@ -1,20 +1,11 @@
 ---START---
---
--- RULES
--- From Jan's original setup_ruletest.sql and run_ruletest.sql
--- - thomas 1998-09-13
---
-
---
--- Tables and rules for the view test
---
-create table rtest_t1 (a int4, b int4);
+CREATE TABLE rtest_t1 (_gemini_pk serial PRIMARY KEY, a int4, b int4);
 ---END---
 ---START---
-create table rtest_t2 (a int4, b int4);
+CREATE TABLE rtest_t2 (_gemini_pk serial PRIMARY KEY, a int4, b int4);
 ---END---
 ---START---
-create table rtest_t3 (a int4, b int4);
+CREATE TABLE rtest_t3 (_gemini_pk serial PRIMARY KEY, a int4, b int4);
 ---END---
 ---START---
 create view rtest_v1 as select * from rtest_t1;
@@ -43,24 +34,16 @@ COMMENT ON RULE rtest_v1_del ON rtest_v1 IS 'delete rule';
 COMMENT ON RULE rtest_v1_del ON rtest_v1 IS NULL;
 ---END---
 ---START---
---
--- Tables and rules for the constraint update/delete test
---
--- Note:
--- 	Now that we have multiple action rule support, we check
--- 	both possible syntaxes to define them (The last action
---  can but must not have a semicolon at the end).
---
-create table rtest_system (sysname text, sysdesc text);
+CREATE TABLE rtest_system (_gemini_pk serial PRIMARY KEY, sysname text, sysdesc text);
 ---END---
 ---START---
-create table rtest_interface (sysname text, ifname text);
+CREATE TABLE rtest_interface (_gemini_pk serial PRIMARY KEY, sysname text, ifname text);
 ---END---
 ---START---
-create table rtest_person (pname text, pdesc text);
+CREATE TABLE rtest_person (_gemini_pk serial PRIMARY KEY, pname text, pdesc text);
 ---END---
 ---START---
-create table rtest_admin (pname text, sysname text);
+CREATE TABLE rtest_admin (_gemini_pk serial PRIMARY KEY, pname text, sysname text);
 ---END---
 ---START---
 create rule rtest_sys_upd as on update to rtest_system do also (
@@ -85,16 +68,13 @@ create rule rtest_pers_del as on delete to rtest_person do also
 	delete from rtest_admin where pname = old.pname;
 ---END---
 ---START---
---
--- Tables and rules for the logging test
---
-create table rtest_emp (ename char(20), salary money);
+CREATE TABLE rtest_emp (_gemini_pk serial PRIMARY KEY, ename char(20), salary money);
 ---END---
 ---START---
-create table rtest_emplog (ename char(20), who name, action char(10), newsal money, oldsal money);
+CREATE TABLE rtest_emplog (_gemini_pk serial PRIMARY KEY, ename char(20), who name, action char(10), newsal money, oldsal money);
 ---END---
 ---START---
-create table rtest_empmass (ename char(20), salary money);
+CREATE TABLE rtest_empmass (_gemini_pk serial PRIMARY KEY, ename char(20), salary money);
 ---END---
 ---START---
 create rule rtest_emp_ins as on insert to rtest_emp do
@@ -112,26 +92,22 @@ create rule rtest_emp_del as on delete to rtest_emp do
 			'fired', '0.00', old.salary);
 ---END---
 ---START---
---
--- Tables and rules for the multiple cascaded qualified instead
--- rule test
---
-create table rtest_t4 (a int4, b text);
+CREATE TABLE rtest_t4 (_gemini_pk serial PRIMARY KEY, a int4, b text);
 ---END---
 ---START---
-create table rtest_t5 (a int4, b text);
+CREATE TABLE rtest_t5 (_gemini_pk serial PRIMARY KEY, a int4, b text);
 ---END---
 ---START---
-create table rtest_t6 (a int4, b text);
+CREATE TABLE rtest_t6 (_gemini_pk serial PRIMARY KEY, a int4, b text);
 ---END---
 ---START---
-create table rtest_t7 (a int4, b text);
+CREATE TABLE rtest_t7 (_gemini_pk serial PRIMARY KEY, a int4, b text);
 ---END---
 ---START---
-create table rtest_t8 (a int4, b text);
+CREATE TABLE rtest_t8 (_gemini_pk serial PRIMARY KEY, a int4, b text);
 ---END---
 ---START---
-create table rtest_t9 (a int4, b text);
+CREATE TABLE rtest_t9 (_gemini_pk serial PRIMARY KEY, a int4, b text);
 ---END---
 ---START---
 create rule rtest_t4_ins1 as on insert to rtest_t4
@@ -154,16 +130,10 @@ create rule rtest_t6_ins as on insert to rtest_t6
 	insert into rtest_t8 values (new.a, new.b);
 ---END---
 ---START---
---
--- Tables and rules for the rule fire order test
---
--- As of PG 7.3, the rules should fire in order by name, regardless
--- of INSTEAD attributes or creation order.
---
-create table rtest_order1 (a int4);
+CREATE TABLE rtest_order1 (_gemini_pk serial PRIMARY KEY, a int4);
 ---END---
 ---START---
-create table rtest_order2 (a int4, b int4, c text);
+CREATE TABLE rtest_order2 (_gemini_pk serial PRIMARY KEY, a int4, b int4, c text);
 ---END---
 ---START---
 create sequence rtest_seq;
@@ -190,19 +160,16 @@ create rule rtest_order_r1 as on insert to rtest_order1 do instead
 		'rule 1 - this should run 1st');
 ---END---
 ---START---
---
--- Tables and rules for the instead nothing test
---
-create table rtest_nothn1 (a int4, b text);
+CREATE TABLE rtest_nothn1 (_gemini_pk serial PRIMARY KEY, a int4, b text);
 ---END---
 ---START---
-create table rtest_nothn2 (a int4, b text);
+CREATE TABLE rtest_nothn2 (_gemini_pk serial PRIMARY KEY, a int4, b text);
 ---END---
 ---START---
-create table rtest_nothn3 (a int4, b text);
+CREATE TABLE rtest_nothn3 (_gemini_pk serial PRIMARY KEY, a int4, b text);
 ---END---
 ---START---
-create table rtest_nothn4 (a int4, b text);
+CREATE TABLE rtest_nothn4 (_gemini_pk serial PRIMARY KEY, a int4, b text);
 ---END---
 ---START---
 create rule rtest_nothn_r1 as on insert to rtest_nothn1
@@ -802,16 +769,16 @@ select * from rtest_nothn2;
 select * from rtest_nothn3;
 ---END---
 ---START---
-create table rtest_view1 (a int4, b text, v bool);
+CREATE TABLE rtest_view1 (_gemini_pk serial PRIMARY KEY, a int4, b text, v bool);
 ---END---
 ---START---
-create table rtest_view2 (a int4);
+CREATE TABLE rtest_view2 (_gemini_pk serial PRIMARY KEY, a int4);
 ---END---
 ---START---
-create table rtest_view3 (a int4, b text);
+CREATE TABLE rtest_view3 (_gemini_pk serial PRIMARY KEY, a int4, b text);
 ---END---
 ---START---
-create table rtest_view4 (a int4, b text, c int4);
+CREATE TABLE rtest_view4 (_gemini_pk serial PRIMARY KEY, a int4, b text, c int4);
 ---END---
 ---START---
 create view rtest_vview1 as select a, b from rtest_view1 X
@@ -948,20 +915,10 @@ select * from rtest_view4;
 delete from rtest_view4;
 ---END---
 ---START---
---
--- Test for computations in views
---
-create table rtest_comp (
-	part	text,
-	unit	char(4),
-	size	float
-);
+CREATE TABLE rtest_comp (_gemini_pk serial PRIMARY KEY, part text, unit char(4), size double precision);
 ---END---
 ---START---
-create table rtest_unitfact (
-	unit	char(4),
-	factor	float
-);
+CREATE TABLE rtest_unitfact (_gemini_pk serial PRIMARY KEY, unit char(4), factor double precision);
 ---END---
 ---START---
 create view rtest_vcomp as
@@ -1003,33 +960,13 @@ select * from rtest_vcomp order by part;
 select * from rtest_vcomp where size_in_cm > 10.0 order by size_in_cm using >;
 ---END---
 ---START---
---
--- In addition run the (slightly modified) queries from the
--- programmers manual section on the rule system.
---
-CREATE TABLE shoe_data (
-	shoename   char(10),      -- primary key
-	sh_avail   integer,       -- available # of pairs
-	slcolor    char(10),      -- preferred shoelace color
-	slminlen   float,         -- minimum shoelace length
-	slmaxlen   float,         -- maximum shoelace length
-	slunit     char(8)        -- length unit
-);
+CREATE TABLE shoe_data (_gemini_pk serial PRIMARY KEY, shoename char(10), sh_avail integer, slcolor char(10), slminlen double precision, slmaxlen double precision, slunit char(8));
 ---END---
 ---START---
-CREATE TABLE shoelace_data (
-	sl_name    char(10),      -- primary key
-	sl_avail   integer,       -- available # of pairs
-	sl_color   char(10),      -- shoelace color
-	sl_len     float,         -- shoelace length
-	sl_unit    char(8)        -- length unit
-);
+CREATE TABLE shoelace_data (_gemini_pk serial PRIMARY KEY, sl_name char(10), sl_avail integer, sl_color char(10), sl_len double precision, sl_unit char(8));
 ---END---
 ---START---
-CREATE TABLE unit (
-	un_name    char(8),       -- the primary key
-	un_fact    float          -- factor to transform to cm
-);
+CREATE TABLE unit (_gemini_pk serial PRIMARY KEY, un_name char(8), un_fact double precision);
 ---END---
 ---START---
 CREATE VIEW shoe AS
@@ -1120,12 +1057,7 @@ SELECT * FROM shoelace ORDER BY sl_name;
 SELECT * FROM shoe_ready WHERE total_avail >= 2 ORDER BY 1;
 ---END---
 ---START---
-CREATE TABLE shoelace_log (
-        sl_name    char(10),      -- shoelace changed
-        sl_avail   integer,       -- new available value
-        log_who    name,          -- who did it
-        log_when   timestamp      -- when
-    );
+CREATE TABLE shoelace_log (_gemini_pk serial PRIMARY KEY, sl_name char(10), sl_avail integer, log_who name, log_when timestamp);
 ---END---
 ---START---
 -- Want "log_who" to be CURRENT_USER,
@@ -1175,16 +1107,10 @@ CREATE RULE shoelace_del AS ON DELETE TO shoelace
          WHERE sl_name = OLD.sl_name;
 ---END---
 ---START---
-CREATE TABLE shoelace_arrive (
-        arr_name    char(10),
-        arr_quant   integer
-    );
+CREATE TABLE shoelace_arrive (_gemini_pk serial PRIMARY KEY, arr_name char(10), arr_quant integer);
 ---END---
 ---START---
-CREATE TABLE shoelace_ok (
-        ok_name     char(10),
-        ok_quant    integer
-    );
+CREATE TABLE shoelace_ok (_gemini_pk serial PRIMARY KEY, ok_name char(10), ok_quant integer);
 ---END---
 ---START---
 CREATE RULE shoelace_ok_ins AS ON INSERT TO shoelace_ok
@@ -1255,13 +1181,10 @@ SELECT * FROM shoe ORDER BY shoename;
 SELECT count(*) FROM shoe;
 ---END---
 ---START---
---
--- Simple test of qualified ON INSERT ... this did not work in 7.0 ...
---
-create table rules_foo (f1 int);
+CREATE TABLE rules_foo (_gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
-create table rules_foo2 (f1 int);
+CREATE TABLE rules_foo2 (_gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
 create rule rules_foorule as on insert to rules_foo where f1 < 100
@@ -1311,11 +1234,7 @@ drop table rules_foo;
 drop table rules_foo2;
 ---END---
 ---START---
---
--- Test rules containing INSERT ... SELECT, which is a very ugly special
--- case as of 7.1.  Example is based on bug report from Joel Burton.
---
-create table pparent (pid int, txt text);
+CREATE TABLE pparent (_gemini_pk serial PRIMARY KEY, pid integer, txt text);
 ---END---
 ---START---
 insert into pparent values (1,'parent1');
@@ -1324,7 +1243,7 @@ insert into pparent values (1,'parent1');
 insert into pparent values (2,'parent2');
 ---END---
 ---START---
-create table cchild (pid int, descrip text);
+CREATE TABLE cchild (_gemini_pk serial PRIMARY KEY, pid integer, descrip text);
 ---END---
 ---START---
 insert into cchild values (1,'descrip1');
@@ -1407,7 +1326,7 @@ ORDER BY tablename, rulename;
 CREATE TABLE ruletest_tbl (a int, b int);
 ---END---
 ---START---
-CREATE TABLE ruletest_tbl2 (a int, b int);
+CREATE TABLE ruletest_tbl2 (_gemini_pk serial PRIMARY KEY, a integer, b integer);
 ---END---
 ---START---
 CREATE OR REPLACE RULE myrule AS ON INSERT TO ruletest_tbl
@@ -1547,12 +1466,7 @@ drop rule "_RETURN" on rules_fooview;
 drop view rules_fooview;
 ---END---
 ---START---
---
--- We used to allow converting a table to a view by creating a "_RETURN"
--- rule for it, but no more.
---
-
-create table rules_fooview (x int, y text);
+CREATE TABLE rules_fooview (_gemini_pk serial PRIMARY KEY, x integer, y text);
 ---END---
 ---START---
 create rule "_RETURN" as on select to rules_fooview do instead
@@ -1562,8 +1476,7 @@ create rule "_RETURN" as on select to rules_fooview do instead
 drop table rules_fooview;
 ---END---
 ---START---
--- likewise, converting a partitioned table or partition to view is not allowed
-create table rules_fooview (x int, y text) partition by list (x);
+CREATE TABLE rules_fooview (_gemini_pk serial PRIMARY KEY, x integer, y text) PARTITION BY list (x);
 ---END---
 ---START---
 create rule "_RETURN" as on select to rules_fooview do instead
@@ -1645,13 +1558,19 @@ drop table id cascade;
 -- constraint exclusion
 --
 
-create temp table t1 (a integer primary key);
+DROP TABLE IF EXISTS t1;
+
+create table t1 (a integer primary key);
 ---END---
 ---START---
-create temp table t1_1 (check (a >= 0 and a < 10)) inherits (t1);
+DROP TABLE IF EXISTS t1_1;
+
+CREATE TABLE t1_1 (_gemini_pk serial PRIMARY KEY, CHECK (a >= 0 AND a < 10)) INHERITS (t1);
 ---END---
 ---START---
-create temp table t1_2 (check (a >= 10 and a < 20)) inherits (t1);
+DROP TABLE IF EXISTS t1_2;
+
+CREATE TABLE t1_2 (_gemini_pk serial PRIMARY KEY, CHECK (a >= 10 AND a < 20)) INHERITS (t1);
 ---END---
 ---START---
 create rule t1_ins_1 as on insert to t1
@@ -1699,9 +1618,7 @@ select * from only t1_2;
 reset constraint_exclusion;
 ---END---
 ---START---
--- test FOR UPDATE in rules
-
-create table rules_base(f1 int, f2 int);
+CREATE TABLE rules_base (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer);
 ---END---
 ---START---
 insert into rules_base values(1,2), (11,12);
@@ -1740,14 +1657,10 @@ select pg_get_viewdef('shoe'::regclass,true) as pretty;
 select pg_get_viewdef('shoe'::regclass,0) as prettier;
 ---END---
 ---START---
---
--- check multi-row VALUES in rules
---
-
-create table rules_src(f1 int, f2 int default 0);
+CREATE TABLE rules_src (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer DEFAULT 0);
 ---END---
 ---START---
-create table rules_log(f1 int, f2 int, tag text, id serial);
+CREATE TABLE rules_log (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, tag text, id serial);
 ---END---
 ---START---
 insert into rules_src values(1,2), (11,12);
@@ -1821,7 +1734,7 @@ create rule r7 as on delete to rules_src do instead
 create table rule_t1(f1 int, f2 int);
 ---END---
 ---START---
-create table rule_dest(f1 int, f2 int[], tag text);
+CREATE TABLE rule_dest (_gemini_pk serial PRIMARY KEY, f1 integer, f2 integer[], tag text);
 ---END---
 ---START---
 create rule rr as on update to rule_t1 do instead UPDATE rule_dest trgt
@@ -1833,10 +1746,7 @@ create rule rr as on update to rule_t1 do instead UPDATE rule_dest trgt
 drop table rule_t1, rule_dest;
 ---END---
 ---START---
---
--- Test implicit LATERAL references to old/new in rules
---
-CREATE TABLE rule_t1(a int, b text DEFAULT 'xxx', c int);
+CREATE TABLE rule_t1 (_gemini_pk serial PRIMARY KEY, a integer, b text DEFAULT 'xxx', c integer);
 ---END---
 ---START---
 CREATE VIEW rule_v1 AS SELECT * FROM rule_t1;
@@ -1865,10 +1775,7 @@ SELECT * FROM rule_t1;
 DROP TABLE rule_t1 CASCADE;
 ---END---
 ---START---
---
--- check alter rename rule
---
-CREATE TABLE rule_t1 (a INT);
+CREATE TABLE rule_t1 (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 CREATE VIEW rule_v1 AS SELECT * FROM rule_t1;
@@ -1957,10 +1864,7 @@ CREATE TABLE hats (
 );
 ---END---
 ---START---
-CREATE TABLE hat_data (
-	hat_name    char(10),
-	hat_color   char(10)      -- hat color
-);
+CREATE TABLE hat_data (_gemini_pk serial PRIMARY KEY, hat_name char(10), hat_color char(10));
 ---END---
 ---START---
 create unique index hat_data_unique_idx
@@ -2150,8 +2054,7 @@ SELECT pg_get_function_arg_default('pg_class'::regclass, 0);
 SELECT pg_get_partkeydef(0);
 ---END---
 ---START---
--- test rename for a rule defined on a partitioned table
-CREATE TABLE rules_parted_table (a int) PARTITION BY LIST (a);
+CREATE TABLE rules_parted_table (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE rules_parted_table_1 PARTITION OF rules_parted_table FOR VALUES IN (1);
@@ -2167,13 +2070,10 @@ ALTER RULE rules_parted_table_insert ON rules_parted_table RENAME TO rules_parte
 DROP TABLE rules_parted_table;
 ---END---
 ---START---
---
--- test MERGE
---
-CREATE TABLE rule_merge1 (a int, b text);
+CREATE TABLE rule_merge1 (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
-CREATE TABLE rule_merge2 (a int, b text);
+CREATE TABLE rule_merge2 (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 CREATE RULE rule1 AS ON INSERT TO rule_merge1
@@ -2211,8 +2111,7 @@ MERGE INTO rule_merge2 t USING (SELECT 1 AS a) s
 		INSERT VALUES (s.a, '');
 ---END---
 ---START---
--- test deparsing
-CREATE TABLE sf_target(id int, data text, filling int[]);
+CREATE TABLE sf_target (_gemini_pk serial PRIMARY KEY, id integer, data text, filling integer[]);
 ---END---
 ---START---
 CREATE FUNCTION merge_sf_test()
@@ -2267,13 +2166,10 @@ DROP FUNCTION merge_sf_test;
 DROP TABLE sf_target;
 ---END---
 ---START---
---
--- Test enabling/disabling
---
-CREATE TABLE ruletest1 (a int);
+CREATE TABLE ruletest1 (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
-CREATE TABLE ruletest2 (b int);
+CREATE TABLE ruletest2 (_gemini_pk serial PRIMARY KEY, b integer);
 ---END---
 ---START---
 CREATE RULE rule1 AS ON INSERT TO ruletest1
@@ -2329,10 +2225,10 @@ DROP TABLE ruletest2;
 CREATE USER regress_rule_user1;
 ---END---
 ---START---
-CREATE TABLE ruletest_t1 (x int);
+CREATE TABLE ruletest_t1 (_gemini_pk serial PRIMARY KEY, x integer);
 ---END---
 ---START---
-CREATE TABLE ruletest_t2 (x int);
+CREATE TABLE ruletest_t2 (_gemini_pk serial PRIMARY KEY, x integer);
 ---END---
 ---START---
 CREATE VIEW ruletest_v1 WITH (security_invoker=true) AS
@@ -2355,9 +2251,7 @@ INSERT INTO ruletest_v1 VALUES (1);
 RESET SESSION AUTHORIZATION;
 ---END---
 ---START---
--- Test that main query's relation's permissions are checked before
--- the rule action's relation's.
-CREATE TABLE ruletest_t3 (x int);
+CREATE TABLE ruletest_t3 (_gemini_pk serial PRIMARY KEY, x integer);
 ---END---
 ---START---
 CREATE RULE rule2 AS ON UPDATE TO ruletest_t1

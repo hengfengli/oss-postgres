@@ -8,7 +8,7 @@
 SET extra_float_digits = -1;
 ---END---
 ---START---
-CREATE TABLE CIRCLE_TBL (f1 circle);
+CREATE TABLE circle_tbl (_gemini_pk serial PRIMARY KEY, f1 circle);
 ---END---
 ---START---
 INSERT INTO CIRCLE_TBL VALUES ('<(5,1),3>');

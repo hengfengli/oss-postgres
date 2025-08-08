@@ -4,7 +4,7 @@
 SET enable_seqscan TO off;
 ---END---
 ---START---
-CREATE TABLE tidrangescan(id integer, data text);
+CREATE TABLE tidrangescan (_gemini_pk serial PRIMARY KEY, id integer, data text);
 ---END---
 ---START---
 -- empty table

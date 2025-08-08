@@ -108,7 +108,7 @@ REASSIGN OWNED BY regress_dep_user1 TO regress_dep_user0;
 DROP OWNED BY regress_dep_user0;
 ---END---
 ---START---
-CREATE TABLE deptest1 (f1 int unique);
+CREATE TABLE deptest1 (_gemini_pk serial PRIMARY KEY, f1 integer UNIQUE);
 ---END---
 ---START---
 GRANT ALL ON deptest1 TO regress_dep_user1 WITH GRANT OPTION;
@@ -166,7 +166,7 @@ CREATE TYPE deptest_enum AS ENUM ('red');
 CREATE TYPE deptest_range AS RANGE (SUBTYPE = int4);
 ---END---
 ---START---
-CREATE TABLE deptest2 (f1 int);
+CREATE TABLE deptest2 (_gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
 -- make a serial column the hard way

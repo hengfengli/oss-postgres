@@ -420,7 +420,9 @@ ROLLBACK;
 -- cursor
 --
 
-create temp table tt1(f1 int);
+DROP TABLE IF EXISTS tt1;
+
+CREATE TABLE tt1 (_gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
 create function count_tt1_v() returns int8 as
@@ -536,7 +538,9 @@ COMMIT;
 -- Tests for updatable cursors
 --
 
-CREATE TEMP TABLE uctest(f1 int, f2 text);
+DROP TABLE IF EXISTS uctest;
+
+CREATE TABLE uctest (_gemini_pk serial PRIMARY KEY, f1 integer, f2 text);
 ---END---
 ---START---
 INSERT INTO uctest VALUES (1, 'one'), (2, 'two'), (3, 'three');
@@ -744,7 +748,9 @@ DELETE FROM uctest WHERE f1 = 10;
 -- restore test table state
 
 -- Check inheritance cases
-CREATE TEMP TABLE ucchild () inherits (uctest);
+DROP TABLE IF EXISTS ucchild;
+
+CREATE TABLE ucchild (_gemini_pk serial PRIMARY KEY) INHERITS (uctest);
 ---END---
 ---START---
 INSERT INTO ucchild values(100, 'hundred');
@@ -977,13 +983,13 @@ ROLLBACK;
 BEGIN;
 ---END---
 ---START---
-CREATE TABLE current_check (currentid int, payload text);
+CREATE TABLE current_check (_gemini_pk serial PRIMARY KEY, currentid integer, payload text);
 ---END---
 ---START---
-CREATE TABLE current_check_1 () INHERITS (current_check);
+CREATE TABLE current_check_1 (_gemini_pk serial PRIMARY KEY) INHERITS (current_check);
 ---END---
 ---START---
-CREATE TABLE current_check_2 () INHERITS (current_check);
+CREATE TABLE current_check_2 (_gemini_pk serial PRIMARY KEY) INHERITS (current_check);
 ---END---
 ---START---
 INSERT INTO current_check_1 SELECT i, 'p' || i FROM generate_series(1,9) i;
@@ -1029,7 +1035,7 @@ BEGIN;
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 ---END---
 ---START---
-CREATE TABLE cursor (a int);
+CREATE TABLE cursor (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 INSERT INTO cursor VALUES (1);
@@ -1126,7 +1132,7 @@ begin;
 set default_toast_compression = 'pglz';
 ---END---
 ---START---
-create table toasted_data (f1 int[]);
+CREATE TABLE toasted_data (_gemini_pk serial PRIMARY KEY, f1 integer[]);
 ---END---
 ---START---
 insert into toasted_data

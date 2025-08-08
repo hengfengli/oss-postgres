@@ -5,7 +5,9 @@
 
 -- Simple cases
 
-CREATE TEMP TABLE foo (f1 serial, f2 text, f3 int default 42);
+DROP TABLE IF EXISTS foo;
+
+CREATE TABLE foo (_gemini_pk serial PRIMARY KEY, f1 serial, f2 text, f3 integer DEFAULT 42);
 ---END---
 ---START---
 INSERT INTO foo (f2,f3)
@@ -69,7 +71,9 @@ SELECT * FROM foo;
 ---START---
 -- Check inheritance cases
 
-CREATE TEMP TABLE foochild (fc int) INHERITS (foo);
+DROP TABLE IF EXISTS foochild;
+
+CREATE TABLE foochild (_gemini_pk serial PRIMARY KEY, fc integer) INHERITS (foo);
 ---END---
 ---START---
 INSERT INTO foochild VALUES(123,'child',999,-123);
@@ -195,7 +199,9 @@ SELECT * FROM voo;
 ---START---
 -- Try a join case
 
-CREATE TEMP TABLE joinme (f2j text, other int);
+DROP TABLE IF EXISTS joinme;
+
+CREATE TABLE joinme (_gemini_pk serial PRIMARY KEY, f2j text, other integer);
 ---END---
 ---START---
 INSERT INTO joinme VALUES('more', 12345);

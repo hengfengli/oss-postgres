@@ -118,8 +118,7 @@ SELECT 1 \crosstabview
 DROP TABLE ctv_data;
 ---END---
 ---START---
--- check error reporting (bug #14476)
-CREATE TABLE ctv_data (x int, y int, v text);
+CREATE TABLE ctv_data (_gemini_pk serial PRIMARY KEY, x integer, y integer, v text);
 ---END---
 ---START---
 INSERT INTO ctv_data SELECT 1, x, '*' || x FROM generate_series(1,10) x;

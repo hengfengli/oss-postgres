@@ -1,9 +1,5 @@
 ---START---
---
--- macaddr
---
-
-CREATE TABLE macaddr_data (a int, b macaddr);
+CREATE TABLE macaddr_data (_gemini_pk serial PRIMARY KEY, a integer, b macaddr);
 ---END---
 ---START---
 INSERT INTO macaddr_data VALUES (1, '08:00:2b:01:02:03');

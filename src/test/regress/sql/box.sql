@@ -1,26 +1,5 @@
 ---START---
---
--- BOX
---
-
---
--- box logic
---	     o
--- 3	  o--|X
---	  |  o|
--- 2	+-+-+ |
---	| | | |
--- 1	| o-+-o
---	|   |
--- 0	+---+
---
---	0 1 2 3
---
-
--- boxes are specified by two points, given by four floats x1,y1,x2,y2
-
-
-CREATE TABLE BOX_TBL (f1 box);
+CREATE TABLE box_tbl (_gemini_pk serial PRIMARY KEY, f1 box);
 ---END---
 ---START---
 INSERT INTO BOX_TBL (f1) VALUES ('(2.0,2.0,0.0,0.0)');
@@ -159,7 +138,9 @@ SELECT height(f1), width(f1) FROM BOX_TBL;
 -- Test the SP-GiST index
 --
 
-CREATE TEMPORARY TABLE box_temp (f1 box);
+DROP TABLE IF EXISTS box_temp;
+
+CREATE TABLE box_temp (_gemini_pk serial PRIMARY KEY, f1 box);
 ---END---
 ---START---
 INSERT INTO box_temp
@@ -260,10 +241,7 @@ RESET enable_seqscan;
 DROP INDEX box_spgist;
 ---END---
 ---START---
---
--- Test the SP-GiST index on the larger volume of data
---
-CREATE TABLE quad_box_tbl (id int, b box);
+CREATE TABLE quad_box_tbl (_gemini_pk serial PRIMARY KEY, id integer, b box);
 ---END---
 ---START---
 INSERT INTO quad_box_tbl
@@ -370,7 +348,9 @@ SELECT rank() OVER (ORDER BY b <-> point '123,456') n, b <-> point '123,456' dis
 FROM quad_box_tbl;
 ---END---
 ---START---
-CREATE TEMP TABLE quad_box_tbl_ord_idx1 AS
+DROP TABLE IF EXISTS quad_box_tbl_ord_idx1;
+
+CREATE TABLE quad_box_tbl_ord_idx1 AS
 SELECT rank() OVER (ORDER BY b <-> point '123,456') n, b <-> point '123,456' dist, id
 FROM quad_box_tbl;
 ---END---
@@ -387,7 +367,9 @@ SELECT rank() OVER (ORDER BY b <-> point '123,456') n, b <-> point '123,456' dis
 FROM quad_box_tbl WHERE b <@ box '((200,300),(500,600))';
 ---END---
 ---START---
-CREATE TEMP TABLE quad_box_tbl_ord_idx2 AS
+DROP TABLE IF EXISTS quad_box_tbl_ord_idx2;
+
+CREATE TABLE quad_box_tbl_ord_idx2 AS
 SELECT rank() OVER (ORDER BY b <-> point '123,456') n, b <-> point '123,456' dist, id
 FROM quad_box_tbl WHERE b <@ box '((200,300),(500,600))';
 ---END---

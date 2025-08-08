@@ -3,7 +3,9 @@
 -- Tests to exercise the plan caching/invalidation mechanism
 --
 
-CREATE TEMP TABLE pcachetest AS SELECT * FROM int8_tbl;
+DROP TABLE IF EXISTS pcachetest;
+
+CREATE TABLE pcachetest AS SELECT * FROM int8_tbl;
 ---END---
 ---START---
 -- create and use a cached plan
@@ -32,7 +34,9 @@ EXECUTE prepstmt2(123);
 ---START---
 -- recreate the temp table (this demonstrates that the raw plan is
 -- purely textual and doesn't depend on OIDs, for instance)
-CREATE TEMP TABLE pcachetest AS SELECT * FROM int8_tbl ORDER BY 2;
+DROP TABLE IF EXISTS pcachetest;
+
+CREATE TABLE pcachetest AS SELECT * FROM int8_tbl ORDER BY 2;
 ---END---
 ---START---
 EXECUTE prepstmt;
@@ -86,7 +90,8 @@ EXECUTE vprep;
 create function cache_test(int) returns int as $$
 declare total int;
 begin
-	create temp table t1(f1 int);
+	DROP TABLE IF EXISTS t1;
+create table t1(f1 int);
 	insert into t1 values($1);
 	insert into t1 values(11);
 	insert into t1 values(12);
@@ -214,7 +219,8 @@ create function cachebug() returns void as $$
 declare r int;
 begin
   drop table if exists temptable cascade;
-  create temp table temptable as select * from generate_series(1,3) as f1;
+  DROP TABLE IF EXISTS temptable;
+create table temptable as select * from generate_series(1,3) as f1;
   create temp view vv as select * from temptable;
   for r in select * from vv loop
     raise notice '%', r;
@@ -228,9 +234,7 @@ select cachebug();
 select cachebug();
 ---END---
 ---START---
--- Check that addition or removal of any partition is correctly dealt with by
--- default partition table when it is being used in prepared statement.
-create table pc_list_parted (a int) partition by list(a);
+CREATE TABLE pc_list_parted (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 create table pc_list_part_null partition of pc_list_parted for values in (null);
@@ -278,9 +282,7 @@ drop table pc_list_parted, pc_list_part_null;
 deallocate pstmt_def_insert;
 ---END---
 ---START---
--- Test plan_cache_mode
-
-create table test_mode (a int);
+CREATE TABLE test_mode (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 insert into test_mode select 1 from generate_series(1,1000) union all select 2;

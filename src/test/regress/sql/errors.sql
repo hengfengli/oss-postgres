@@ -376,8 +376,8 @@ CREATE TABLE foo(id INT4 UNIQUE NOT NULL, id2 TEXT NOT NULL PRIMARY KEY, id3 INT
 ---END---
 ---START---
 -- long line to be truncated on the left, many lines
+DROP TABLE IF EXISTS foo;
 CREATE
-TEMPORARY
 TABLE
 foo(id INT4 UNIQUE NOT NULL, id2 TEXT NOT NULL PRIMARY KEY, id3 INTEGER NOT NUL,
 id4 INT4
@@ -391,16 +391,16 @@ NULL);
 ---END---
 ---START---
 -- long line to be truncated on the right, many lines
+DROP TABLE IF EXISTS foo;
 CREATE
-TEMPORARY
 TABLE
 foo(
 id3 INTEGER NOT NUL, id4 INT4 UNIQUE NOT NULL, id5 TEXT UNIQUE NOT NULL, id INT4 UNIQUE NOT NULL, id2 TEXT NOT NULL PRIMARY KEY);
 ---END---
 ---START---
 -- long line to be truncated both ways, many lines
+DROP TABLE IF EXISTS foo;
 CREATE
-TEMPORARY
 TABLE
 foo
 (id
@@ -411,8 +411,8 @@ idv INT4 UNIQUE NOT NULL);
 ---END---
 ---START---
 -- more than 10 lines...
+DROP TABLE IF EXISTS foo;
 CREATE
-TEMPORARY
 TABLE
 foo
 (id

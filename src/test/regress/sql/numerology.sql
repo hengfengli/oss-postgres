@@ -200,13 +200,7 @@ SELECT 1_000.5_;
 SELECT 1_000.5e_1;
 ---END---
 ---START---
---
--- Test implicit type conversions
--- This fails for Postgres v6.1 (and earlier?)
---  so let's try explicit conversions for now - tgl 97/05/07
---
-
-CREATE TABLE TEMP_FLOAT (f1 FLOAT8);
+CREATE TABLE temp_float (_gemini_pk serial PRIMARY KEY, f1 float8);
 ---END---
 ---START---
 INSERT INTO TEMP_FLOAT (f1)
@@ -221,9 +215,7 @@ SELECT f1 FROM TEMP_FLOAT
   ORDER BY f1;
 ---END---
 ---START---
--- int4
-
-CREATE TABLE TEMP_INT4 (f1 INT4);
+CREATE TABLE temp_int4 (_gemini_pk serial PRIMARY KEY, f1 int4);
 ---END---
 ---START---
 INSERT INTO TEMP_INT4 (f1)
@@ -239,9 +231,7 @@ SELECT f1 FROM TEMP_INT4
   ORDER BY f1;
 ---END---
 ---START---
--- int2
-
-CREATE TABLE TEMP_INT2 (f1 INT2);
+CREATE TABLE temp_int2 (_gemini_pk serial PRIMARY KEY, f1 int2);
 ---END---
 ---START---
 INSERT INTO TEMP_INT2 (f1)
@@ -258,11 +248,7 @@ SELECT f1 FROM TEMP_INT2
   ORDER BY f1;
 ---END---
 ---START---
---
--- Group-by combinations
---
-
-CREATE TABLE TEMP_GROUP (f1 INT4, f2 INT4, f3 FLOAT8);
+CREATE TABLE temp_group (_gemini_pk serial PRIMARY KEY, f1 int4, f2 int4, f3 float8);
 ---END---
 ---START---
 INSERT INTO TEMP_GROUP

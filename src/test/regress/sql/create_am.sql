@@ -139,10 +139,7 @@ CREATE ACCESS METHOD bogus TYPE TABLE HANDLER bthandler;
 SELECT amname, amhandler, amtype FROM pg_am where amtype = 't' ORDER BY 1, 2;
 ---END---
 ---START---
--- First create tables employing the new AM using USING
-
--- plain CREATE TABLE
-CREATE TABLE tableam_tbl_heap2(f1 int) USING heap2;
+CREATE TABLE tableam_tbl_heap2 (_gemini_pk serial PRIMARY KEY, f1 integer) USING heap2;
 ---END---
 ---START---
 INSERT INTO tableam_tbl_heap2 VALUES(1);
@@ -177,11 +174,10 @@ CREATE MATERIALIZED VIEW tableam_tblmv_heap2 USING heap2 AS SELECT * FROM tablea
 SELECT f1 FROM tableam_tblmv_heap2 ORDER BY f1;
 ---END---
 ---START---
--- CREATE TABLE ..  PARTITION BY doesn't not support USING
-CREATE TABLE tableam_parted_heap2 (a text, b int) PARTITION BY list (a) USING heap2;
+CREATE TABLE tableam_parted_heap2 (_gemini_pk serial PRIMARY KEY, a text, b integer) PARTITION BY list (a) USING heap2;
 ---END---
 ---START---
-CREATE TABLE tableam_parted_heap2 (a text, b int) PARTITION BY list (a);
+CREATE TABLE tableam_parted_heap2 (_gemini_pk serial PRIMARY KEY, a text, b integer) PARTITION BY list (a);
 ---END---
 ---START---
 -- new partitions will inherit from the current default, rather the partition root
@@ -308,9 +304,7 @@ DROP MATERIALIZED VIEW heapmv;
 DROP TABLE heaptable;
 ---END---
 ---START---
--- No support for partitioned tables.
-CREATE TABLE am_partitioned(x INT, y INT)
-  PARTITION BY hash (x);
+CREATE TABLE am_partitioned (_gemini_pk serial PRIMARY KEY, x integer, y integer) PARTITION BY hash (x);
 ---END---
 ---START---
 ALTER TABLE am_partitioned SET ACCESS METHOD heap2;
@@ -326,8 +320,7 @@ BEGIN;
 SET LOCAL default_table_access_method = 'heap2';
 ---END---
 ---START---
--- following tests should all respect the default AM
-CREATE TABLE tableam_tbl_heapx(f1 int);
+CREATE TABLE tableam_tbl_heapx (_gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
 CREATE TABLE tableam_tblas_heapx AS SELECT * FROM tableam_tbl_heapx;
@@ -339,7 +332,7 @@ SELECT INTO tableam_tblselectinto_heapx FROM tableam_tbl_heapx;
 CREATE MATERIALIZED VIEW tableam_tblmv_heapx USING heap2 AS SELECT * FROM tableam_tbl_heapx;
 ---END---
 ---START---
-CREATE TABLE tableam_parted_heapx (a text, b int) PARTITION BY list (a);
+CREATE TABLE tableam_parted_heapx (_gemini_pk serial PRIMARY KEY, a text, b integer) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE tableam_parted_1_heapx PARTITION OF tableam_parted_heapx FOR VALUES IN ('a', 'b');
@@ -389,13 +382,13 @@ ROLLBACK;
 CREATE TABLE i_am_a_failure() USING "";
 ---END---
 ---START---
-CREATE TABLE i_am_a_failure() USING i_do_not_exist_am;
+CREATE TABLE i_am_a_failure (_gemini_pk serial PRIMARY KEY) USING i_do_not_exist_am;
 ---END---
 ---START---
-CREATE TABLE i_am_a_failure() USING "I do not exist AM";
+CREATE TABLE i_am_a_failure (_gemini_pk serial PRIMARY KEY) USING "I do not exist AM";
 ---END---
 ---START---
-CREATE TABLE i_am_a_failure() USING "btree";
+CREATE TABLE i_am_a_failure (_gemini_pk serial PRIMARY KEY) USING btree;
 ---END---
 ---START---
 -- Drop table access method, which fails as objects depends on it

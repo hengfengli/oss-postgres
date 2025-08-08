@@ -9,81 +9,76 @@
 SELECT char 'c' = char 'c' AS true;
 ---END---
 ---START---
---
--- Build a table for testing
--- (This temporarily hides the table created in test_setup.sql)
---
-
-CREATE TEMP TABLE CHAR_TBL(f1 char);
+CREATE TABLE char_tbl_temp (_gemini_pk serial PRIMARY KEY, f1 char);
 ---END---
 ---START---
-INSERT INTO CHAR_TBL (f1) VALUES ('a');
+INSERT INTO CHAR_TBL_TEMP (f1) VALUES ('a');
 ---END---
 ---START---
-INSERT INTO CHAR_TBL (f1) VALUES ('A');
+INSERT INTO CHAR_TBL_TEMP (f1) VALUES ('A');
 ---END---
 ---START---
 -- any of the following three input formats are acceptable
-INSERT INTO CHAR_TBL (f1) VALUES ('1');
+INSERT INTO CHAR_TBL_TEMP (f1) VALUES ('1');
 ---END---
 ---START---
-INSERT INTO CHAR_TBL (f1) VALUES (2);
+INSERT INTO CHAR_TBL_TEMP (f1) VALUES (2);
 ---END---
 ---START---
-INSERT INTO CHAR_TBL (f1) VALUES ('3');
+INSERT INTO CHAR_TBL_TEMP (f1) VALUES ('3');
 ---END---
 ---START---
 -- zero-length char
-INSERT INTO CHAR_TBL (f1) VALUES ('');
+INSERT INTO CHAR_TBL_TEMP (f1) VALUES ('');
 ---END---
 ---START---
 -- try char's of greater than 1 length
-INSERT INTO CHAR_TBL (f1) VALUES ('cd');
+INSERT INTO CHAR_TBL_TEMP (f1) VALUES ('cd');
 ---END---
 ---START---
-INSERT INTO CHAR_TBL (f1) VALUES ('c     ');
+INSERT INTO CHAR_TBL_TEMP (f1) VALUES ('c     ');
 ---END---
 ---START---
-SELECT * FROM CHAR_TBL;
+SELECT * FROM CHAR_TBL_TEMP;
 ---END---
 ---START---
 SELECT c.*
-   FROM CHAR_TBL c
+   FROM CHAR_TBL_TEMP c
    WHERE c.f1 <> 'a';
 ---END---
 ---START---
 SELECT c.*
-   FROM CHAR_TBL c
+   FROM CHAR_TBL_TEMP c
    WHERE c.f1 = 'a';
 ---END---
 ---START---
 SELECT c.*
-   FROM CHAR_TBL c
+   FROM CHAR_TBL_TEMP c
    WHERE c.f1 < 'a';
 ---END---
 ---START---
 SELECT c.*
-   FROM CHAR_TBL c
+   FROM CHAR_TBL_TEMP c
    WHERE c.f1 <= 'a';
 ---END---
 ---START---
 SELECT c.*
-   FROM CHAR_TBL c
+   FROM CHAR_TBL_TEMP c
    WHERE c.f1 > 'a';
 ---END---
 ---START---
 SELECT c.*
-   FROM CHAR_TBL c
+   FROM CHAR_TBL_TEMP c
    WHERE c.f1 >= 'a';
 ---END---
 ---START---
-DROP TABLE CHAR_TBL;
+DROP TABLE CHAR_TBL_TEMP;
 ---END---
 ---START---
 --
 -- Now test longer arrays of char
 --
--- This char_tbl was already created and filled in test_setup.sql.
+-- This char_tbl_TEMP was already created and filled in test_setup.sql.
 -- Here we just try to insert bad values.
 --
 

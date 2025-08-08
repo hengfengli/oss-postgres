@@ -1,10 +1,5 @@
 ---START---
-/*
- * 1.1. test CREATE INDEX with buffered build
- */
-
--- Regular index with included columns
-CREATE TABLE tbl_gist (c1 int, c2 int, c3 int, c4 box);
+CREATE TABLE tbl_gist (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer, c4 box);
 ---END---
 ---START---
 -- size is chosen to exceed page size and trigger actual truncation
@@ -34,12 +29,7 @@ SET enable_bitmapscan TO default;
 DROP TABLE tbl_gist;
 ---END---
 ---START---
-/*
- * 1.2. test CREATE INDEX with inserts
- */
-
--- Regular index with included columns
-CREATE TABLE tbl_gist (c1 int, c2 int, c3 int, c4 box);
+CREATE TABLE tbl_gist (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer, c4 box);
 ---END---
 ---START---
 -- size is chosen to exceed page size and trigger actual truncation
@@ -69,10 +59,7 @@ SET enable_bitmapscan TO default;
 DROP TABLE tbl_gist;
 ---END---
 ---START---
-/*
- * 2. CREATE INDEX CONCURRENTLY
- */
-CREATE TABLE tbl_gist (c1 int, c2 int, c3 int, c4 box);
+CREATE TABLE tbl_gist (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer, c4 box);
 ---END---
 ---START---
 INSERT INTO tbl_gist SELECT x, 2*x, 3*x, box(point(x,x+1),point(2*x,2*x+1)) FROM generate_series(1,10) AS x;
@@ -87,10 +74,7 @@ SELECT indexdef FROM pg_indexes WHERE tablename = 'tbl_gist' ORDER BY indexname;
 DROP TABLE tbl_gist;
 ---END---
 ---START---
-/*
- * 3. REINDEX
- */
-CREATE TABLE tbl_gist (c1 int, c2 int, c3 int, c4 box);
+CREATE TABLE tbl_gist (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer, c4 box);
 ---END---
 ---START---
 INSERT INTO tbl_gist SELECT x, 2*x, 3*x, box(point(x,x+1),point(2*x,2*x+1)) FROM generate_series(1,10) AS x;
@@ -117,10 +101,7 @@ SELECT indexdef FROM pg_indexes WHERE tablename = 'tbl_gist' ORDER BY indexname;
 DROP TABLE tbl_gist;
 ---END---
 ---START---
-/*
- * 4. Update, delete values in indexed table.
- */
-CREATE TABLE tbl_gist (c1 int, c2 int, c3 int, c4 box);
+CREATE TABLE tbl_gist (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer, c4 box);
 ---END---
 ---START---
 INSERT INTO tbl_gist SELECT x, 2*x, 3*x, box(point(x,x+1),point(2*x,2*x+1)) FROM generate_series(1,10) AS x;
@@ -141,10 +122,7 @@ DELETE FROM tbl_gist WHERE c1 = 5 OR c3 = 12;
 DROP TABLE tbl_gist;
 ---END---
 ---START---
-/*
- * 5. Alter column type.
- */
-CREATE TABLE tbl_gist (c1 int, c2 int, c3 int, c4 box);
+CREATE TABLE tbl_gist (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer, c4 box);
 ---END---
 ---START---
 INSERT INTO tbl_gist SELECT x, 2*x, 3*x, box(point(x,x+1),point(2*x,2*x+1)) FROM generate_series(1,10) AS x;
@@ -163,10 +141,7 @@ ALTER TABLE tbl_gist ALTER c3 TYPE bigint;
 DROP TABLE tbl_gist;
 ---END---
 ---START---
-/*
- * 6. EXCLUDE constraint.
- */
-CREATE TABLE tbl_gist (c1 int, c2 int, c3 int, c4 box, EXCLUDE USING gist (c4 WITH &&) INCLUDE (c1, c2, c3));
+CREATE TABLE tbl_gist (_gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer, c4 box, EXCLUDE USING gist (c4 WITH OPERATOR(&&)) INCLUDE (c1, c2, c3));
 ---END---
 ---START---
 INSERT INTO tbl_gist SELECT x, 2*x, 3*x, box(point(x,x+1),point(2*x,2*x+1)) FROM generate_series(1,10) AS x;

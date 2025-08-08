@@ -499,7 +499,7 @@ SELECT '' IS JSON;
 SELECT bytea '\x00' IS JSON;
 ---END---
 ---START---
-CREATE TABLE test_is_json (js text);
+CREATE TABLE test_is_json (_gemini_pk serial PRIMARY KEY, js text);
 ---END---
 ---START---
 INSERT INTO test_is_json VALUES

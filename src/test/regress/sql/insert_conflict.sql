@@ -1,8 +1,5 @@
 ---START---
---
--- insert...on conflict do unique index inference
---
-create table insertconflicttest(key int4, fruit text);
+CREATE TABLE insertconflicttest (_gemini_pk serial PRIMARY KEY, key int4, fruit text);
 ---END---
 ---START---
 --
@@ -413,12 +410,7 @@ drop index plain;
 drop table insertconflicttest;
 ---END---
 ---START---
---
--- Verify that EXCLUDED does not allow system column references. These
--- do not make sense because EXCLUDED isn't an already stored tuple
--- (and thus doesn't have a ctid etc).
---
-create table syscolconflicttest(key int4, data text);
+CREATE TABLE syscolconflicttest (_gemini_pk serial PRIMARY KEY, key int4, data text);
 ---END---
 ---START---
 insert into syscolconflicttest values (1);
@@ -430,11 +422,7 @@ insert into syscolconflicttest values (1) on conflict (key) do update set data =
 drop table syscolconflicttest;
 ---END---
 ---START---
---
--- Previous tests all managed to not test any expressions requiring
--- planner preprocessing ...
---
-create table insertconflict (a bigint, b bigint);
+CREATE TABLE insertconflict (_gemini_pk serial PRIMARY KEY, a bigint, b bigint);
 ---END---
 ---START---
 create unique index insertconflicti1 on insertconflict(coalesce(a, 0));
@@ -490,21 +478,10 @@ drop view insertconflictv;
 drop table insertconflict;
 ---END---
 ---START---
--- ******************************************************************
--- *                                                                *
--- * Test inheritance (example taken from tutorial)                 *
--- *                                                                *
--- ******************************************************************
-create table cities (
-	name		text,
-	population	float8,
-	altitude	int		-- (in ft)
-);
+CREATE TABLE cities (_gemini_pk serial PRIMARY KEY, name text, population float8, altitude integer);
 ---END---
 ---START---
-create table capitals (
-	state		char(2)
-) inherits (cities);
+CREATE TABLE capitals (_gemini_pk serial PRIMARY KEY, state char(2)) INHERITS (cities);
 ---END---
 ---START---
 -- Create unique indexes.  Due to a general limitation of inheritance,
@@ -650,10 +627,7 @@ insert into dropcol(key, keep1, keep2) values(1, '5', 5) on conflict(key)
 DROP TABLE dropcol;
 ---END---
 ---START---
--- check handling of regular btree constraint along with gist constraint
-
-create table twoconstraints (f1 int unique, f2 box,
-                             exclude using gist(f2 with &&));
+CREATE TABLE twoconstraints (_gemini_pk serial PRIMARY KEY, f1 integer UNIQUE, f2 box, EXCLUDE USING gist (f2 WITH OPERATOR(&&)));
 ---END---
 ---START---
 insert into twoconstraints values(1, '((0,0),(1,1))');
@@ -748,8 +722,7 @@ select * from selfconflict;
 drop table selfconflict;
 ---END---
 ---START---
--- check ON CONFLICT handling with partitioned tables
-create table parted_conflict_test (a int unique, b char) partition by list (a);
+CREATE TABLE parted_conflict_test (_gemini_pk serial PRIMARY KEY, a integer UNIQUE, b char) PARTITION BY list (a);
 ---END---
 ---START---
 create table parted_conflict_test_1 partition of parted_conflict_test (b unique) for values in (1, 2);
@@ -785,9 +758,7 @@ insert into parted_conflict_test_1 values (2, 'b') on conflict (b) do update set
 select * from parted_conflict_test order by a;
 ---END---
 ---START---
--- now check that DO UPDATE works correctly for target partition with
--- different attribute numbers
-create table parted_conflict_test_2 (b char, a int unique);
+CREATE TABLE parted_conflict_test_2 (_gemini_pk serial PRIMARY KEY, b char, a integer UNIQUE);
 ---END---
 ---START---
 alter table parted_conflict_test attach partition parted_conflict_test_2 for values in (3);
@@ -884,9 +855,7 @@ insert into parted_conflict_1 values (40, 'cuarenta')
 drop table parted_conflict;
 ---END---
 ---START---
--- same thing, but this time try to use an index that's created not in the
--- partition
-create table parted_conflict (a int, b text) partition by range (a);
+CREATE TABLE parted_conflict (_gemini_pk serial PRIMARY KEY, a integer, b text) PARTITION BY range (a);
 ---END---
 ---START---
 create table parted_conflict_1 partition of parted_conflict for values from (0) to (1000) partition by range (a);
@@ -914,11 +883,10 @@ insert into parted_conflict_1 values (40, 'cuarenta')
 drop table parted_conflict;
 ---END---
 ---START---
--- test whole-row Vars in ON CONFLICT expressions
-create table parted_conflict (a int, b text, c int) partition by range (a);
+CREATE TABLE parted_conflict (_gemini_pk serial PRIMARY KEY, a integer, b text, c integer) PARTITION BY range (a);
 ---END---
 ---START---
-create table parted_conflict_1 (drp text, c int, a int, b text);
+CREATE TABLE parted_conflict_1 (_gemini_pk serial PRIMARY KEY, drp text, c integer, a integer, b text);
 ---END---
 ---START---
 alter table parted_conflict_1 drop column drp;

@@ -1,15 +1,5 @@
 ---START---
---
--- PREPARED TRANSACTIONS (two-phase commit)
---
--- We can't readily test persistence of prepared xacts within the
--- regression script framework, unfortunately.  Note that a crash
--- isn't really needed ... stopping and starting the postmaster would
--- be enough, but we can't even do that here.
-
-
--- create a simple table that we'll use in the tests
-CREATE TABLE pxtest1 (foobar VARCHAR(10));
+CREATE TABLE pxtest1 (_gemini_pk serial PRIMARY KEY, foobar varchar(10));
 ---END---
 ---START---
 INSERT INTO pxtest1 VALUES ('aaa');
@@ -163,7 +153,7 @@ PREPARE TRANSACTION 'foo6';
 BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 ---END---
 ---START---
-CREATE TABLE pxtest2 (a int);
+CREATE TABLE pxtest2 (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 INSERT INTO pxtest2 VALUES (1);
@@ -187,7 +177,7 @@ INSERT INTO pxtest2 VALUES (3);
 PREPARE TRANSACTION 'regress-one';
 ---END---
 ---START---
-CREATE TABLE pxtest3(fff int);
+CREATE TABLE pxtest3 (_gemini_pk serial PRIMARY KEY, fff integer);
 ---END---
 ---START---
 -- Test shared invalidation
@@ -197,7 +187,7 @@ BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 DROP TABLE pxtest3;
 ---END---
 ---START---
-CREATE TABLE pxtest4 (a int);
+CREATE TABLE pxtest4 (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 INSERT INTO pxtest4 VALUES (1);

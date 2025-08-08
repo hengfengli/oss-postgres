@@ -33,15 +33,7 @@ SET allow_in_place_tablespaces = true;
 CREATE TABLESPACE regress_tblspace LOCATION '';
 ---END---
 ---START---
---
--- These tables have traditionally been referenced by many tests,
--- so create and populate them.  Insert only non-error values here.
--- (Some subsequent tests try to insert erroneous values.  That's okay
--- because the table won't actually change.  Do not change the contents
--- of these tables in later tests, as it may affect other tests.)
---
-
-CREATE TABLE CHAR_TBL(f1 char(4));
+CREATE TABLE char_tbl (_gemini_pk serial PRIMARY KEY, f1 char(4));
 ---END---
 ---START---
 INSERT INTO CHAR_TBL (f1) VALUES
@@ -54,7 +46,7 @@ INSERT INTO CHAR_TBL (f1) VALUES
 VACUUM CHAR_TBL;
 ---END---
 ---START---
-CREATE TABLE FLOAT8_TBL(f1 float8);
+CREATE TABLE float8_tbl (_gemini_pk serial PRIMARY KEY, f1 float8);
 ---END---
 ---START---
 INSERT INTO FLOAT8_TBL(f1) VALUES
@@ -68,7 +60,7 @@ INSERT INTO FLOAT8_TBL(f1) VALUES
 VACUUM FLOAT8_TBL;
 ---END---
 ---START---
-CREATE TABLE INT2_TBL(f1 int2);
+CREATE TABLE int2_tbl (_gemini_pk serial PRIMARY KEY, f1 int2);
 ---END---
 ---START---
 INSERT INTO INT2_TBL(f1) VALUES
@@ -82,7 +74,7 @@ INSERT INTO INT2_TBL(f1) VALUES
 VACUUM INT2_TBL;
 ---END---
 ---START---
-CREATE TABLE INT4_TBL(f1 int4);
+CREATE TABLE int4_tbl (_gemini_pk serial PRIMARY KEY, f1 int4);
 ---END---
 ---START---
 INSERT INTO INT4_TBL(f1) VALUES
@@ -96,7 +88,7 @@ INSERT INTO INT4_TBL(f1) VALUES
 VACUUM INT4_TBL;
 ---END---
 ---START---
-CREATE TABLE INT8_TBL(q1 int8, q2 int8);
+CREATE TABLE int8_tbl (_gemini_pk serial PRIMARY KEY, q1 int8, q2 int8);
 ---END---
 ---START---
 INSERT INTO INT8_TBL VALUES
@@ -110,7 +102,7 @@ INSERT INTO INT8_TBL VALUES
 VACUUM INT8_TBL;
 ---END---
 ---START---
-CREATE TABLE POINT_TBL(f1 point);
+CREATE TABLE point_tbl (_gemini_pk serial PRIMARY KEY, f1 point);
 ---END---
 ---START---
 INSERT INTO POINT_TBL(f1) VALUES
@@ -126,9 +118,7 @@ INSERT INTO POINT_TBL(f1) VALUES
   ('10.0,10.0');
 ---END---
 ---START---
--- We intentionally don't vacuum point_tbl here; geometry depends on that
-
-CREATE TABLE TEXT_TBL (f1 text);
+CREATE TABLE text_tbl (_gemini_pk serial PRIMARY KEY, f1 text);
 ---END---
 ---START---
 INSERT INTO TEXT_TBL VALUES
@@ -139,7 +129,7 @@ INSERT INTO TEXT_TBL VALUES
 VACUUM TEXT_TBL;
 ---END---
 ---START---
-CREATE TABLE VARCHAR_TBL(f1 varchar(4));
+CREATE TABLE varchar_tbl (_gemini_pk serial PRIMARY KEY, f1 varchar(4));
 ---END---
 ---START---
 INSERT INTO VARCHAR_TBL (f1) VALUES
@@ -152,24 +142,7 @@ INSERT INTO VARCHAR_TBL (f1) VALUES
 VACUUM VARCHAR_TBL;
 ---END---
 ---START---
-CREATE TABLE onek (
-	unique1		int4,
-	unique2		int4,
-	two			int4,
-	four		int4,
-	ten			int4,
-	twenty		int4,
-	hundred		int4,
-	thousand	int4,
-	twothousand	int4,
-	fivethous	int4,
-	tenthous	int4,
-	odd			int4,
-	even		int4,
-	stringu1	name,
-	stringu2	name,
-	string4		name
-);
+CREATE TABLE onek (_gemini_pk serial PRIMARY KEY, unique1 int4, unique2 int4, two int4, four int4, ten int4, twenty int4, hundred int4, thousand int4, twothousand int4, fivethous int4, tenthous int4, odd int4, even int4, stringu1 name, stringu2 name, string4 name);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/onek.data'
@@ -185,24 +158,7 @@ CREATE TABLE onek2 AS SELECT * FROM onek;
 VACUUM ANALYZE onek2;
 ---END---
 ---START---
-CREATE TABLE tenk1 (
-	unique1		int4,
-	unique2		int4,
-	two			int4,
-	four		int4,
-	ten			int4,
-	twenty		int4,
-	hundred		int4,
-	thousand	int4,
-	twothousand	int4,
-	fivethous	int4,
-	tenthous	int4,
-	odd			int4,
-	even		int4,
-	stringu1	name,
-	stringu2	name,
-	string4		name
-);
+CREATE TABLE tenk1 (_gemini_pk serial PRIMARY KEY, unique1 int4, unique2 int4, two int4, four int4, ten int4, twenty int4, hundred int4, thousand int4, twothousand int4, fivethous int4, tenthous int4, odd int4, even int4, stringu1 name, stringu2 name, string4 name);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/tenk.data'
@@ -218,11 +174,7 @@ CREATE TABLE tenk2 AS SELECT * FROM tenk1;
 VACUUM ANALYZE tenk2;
 ---END---
 ---START---
-CREATE TABLE person (
-	name 		text,
-	age			int4,
-	location 	point
-);
+CREATE TABLE person (_gemini_pk serial PRIMARY KEY, name text, age int4, location point);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/person.data'
@@ -232,10 +184,7 @@ COPY person FROM :'filename';
 VACUUM ANALYZE person;
 ---END---
 ---START---
-CREATE TABLE emp (
-	salary 		int4,
-	manager 	name
-) INHERITS (person);
+CREATE TABLE emp (_gemini_pk serial PRIMARY KEY, salary int4, manager name) INHERITS (person);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/emp.data'
@@ -245,9 +194,7 @@ COPY emp FROM :'filename';
 VACUUM ANALYZE emp;
 ---END---
 ---START---
-CREATE TABLE student (
-	gpa 		float8
-) INHERITS (person);
+CREATE TABLE student (_gemini_pk serial PRIMARY KEY, gpa float8) INHERITS (person);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/student.data'
@@ -257,9 +204,7 @@ COPY student FROM :'filename';
 VACUUM ANALYZE student;
 ---END---
 ---START---
-CREATE TABLE stud_emp (
-	percent 	int4
-) INHERITS (emp, student);
+CREATE TABLE stud_emp (_gemini_pk serial PRIMARY KEY, percent int4) INHERITS (emp, student);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/stud_emp.data'
@@ -269,10 +214,7 @@ COPY stud_emp FROM :'filename';
 VACUUM ANALYZE stud_emp;
 ---END---
 ---START---
-CREATE TABLE road (
-	name		text,
-	thepath 	path
-);
+CREATE TABLE road (_gemini_pk serial PRIMARY KEY, name text, thepath path);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/streets.data'
@@ -282,7 +224,7 @@ COPY road FROM :'filename';
 VACUUM ANALYZE road;
 ---END---
 ---START---
-CREATE TABLE ihighway () INHERITS (road);
+CREATE TABLE ihighway (_gemini_pk serial PRIMARY KEY) INHERITS (road);
 ---END---
 ---START---
 INSERT INTO ihighway
@@ -294,9 +236,7 @@ INSERT INTO ihighway
 VACUUM ANALYZE ihighway;
 ---END---
 ---START---
-CREATE TABLE shighway (
-	surface		text
-) INHERITS (road);
+CREATE TABLE shighway (_gemini_pk serial PRIMARY KEY, surface text) INHERITS (road);
 ---END---
 ---START---
 INSERT INTO shighway

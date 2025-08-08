@@ -540,13 +540,17 @@ SELECT '3.4'::numeric UNION SELECT 'foo';
 -- UNION or UNION ALL
 --
 
-CREATE TEMP TABLE t1 (a text, b text);
+DROP TABLE IF EXISTS t1;
+
+CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, a text, b text);
 ---END---
 ---START---
 CREATE INDEX t1_ab_idx on t1 ((a || b));
 ---END---
 ---START---
-CREATE TEMP TABLE t2 (ab text primary key);
+DROP TABLE IF EXISTS t2;
+
+CREATE TABLE t2 (ab text primary key);
 ---END---
 ---START---
 INSERT INTO t1 VALUES ('a', 'b'), ('x', 'y');
@@ -585,13 +589,17 @@ explain (costs off)
 -- children.
 --
 
-CREATE TEMP TABLE t1c (b text, a text);
+DROP TABLE IF EXISTS t1c;
+
+CREATE TABLE t1c (_gemini_pk serial PRIMARY KEY, b text, a text);
 ---END---
 ---START---
 ALTER TABLE t1c INHERIT t1;
 ---END---
 ---START---
-CREATE TEMP TABLE t2c (primary key (ab)) INHERITS (t2);
+DROP TABLE IF EXISTS t2c;
+
+CREATE TABLE t2c (primary key (ab)) INHERITS (t2);
 ---END---
 ---START---
 INSERT INTO t1c VALUES ('v', 'w'), ('c', 'd'), ('m', 'n'), ('e', 'f');
@@ -641,7 +649,7 @@ create table events (event_id int primary key);
 create table other_events (event_id int primary key);
 ---END---
 ---START---
-create table events_child () inherits (events);
+CREATE TABLE events_child (_gemini_pk serial PRIMARY KEY) INHERITS (events);
 ---END---
 ---START---
 explain (costs off)
@@ -758,7 +766,9 @@ language plpgsql immutable strict cost 10000
 as $$begin return $1; end$$;
 ---END---
 ---START---
-create temp table t3 as select generate_series(-1000,1000) as x;
+DROP TABLE IF EXISTS t3;
+
+create table t3 as select generate_series(-1000,1000) as x;
 ---END---
 ---START---
 create index t3i on t3 (expensivefunc(x));

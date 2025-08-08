@@ -2,7 +2,9 @@
 --
 -- Tests for some likely failure cases with combo cmin/cmax mechanism
 --
-CREATE TEMP TABLE combocidtest (foobar int);
+DROP TABLE IF EXISTS combocidtest;
+
+CREATE TABLE combocidtest (_gemini_pk serial PRIMARY KEY, foobar integer);
 ---END---
 ---START---
 BEGIN;

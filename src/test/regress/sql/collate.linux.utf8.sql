@@ -22,10 +22,7 @@ CREATE SCHEMA collate_tests;
 SET search_path = collate_tests;
 ---END---
 ---START---
-CREATE TABLE collate_test1 (
-    a int,
-    b text COLLATE "en_US" NOT NULL
-);
+CREATE TABLE collate_test1 (_gemini_pk serial PRIMARY KEY, a integer, b text COLLATE "en_US" NOT NULL);
 ---END---
 ---START---
 \d collate_test1
@@ -36,21 +33,13 @@ CREATE TABLE collate_test_fail (
 );
 ---END---
 ---START---
-CREATE TABLE collate_test_fail (
-    a int,
-    b text COLLATE "foo"
-);
+CREATE TABLE collate_test_fail (_gemini_pk serial PRIMARY KEY, a integer, b text COLLATE foo);
 ---END---
 ---START---
-CREATE TABLE collate_test_fail (
-    a int COLLATE "en_US",
-    b text
-);
+CREATE TABLE collate_test_fail (_gemini_pk serial PRIMARY KEY, a integer COLLATE "en_US", b text);
 ---END---
 ---START---
-CREATE TABLE collate_test_like (
-    LIKE collate_test1
-);
+CREATE TABLE collate_test_like (_gemini_pk serial PRIMARY KEY, LIKE collate_test1);
 ---END---
 ---START---
 \d collate_test_like
@@ -61,10 +50,7 @@ CREATE TABLE collate_test2 (
 );
 ---END---
 ---START---
-CREATE TABLE collate_test3 (
-    a int,
-    b text COLLATE "C"
-);
+CREATE TABLE collate_test3 (_gemini_pk serial PRIMARY KEY, a integer, b text COLLATE "C");
 ---END---
 ---START---
 INSERT INTO collate_test1 VALUES (1, 'abc'), (2, 'äbc'), (3, 'bbc'), (4, 'ABC');
@@ -106,11 +92,7 @@ CREATE DOMAIN testdomain_sv AS text COLLATE "sv_SE";
 CREATE DOMAIN testdomain_i AS int COLLATE "sv_SE";
 ---END---
 ---START---
--- fails
-CREATE TABLE collate_test4 (
-    a int,
-    b testdomain_sv
-);
+CREATE TABLE collate_test4 (_gemini_pk serial PRIMARY KEY, a integer, b testdomain_sv);
 ---END---
 ---START---
 INSERT INTO collate_test4 SELECT * FROM collate_test1;
@@ -119,10 +101,7 @@ INSERT INTO collate_test4 SELECT * FROM collate_test1;
 SELECT a, b FROM collate_test4 ORDER BY b;
 ---END---
 ---START---
-CREATE TABLE collate_test5 (
-    a int,
-    b testdomain_sv COLLATE "en_US"
-);
+CREATE TABLE collate_test5 (_gemini_pk serial PRIMARY KEY, a integer, b testdomain_sv COLLATE "en_US");
 ---END---
 ---START---
 INSERT INTO collate_test5 SELECT * FROM collate_test1;
@@ -160,13 +139,7 @@ SELECT 'bbc' COLLATE "en_US" > 'äbc' COLLATE "en_US" AS "true";
 SELECT 'bbc' COLLATE "sv_SE" > 'äbc' COLLATE "sv_SE" AS "false";
 ---END---
 ---START---
--- upper/lower
-
-CREATE TABLE collate_test10 (
-    a int,
-    x text COLLATE "en_US",
-    y text COLLATE "tr_TR"
-);
+CREATE TABLE collate_test10 (_gemini_pk serial PRIMARY KEY, a integer, x text COLLATE "en_US", y text COLLATE "tr_TR");
 ---END---
 ---START---
 INSERT INTO collate_test10 VALUES (1, 'hij', 'hij'), (2, 'HIJ', 'HIJ');
@@ -237,10 +210,7 @@ SELECT * FROM collate_test1 WHERE b ~* '^abc';
 SELECT * FROM collate_test1 WHERE b ~* 'bc';
 ---END---
 ---START---
-CREATE TABLE collate_test6 (
-    a int,
-    b text COLLATE "en_US"
-);
+CREATE TABLE collate_test6 (_gemini_pk serial PRIMARY KEY, a integer, b text COLLATE "en_US");
 ---END---
 ---START---
 INSERT INTO collate_test6 VALUES (1, 'abc'), (2, 'ABC'), (3, '123'), (4, 'ab1'),
@@ -720,7 +690,7 @@ ALTER DATABASE :"datname" REFRESH COLLATION VERSION;
 CREATE COLLATION test0 FROM "C";
 ---END---
 ---START---
-CREATE TABLE collate_dep_test1 (a int, b text COLLATE test0);
+CREATE TABLE collate_dep_test1 (_gemini_pk serial PRIMARY KEY, a integer, b text COLLATE test0);
 ---END---
 ---START---
 CREATE DOMAIN collate_dep_dom1 AS text COLLATE test0;
@@ -732,7 +702,7 @@ CREATE TYPE collate_dep_test2 AS (x int, y text COLLATE test0);
 CREATE VIEW collate_dep_test3 AS SELECT text 'foo' COLLATE test0 AS foo;
 ---END---
 ---START---
-CREATE TABLE collate_dep_test4t (a int, b text);
+CREATE TABLE collate_dep_test4t (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
 CREATE INDEX collate_dep_test4i ON collate_dep_test4t (b COLLATE test0);

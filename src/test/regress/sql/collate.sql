@@ -17,10 +17,7 @@ CREATE SCHEMA collate_tests;
 SET search_path = collate_tests;
 ---END---
 ---START---
-CREATE TABLE collate_test1 (
-    a int,
-    b text COLLATE "C" NOT NULL
-);
+CREATE TABLE collate_test1 (_gemini_pk serial PRIMARY KEY, a integer, b text COLLATE "C" NOT NULL);
 ---END---
 ---START---
 \d collate_test1
@@ -31,9 +28,7 @@ CREATE TABLE collate_test_fail (
 );
 ---END---
 ---START---
-CREATE TABLE collate_test_like (
-    LIKE collate_test1
-);
+CREATE TABLE collate_test_like (_gemini_pk serial PRIMARY KEY, LIKE collate_test1);
 ---END---
 ---START---
 \d collate_test_like
@@ -70,11 +65,7 @@ CREATE DOMAIN testdomain_p AS text COLLATE "POSIX";
 CREATE DOMAIN testdomain_i AS int COLLATE "POSIX";
 ---END---
 ---START---
--- fail
-CREATE TABLE collate_test4 (
-    a int,
-    b testdomain_p
-);
+CREATE TABLE collate_test4 (_gemini_pk serial PRIMARY KEY, a integer, b testdomain_p);
 ---END---
 ---START---
 INSERT INTO collate_test4 SELECT * FROM collate_test1;
@@ -83,10 +74,7 @@ INSERT INTO collate_test4 SELECT * FROM collate_test1;
 SELECT a, b FROM collate_test4 ORDER BY b;
 ---END---
 ---START---
-CREATE TABLE collate_test5 (
-    a int,
-    b testdomain_p COLLATE "C"
-);
+CREATE TABLE collate_test5 (_gemini_pk serial PRIMARY KEY, a integer, b testdomain_p COLLATE "C");
 ---END---
 ---START---
 INSERT INTO collate_test5 SELECT * FROM collate_test1;
@@ -118,13 +106,7 @@ SELECT 'bbc' COLLATE "C" > 'Abc' COLLATE "C" AS "true";
 SELECT 'bbc' COLLATE "POSIX" < 'Abc' COLLATE "POSIX" AS "false";
 ---END---
 ---START---
--- upper/lower
-
-CREATE TABLE collate_test10 (
-    a int,
-    x text COLLATE "C",
-    y text COLLATE "POSIX"
-);
+CREATE TABLE collate_test10 (_gemini_pk serial PRIMARY KEY, a integer, x text COLLATE "C", y text COLLATE "POSIX");
 ---END---
 ---START---
 INSERT INTO collate_test10 VALUES (1, 'hij', 'hij'), (2, 'HIJ', 'HIJ');
@@ -395,7 +377,7 @@ CREATE TABLE collate_test20 (f1 text COLLATE "C" PRIMARY KEY);
 INSERT INTO collate_test20 VALUES ('foo'), ('bar');
 ---END---
 ---START---
-CREATE TABLE collate_test21 (f2 text COLLATE "POSIX" REFERENCES collate_test20);
+CREATE TABLE collate_test21 (_gemini_pk serial PRIMARY KEY, f2 text COLLATE "POSIX" REFERENCES collate_test20);
 ---END---
 ---START---
 INSERT INTO collate_test21 VALUES ('foo'), ('bar');
@@ -404,8 +386,7 @@ INSERT INTO collate_test21 VALUES ('foo'), ('bar');
 INSERT INTO collate_test21 VALUES ('baz');
 ---END---
 ---START---
--- fail
-CREATE TABLE collate_test22 (f2 text COLLATE "POSIX");
+CREATE TABLE collate_test22 (_gemini_pk serial PRIMARY KEY, f2 text COLLATE "POSIX");
 ---END---
 ---START---
 INSERT INTO collate_test22 VALUES ('foo'), ('bar'), ('baz');
@@ -456,7 +437,7 @@ CREATE COLLATION mycoll3 FROM "default";
 DROP COLLATION mycoll1;
 ---END---
 ---START---
-CREATE TABLE collate_test23 (f1 text collate mycoll2);
+CREATE TABLE collate_test23 (_gemini_pk serial PRIMARY KEY, f1 text COLLATE mycoll2);
 ---END---
 ---START---
 DROP COLLATION mycoll2;
@@ -470,7 +451,9 @@ CREATE COLLATION case_coll ("Lc_Collate" = "POSIX", "Lc_Ctype" = "POSIX");
 ---START---
 -- 9.1 bug with useless COLLATE in an expression subject to length coercion
 
-CREATE TEMP TABLE vctable (f1 varchar(25));
+DROP TABLE IF EXISTS vctable;
+
+CREATE TABLE vctable (_gemini_pk serial PRIMARY KEY, f1 varchar(25));
 ---END---
 ---START---
 INSERT INTO vctable VALUES ('foo' COLLATE "C");

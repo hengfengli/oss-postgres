@@ -1,11 +1,5 @@
 ---START---
---
--- PATH
---
-
---DROP TABLE PATH_TBL;
-
-CREATE TABLE PATH_TBL (f1 path);
+CREATE TABLE path_tbl (_gemini_pk serial PRIMARY KEY, f1 path);
 ---END---
 ---START---
 INSERT INTO PATH_TBL VALUES ('[(1,2),(3,4)]');

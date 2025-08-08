@@ -6,7 +6,7 @@
 BEGIN;
 ---END---
 ---START---
-CREATE TABLE xacttest (a smallint, b real);
+CREATE TABLE xacttest (_gemini_pk serial PRIMARY KEY, a smallint, b real);
 ---END---
 ---START---
 INSERT INTO xacttest VALUES
@@ -29,7 +29,7 @@ SELECT a FROM xacttest WHERE a > 100;
 BEGIN;
 ---END---
 ---START---
-CREATE TABLE disappear (a int4);
+CREATE TABLE disappear (_gemini_pk serial PRIMARY KEY, a int4);
 ---END---
 ---START---
 DELETE FROM xacttest;
@@ -94,14 +94,12 @@ CREATE FUNCTION errfunc() RETURNS int LANGUAGE SQL AS 'SELECT 1'
 SET transaction_read_only = on;
 ---END---
 ---START---
--- error
-
--- Read-only tests
-
-CREATE TABLE writetest (a int);
+CREATE TABLE writetest (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
-CREATE TEMPORARY TABLE temptest (a int);
+DROP TABLE IF EXISTS temptest;
+
+CREATE TABLE temptest (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 BEGIN;
@@ -297,13 +295,13 @@ COMMIT;
 SET SESSION CHARACTERISTICS AS TRANSACTION READ WRITE;
 ---END---
 ---START---
-CREATE TABLE trans_foobar (a int);
+CREATE TABLE trans_foobar (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 BEGIN;
 ---END---
 ---START---
-CREATE TABLE trans_foo (a int);
+CREATE TABLE trans_foo (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 SAVEPOINT one;
@@ -312,7 +310,7 @@ SAVEPOINT one;
 DROP TABLE trans_foo;
 ---END---
 ---START---
-CREATE TABLE trans_bar (a int);
+CREATE TABLE trans_bar (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 ROLLBACK TO SAVEPOINT one;
@@ -324,7 +322,7 @@ RELEASE SAVEPOINT one;
 SAVEPOINT two;
 ---END---
 ---START---
-CREATE TABLE trans_baz (a int);
+CREATE TABLE trans_baz (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 RELEASE SAVEPOINT two;
@@ -333,7 +331,7 @@ RELEASE SAVEPOINT two;
 drop TABLE trans_foobar;
 ---END---
 ---START---
-CREATE TABLE trans_barbaz (a int);
+CREATE TABLE trans_barbaz (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 COMMIT;
@@ -437,7 +435,7 @@ RELEASE SAVEPOINT one;
 SAVEPOINT two;
 ---END---
 ---START---
-CREATE TABLE savepoints (a int);
+CREATE TABLE savepoints (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 SAVEPOINT three;
@@ -847,7 +845,7 @@ BEGIN;
 savepoint x;
 ---END---
 ---START---
-CREATE TABLE koju (a INT UNIQUE);
+CREATE TABLE koju (_gemini_pk serial PRIMARY KEY, a integer UNIQUE);
 ---END---
 ---START---
 INSERT INTO koju VALUES (1);
@@ -859,7 +857,7 @@ INSERT INTO koju VALUES (1);
 rollback to x;
 ---END---
 ---START---
-CREATE TABLE koju (a INT UNIQUE);
+CREATE TABLE koju (_gemini_pk serial PRIMARY KEY, a integer UNIQUE);
 ---END---
 ---START---
 INSERT INTO koju VALUES (1);
@@ -891,7 +889,7 @@ exception
 end$$ language plpgsql volatile;
 ---END---
 ---START---
-create table revalidate_bug (c float8 unique);
+CREATE TABLE revalidate_bug (_gemini_pk serial PRIMARY KEY, c float8 UNIQUE);
 ---END---
 ---START---
 insert into revalidate_bug values (1);
@@ -915,7 +913,7 @@ begin;
 savepoint x;
 ---END---
 ---START---
-create table trans_abc (a int);
+CREATE TABLE trans_abc (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 insert into trans_abc values (5);
@@ -943,7 +941,7 @@ commit;
 begin;
 ---END---
 ---START---
-create table trans_abc (a int);
+CREATE TABLE trans_abc (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 insert into trans_abc values (5);
@@ -985,7 +983,8 @@ $$ begin return 1/x; end $$;
 CREATE FUNCTION create_temp_tab() RETURNS text
 LANGUAGE plpgsql AS $$
 BEGIN
-  CREATE TEMP TABLE new_table (f1 float8);
+  DROP TABLE IF EXISTS new_table;
+CREATE TABLE new_table (f1 float8);
   -- case of interest is that we fail while holding an open
   -- relcache reference to new_table
   INSERT INTO new_table SELECT invert(0.0);
@@ -1036,9 +1035,7 @@ DROP FUNCTION create_temp_tab();
 DROP FUNCTION invert(x float8);
 ---END---
 ---START---
--- Tests for AND CHAIN
-
-CREATE TABLE trans_abc (a int);
+CREATE TABLE trans_abc (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 -- set nondefault value so we have something to override below
@@ -1242,7 +1239,9 @@ DROP TABLE trans_abc;
 -- tests rely on the fact that psql will not break SQL commands apart at a
 -- backslash-quoted semicolon, but will send them as one Query.
 
-create temp table i_table (f1 int);
+DROP TABLE IF EXISTS i_table;
+
+CREATE TABLE i_table (_gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
 -- psql will show all results of a multi-statement Query
@@ -1450,7 +1449,7 @@ ROLLBACK AND CHAIN;
 SHOW transaction_read_only;
 ---END---
 ---START---
-CREATE TABLE trans_abc (a int);
+CREATE TABLE trans_abc (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 -- COMMIT/ROLLBACK + COMMIT/ROLLBACK AND CHAIN

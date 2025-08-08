@@ -22,10 +22,10 @@ CREATE USER regress_seclabel_user1 WITH CREATEROLE;
 CREATE USER regress_seclabel_user2;
 ---END---
 ---START---
-CREATE TABLE seclabel_tbl1 (a int, b text);
+CREATE TABLE seclabel_tbl1 (_gemini_pk serial PRIMARY KEY, a integer, b text);
 ---END---
 ---START---
-CREATE TABLE seclabel_tbl2 (x int, y text);
+CREATE TABLE seclabel_tbl2 (_gemini_pk serial PRIMARY KEY, x integer, y text);
 ---END---
 ---START---
 CREATE VIEW seclabel_view1 AS SELECT * FROM seclabel_tbl2;

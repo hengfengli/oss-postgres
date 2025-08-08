@@ -1,36 +1,32 @@
 ---START---
---
--- NUMERIC
---
-
-CREATE TABLE num_data (id int4, val numeric(210,10));
+CREATE TABLE num_data (_gemini_pk serial PRIMARY KEY, id int4, val numeric(210, 10));
 ---END---
 ---START---
-CREATE TABLE num_exp_add (id1 int4, id2 int4, expected numeric(210,10));
+CREATE TABLE num_exp_add (_gemini_pk serial PRIMARY KEY, id1 int4, id2 int4, expected numeric(210, 10));
 ---END---
 ---START---
-CREATE TABLE num_exp_sub (id1 int4, id2 int4, expected numeric(210,10));
+CREATE TABLE num_exp_sub (_gemini_pk serial PRIMARY KEY, id1 int4, id2 int4, expected numeric(210, 10));
 ---END---
 ---START---
-CREATE TABLE num_exp_div (id1 int4, id2 int4, expected numeric(210,10));
+CREATE TABLE num_exp_div (_gemini_pk serial PRIMARY KEY, id1 int4, id2 int4, expected numeric(210, 10));
 ---END---
 ---START---
-CREATE TABLE num_exp_mul (id1 int4, id2 int4, expected numeric(210,10));
+CREATE TABLE num_exp_mul (_gemini_pk serial PRIMARY KEY, id1 int4, id2 int4, expected numeric(210, 10));
 ---END---
 ---START---
-CREATE TABLE num_exp_sqrt (id int4, expected numeric(210,10));
+CREATE TABLE num_exp_sqrt (_gemini_pk serial PRIMARY KEY, id int4, expected numeric(210, 10));
 ---END---
 ---START---
-CREATE TABLE num_exp_ln (id int4, expected numeric(210,10));
+CREATE TABLE num_exp_ln (_gemini_pk serial PRIMARY KEY, id int4, expected numeric(210, 10));
 ---END---
 ---START---
-CREATE TABLE num_exp_log10 (id int4, expected numeric(210,10));
+CREATE TABLE num_exp_log10 (_gemini_pk serial PRIMARY KEY, id int4, expected numeric(210, 10));
 ---END---
 ---START---
-CREATE TABLE num_exp_power_10_ln (id int4, expected numeric(210,10));
+CREATE TABLE num_exp_power_10_ln (_gemini_pk serial PRIMARY KEY, id int4, expected numeric(210, 10));
 ---END---
 ---START---
-CREATE TABLE num_result (id1 int4, id2 int4, result numeric(210,10));
+CREATE TABLE num_result (_gemini_pk serial PRIMARY KEY, id1 int4, id2 int4, result numeric(210, 10));
 ---END---
 ---START---
 -- ******************************
@@ -1887,8 +1883,7 @@ SELECT STDDEV(val) FROM num_data;
 SELECT VARIANCE(val) FROM num_data;
 ---END---
 ---START---
--- Check for appropriate rounding and overflow
-CREATE TABLE fract_only (id int, val numeric(4,4));
+CREATE TABLE fract_only (_gemini_pk serial PRIMARY KEY, id integer, val numeric(4, 4));
 ---END---
 ---START---
 INSERT INTO fract_only VALUES (1, '0.0');
@@ -2051,8 +2046,7 @@ SELECT 'Infinity'::numeric::int8;
 SELECT '-Infinity'::numeric::int8;
 ---END---
 ---START---
--- Simple check that ceil(), floor(), and round() work correctly
-CREATE TABLE ceil_floor_round (a numeric);
+CREATE TABLE ceil_floor_round (_gemini_pk serial PRIMARY KEY, a numeric);
 ---END---
 ---START---
 INSERT INTO ceil_floor_round VALUES ('-5.5');
@@ -2127,8 +2121,7 @@ SELECT width_bucket(2.0, 3.0, '-inf', 888);
 SELECT width_bucket(0::float8, '-inf', 4.0::float8, 888);
 ---END---
 ---START---
--- normal operation
-CREATE TABLE width_bucket_test (operand_num numeric, operand_f8 float8);
+CREATE TABLE width_bucket_test (_gemini_pk serial PRIMARY KEY, operand_num numeric, operand_f8 float8);
 ---END---
 ---START---
 COPY width_bucket_test (operand_num) FROM stdin;
@@ -2480,11 +2473,7 @@ SELECT to_number('42nd', '99th');
 RESET lc_numeric;
 ---END---
 ---START---
---
--- Input syntax
---
-
-CREATE TABLE num_input_test (n1 numeric);
+CREATE TABLE num_input_test (_gemini_pk serial PRIMARY KEY, n1 numeric);
 ---END---
 ---START---
 -- good inputs
@@ -2670,17 +2659,7 @@ SELECT * FROM pg_input_error_info('1234.567', 'numeric(7,4)');
 SELECT * FROM pg_input_error_info('0x1234.567', 'numeric');
 ---END---
 ---START---
---
--- Test precision and scale typemods
---
-
-CREATE TABLE num_typemod_test (
-  millions numeric(3, -6),
-  thousands numeric(3, -3),
-  units numeric(3, 0),
-  thousandths numeric(3, 3),
-  millionths numeric(3, 6)
-);
+CREATE TABLE num_typemod_test (_gemini_pk serial PRIMARY KEY, millions numeric(3, -6), thousands numeric(3, -3), units numeric(3, 0), thousandths numeric(3, 3), millionths numeric(3, 6));
 ---END---
 ---START---
 \d num_typemod_test
@@ -3282,10 +3261,7 @@ SELECT SUM(9999::numeric) FROM generate_series(1, 100000);
 SELECT SUM((-9999)::numeric) FROM generate_series(1, 100000);
 ---END---
 ---START---
---
--- Tests for VARIANCE()
---
-CREATE TABLE num_variance (a numeric);
+CREATE TABLE num_variance (_gemini_pk serial PRIMARY KEY, a numeric);
 ---END---
 ---START---
 INSERT INTO num_variance VALUES (0);

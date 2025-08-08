@@ -35,7 +35,7 @@ SELECT generate_series(1, generate_series(1, 3)), generate_series(2, 4);
 SELECT generate_series(1, generate_series(1, 3)), generate_series(2, 4);
 ---END---
 ---START---
-CREATE TABLE few(id int, dataa text, datab text);
+CREATE TABLE few (_gemini_pk serial PRIMARY KEY, id integer, dataa text, datab text);
 ---END---
 ---START---
 INSERT INTO few VALUES(1, 'a', 'foo'),(2, 'a', 'bar'),(3, 'b', 'bar');

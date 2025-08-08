@@ -1,9 +1,5 @@
 ---START---
---
--- VACUUM
---
-
-CREATE TABLE vactst (i INT);
+CREATE TABLE vactst (_gemini_pk serial PRIMARY KEY, i integer);
 ---END---
 ---START---
 INSERT INTO vactst VALUES (1);
@@ -189,8 +185,7 @@ VACUUM FULL vactst;
 VACUUM (DISABLE_PAGE_SKIPPING) vaccluster;
 ---END---
 ---START---
--- PARALLEL option
-CREATE TABLE pvactst (i INT, a INT[], p POINT) with (autovacuum_enabled = off);
+CREATE TABLE pvactst (_gemini_pk serial PRIMARY KEY, i integer, a integer[], p point) WITH (autovacuum_enabled = off);
 ---END---
 ---START---
 INSERT INTO pvactst SELECT i, array[1,2,3], point(i, i+1) FROM generate_series(1,1000) i;
@@ -253,7 +248,9 @@ VACUUM (PARALLEL) pvactst;
 -- error, cannot use PARALLEL option without parallel degree
 
 -- Test different combinations of parallel and full options for temporary tables
-CREATE TEMPORARY TABLE tmp (a int PRIMARY KEY);
+DROP TABLE IF EXISTS tmp;
+
+CREATE TABLE tmp (a int PRIMARY KEY);
 ---END---
 ---START---
 CREATE INDEX tmp_idx1 ON tmp (a);
@@ -355,8 +352,9 @@ VACUUM (INDEX_CLEANUP FALSE, FREEZE TRUE) vaccluster;
 ---END---
 ---START---
 -- TRUNCATE option
-CREATE TEMP TABLE vac_truncate_test(i INT NOT NULL, j text)
-	WITH (vacuum_truncate=true, autovacuum_enabled=false);
+DROP TABLE IF EXISTS vac_truncate_test;
+
+CREATE TABLE vac_truncate_test (_gemini_pk serial PRIMARY KEY, i integer NOT NULL, j text) WITH (vacuum_truncate = 'true', autovacuum_enabled = 'false');
 ---END---
 ---START---
 INSERT INTO vac_truncate_test VALUES (1, NULL), (NULL, NULL);
@@ -380,8 +378,7 @@ VACUUM (TRUNCATE FALSE, FULL TRUE) vac_truncate_test;
 DROP TABLE vac_truncate_test;
 ---END---
 ---START---
--- partitioned table
-CREATE TABLE vacparted (a int, b char) PARTITION BY LIST (a);
+CREATE TABLE vacparted (_gemini_pk serial PRIMARY KEY, a integer, b char) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE vacparted1 PARTITION OF vacparted FOR VALUES IN (1);
@@ -549,8 +546,7 @@ ANALYZE vactst;
 COMMIT;
 ---END---
 ---START---
--- PROCESS_TOAST option
-CREATE TABLE vac_option_tab (a INT, t TEXT);
+CREATE TABLE vac_option_tab (_gemini_pk serial PRIMARY KEY, a integer, t text);
 ---END---
 ---START---
 INSERT INTO vac_option_tab SELECT a, 't' || a FROM generate_series(1, 10) AS a;
@@ -683,11 +679,10 @@ DROP TABLE vacparted;
 DROP TABLE no_index_cleanup;
 ---END---
 ---START---
--- relation ownership, WARNING logs generated as all are skipped.
-CREATE TABLE vacowned (a int);
+CREATE TABLE vacowned (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
-CREATE TABLE vacowned_parted (a int) PARTITION BY LIST (a);
+CREATE TABLE vacowned_parted (_gemini_pk serial PRIMARY KEY, a integer) PARTITION BY list (a);
 ---END---
 ---START---
 CREATE TABLE vacowned_part1 PARTITION OF vacowned_parted FOR VALUES IN (1);

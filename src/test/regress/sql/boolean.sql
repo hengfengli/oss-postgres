@@ -145,9 +145,7 @@ SELECT '  tru e '::text::boolean AS invalid;
 SELECT ''::text::boolean AS invalid;
 ---END---
 ---START---
--- error
-
-CREATE TABLE BOOLTBL1 (f1 bool);
+CREATE TABLE booltbl1 (_gemini_pk serial PRIMARY KEY, f1 bool);
 ---END---
 ---START---
 INSERT INTO BOOLTBL1 (f1) VALUES (bool 't');
@@ -186,7 +184,7 @@ SELECT BOOLTBL1.*
    WHERE f1 = bool 'false';
 ---END---
 ---START---
-CREATE TABLE BOOLTBL2 (f1 bool);
+CREATE TABLE booltbl2 (_gemini_pk serial PRIMARY KEY, f1 bool);
 ---END---
 ---START---
 INSERT INTO BOOLTBL2 (f1) VALUES (bool 'f');
@@ -278,10 +276,7 @@ SELECT f1
    WHERE f1 IS NOT TRUE;
 ---END---
 ---START---
---
--- Tests for BooleanTest
---
-CREATE TABLE BOOLTBL3 (d text, b bool, o int);
+CREATE TABLE booltbl3 (_gemini_pk serial PRIMARY KEY, d text, b bool, o integer);
 ---END---
 ---START---
 INSERT INTO BOOLTBL3 (d, b, o) VALUES ('true', true, 1);
@@ -304,10 +299,7 @@ SELECT
 FROM booltbl3 ORDER BY o;
 ---END---
 ---START---
--- Test to make sure short-circuiting and NULL handling is
--- correct. Use a table as source to prevent constant simplification
--- to interfer.
-CREATE TABLE booltbl4(isfalse bool, istrue bool, isnul bool);
+CREATE TABLE booltbl4 (_gemini_pk serial PRIMARY KEY, isfalse bool, istrue bool, isnul bool);
 ---END---
 ---START---
 INSERT INTO booltbl4 VALUES (false, true, null);

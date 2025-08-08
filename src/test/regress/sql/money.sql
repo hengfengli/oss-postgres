@@ -1,11 +1,5 @@
 ---START---
---
--- MONEY
---
--- Note that we assume lc_monetary has been set to C.
---
-
-CREATE TABLE money_data (m money);
+CREATE TABLE money_data (_gemini_pk serial PRIMARY KEY, m money);
 ---END---
 ---START---
 INSERT INTO money_data VALUES ('123');

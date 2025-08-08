@@ -1,7 +1,9 @@
 ---START---
 -- from http://www.depesz.com/index.php/2010/04/19/getting-unique-elements/
 
-CREATE TEMP TABLE articles (
+DROP TABLE IF EXISTS articles;
+
+CREATE TABLE articles (
     id int CONSTRAINT articles_pkey PRIMARY KEY,
     keywords text,
     title text UNIQUE NOT NULL,
@@ -10,7 +12,9 @@ CREATE TEMP TABLE articles (
 );
 ---END---
 ---START---
-CREATE TEMP TABLE articles_in_category (
+DROP TABLE IF EXISTS articles_in_category;
+
+CREATE TABLE articles_in_category (
     article_id int,
     category_id int,
     changed date,
@@ -94,10 +98,14 @@ GROUP BY aic.article_id;
 ---START---
 -- example from documentation
 
-CREATE TEMP TABLE products (product_id int, name text, price numeric);
+DROP TABLE IF EXISTS products;
+
+CREATE TABLE products (_gemini_pk serial PRIMARY KEY, product_id integer, name text, price numeric);
 ---END---
 ---START---
-CREATE TEMP TABLE sales (product_id int, units int);
+DROP TABLE IF EXISTS sales;
+
+CREATE TABLE sales (_gemini_pk serial PRIMARY KEY, product_id integer, units integer);
 ---END---
 ---START---
 -- OK
@@ -123,7 +131,9 @@ SELECT product_id, p.name, (sum(s.units) * p.price) AS sales
 ---START---
 -- Drupal example, http://drupal.org/node/555530
 
-CREATE TEMP TABLE node (
+DROP TABLE IF EXISTS node;
+
+CREATE TABLE node (
     nid SERIAL,
     vid integer NOT NULL default '0',
     type varchar(32) NOT NULL default '',
@@ -136,7 +146,9 @@ CREATE TEMP TABLE node (
 );
 ---END---
 ---START---
-CREATE TEMP TABLE users (
+DROP TABLE IF EXISTS users;
+
+CREATE TABLE users (
     uid integer NOT NULL default '0',
     name varchar(60) NOT NULL default '',
     pass varchar(32) NOT NULL default '',

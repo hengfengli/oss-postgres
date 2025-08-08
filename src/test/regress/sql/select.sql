@@ -178,7 +178,9 @@ TABLE int8_tbl;
 ---END---
 ---START---
 -- corner case: VALUES with no columns
-CREATE TEMP TABLE nocols();
+DROP TABLE IF EXISTS nocols;
+
+CREATE TABLE nocols (_gemini_pk serial PRIMARY KEY);
 ---END---
 ---START---
 INSERT INTO nocols DEFAULT VALUES;
@@ -191,7 +193,9 @@ SELECT * FROM nocols n, LATERAL (VALUES(n.*)) v;
 -- Test ORDER BY options
 --
 
-CREATE TEMP TABLE foo (f1 int);
+DROP TABLE IF EXISTS foo;
+
+CREATE TABLE foo (_gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
 INSERT INTO foo VALUES (42),(3),(10),(7),(null),(null),(1);
@@ -386,9 +390,7 @@ select * from (values (2),(null),(1)) v(k) where k = k order by k;
 select * from (values (2),(null),(1)) v(k) where k = k;
 ---END---
 ---START---
--- Test partitioned tables with no partitions, which should be handled the
--- same as the non-inheritance case when expanding its RTE.
-create table list_parted_tbl (a int,b int) partition by list (a);
+CREATE TABLE list_parted_tbl (_gemini_pk serial PRIMARY KEY, a integer, b integer) PARTITION BY list (a);
 ---END---
 ---START---
 create table list_parted_tbl1 partition of list_parted_tbl

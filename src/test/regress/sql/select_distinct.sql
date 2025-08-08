@@ -247,7 +247,9 @@ SELECT DISTINCT four,1,2,3 FROM tenk1 WHERE four = 0;
 -- very own regression file.
 --
 
-CREATE TEMP TABLE disttable (f1 integer);
+DROP TABLE IF EXISTS disttable;
+
+CREATE TABLE disttable (_gemini_pk serial PRIMARY KEY, f1 integer);
 ---END---
 ---START---
 INSERT INTO DISTTABLE VALUES(1);

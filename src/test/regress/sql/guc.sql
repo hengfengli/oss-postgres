@@ -448,7 +448,9 @@ SHOW plpgsql.extra_foo_warnings;
 --
 -- Test DISCARD TEMP
 --
-CREATE TEMP TABLE reset_test ( data text ) ON COMMIT DELETE ROWS;
+DROP TABLE IF EXISTS reset_test;
+
+CREATE TABLE reset_test (_gemini_pk serial PRIMARY KEY, data text) ON COMMIT DELETE ROWS;
 ---END---
 ---START---
 SELECT relname FROM pg_class WHERE relname = 'reset_test';
@@ -477,7 +479,9 @@ LISTEN foo_event;
 SET vacuum_cost_delay = 13;
 ---END---
 ---START---
-CREATE TEMP TABLE tmp_foo (data text) ON COMMIT DELETE ROWS;
+DROP TABLE IF EXISTS tmp_foo;
+
+CREATE TABLE tmp_foo (_gemini_pk serial PRIMARY KEY, data text) ON COMMIT DELETE ROWS;
 ---END---
 ---START---
 CREATE ROLE regress_guc_user;

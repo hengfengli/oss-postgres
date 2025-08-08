@@ -11,11 +11,7 @@ SELECT name 'name string' = name 'name string' AS "True";
 SELECT name 'name string' = name 'name string ' AS "False";
 ---END---
 ---START---
---
---
---
-
-CREATE TABLE NAME_TBL(f1 name);
+CREATE TABLE name_tbl (_gemini_pk serial PRIMARY KEY, f1 name);
 ---END---
 ---START---
 INSERT INTO NAME_TBL(f1) VALUES ('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ABCDEFGHIJKLMNOPQR');

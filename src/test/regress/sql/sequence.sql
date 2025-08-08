@@ -34,8 +34,7 @@ CREATE SEQUENCE sequence_testx OWNED BY pg_class_oid_index.oid;
 CREATE SEQUENCE sequence_testx OWNED BY pg_class.relname;
 ---END---
 ---START---
--- not same schema
-CREATE TABLE sequence_test_table (a int);
+CREATE TABLE sequence_test_table (_gemini_pk serial PRIMARY KEY, a integer);
 ---END---
 ---START---
 CREATE SEQUENCE sequence_testx OWNED BY sequence_test_table.b;
@@ -128,13 +127,7 @@ ALTER SEQUENCE sequence_test13 AS int;
 ALTER SEQUENCE sequence_test14 AS int;
 ---END---
 ---START---
--- min and max will be adjusted
-
----
---- test creation of SERIAL column
----
-
-CREATE TABLE serialTest1 (f1 text, f2 serial);
+CREATE TABLE serialtest1 (_gemini_pk serial PRIMARY KEY, f1 text, f2 serial);
 ---END---
 ---START---
 INSERT INTO serialTest1 VALUES ('foo');
@@ -155,9 +148,7 @@ SELECT * FROM serialTest1;
 SELECT pg_get_serial_sequence('serialTest1', 'f2');
 ---END---
 ---START---
--- test smallserial / bigserial
-CREATE TABLE serialTest2 (f1 text, f2 serial, f3 smallserial, f4 serial2,
-  f5 bigserial, f6 serial8);
+CREATE TABLE serialtest2 (_gemini_pk serial PRIMARY KEY, f1 text, f2 serial, f3 smallserial, f4 serial2, f5 bigserial, f6 serial8);
 ---END---
 ---START---
 INSERT INTO serialTest2 (f1)
@@ -317,11 +308,9 @@ CREATE TEMP SEQUENCE myseq2;
 CREATE TEMP SEQUENCE myseq3;
 ---END---
 ---START---
-CREATE TEMP TABLE t1 (
-  f1 serial,
-  f2 int DEFAULT nextval('myseq2'),
-  f3 int DEFAULT nextval('myseq3'::text)
-);
+DROP TABLE IF EXISTS t1;
+
+CREATE TABLE t1 (_gemini_pk serial PRIMARY KEY, f1 serial, f2 integer DEFAULT nextval('myseq2'), f3 integer DEFAULT nextval(CAST('myseq3' AS text)));
 ---END---
 ---START---
 -- Both drops should fail, but with different error messages:
