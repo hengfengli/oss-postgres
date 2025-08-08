@@ -21,165 +21,360 @@ CREATE TABLE aggtest (
 ---END---
 ---START---
 COPY aggtest FROM :'filename';
-
+---END---
+---START---
 ANALYZE aggtest;
-
-
+---END---
+---START---
 SELECT avg(four) AS avg_1 FROM onek;
-
+---END---
+---START---
 SELECT avg(a) AS avg_32 FROM aggtest WHERE a < 100;
-
+---END---
+---START---
 SELECT any_value(v) FROM (VALUES (1), (2), (3)) AS v (v);
+---END---
+---START---
 SELECT any_value(v) FROM (VALUES (NULL)) AS v (v);
+---END---
+---START---
 SELECT any_value(v) FROM (VALUES (NULL), (1), (2)) AS v (v);
+---END---
+---START---
 SELECT any_value(v) FROM (VALUES (array['hello', 'world'])) AS v (v);
+---END---
+---START---
 
 -- In 7.1, avg(float4) is computed using float8 arithmetic.
 -- Round the result to 3 digits to avoid platform-specific results.
 
 SELECT avg(b)::numeric(10,3) AS avg_107_943 FROM aggtest;
-
+---END---
+---START---
 SELECT avg(gpa) AS avg_3_4 FROM ONLY student;
-
+---END---
+---START---
 
 SELECT sum(four) AS sum_1500 FROM onek;
+---END---
+---START---
 SELECT sum(a) AS sum_198 FROM aggtest;
+---END---
+---START---
 SELECT sum(b) AS avg_431_773 FROM aggtest;
+---END---
+---START---
 SELECT sum(gpa) AS avg_6_8 FROM ONLY student;
-
+---END---
+---START---
 SELECT max(four) AS max_3 FROM onek;
+---END---
+---START---
 SELECT max(a) AS max_100 FROM aggtest;
+---END---
+---START---
 SELECT max(aggtest.b) AS max_324_78 FROM aggtest;
+---END---
+---START---
 SELECT max(student.gpa) AS max_3_7 FROM student;
-
+---END---
+---START---
 SELECT stddev_pop(b) FROM aggtest;
+---END---
+---START---
 SELECT stddev_samp(b) FROM aggtest;
+---END---
+---START---
 SELECT var_pop(b) FROM aggtest;
+---END---
+---START---
 SELECT var_samp(b) FROM aggtest;
-
+---END---
+---START---
 SELECT stddev_pop(b::numeric) FROM aggtest;
+---END---
+---START---
 SELECT stddev_samp(b::numeric) FROM aggtest;
+---END---
+---START---
 SELECT var_pop(b::numeric) FROM aggtest;
+---END---
+---START---
 SELECT var_samp(b::numeric) FROM aggtest;
+---END---
+---START---
 
 -- population variance is defined for a single tuple, sample variance
 -- is not
 SELECT var_pop(1.0::float8), var_samp(2.0::float8);
+---END---
+---START---
 SELECT stddev_pop(3.0::float8), stddev_samp(4.0::float8);
+---END---
+---START---
 SELECT var_pop('inf'::float8), var_samp('inf'::float8);
+---END---
+---START---
 SELECT stddev_pop('inf'::float8), stddev_samp('inf'::float8);
+---END---
+---START---
 SELECT var_pop('nan'::float8), var_samp('nan'::float8);
+---END---
+---START---
 SELECT stddev_pop('nan'::float8), stddev_samp('nan'::float8);
+---END---
+---START---
 SELECT var_pop(1.0::float4), var_samp(2.0::float4);
+---END---
+---START---
 SELECT stddev_pop(3.0::float4), stddev_samp(4.0::float4);
+---END---
+---START---
 SELECT var_pop('inf'::float4), var_samp('inf'::float4);
+---END---
+---START---
 SELECT stddev_pop('inf'::float4), stddev_samp('inf'::float4);
+---END---
+---START---
 SELECT var_pop('nan'::float4), var_samp('nan'::float4);
+---END---
+---START---
 SELECT stddev_pop('nan'::float4), stddev_samp('nan'::float4);
+---END---
+---START---
 SELECT var_pop(1.0::numeric), var_samp(2.0::numeric);
+---END---
+---START---
 SELECT stddev_pop(3.0::numeric), stddev_samp(4.0::numeric);
+---END---
+---START---
 SELECT var_pop('inf'::numeric), var_samp('inf'::numeric);
+---END---
+---START---
 SELECT stddev_pop('inf'::numeric), stddev_samp('inf'::numeric);
+---END---
+---START---
 SELECT var_pop('nan'::numeric), var_samp('nan'::numeric);
+---END---
+---START---
 SELECT stddev_pop('nan'::numeric), stddev_samp('nan'::numeric);
-
+---END---
+---START---
 -- verify correct results for null and NaN inputs
 select sum(null::int4) from generate_series(1,3);
+---END---
+---START---
 select sum(null::int8) from generate_series(1,3);
+---END---
+---START---
 select sum(null::numeric) from generate_series(1,3);
+---END---
+---START---
 select sum(null::float8) from generate_series(1,3);
+---END---
+---START---
 select avg(null::int4) from generate_series(1,3);
+---END---
+---START---
 select avg(null::int8) from generate_series(1,3);
+---END---
+---START---
 select avg(null::numeric) from generate_series(1,3);
+---END---
+---START---
 select avg(null::float8) from generate_series(1,3);
+---END---
+---START---
 select sum('NaN'::numeric) from generate_series(1,3);
+---END---
+---START---
 select avg('NaN'::numeric) from generate_series(1,3);
+---END---
+---START---
 
 -- verify correct results for infinite inputs
 SELECT sum(x::float8), avg(x::float8), var_pop(x::float8)
 FROM (VALUES ('1'), ('infinity')) v(x);
+---END---
+---START---
 SELECT sum(x::float8), avg(x::float8), var_pop(x::float8)
 FROM (VALUES ('infinity'), ('1')) v(x);
+---END---
+---START---
 SELECT sum(x::float8), avg(x::float8), var_pop(x::float8)
 FROM (VALUES ('infinity'), ('infinity')) v(x);
+---END---
+---START---
 SELECT sum(x::float8), avg(x::float8), var_pop(x::float8)
 FROM (VALUES ('-infinity'), ('infinity')) v(x);
+---END---
+---START---
 SELECT sum(x::float8), avg(x::float8), var_pop(x::float8)
 FROM (VALUES ('-infinity'), ('-infinity')) v(x);
+---END---
+---START---
 SELECT sum(x::numeric), avg(x::numeric), var_pop(x::numeric)
 FROM (VALUES ('1'), ('infinity')) v(x);
+---END---
+---START---
 SELECT sum(x::numeric), avg(x::numeric), var_pop(x::numeric)
 FROM (VALUES ('infinity'), ('1')) v(x);
+---END---
+---START---
 SELECT sum(x::numeric), avg(x::numeric), var_pop(x::numeric)
 FROM (VALUES ('infinity'), ('infinity')) v(x);
+---END---
+---START---
 SELECT sum(x::numeric), avg(x::numeric), var_pop(x::numeric)
 FROM (VALUES ('-infinity'), ('infinity')) v(x);
+---END---
+---START---
 SELECT sum(x::numeric), avg(x::numeric), var_pop(x::numeric)
 FROM (VALUES ('-infinity'), ('-infinity')) v(x);
+---END---
+---START---
 
 -- test accuracy with a large input offset
 SELECT avg(x::float8), var_pop(x::float8)
 FROM (VALUES (100000003), (100000004), (100000006), (100000007)) v(x);
+---END---
+---START---
 SELECT avg(x::float8), var_pop(x::float8)
 FROM (VALUES (7000000000005), (7000000000007)) v(x);
+---END---
+---START---
 
 -- SQL2003 binary aggregates
 SELECT regr_count(b, a) FROM aggtest;
+---END---
+---START---
 SELECT regr_sxx(b, a) FROM aggtest;
+---END---
+---START---
 SELECT regr_syy(b, a) FROM aggtest;
+---END---
+---START---
 SELECT regr_sxy(b, a) FROM aggtest;
+---END---
+---START---
 SELECT regr_avgx(b, a), regr_avgy(b, a) FROM aggtest;
+---END---
+---START---
 SELECT regr_r2(b, a) FROM aggtest;
+---END---
+---START---
 SELECT regr_slope(b, a), regr_intercept(b, a) FROM aggtest;
+---END---
+---START---
 SELECT covar_pop(b, a), covar_samp(b, a) FROM aggtest;
+---END---
+---START---
 SELECT corr(b, a) FROM aggtest;
+---END---
+---START---
 
 -- check single-tuple behavior
 SELECT covar_pop(1::float8,2::float8), covar_samp(3::float8,4::float8);
+---END---
+---START---
 SELECT covar_pop(1::float8,'inf'::float8), covar_samp(3::float8,'inf'::float8);
+---END---
+---START---
 SELECT covar_pop(1::float8,'nan'::float8), covar_samp(3::float8,'nan'::float8);
+---END---
+---START---
 
 -- test accum and combine functions directly
 CREATE TABLE regr_test (x float8, y float8);
+---END---
+---START---
 INSERT INTO regr_test VALUES (10,150),(20,250),(30,350),(80,540),(100,200);
+---END---
+---START---
 SELECT count(*), sum(x), regr_sxx(y,x), sum(y),regr_syy(y,x), regr_sxy(y,x)
 FROM regr_test WHERE x IN (10,20,30,80);
+---END---
+---START---
 SELECT count(*), sum(x), regr_sxx(y,x), sum(y),regr_syy(y,x), regr_sxy(y,x)
 FROM regr_test;
+---END---
+---START---
 SELECT float8_accum('{4,140,2900}'::float8[], 100);
+---END---
+---START---
 SELECT float8_regr_accum('{4,140,2900,1290,83075,15050}'::float8[], 200, 100);
+---END---
+---START---
 SELECT count(*), sum(x), regr_sxx(y,x), sum(y),regr_syy(y,x), regr_sxy(y,x)
 FROM regr_test WHERE x IN (10,20,30);
+---END---
+---START---
 SELECT count(*), sum(x), regr_sxx(y,x), sum(y),regr_syy(y,x), regr_sxy(y,x)
 FROM regr_test WHERE x IN (80,100);
+---END---
+---START---
 SELECT float8_combine('{3,60,200}'::float8[], '{0,0,0}'::float8[]);
+---END---
+---START---
 SELECT float8_combine('{0,0,0}'::float8[], '{2,180,200}'::float8[]);
+---END---
+---START---
 SELECT float8_combine('{3,60,200}'::float8[], '{2,180,200}'::float8[]);
+---END---
+---START---
 SELECT float8_regr_combine('{3,60,200,750,20000,2000}'::float8[],
                            '{0,0,0,0,0,0}'::float8[]);
+---END---
+---START---
 SELECT float8_regr_combine('{0,0,0,0,0,0}'::float8[],
                            '{2,180,200,740,57800,-3400}'::float8[]);
+---END---
+---START---
 SELECT float8_regr_combine('{3,60,200,750,20000,2000}'::float8[],
                            '{2,180,200,740,57800,-3400}'::float8[]);
+---END---
+---START---
 DROP TABLE regr_test;
+---END---
+---START---
 
 -- test count, distinct
 SELECT count(four) AS cnt_1000 FROM onek;
+---END---
+---START---
 SELECT count(DISTINCT four) AS cnt_4 FROM onek;
+---END---
+---START---
 
 select ten, count(*), sum(four) from onek
 group by ten order by ten;
+---END---
+---START---
 
 select ten, count(four), sum(DISTINCT four) from onek
 group by ten order by ten;
+---END---
+---START---
 
 -- user-defined aggregates
 SELECT newavg(four) AS avg_1 FROM onek;
+---END---
+---START---
 SELECT newsum(four) AS sum_1500 FROM onek;
+---END---
+---START---
 SELECT newcnt(four) AS cnt_1000 FROM onek;
+---END---
+---START---
 SELECT newcnt(*) AS cnt_1000 FROM onek;
+---END---
+---START---
 SELECT oldcnt(*) AS cnt_1000 FROM onek;
+---END---
+---START---
 SELECT sum2(q1,q2) FROM int8_tbl;
+---END---
+---START---
 
 -- test for outer-level aggregates
 
@@ -187,18 +382,24 @@ SELECT sum2(q1,q2) FROM int8_tbl;
 select ten, sum(distinct four) from onek a
 group by ten
 having exists (select 1 from onek b where sum(distinct a.four) = b.four);
+---END---
+---START---
 
 -- this should fail because subquery has an agg of its own in WHERE
 select ten, sum(distinct four) from onek a
 group by ten
 having exists (select 1 from onek b
                where sum(distinct a.four + b.four) = b.four);
+---END---
+---START---
 
 -- Test handling of sublinks within outer-level aggregates.
 -- Per bug report from Daniel Grace.
 select
   (select max((select i.unique2 from tenk1 i where i.unique1 = o.unique1)))
 from tenk1 o;
+---END---
+---START---
 
 -- Test handling of Params within aggregate arguments in hashed aggregation.
 -- Per bug report from Jeevan Chalke.
@@ -208,19 +409,27 @@ from generate_series(1, 3) s1,
      lateral (select s2, sum(s1 + s2) sm
               from generate_series(1, 3) s2 group by s2) ss
 order by 1, 2;
+---END---
+---START---
 select s1, s2, sm
 from generate_series(1, 3) s1,
      lateral (select s2, sum(s1 + s2) sm
               from generate_series(1, 3) s2 group by s2) ss
 order by 1, 2;
+---END---
+---START---
 
 explain (verbose, costs off)
 select array(select sum(x+y) s
             from generate_series(1,3) y group by y order by s)
   from generate_series(1,3) x;
+---END---
+---START---
 select array(select sum(x+y) s
             from generate_series(1,3) y group by y order by s)
   from generate_series(1,3) x;
+---END---
+---START---
 
 --
 -- test for bitwise integer aggregates
@@ -233,6 +442,8 @@ CREATE TEMPORARY TABLE bitwise_test(
   x INT2,
   y BIT(4)
 );
+---END---
+---START---
 
 -- empty case
 SELECT
@@ -240,6 +451,8 @@ SELECT
   BIT_OR(i4)  AS "?",
   BIT_XOR(i8) AS "?"
 FROM bitwise_test;
+---END---
+---START---
 
 COPY bitwise_test FROM STDIN NULL 'null';
 1	1	1	1	1	B0101
