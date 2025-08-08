@@ -33,7 +33,7 @@ SET allow_in_place_tablespaces = true;
 CREATE TABLESPACE regress_tblspace LOCATION '';
 ---END---
 ---START---
-CREATE TABLE char_tbl (gemini_pk serial PRIMARY KEY, f1 char(4));
+CREATE TABLE char_tbl (gemini_pk serial PRIMARY KEY, f1 varchar);
 ---END---
 ---START---
 INSERT INTO CHAR_TBL (f1) VALUES
@@ -60,7 +60,7 @@ INSERT INTO FLOAT8_TBL(f1) VALUES
 VACUUM FLOAT8_TBL;
 ---END---
 ---START---
-CREATE TABLE int2_tbl (gemini_pk serial PRIMARY KEY, f1 int2);
+CREATE TABLE int2_tbl (gemini_pk serial PRIMARY KEY, f1 int8);
 ---END---
 ---START---
 INSERT INTO INT2_TBL(f1) VALUES
@@ -74,7 +74,7 @@ INSERT INTO INT2_TBL(f1) VALUES
 VACUUM INT2_TBL;
 ---END---
 ---START---
-CREATE TABLE int4_tbl (gemini_pk serial PRIMARY KEY, f1 int4);
+CREATE TABLE int4_tbl (gemini_pk serial PRIMARY KEY, f1 int8);
 ---END---
 ---START---
 INSERT INTO INT4_TBL(f1) VALUES
@@ -142,7 +142,7 @@ INSERT INTO VARCHAR_TBL (f1) VALUES
 VACUUM VARCHAR_TBL;
 ---END---
 ---START---
-CREATE TABLE onek (gemini_pk serial PRIMARY KEY, unique1 int4, unique2 int4, two int4, four int4, ten int4, twenty int4, hundred int4, thousand int4, twothousand int4, fivethous int4, tenthous int4, odd int4, even int4, stringu1 name, stringu2 name, string4 name);
+CREATE TABLE onek (gemini_pk serial PRIMARY KEY, unique1 int8, unique2 int8, two int8, four int8, ten int8, twenty int8, hundred int8, thousand int8, twothousand int8, fivethous int8, tenthous int8, odd int8, even int8, stringu1 varchar, stringu2 varchar, string4 varchar);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/onek.data'
@@ -158,7 +158,7 @@ CREATE TABLE onek2 AS SELECT * FROM onek;
 VACUUM ANALYZE onek2;
 ---END---
 ---START---
-CREATE TABLE tenk1 (gemini_pk serial PRIMARY KEY, unique1 int4, unique2 int4, two int4, four int4, ten int4, twenty int4, hundred int4, thousand int4, twothousand int4, fivethous int4, tenthous int4, odd int4, even int4, stringu1 name, stringu2 name, string4 name);
+CREATE TABLE tenk1 (gemini_pk serial PRIMARY KEY, unique1 int8, unique2 int8, two int8, four int8, ten int8, twenty int8, hundred int8, thousand int8, twothousand int8, fivethous int8, tenthous int8, odd int8, even int8, stringu1 varchar, stringu2 varchar, string4 varchar);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/tenk.data'
@@ -174,7 +174,7 @@ CREATE TABLE tenk2 AS SELECT * FROM tenk1;
 VACUUM ANALYZE tenk2;
 ---END---
 ---START---
-CREATE TABLE person (gemini_pk serial PRIMARY KEY, name text, age int4, location point);
+CREATE TABLE person (gemini_pk serial PRIMARY KEY, name text, age int8, location point);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/person.data'
@@ -184,7 +184,7 @@ COPY person FROM :'filename';
 VACUUM ANALYZE person;
 ---END---
 ---START---
-CREATE TABLE emp (gemini_pk serial PRIMARY KEY, salary int4, manager name) INHERITS (person);
+CREATE TABLE emp (gemini_pk serial PRIMARY KEY, salary int8, manager varchar) INHERITS (person);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/emp.data'
@@ -204,7 +204,7 @@ COPY student FROM :'filename';
 VACUUM ANALYZE student;
 ---END---
 ---START---
-CREATE TABLE stud_emp (gemini_pk serial PRIMARY KEY, percent int4) INHERITS (emp, student);
+CREATE TABLE stud_emp (gemini_pk serial PRIMARY KEY, percent int8) INHERITS (emp, student);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/stud_emp.data'
@@ -292,15 +292,15 @@ CREATE FUNCTION get_columns_length(oid[])
 -- the sum of the values passed to it and the one for text returns the length
 -- of the non-empty string value passed to it or 0.
 
-create function part_hashint4_noop(value int4, seed int8)
+create function part_hashint4_noop(value int8, seed int8)
     returns int8 as $$
     select value + seed;
     $$ language sql strict immutable parallel safe;
 ---END---
 ---START---
-create operator class part_test_int4_ops for type int4 using hash as
+create operator class part_test_int4_ops for type int8 using hash as
     operator 1 =,
-    function 2 part_hashint4_noop(int4, int8);
+    function 2 part_hashint4_noop(int8, int8);
 ---END---
 ---START---
 create function part_hashtext_length(value text, seed int8)
