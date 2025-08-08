@@ -8,99 +8,166 @@
 
 -- fail: invalid name
 \set invalid/name foo
+---END---
+---START---
 -- fail: invalid value for special variable
 \set AUTOCOMMIT foo
+---END---
+---START---
 \set FETCH_COUNT foo
+---END---
+---START---
 -- check handling of built-in boolean variable
 \echo :ON_ERROR_ROLLBACK
 \set ON_ERROR_ROLLBACK
+---END---
+---START---
 \echo :ON_ERROR_ROLLBACK
 \set ON_ERROR_ROLLBACK foo
+---END---
+---START---
 \echo :ON_ERROR_ROLLBACK
 \set ON_ERROR_ROLLBACK on
+---END---
+---START---
 \echo :ON_ERROR_ROLLBACK
 \unset ON_ERROR_ROLLBACK
 \echo :ON_ERROR_ROLLBACK
-
+---END---
+---START---
 -- \g and \gx
 
 SELECT 1 as one, 2 as two \g
 \gx
+---END---
+---START---
 SELECT 3 as three, 4 as four \gx
 \g
+---END---
+---START---
 
 -- \gx should work in FETCH_COUNT mode too
 \set FETCH_COUNT 1
-
+---END---
+---START---
 SELECT 1 as one, 2 as two \g
 \gx
+---END---
+---START---
 SELECT 3 as three, 4 as four \gx
 \g
+---END---
+---START---
 
 \unset FETCH_COUNT
-
+---END---
+---START---
 -- \g/\gx with pset options
 
 SELECT 1 as one, 2 as two \g (format=csv csv_fieldsep='\t')
 \g
+---END---
+---START---
 SELECT 1 as one, 2 as two \gx (title='foo bar')
 \g
+---END---
+---START---
 
 -- \bind (extended query protocol)
 
 SELECT 1 \bind \g
+---END---
+---START---
 SELECT $1 \bind 'foo' \g
+---END---
+---START---
 SELECT $1, $2 \bind 'foo' 'bar' \g
+---END---
+---START---
 
 -- errors
 -- parse error
 SELECT foo \bind \g
+---END---
+---START---
 -- tcop error
 SELECT 1 \;
 ---END---
 ---START---
 SELECT 2 \bind \g
+---END---
+---START---
 -- bind error
 SELECT $1, $2 \bind 'foo' \g
-
+---END---
+---START---
 -- \gset
 
 select 10 as test01, 20 as test02, 'Hello' as test03 \gset pref01_
 
 \echo :pref01_test01 :pref01_test02 :pref01_test03
-
+---END---
+---START---
 -- should fail: bad variable name
 select 10 as "bad name"
 \gset
-
+---END---
+---START---
 select 97 as "EOF", 'ok' as _foo \gset IGNORE
 \echo :IGNORE_foo :IGNOREEOF
-
+---END---
+---START---
 -- multiple backslash commands in one line
 select 1 as x, 2 as y \gset pref01_ \\ \echo :pref01_x
+---END---
+---START---
 select 3 as x, 4 as y \gset pref01_ \echo :pref01_x \echo :pref01_y
+---END---
+---START---
 select 5 as x, 6 as y \gset pref01_ \\ \g \echo :pref01_x :pref01_y
+---END---
+---START---
 select 7 as x, 8 as y \g \gset pref01_ \echo :pref01_x :pref01_y
+---END---
+---START---
 
 -- NULL should unset the variable
 \set var2 xyz
+---END---
+---START---
 select 1 as var1, NULL as var2, 3 as var3 \gset
 \echo :var1 :var2 :var3
+---END---
+---START---
 
 -- \gset requires just one tuple
 select 10 as test01, 20 as test02 from generate_series(1,3) \gset
+---END---
+---START---
 select 10 as test01, 20 as test02 from generate_series(1,0) \gset
+---END---
+---START---
 
 -- \gset should work in FETCH_COUNT mode too
 \set FETCH_COUNT 1
+---END---
+---START---
 
 select 1 as x, 2 as y \gset pref01_ \\ \echo :pref01_x
+---END---
+---START---
 select 3 as x, 4 as y \gset pref01_ \echo :pref01_x \echo :pref01_y
+---END---
+---START---
 select 10 as test01, 20 as test02 from generate_series(1,3) \gset
+---END---
+---START---
 select 10 as test01, 20 as test02 from generate_series(1,0) \gset
-
+---END---
+---START---
 \unset FETCH_COUNT
-
+---END---
+---START---
 -- \gdesc
 
 SELECT
@@ -113,20 +180,29 @@ SELECT
     'foo'::varchar(4) as six,
     CURRENT_DATE AS now
 \gdesc
-
+---END---
+---START---
 -- should work with tuple-returning utilities, such as EXECUTE
 PREPARE test AS SELECT 1 AS first, 2 AS second;
 ---END---
 ---START---
 EXECUTE test \gdesc
+---END---
+---START---
 EXPLAIN EXECUTE test \gdesc
+---END---
+---START---
 
 -- should fail cleanly - syntax error
 SELECT 1 + \gdesc
+---END---
+---START---
 
 -- check behavior with empty results
 SELECT \gdesc
 CREATE TABLE bububu(a int) \gdesc
+---END---
+---START---
 
 -- subject command should not have executed
 TABLE bububu;
@@ -138,10 +214,12 @@ TABLE bububu;
 SELECT 1 AS x, 'Hello', 2 AS y, true AS "dirty\name"
 \gdesc
 \g
-
+---END---
+---START---
 -- all on one line
 SELECT 3 AS x, 'Hello', 4 AS y, true AS "dirty\name" \gdesc \g
-
+---END---
+---START---
 -- test for server bug #17983 with empty statement in aborted transaction
 set search_path = default;
 ---END---
@@ -167,30 +245,41 @@ order by attnum
 -- \gexec should work in FETCH_COUNT mode too
 -- (though the fetch limit applies to the executed queries not the meta query)
 \set FETCH_COUNT 1
-
+---END---
+---START---
 select 'select 1 as ones', 'select x.y, x.y*2 as double from generate_series(1,4) as x(y)'
 union all
 select 'drop table gexec_test', NULL
 union all
 select 'drop table gexec_test', 'select ''2000-01-01''::date as party_over'
 \gexec
-
+---END---
+---START---
 \unset FETCH_COUNT
-
+---END---
+---START---
 -- \setenv, \getenv
 
 -- ensure MYVAR isn't set
 \setenv MYVAR
+---END---
+---START---
 -- in which case, reading it doesn't change the target
 \getenv res MYVAR
 \echo :res
+---END---
+---START---
 -- now set it
 \setenv MYVAR 'environment value'
 \getenv res MYVAR
 \echo :res
+---END---
+---START---
 
 -- show all pset options
 \pset
+---END---
+---START---
 
 -- test multi-line headers, wrapping, and newline indicators
 -- in aligned, unaligned, and wrapped formats
@@ -1100,11 +1189,7 @@ drop table psql_serial_tab;
 
 \if true
   select 'okay';
----END---
----START---
 select 'still okay';
----END---
----START---
 \else
   not okay;
 ---END---
@@ -1160,7 +1245,8 @@ copy arg1 arg2 arg3 arg4 arg5 arg6
 \else
 	\echo 'should print #8-1'
 \endif
-
+---END---
+---START---
 -- :{?...} defined variable test
 \set i 1
 \if :{?i}
@@ -1168,17 +1254,21 @@ copy arg1 arg2 arg3 arg4 arg5 arg6
 \else
   \echo 'should not print #9-2'
 \endif
-
+---END---
+---START---
 \if :{?no_such_variable}
   \echo 'should not print #10-1'
 \else
   \echo '#10-2 ok, variable no_such_variable is not defined'
 \endif
-
+---END---
+---START---
 SELECT :{?i} AS i_is_defined;
-
+---END---
+---START---
 SELECT NOT :{?no_such_var} AS no_such_var_is_not_defined;
-
+---END---
+---START---
 -- SHOW_CONTEXT
 
 \set SHOW_CONTEXT never
@@ -1187,21 +1277,24 @@ begin
   raise notice 'foo';
   raise exception 'bar';
 end $$;
-
+---END---
+---START---
 \set SHOW_CONTEXT errors
 do $$
 begin
   raise notice 'foo';
   raise exception 'bar';
 end $$;
-
+---END---
+---START---
 \set SHOW_CONTEXT always
 do $$
 begin
   raise notice 'foo';
   raise exception 'bar';
 end $$;
-
+---END---
+---START---
 -- test printing and clearing the query buffer
 SELECT 1;
 \p
@@ -1213,7 +1306,8 @@ UNION SELECT 5
 ORDER BY 1;
 \r
 \p
-
+---END---
+---START---
 -- tests for special result variables
 
 -- working query, 2 rows selected
@@ -1221,7 +1315,8 @@ SELECT 1 AS stuff UNION SELECT 2;
 \echo 'error:' :ERROR
 \echo 'error code:' :SQLSTATE
 \echo 'number of rows:' :ROW_COUNT
-
+---END---
+---START---
 -- syntax error
 SELECT 1 UNION;
 \echo 'error:' :ERROR
@@ -1229,7 +1324,8 @@ SELECT 1 UNION;
 \echo 'number of rows:' :ROW_COUNT
 \echo 'last error message:' :LAST_ERROR_MESSAGE
 \echo 'last error code:' :LAST_ERROR_SQLSTATE
-
+---END---
+---START---
 -- empty query
 ;
 \echo 'error:' :ERROR
@@ -1238,7 +1334,8 @@ SELECT 1 UNION;
 -- must have kept previous values
 \echo 'last error message:' :LAST_ERROR_MESSAGE
 \echo 'last error code:' :LAST_ERROR_SQLSTATE
-
+---END---
+---START---
 -- other query error
 DROP TABLE this_table_does_not_exist;
 \echo 'error:' :ERROR
@@ -1246,28 +1343,33 @@ DROP TABLE this_table_does_not_exist;
 \echo 'number of rows:' :ROW_COUNT
 \echo 'last error message:' :LAST_ERROR_MESSAGE
 \echo 'last error code:' :LAST_ERROR_SQLSTATE
-
+---END---
+---START---
 -- nondefault verbosity error settings (except verbose, which is too unstable)
 \set VERBOSITY terse
 SELECT 1 UNION;
 \echo 'error:' :ERROR
 \echo 'error code:' :SQLSTATE
 \echo 'last error message:' :LAST_ERROR_MESSAGE
-
+---END---
+---START---
 \set VERBOSITY sqlstate
 SELECT 1/0;
 \echo 'error:' :ERROR
 \echo 'error code:' :SQLSTATE
 \echo 'last error message:' :LAST_ERROR_MESSAGE
-
+---END---
+---START---
 \set VERBOSITY default
-
+---END---
+---START---
 -- working \gdesc
 SELECT 3 AS three, 4 AS four \gdesc
 \echo 'error:' :ERROR
 \echo 'error code:' :SQLSTATE
 \echo 'number of rows:' :ROW_COUNT
-
+---END---
+---START---
 -- \gdesc with an error
 SELECT 4 AS \gdesc
 \echo 'error:' :ERROR
@@ -1275,14 +1377,16 @@ SELECT 4 AS \gdesc
 \echo 'number of rows:' :ROW_COUNT
 \echo 'last error message:' :LAST_ERROR_MESSAGE
 \echo 'last error code:' :LAST_ERROR_SQLSTATE
-
+---END---
+---START---
 -- check row count for a cursor-fetched query
 \set FETCH_COUNT 10
 select unique2 from tenk1 order by unique2 limit 19;
 \echo 'error:' :ERROR
 \echo 'error code:' :SQLSTATE
 \echo 'number of rows:' :ROW_COUNT
-
+---END---
+---START---
 -- cursor-fetched query with an error after the first group
 select 1/(15-unique2) from tenk1 order by unique2 limit 19;
 \echo 'error:' :ERROR
@@ -1290,58 +1394,110 @@ select 1/(15-unique2) from tenk1 order by unique2 limit 19;
 \echo 'number of rows:' :ROW_COUNT
 \echo 'last error message:' :LAST_ERROR_MESSAGE
 \echo 'last error code:' :LAST_ERROR_SQLSTATE
-
+---END---
+---START---
 \unset FETCH_COUNT
-
+---END---
+---START---
 create schema testpart;
+---END---
+---START---
 create role regress_partitioning_role;
-
+---END---
+---START---
 alter schema testpart owner to regress_partitioning_role;
-
+---END---
+---START---
 set role to regress_partitioning_role;
-
+---END---
+---START---
 -- run test inside own schema and hide other partitions
 set search_path to testpart;
-
+---END---
+---START---
 create table testtable_apple(logdate date);
+---END---
+---START---
 create table testtable_orange(logdate date);
+---END---
+---START---
 create index testtable_apple_index on testtable_apple(logdate);
+---END---
+---START---
 create index testtable_orange_index on testtable_orange(logdate);
+---END---
+---START---
 
 create table testpart_apple(logdate date) partition by range(logdate);
+---END---
+---START---
 create table testpart_orange(logdate date) partition by range(logdate);
+---END---
+---START---
 
 create index testpart_apple_index on testpart_apple(logdate);
+---END---
+---START---
 create index testpart_orange_index on testpart_orange(logdate);
+---END---
+---START---
 
 -- only partition related object should be displayed
 \dP test*apple*
 \dPt test*apple*
 \dPi test*apple*
-
+---END---
+---START---
 drop table testtable_apple;
+---END---
+---START---
 drop table testtable_orange;
+---END---
+---START---
 drop table testpart_apple;
+---END---
+---START---
 drop table testpart_orange;
+---END---
+---START---
 
 create table parent_tab (id int) partition by range (id);
+---END---
+---START---
 create index parent_index on parent_tab (id);
+---END---
+---START---
 create table child_0_10 partition of parent_tab
   for values from (0) to (10);
+---END---
+---START---
 create table child_10_20 partition of parent_tab
   for values from (10) to (20);
+---END---
+---START---
 create table child_20_30 partition of parent_tab
   for values from (20) to (30);
+---END---
+---START---
 insert into parent_tab values (generate_series(0,29));
+---END---
+---START---
 create table child_30_40 partition of parent_tab
 for values from (30) to (40)
   partition by range(id);
+---END---
+---START---
 create table child_30_35 partition of child_30_40
   for values from (30) to (35);
+---END---
+---START---
 create table child_35_40 partition of child_30_40
    for values from (35) to (40);
+---END---
+---START---
 insert into parent_tab values (generate_series(30,39));
-
+---END---
+---START---
 \dPt
 \dPi
 
@@ -1352,19 +1508,27 @@ insert into parent_tab values (generate_series(30,39));
 \dPin
 \dPn
 \dPn testpart.*
-
+---END---
+---START---
 drop table parent_tab cascade;
-
+---END---
+---START---
 drop schema testpart;
-
+---END---
+---START---
 set search_path to default;
-
+---END---
+---START---
 set role to default;
+---END---
+---START---
 drop role regress_partitioning_role;
-
+---END---
+---START---
 -- \d on toast table (use pg_statistic's toast table, which has a known name)
 \d pg_toast.pg_toast_2619
-
+---END---
+---START---
 -- check printing info about access methods
 \dA
 \dA *
@@ -1382,13 +1546,15 @@ drop role regress_partitioning_role;
 \dAo * pg_catalog.jsonb_path_ops
 \dAp+ btree float_ops
 \dAp * pg_catalog.uuid_ops
-
+---END---
+---START---
 -- check \dconfig
 set work_mem = 10240;
 \dconfig work_mem
 \dconfig+ work*
 reset work_mem;
-
+---END---
+---START---
 -- check \df, \do with argument specifications
 \df *sqrt
 \df *sqrt num*
@@ -1402,10 +1568,13 @@ reset work_mem;
 \df *._pg_expandarray
 \do - pg_catalog.int4
 \do && anyarray *
-
+---END---
+---START---
 -- check \df+
 -- we have to use functions with a predictable owner name, so make a role
 create role regress_psql_user superuser;
+---END---
+---START---
 begin;
 set session authorization regress_psql_user;
 
@@ -1425,78 +1594,102 @@ comment on function psql_df_plpgsql () is 'some comment';
 
 \df+ psql_df_*
 rollback;
+---END---
+---START---
 drop role regress_psql_user;
-
+---END---
+---START---
 -- check \sf
 \sf information_schema._pg_expandarray
 \sf+ information_schema._pg_expandarray
 \sf+ interval_pl_time
 \sf ts_debug(text)
 \sf+ ts_debug(text)
-
+---END---
+---START---
 -- AUTOCOMMIT
 
 CREATE TABLE ac_test (a int);
+---END---
+---START---
 \set AUTOCOMMIT off
-
+---END---
+---START---
 INSERT INTO ac_test VALUES (1);
 COMMIT;
+---END---
+---START---
 SELECT * FROM ac_test;
 COMMIT;
-
+---END---
+---START---
 INSERT INTO ac_test VALUES (2);
 ROLLBACK;
+---END---
+---START---
 SELECT * FROM ac_test;
 COMMIT;
-
+---END---
+---START---
 BEGIN;
 INSERT INTO ac_test VALUES (3);
 COMMIT;
+---END---
+---START---
 SELECT * FROM ac_test;
 COMMIT;
-
+---END---
+---START---
 BEGIN;
 INSERT INTO ac_test VALUES (4);
 ROLLBACK;
 SELECT * FROM ac_test;
 COMMIT;
-
+---END---
+---START---
 \set AUTOCOMMIT on
 DROP TABLE ac_test;
 SELECT * FROM ac_test;  -- should be gone now
-
+---END---
+---START---
 -- ON_ERROR_ROLLBACK
 
 \set ON_ERROR_ROLLBACK on
 CREATE TABLE oer_test (a int);
-
+---END---
+---START---
 BEGIN;
 INSERT INTO oer_test VALUES (1);
 INSERT INTO oer_test VALUES ('foo');
 INSERT INTO oer_test VALUES (3);
 COMMIT;
 SELECT * FROM oer_test;
-
+---END---
+---START---
 BEGIN;
 INSERT INTO oer_test VALUES (4);
 ROLLBACK;
 SELECT * FROM oer_test;
-
+---END---
+---START---
 BEGIN;
 INSERT INTO oer_test VALUES (5);
 COMMIT AND CHAIN;
 INSERT INTO oer_test VALUES (6);
 COMMIT;
 SELECT * FROM oer_test;
-
+---END---
+---START---
 DROP TABLE oer_test;
 \set ON_ERROR_ROLLBACK off
-
+---END---
+---START---
 -- ECHO errors
 \set ECHO errors
 SELECT * FROM notexists;
 \set ECHO all
-
+---END---
+---START---
 --
 -- combined queries
 --
@@ -1504,18 +1697,27 @@ CREATE FUNCTION warn(msg TEXT) RETURNS BOOLEAN LANGUAGE plpgsql
 AS $$
   BEGIN RAISE NOTICE 'warn %', msg ; RETURN TRUE ; END
 $$;
-
+---END---
+---START---
 -- show both
 SELECT 1 AS one \; SELECT warn('1.5') \; SELECT 2 AS two ;
+---END---
+---START---
 -- \gset applies to last query only
 SELECT 3 AS three \; SELECT warn('3.5') \; SELECT 4 AS four \gset
 \echo :three :four
+---END---
+---START---
 -- syntax error stops all processing
 SELECT 5 \; SELECT 6 + \; SELECT warn('6.5') \; SELECT 7 ;
+---END---
+---START---
 -- with aborted transaction, stop on first error
 BEGIN \; SELECT 8 AS eight \; SELECT 9/0 AS nine \; ROLLBACK \; SELECT 10 AS ten ;
 -- close previously aborted transaction
 ROLLBACK;
+---END---
+---START---
 
 -- miscellaneous SQL commands
 -- (non SELECT output is sent to stderr, thus is not shown in expected results)
@@ -1980,7 +2182,8 @@ DROP FUNCTION psql_error;
 \dX nonesuch.public.func_deps_stat
 \dy regression.myevt
 \dy nonesuch.myevt
-
+---END---
+---START---
 -- check that dots within quoted name segments are not counted
 \dA "no.such.access.method"
 \dt "no.such.table.relation"
@@ -2021,7 +2224,8 @@ DROP FUNCTION psql_error;
 \dx "no.such.installed.extension"
 \dX "no.such.extended.statistics"
 \dy "no.such.event.trigger"
-
+---END---
+---START---
 -- again, but with dotted schema qualifications.
 \dA "no.such.schema"."no.such.access.method"
 \dt "no.such.schema"."no.such.table.relation"
@@ -2061,7 +2265,8 @@ DROP FUNCTION psql_error;
 \dx "no.such.schema"."no.such.installed.extension"
 \dX "no.such.schema"."no.such.extended.statistics"
 \dy "no.such.schema"."no.such.event.trigger"
-
+---END---
+---START---
 -- again, but with current database and dotted schema qualifications.
 \dt regression."no.such.schema"."no.such.table.relation"
 \da regression."no.such.schema"."no.such.aggregate.function"
@@ -2085,7 +2290,8 @@ DROP FUNCTION psql_error;
 \dP regression."no.such.schema"."no.such.partitioned.relation"
 \dT regression."no.such.schema"."no.such.data.type"
 \dX regression."no.such.schema"."no.such.extended.statistics"
-
+---END---
+---START---
 -- again, but with dotted database and dotted schema qualifications.
 \dt "no.such.database"."no.such.schema"."no.such.table.relation"
 \da "no.such.database"."no.such.schema"."no.such.aggregate.function"
@@ -2110,7 +2316,8 @@ DROP FUNCTION psql_error;
 \dP "no.such.database"."no.such.schema"."no.such.partitioned.relation"
 \dT "no.such.database"."no.such.schema"."no.such.data.type"
 \dX "no.such.database"."no.such.schema"."no.such.extended.statistics"
-
+---END---
+---START---
 -- check \drg and \du
 CREATE ROLE regress_du_role0;
 ---END---

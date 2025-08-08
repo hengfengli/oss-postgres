@@ -7,10 +7,18 @@
 
 -- directory paths and dlsuffix are passed to us in environment variables
 \getenv abs_srcdir PG_ABS_SRCDIR
+---END---
+---START---
 \getenv libdir PG_LIBDIR
+---END---
+---START---
 \getenv dlsuffix PG_DLSUFFIX
+---END---
+---START---
 
 \set regresslib :libdir '/regress' :dlsuffix
+---END---
+---START---
 
 CREATE FUNCTION interpt_pp(path, path)
     RETURNS point
@@ -29,51 +37,71 @@ CREATE TABLE real_city (
 ---END---
 ---START---
 COPY real_city FROM :'filename';
+---END---
+---START---
 ANALYZE real_city;
-
+---END---
+---START---
 SELECT *
    INTO TABLE ramp
    FROM ONLY road
    WHERE name ~ '.*Ramp';
-
+---END---
+---START---
 CREATE VIEW street AS
    SELECT r.name, r.thepath, c.cname AS cname
    FROM ONLY road r, real_city c
    WHERE c.outline ?# r.thepath;
-
+---END---
+---START---
 CREATE VIEW iexit AS
    SELECT ih.name, ih.thepath,
 	interpt_pp(ih.thepath, r.thepath) AS exit
    FROM ihighway ih, ramp r
    WHERE ih.thepath ?# r.thepath;
-
+---END---
+---START---
 CREATE VIEW toyemp AS
    SELECT name, age, location, 12*salary AS annualsal
    FROM emp;
-
+---END---
+---START---
 -- Test comments
 COMMENT ON VIEW noview IS 'no view';
+---END---
+---START---
 COMMENT ON VIEW toyemp IS 'is a view';
+---END---
+---START---
 COMMENT ON VIEW toyemp IS NULL;
+---END---
+---START---
 
 -- These views are left around mainly to exercise special cases in pg_dump.
 
 CREATE TABLE view_base_table (key int PRIMARY KEY, data varchar(20));
+---END---
+---START---
 
 CREATE VIEW key_dependent_view AS
    SELECT * FROM view_base_table GROUP BY key;
+---END---
+---START---
 
 ALTER TABLE view_base_table DROP CONSTRAINT view_base_table_pkey;  -- fails
-
+---END---
+---START---
 CREATE VIEW key_dependent_view_no_cols AS
    SELECT FROM view_base_table GROUP BY key HAVING length(data) > 0;
-
+---END---
+---START---
 --
 -- CREATE OR REPLACE VIEW
 --
 
 CREATE TABLE viewtest_tbl (a int, b int, c numeric(10,1), d text COLLATE "C");
-
+---END---
+---START---
 COPY viewtest_tbl FROM stdin;
 5	10	1.1	xy
 10	15	2.2	xyz
