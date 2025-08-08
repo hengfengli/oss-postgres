@@ -1,3 +1,4 @@
+---START---
 --
 -- Tests for psql features that aren't closely connected to any
 -- specific server features
@@ -55,7 +56,10 @@ SELECT $1, $2 \bind 'foo' 'bar' \g
 -- parse error
 SELECT foo \bind \g
 -- tcop error
-SELECT 1 \; SELECT 2 \bind \g
+SELECT 1 \;
+---END---
+---START---
+SELECT 2 \bind \g
 -- bind error
 SELECT $1, $2 \bind 'foo' \g
 
@@ -112,6 +116,8 @@ SELECT
 
 -- should work with tuple-returning utilities, such as EXECUTE
 PREPARE test AS SELECT 1 AS first, 2 AS second;
+---END---
+---START---
 EXECUTE test \gdesc
 EXPLAIN EXECUTE test \gdesc
 
@@ -123,7 +129,10 @@ SELECT \gdesc
 CREATE TABLE bububu(a int) \gdesc
 
 -- subject command should not have executed
-TABLE bububu;  -- fail
+TABLE bububu;
+---END---
+---START---
+-- fail
 
 -- query buffer should remain unchanged
 SELECT 1 AS x, 'Hello', 2 AS y, true AS "dirty\name"
@@ -135,15 +144,20 @@ SELECT 3 AS x, 'Hello', 4 AS y, true AS "dirty\name" \gdesc \g
 
 -- test for server bug #17983 with empty statement in aborted transaction
 set search_path = default;
+---END---
+---START---
 begin;
-bogus;
-;
+---END---
+---START---
 \gdesc
 rollback;
-
+---END---
+---START---
 -- \gexec
 
 create temporary table gexec_test(a int, b text, c date, d float);
+---END---
+---START---
 select format('create index on gexec_test(%I)', attname)
 from pg_attribute
 where attrelid = 'gexec_test'::regclass and attnum > 0
@@ -184,7 +198,8 @@ prepare q as select array_to_string(array_agg(repeat('x',2*n)),E'\n') as "ab
 
 c", array_to_string(array_agg(repeat('y',20-2*n)),E'\n') as "a
 bc" from generate_series(1,10) as n(n) group by n>1 order by n>1;
-
+---END---
+---START---
 \pset linestyle ascii
 
 \pset expanded off
@@ -193,54 +208,84 @@ bc" from generate_series(1,10) as n(n) group by n>1 order by n>1;
 \pset border 0
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset border 1
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset border 2
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset expanded on
 \pset columns 20
 
 \pset border 0
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset border 1
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset border 2
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset linestyle old-ascii
 
 \pset expanded off
@@ -249,59 +294,91 @@ execute q;
 \pset border 0
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset border 1
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset border 2
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset expanded on
 \pset columns 20
 
 \pset border 0
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset border 1
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset border 2
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 deallocate q;
-
+---END---
+---START---
 -- test single-line header and data
 prepare q as select repeat('x',2*n) as "0123456789abcdef", repeat('y',20-2*n) as "0123456789" from generate_series(1,10) as n;
-
+---END---
+---START---
 \pset linestyle ascii
 
 \pset expanded off
@@ -310,81 +387,126 @@ prepare q as select repeat('x',2*n) as "0123456789abcdef", repeat('y',20-2*n) as
 \pset border 0
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset border 1
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset border 2
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset expanded on
 \pset columns 30
 
 \pset border 0
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset border 1
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset border 2
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset expanded on
 \pset columns 20
 
 \pset border 0
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset border 1
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset border 2
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset linestyle old-ascii
 
 \pset expanded off
@@ -393,62 +515,94 @@ execute q;
 \pset border 0
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset border 1
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset border 2
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset expanded on
 
 \pset border 0
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset border 1
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 \pset border 2
 \pset format unaligned
 execute q;
+---END---
+---START---
 \pset format aligned
 execute q;
+---END---
+---START---
 \pset format wrapped
 execute q;
-
+---END---
+---START---
 deallocate q;
-
+---END---
+---START---
 \pset linestyle ascii
 \pset border 1
 
 -- support table for output-format tests (useful to create a footer)
 
 create table psql_serial_tab (id serial);
-
+---END---
+---START---
 -- test header/footer/tuples_only behavior in aligned/unaligned/wrapped cases
 
 \pset format aligned
@@ -465,7 +619,8 @@ create table psql_serial_tab (id serial);
 \pset tuples_only false
 -- empty table is a special case for this format
 select 1 where false;
-
+---END---
+---START---
 \pset format unaligned
 
 \pset expanded off
@@ -496,16 +651,36 @@ select 1 where false;
 \pset expanded off
 
 CREATE SCHEMA tableam_display;
+---END---
+---START---
 CREATE ROLE regress_display_role;
+---END---
+---START---
 ALTER SCHEMA tableam_display OWNER TO regress_display_role;
+---END---
+---START---
 SET search_path TO tableam_display;
+---END---
+---START---
 CREATE ACCESS METHOD heap_psql TYPE TABLE HANDLER heap_tableam_handler;
+---END---
+---START---
 SET ROLE TO regress_display_role;
+---END---
+---START---
 -- Use only relations with a physical size of zero.
 CREATE TABLE tbl_heap_psql(f1 int, f2 char(100)) using heap_psql;
+---END---
+---START---
 CREATE TABLE tbl_heap(f1 int, f2 char(100)) using heap;
+---END---
+---START---
 CREATE VIEW view_heap_psql AS SELECT f1 from tbl_heap_psql;
+---END---
+---START---
 CREATE MATERIALIZED VIEW mat_view_heap_psql USING heap_psql AS SELECT f1 from tbl_heap_psql;
+---END---
+---START---
 \d+ tbl_heap_psql
 \d+ tbl_heap
 \set HIDE_TABLEAM off
@@ -520,11 +695,20 @@ CREATE MATERIALIZED VIEW mat_view_heap_psql USING heap_psql AS SELECT f1 from tb
 \set HIDE_TABLEAM on
 \d+
 RESET ROLE;
+---END---
+---START---
 RESET search_path;
+---END---
+---START---
 DROP SCHEMA tableam_display CASCADE;
+---END---
+---START---
 DROP ACCESS METHOD heap_psql;
+---END---
+---START---
 DROP ROLE regress_display_role;
-
+---END---
+---START---
 -- test numericlocale (as best we can without control of psql's locale)
 
 \pset format aligned
@@ -533,7 +717,8 @@ DROP ROLE regress_display_role;
 
 select n, -n as m, n * 111 as x, '1e90'::float8 as f
 from generate_series(0,3) n;
-
+---END---
+---START---
 \pset numericlocale false
 
 -- test asciidoc output format
@@ -555,29 +740,37 @@ from generate_series(0,3) n;
 prepare q as
   select 'some|text' as "a|title", '        ' as "empty ", n as int
   from generate_series(1,2) as n;
-
+---END---
+---START---
 \pset expanded off
 \pset border 0
 execute q;
-
+---END---
+---START---
 \pset border 1
 execute q;
-
+---END---
+---START---
 \pset border 2
 execute q;
-
+---END---
+---START---
 \pset expanded on
 \pset border 0
 execute q;
-
+---END---
+---START---
 \pset border 1
 execute q;
-
+---END---
+---START---
 \pset border 2
 execute q;
-
+---END---
+---START---
 deallocate q;
-
+---END---
+---START---
 -- test csv output format
 
 \pset format csv
@@ -598,24 +791,35 @@ prepare q as
   select 'some"text' as "a""title", E'  <foo>\n<bar>' as "junk",
          '   ' as "empty", n as int
   from generate_series(1,2) as n;
-
+---END---
+---START---
 \pset expanded off
 execute q;
-
+---END---
+---START---
 \pset expanded on
 execute q;
-
+---END---
+---START---
 deallocate q;
-
+---END---
+---START---
 -- special cases
 \pset expanded off
 select 'comma,comma' as comma, 'semi;semi' as semi;
+---END---
+---START---
 \pset csv_fieldsep ';'
 select 'comma,comma' as comma, 'semi;semi' as semi;
+---END---
+---START---
 select '\.' as data;
+---END---
+---START---
 \pset csv_fieldsep '.'
 select '\' as d1, '' as d2;
-
+---END---
+---START---
 -- illegal csv separators
 \pset csv_fieldsep ''
 \pset csv_fieldsep '\0'
@@ -646,31 +850,41 @@ prepare q as
   select 'some"text' as "a&title", E'  <foo>\n<bar>' as "junk",
          '   ' as "empty", n as int
   from generate_series(1,2) as n;
-
+---END---
+---START---
 \pset expanded off
 \pset border 0
 execute q;
-
+---END---
+---START---
 \pset border 1
 execute q;
-
+---END---
+---START---
 \pset tableattr foobar
 execute q;
+---END---
+---START---
 \pset tableattr
 
 \pset expanded on
 \pset border 0
 execute q;
-
+---END---
+---START---
 \pset border 1
 execute q;
-
+---END---
+---START---
 \pset tableattr foobar
 execute q;
+---END---
+---START---
 \pset tableattr
 
 deallocate q;
-
+---END---
+---START---
 -- test latex output format
 
 \pset format latex
@@ -691,35 +905,45 @@ prepare q as
   select 'some\more_text' as "a$title", E'  #<foo>%&^~|\n{bar}' as "junk",
          '   ' as "empty", n as int
   from generate_series(1,2) as n;
-
+---END---
+---START---
 \pset expanded off
 \pset border 0
 execute q;
-
+---END---
+---START---
 \pset border 1
 execute q;
-
+---END---
+---START---
 \pset border 2
 execute q;
-
+---END---
+---START---
 \pset border 3
 execute q;
-
+---END---
+---START---
 \pset expanded on
 \pset border 0
 execute q;
-
+---END---
+---START---
 \pset border 1
 execute q;
-
+---END---
+---START---
 \pset border 2
 execute q;
-
+---END---
+---START---
 \pset border 3
 execute q;
-
+---END---
+---START---
 deallocate q;
-
+---END---
+---START---
 -- test latex-longtable output format
 
 \pset format latex-longtable
@@ -740,43 +964,57 @@ prepare q as
   select 'some\more_text' as "a$title", E'  #<foo>%&^~|\n{bar}' as "junk",
          '   ' as "empty", n as int
   from generate_series(1,2) as n;
-
+---END---
+---START---
 \pset expanded off
 \pset border 0
 execute q;
-
+---END---
+---START---
 \pset border 1
 execute q;
-
+---END---
+---START---
 \pset border 2
 execute q;
-
+---END---
+---START---
 \pset border 3
 execute q;
-
+---END---
+---START---
 \pset tableattr lr
 execute q;
+---END---
+---START---
 \pset tableattr
 
 \pset expanded on
 \pset border 0
 execute q;
-
+---END---
+---START---
 \pset border 1
 execute q;
-
+---END---
+---START---
 \pset border 2
 execute q;
-
+---END---
+---START---
 \pset border 3
 execute q;
-
+---END---
+---START---
 \pset tableattr lr
 execute q;
+---END---
+---START---
 \pset tableattr
 
 deallocate q;
-
+---END---
+---START---
 -- test troff-ms output format
 
 \pset format troff-ms
@@ -797,29 +1035,37 @@ prepare q as
   select 'some\text' as "a\title", E'  <foo>\n<bar>' as "junk",
          '   ' as "empty", n as int
   from generate_series(1,2) as n;
-
+---END---
+---START---
 \pset expanded off
 \pset border 0
 execute q;
-
+---END---
+---START---
 \pset border 1
 execute q;
-
+---END---
+---START---
 \pset border 2
 execute q;
-
+---END---
+---START---
 \pset expanded on
 \pset border 0
 execute q;
-
+---END---
+---START---
 \pset border 1
 execute q;
-
+---END---
+---START---
 \pset border 2
 execute q;
-
+---END---
+---START---
 deallocate q;
-
+---END---
+---START---
 -- check ambiguous format requests
 
 \pset format a
@@ -828,7 +1074,8 @@ deallocate q;
 -- clean up after output format tests
 
 drop table psql_serial_tab;
-
+---END---
+---START---
 \pset format aligned
 \pset expanded off
 \pset border 1
@@ -853,143 +1100,16 @@ drop table psql_serial_tab;
 
 \if true
   select 'okay';
-  select 'still okay';
+---END---
+---START---
+select 'still okay';
+---END---
+---START---
 \else
   not okay;
-  still not okay
-\endif
-
--- at this point query buffer should still have last valid line
-\g
-
--- \if should work okay on part of a query
-select
-  \if true
-    42
-  \else
-    (bogus
-  \endif
-  forty_two;
-
-select \if false \\ (bogus \else \\ 42 \endif \\ forty_two;
-
--- test a large nested if using a variety of true-equivalents
-\if true
-	\if 1
-		\if yes
-			\if on
-				\echo 'all true'
-			\else
-				\echo 'should not print #1-1'
-			\endif
-		\else
-			\echo 'should not print #1-2'
-		\endif
-	\else
-		\echo 'should not print #1-3'
-	\endif
-\else
-	\echo 'should not print #1-4'
-\endif
-
--- test a variety of false-equivalents in an if/elif/else structure
-\if false
-	\echo 'should not print #2-1'
-\elif 0
-	\echo 'should not print #2-2'
-\elif no
-	\echo 'should not print #2-3'
-\elif off
-	\echo 'should not print #2-4'
-\else
-	\echo 'all false'
-\endif
-
--- test true-false elif after initial true branch
-\if true
-	\echo 'should print #2-5'
-\elif true
-	\echo 'should not print #2-6'
-\elif false
-	\echo 'should not print #2-7'
-\else
-	\echo 'should not print #2-8'
-\endif
-
--- test simple true-then-else
-\if true
-	\echo 'first thing true'
-\else
-	\echo 'should not print #3-1'
-\endif
-
--- test simple false-true-else
-\if false
-	\echo 'should not print #4-1'
-\elif true
-	\echo 'second thing true'
-\else
-	\echo 'should not print #5-1'
-\endif
-
--- invalid boolean expressions are false
-\if invalid boolean expression
-	\echo 'will not print #6-1'
-\else
-	\echo 'will print anyway #6-2'
-\endif
-
--- test un-matched endif
-\endif
-
--- test un-matched else
-\else
-
--- test un-matched elif
-\elif
-
--- test double-else error
-\if true
-\else
-\else
-\endif
-
--- test elif out-of-order
-\if false
-\else
-\elif
-\endif
-
--- test if-endif matching in a false branch
-\if false
-    \if false
-        \echo 'should not print #7-1'
-    \else
-        \echo 'should not print #7-2'
-    \endif
-    \echo 'should not print #7-3'
-\else
-    \echo 'should print #7-4'
-\endif
-
--- show that vars and backticks are not expanded when ignoring extra args
-\set foo bar
-\echo :foo :'foo' :"foo"
-\pset fieldsep | `nosuchcommand` :foo :'foo' :"foo"
-
--- show that vars and backticks are not expanded and commands are ignored
--- when in a false if-branch
-\set try_to_quit '\\q'
-\if false
-	:try_to_quit
-	\echo `nosuchcommand` :foo :'foo' :"foo"
-	\pset fieldsep | `nosuchcommand` :foo :'foo' :"foo"
-	\a
-	\C arg1
-	\c arg1 arg2 arg3 arg4
-	\cd arg1
-	\conninfo
-	\copy arg1 arg2 arg3 arg4 arg5 arg6
+---END---
+---START---
+copy arg1 arg2 arg3 arg4 arg5 arg6
 	\copyright
 	SELECT 1 as one, 2, 3 \crosstabview
 	\dt arg1
@@ -1412,13 +1532,22 @@ SELECT 'ok' AS "done" ;
 Moe
 Susie
 \.
-
+---END---
+---START---
 \set SHOW_ALL_RESULTS off
-SELECT 1 AS one \; SELECT warn('1.5') \; SELECT 2 AS two ;
-
+SELECT 1 AS one \;
+---END---
+---START---
+SELECT warn('1.5') \;
+---END---
+---START---
+SELECT 2 AS two;
+---END---
+---START---
 \set SHOW_ALL_RESULTS on
 DROP FUNCTION warn(TEXT);
-
+---END---
+---START---
 --
 -- \g with file
 --
@@ -1429,17 +1558,35 @@ CREATE TEMPORARY TABLE reload_output(
   lineno int NOT NULL GENERATED ALWAYS AS IDENTITY,
   line text
 );
-
+---END---
+---START---
 SELECT 1 AS a \g :g_out_file
 COPY reload_output(line) FROM :'g_out_file';
-SELECT 2 AS b\; SELECT 3 AS c\; SELECT 4 AS d \g :g_out_file
+---END---
+---START---
+SELECT 2 AS b\;
+---END---
+---START---
+SELECT 3 AS c\;
+---END---
+---START---
+SELECT 4 AS d \g :g_out_file
 COPY reload_output(line) FROM :'g_out_file';
-COPY (SELECT 'foo') TO STDOUT \; COPY (SELECT 'bar') TO STDOUT \g :g_out_file
+---END---
+---START---
+COPY (SELECT 'foo') TO STDOUT \;
+---END---
+---START---
+COPY (SELECT 'bar') TO STDOUT \g :g_out_file
 COPY reload_output(line) FROM :'g_out_file';
-
+---END---
+---START---
 SELECT line FROM reload_output ORDER BY lineno;
+---END---
+---START---
 TRUNCATE TABLE reload_output;
-
+---END---
+---START---
 --
 -- \o with file
 --
@@ -1447,42 +1594,84 @@ TRUNCATE TABLE reload_output;
 
 \o :o_out_file
 SELECT max(unique1) FROM onek;
-SELECT 1 AS a\; SELECT 2 AS b\; SELECT 3 AS c;
-
+---END---
+---START---
+SELECT 1 AS a\;
+---END---
+---START---
+SELECT 2 AS b\;
+---END---
+---START---
+SELECT 3 AS c;
+---END---
+---START---
 -- COPY TO file
 -- The data goes to :g_out_file and the status to :o_out_file
 \set QUIET false
 COPY (SELECT unique1 FROM onek ORDER BY unique1 LIMIT 10) TO :'g_out_file';
+---END---
+---START---
 -- DML command status
 UPDATE onek SET unique1 = unique1 WHERE false;
+---END---
+---START---
 \set QUIET true
 \o
 
 -- Check the contents of the files generated.
 COPY reload_output(line) FROM :'g_out_file';
+---END---
+---START---
 SELECT line FROM reload_output ORDER BY lineno;
+---END---
+---START---
 TRUNCATE TABLE reload_output;
+---END---
+---START---
 COPY reload_output(line) FROM :'o_out_file';
+---END---
+---START---
 SELECT line FROM reload_output ORDER BY lineno;
+---END---
+---START---
 TRUNCATE TABLE reload_output;
-
+---END---
+---START---
 -- Multiple COPY TO STDOUT with output file
 \o :o_out_file
 -- The data goes to :o_out_file with no status generated.
-COPY (SELECT 'foo1') TO STDOUT \; COPY (SELECT 'bar1') TO STDOUT;
+COPY (SELECT 'foo1') TO STDOUT \;
+---END---
+---START---
+COPY (SELECT 'bar1') TO STDOUT;
+---END---
+---START---
 -- Combination of \o and \g file with multiple COPY queries.
-COPY (SELECT 'foo2') TO STDOUT \; COPY (SELECT 'bar2') TO STDOUT \g :g_out_file
+COPY (SELECT 'foo2') TO STDOUT \;
+---END---
+---START---
+COPY (SELECT 'bar2') TO STDOUT \g :g_out_file
 \o
 
 -- Check the contents of the files generated.
 COPY reload_output(line) FROM :'g_out_file';
+---END---
+---START---
 SELECT line FROM reload_output ORDER BY lineno;
+---END---
+---START---
 TRUNCATE TABLE reload_output;
+---END---
+---START---
 COPY reload_output(line) FROM :'o_out_file';
+---END---
+---START---
 SELECT line FROM reload_output ORDER BY lineno;
-
+---END---
+---START---
 DROP TABLE reload_output;
-
+---END---
+---START---
 --
 -- AUTOCOMMIT and combined queries
 --
@@ -1491,37 +1680,68 @@ DROP TABLE reload_output;
 -- BEGIN is now implicit
 
 CREATE TABLE foo(s TEXT) \;
+---END---
+---START---
 ROLLBACK;
-
+---END---
+---START---
 CREATE TABLE foo(s TEXT) \;
+---END---
+---START---
 INSERT INTO foo(s) VALUES ('hello'), ('world') \;
+---END---
+---START---
 COMMIT;
-
+---END---
+---START---
 DROP TABLE foo \;
+---END---
+---START---
 ROLLBACK;
-
+---END---
+---START---
 -- table foo is still there
 SELECT * FROM foo ORDER BY 1 \;
+---END---
+---START---
 DROP TABLE foo \;
+---END---
+---START---
 COMMIT;
-
+---END---
+---START---
 \set AUTOCOMMIT on
 \echo '# AUTOCOMMIT:' :AUTOCOMMIT
 -- BEGIN now explicit for multi-statement transactions
 
 BEGIN \;
+---END---
+---START---
 CREATE TABLE foo(s TEXT) \;
+---END---
+---START---
 INSERT INTO foo(s) VALUES ('hello'), ('world') \;
+---END---
+---START---
 COMMIT;
-
+---END---
+---START---
 BEGIN \;
+---END---
+---START---
 DROP TABLE foo \;
+---END---
+---START---
 ROLLBACK \;
-
+---END---
+---START---
 -- implicit transactions
 SELECT * FROM foo ORDER BY 1 \;
+---END---
+---START---
 DROP TABLE foo;
-
+---END---
+---START---
 --
 -- test ON_ERROR_ROLLBACK and combined queries
 --
@@ -1530,58 +1750,125 @@ CREATE FUNCTION psql_error(msg TEXT) RETURNS BOOLEAN AS $$
     RAISE EXCEPTION 'error %', msg;
   END;
 $$ LANGUAGE plpgsql;
-
+---END---
+---START---
 \set ON_ERROR_ROLLBACK on
 \echo '# ON_ERROR_ROLLBACK:' :ON_ERROR_ROLLBACK
 \echo '# AUTOCOMMIT:' :AUTOCOMMIT
 
 BEGIN;
-CREATE TABLE bla(s NO_SUCH_TYPE);               -- fails
-CREATE TABLE bla(s TEXT);                       -- succeeds
-SELECT psql_error('oops!');                     -- fails
+---END---
+---START---
+CREATE TABLE bla(s NO_SUCH_TYPE);
+---END---
+---START---
+-- fails
+CREATE TABLE bla(s TEXT);
+---END---
+---START---
+-- succeeds
+SELECT psql_error('oops!');
+---END---
+---START---
+-- fails
 INSERT INTO bla VALUES ('Calvin'), ('Hobbes');
+---END---
+---START---
 COMMIT;
-
+---END---
+---START---
 SELECT * FROM bla ORDER BY 1;
-
+---END---
+---START---
 BEGIN;
-INSERT INTO bla VALUES ('Susie');         -- succeeds
+---END---
+---START---
+INSERT INTO bla VALUES ('Susie');
+---END---
+---START---
+-- succeeds
 -- now with combined queries
-INSERT INTO bla VALUES ('Rosalyn') \;     -- will rollback
-SELECT 'before error' AS show \;          -- will show nevertheless!
-  SELECT psql_error('boum!') \;           -- failure
-  SELECT 'after error' AS noshow;         -- hidden by preceding error
-INSERT INTO bla(s) VALUES ('Moe') \;      -- will rollback
+INSERT INTO bla VALUES ('Rosalyn') \;
+---END---
+---START---
+-- will rollback
+SELECT 'before error' AS show \;
+---END---
+---START---
+-- will show nevertheless!
+  SELECT psql_error('boum!') \;
+---END---
+---START---
+-- failure
+  SELECT 'after error' AS noshow;
+---END---
+---START---
+-- hidden by preceding error
+INSERT INTO bla(s) VALUES ('Moe') \;
+---END---
+---START---
+-- will rollback
   SELECT psql_error('bam!');
-INSERT INTO bla VALUES ('Miss Wormwood'); -- succeeds
+---END---
+---START---
+INSERT INTO bla VALUES ('Miss Wormwood');
+---END---
+---START---
+-- succeeds
 COMMIT;
+---END---
+---START---
 SELECT * FROM bla ORDER BY 1;
-
+---END---
+---START---
 -- some with autocommit off
 \set AUTOCOMMIT off
 \echo '# AUTOCOMMIT:' :AUTOCOMMIT
 
 -- implicit BEGIN
-INSERT INTO bla VALUES ('Dad');           -- succeeds
-SELECT psql_error('bad!');                -- implicit partial rollback
+INSERT INTO bla VALUES ('Dad');
+---END---
+---START---
+-- succeeds
+SELECT psql_error('bad!');
+---END---
+---START---
+-- implicit partial rollback
 
-INSERT INTO bla VALUES ('Mum') \;         -- will rollback
+INSERT INTO bla VALUES ('Mum') \;
+---END---
+---START---
+-- will rollback
 SELECT COUNT(*) AS "#mum"
-FROM bla WHERE s = 'Mum' \;               -- but be counted here
-SELECT psql_error('bad!');                -- implicit partial rollback
+FROM bla WHERE s = 'Mum' \;
+---END---
+---START---
+-- but be counted here
+SELECT psql_error('bad!');
+---END---
+---START---
+-- implicit partial rollback
 COMMIT;
-
+---END---
+---START---
 SELECT COUNT(*) AS "#mum"
-FROM bla WHERE s = 'Mum' \;               -- no mum here
+FROM bla WHERE s = 'Mum' \;
+---END---
+---START---
+-- no mum here
 SELECT * FROM bla ORDER BY 1;
-
+---END---
+---START---
 -- reset all
 \set AUTOCOMMIT on
 \set ON_ERROR_ROLLBACK off
 \echo '# final ON_ERROR_ROLLBACK:' :ON_ERROR_ROLLBACK
 DROP TABLE bla;
+---END---
+---START---
 DROP FUNCTION psql_error;
-
+---END---
+---START---
 -- check describing invalid multipart names
 \dA regression.heap
 \dA nonesuch.heap
@@ -1826,26 +2113,58 @@ DROP FUNCTION psql_error;
 
 -- check \drg and \du
 CREATE ROLE regress_du_role0;
+---END---
+---START---
 CREATE ROLE regress_du_role1;
+---END---
+---START---
 CREATE ROLE regress_du_role2;
+---END---
+---START---
 CREATE ROLE regress_du_admin;
-
+---END---
+---START---
 GRANT regress_du_role0 TO regress_du_admin WITH ADMIN TRUE;
+---END---
+---START---
 GRANT regress_du_role1 TO regress_du_admin WITH ADMIN TRUE;
+---END---
+---START---
 GRANT regress_du_role2 TO regress_du_admin WITH ADMIN TRUE;
-
+---END---
+---START---
 GRANT regress_du_role0 TO regress_du_role1 WITH ADMIN TRUE,  INHERIT TRUE,  SET TRUE  GRANTED BY regress_du_admin;
+---END---
+---START---
 GRANT regress_du_role0 TO regress_du_role2 WITH ADMIN TRUE,  INHERIT FALSE, SET FALSE GRANTED BY regress_du_admin;
+---END---
+---START---
 GRANT regress_du_role1 TO regress_du_role2 WITH ADMIN TRUE , INHERIT FALSE, SET TRUE  GRANTED BY regress_du_admin;
+---END---
+---START---
 GRANT regress_du_role0 TO regress_du_role1 WITH ADMIN FALSE, INHERIT TRUE,  SET FALSE GRANTED BY regress_du_role1;
+---END---
+---START---
 GRANT regress_du_role0 TO regress_du_role2 WITH ADMIN FALSE, INHERIT TRUE , SET TRUE  GRANTED BY regress_du_role1;
+---END---
+---START---
 GRANT regress_du_role0 TO regress_du_role1 WITH ADMIN FALSE, INHERIT FALSE, SET TRUE  GRANTED BY regress_du_role2;
+---END---
+---START---
 GRANT regress_du_role0 TO regress_du_role2 WITH ADMIN FALSE, INHERIT FALSE, SET FALSE GRANTED BY regress_du_role2;
-
+---END---
+---START---
 \drg regress_du_role*
 \du regress_du_role*
 
 DROP ROLE regress_du_role0;
+---END---
+---START---
 DROP ROLE regress_du_role1;
+---END---
+---START---
 DROP ROLE regress_du_role2;
+---END---
+---START---
 DROP ROLE regress_du_admin;
+---END---

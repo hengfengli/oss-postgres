@@ -1,9 +1,11 @@
+---START---
 -- Check that stack depth detection mechanism works and
 -- max_stack_depth is not set too high.
 
 create function infinite_recurse() returns int as
 'select infinite_recurse()' language sql;
-
+---END---
+---START---
 -- Unfortunately, up till mid 2020 the Linux kernel had a bug in PPC64
 -- signal handling that would cause this test to crash if it happened
 -- to receive an sinval catchup interrupt while the stack is deep:
@@ -25,5 +27,4 @@ SELECT version() ~ 'powerpc64[^,]*-linux-gnu'
 \set VERBOSITY sqlstate
 
 select infinite_recurse();
-
-\echo :LAST_ERROR_MESSAGE
+---END---

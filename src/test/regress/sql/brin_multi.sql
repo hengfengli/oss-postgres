@@ -1,3 +1,4 @@
+---START---
 CREATE TABLE brintest_multi (
 	int8col bigint,
 	int2col smallint,
@@ -20,7 +21,8 @@ CREATE TABLE brintest_multi (
 	uuidcol uuid,
 	lsncol pg_lsn
 ) WITH (fillfactor=10);
-
+---END---
+---START---
 INSERT INTO brintest_multi SELECT
 	142857 * tenthous,
 	thousand,
@@ -43,23 +45,28 @@ INSERT INTO brintest_multi SELECT
 	format('%s%s-%s-%s-%s-%s%s%s', to_char(tenthous, 'FM0000'), to_char(tenthous, 'FM0000'), to_char(tenthous, 'FM0000'), to_char(tenthous, 'FM0000'), to_char(tenthous, 'FM0000'), to_char(tenthous, 'FM0000'), to_char(tenthous, 'FM0000'), to_char(tenthous, 'FM0000'))::uuid,
 	format('%s/%s%s', odd, even, tenthous)::pg_lsn
 FROM tenk1 ORDER BY unique2 LIMIT 100;
-
+---END---
+---START---
 -- throw in some NULL's and different values
 INSERT INTO brintest_multi (inetcol, cidrcol) SELECT
 	inet 'fe80::6e40:8ff:fea9:8c46' + tenthous,
 	cidr 'fe80::6e40:8ff:fea9:8c46' + tenthous
 FROM tenk1 ORDER BY thousand, tenthous LIMIT 25;
-
+---END---
+---START---
 -- test minmax-multi specific index options
 -- number of values must be >= 16
 CREATE INDEX brinidx_multi ON brintest_multi USING brin (
 	int8col int8_minmax_multi_ops(values_per_range = 7)
 );
+---END---
+---START---
 -- number of values must be <= 256
 CREATE INDEX brinidx_multi ON brintest_multi USING brin (
 	int8col int8_minmax_multi_ops(values_per_range = 257)
 );
-
+---END---
+---START---
 -- first create an index with a single page range, to force compaction
 -- due to exceeding the number of values per summary
 CREATE INDEX brinidx_multi ON brintest_multi USING brin (
@@ -84,9 +91,11 @@ CREATE INDEX brinidx_multi ON brintest_multi USING brin (
 	uuidcol uuid_minmax_multi_ops,
 	lsncol pg_lsn_minmax_multi_ops
 );
-
+---END---
+---START---
 DROP INDEX brinidx_multi;
-
+---END---
+---START---
 CREATE INDEX brinidx_multi ON brintest_multi USING brin (
 	int8col int8_minmax_multi_ops,
 	int2col int2_minmax_multi_ops,
@@ -109,12 +118,14 @@ CREATE INDEX brinidx_multi ON brintest_multi USING brin (
 	uuidcol uuid_minmax_multi_ops,
 	lsncol pg_lsn_minmax_multi_ops
 ) with (pages_per_range = 1);
-
+---END---
+---START---
 CREATE TABLE brinopers_multi (colname name, typ text,
 	op text[], value text[], matches int[],
 	check (cardinality(op) = cardinality(value)),
 	check (cardinality(op) = cardinality(matches)));
-
+---END---
+---START---
 INSERT INTO brinopers_multi VALUES
 	('int2col', 'int2',
 	 '{>, >=, =, <=, <}',
@@ -240,7 +251,8 @@ INSERT INTO brinopers_multi VALUES
 	 '{>, >=, =, <=, <, IS, IS NOT}',
 	 '{0/1200, 0/1200, 44/455222, 198/1999799, 198/1999799, NULL, NULL}',
 	 '{100, 100, 1, 100, 100, 25, 100}');
-
+---END---
+---START---
 DO $x$
 DECLARE
 	r record;
@@ -321,10 +333,14 @@ BEGIN
 	END LOOP;
 END;
 $x$;
-
+---END---
+---START---
 RESET enable_seqscan;
+---END---
+---START---
 RESET enable_bitmapscan;
-
+---END---
+---START---
 INSERT INTO brintest_multi SELECT
 	142857 * tenthous,
 	thousand,
@@ -347,45 +363,92 @@ INSERT INTO brintest_multi SELECT
 	format('%s%s-%s-%s-%s-%s%s%s', to_char(tenthous, 'FM0000'), to_char(tenthous, 'FM0000'), to_char(tenthous, 'FM0000'), to_char(tenthous, 'FM0000'), to_char(tenthous, 'FM0000'), to_char(tenthous, 'FM0000'), to_char(tenthous, 'FM0000'), to_char(tenthous, 'FM0000'))::uuid,
 	format('%s/%s%s', odd, even, tenthous)::pg_lsn
 FROM tenk1 ORDER BY unique2 LIMIT 5 OFFSET 5;
-
+---END---
+---START---
 SELECT brin_desummarize_range('brinidx_multi', 0);
-VACUUM brintest_multi;  -- force a summarization cycle in brinidx
+---END---
+---START---
+VACUUM brintest_multi;
+---END---
+---START---
+-- force a summarization cycle in brinidx
 
 -- Try inserting a values with NaN, to test distance calculation.
 insert into public.brintest_multi (float4col) values (real 'nan');
+---END---
+---START---
 insert into public.brintest_multi (float8col) values (real 'nan');
-
+---END---
+---START---
 UPDATE brintest_multi SET int8col = int8col * int4col;
-
+---END---
+---START---
 -- Test handling of inet netmasks with inet_minmax_multi_ops
 CREATE TABLE brin_test_inet (a inet);
+---END---
+---START---
 CREATE INDEX ON brin_test_inet USING brin (a inet_minmax_multi_ops);
+---END---
+---START---
 INSERT INTO brin_test_inet VALUES ('127.0.0.1/0');
+---END---
+---START---
 INSERT INTO brin_test_inet VALUES ('0.0.0.0/12');
+---END---
+---START---
 DROP TABLE brin_test_inet;
-
+---END---
+---START---
 -- Tests for brin_summarize_new_values
-SELECT brin_summarize_new_values('brintest_multi'); -- error, not an index
-SELECT brin_summarize_new_values('tenk1_unique1'); -- error, not a BRIN index
-SELECT brin_summarize_new_values('brinidx_multi'); -- ok, no change expected
+SELECT brin_summarize_new_values('brintest_multi');
+---END---
+---START---
+-- error, not an index
+SELECT brin_summarize_new_values('tenk1_unique1');
+---END---
+---START---
+-- error, not a BRIN index
+SELECT brin_summarize_new_values('brinidx_multi');
+---END---
+---START---
+-- ok, no change expected
 
 -- Tests for brin_desummarize_range
-SELECT brin_desummarize_range('brinidx_multi', -1); -- error, invalid range
+SELECT brin_desummarize_range('brinidx_multi', -1);
+---END---
+---START---
+-- error, invalid range
 SELECT brin_desummarize_range('brinidx_multi', 0);
+---END---
+---START---
 SELECT brin_desummarize_range('brinidx_multi', 0);
+---END---
+---START---
 SELECT brin_desummarize_range('brinidx_multi', 100000000);
-
+---END---
+---START---
 -- test building an index with many values, to force compaction of the buffer
 CREATE TABLE brin_large_range (a int4);
+---END---
+---START---
 INSERT INTO brin_large_range SELECT i FROM generate_series(1,10000) s(i);
+---END---
+---START---
 CREATE INDEX brin_large_range_idx ON brin_large_range USING brin (a int4_minmax_multi_ops);
+---END---
+---START---
 DROP TABLE brin_large_range;
-
+---END---
+---START---
 -- Test brin_summarize_range
 CREATE TABLE brin_summarize_multi (
     value int
 ) WITH (fillfactor=10, autovacuum_enabled=false);
+---END---
+---START---
 CREATE INDEX brin_summarize_multi_idx ON brin_summarize_multi USING brin (value) WITH (pages_per_range=2);
+---END---
+---START---
 -- Fill a few pages
 DO $$
 DECLARE curtid tid;
@@ -396,28 +459,51 @@ BEGIN
   END LOOP;
 END;
 $$;
-
+---END---
+---START---
 -- summarize one range
 SELECT brin_summarize_range('brin_summarize_multi_idx', 0);
+---END---
+---START---
 -- nothing: already summarized
 SELECT brin_summarize_range('brin_summarize_multi_idx', 1);
+---END---
+---START---
 -- summarize one range
 SELECT brin_summarize_range('brin_summarize_multi_idx', 2);
+---END---
+---START---
 -- nothing: page doesn't exist in table
 SELECT brin_summarize_range('brin_summarize_multi_idx', 4294967295);
+---END---
+---START---
 -- invalid block number values
 SELECT brin_summarize_range('brin_summarize_multi_idx', -1);
+---END---
+---START---
 SELECT brin_summarize_range('brin_summarize_multi_idx', 4294967296);
-
-
+---END---
+---START---
 -- test brin cost estimates behave sanely based on correlation of values
 CREATE TABLE brin_test_multi (a INT, b INT);
+---END---
+---START---
 INSERT INTO brin_test_multi SELECT x/100,x%100 FROM generate_series(1,10000) x(x);
+---END---
+---START---
 CREATE INDEX brin_test_multi_a_idx ON brin_test_multi USING brin (a) WITH (pages_per_range = 2);
+---END---
+---START---
 CREATE INDEX brin_test_multi_b_idx ON brin_test_multi USING brin (b) WITH (pages_per_range = 2);
+---END---
+---START---
 VACUUM ANALYZE brin_test_multi;
-
+---END---
+---START---
 -- Ensure brin index is used when columns are perfectly correlated
 EXPLAIN (COSTS OFF) SELECT * FROM brin_test_multi WHERE a = 1;
+---END---
+---START---
 -- Ensure brin index is not used when values are not correlated
 EXPLAIN (COSTS OFF) SELECT * FROM brin_test_multi WHERE b = 1;
+---END---

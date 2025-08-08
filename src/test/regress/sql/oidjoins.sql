@@ -1,3 +1,4 @@
+---START---
 --
 -- Verify system catalog foreign key relationships
 --
@@ -47,3 +48,4 @@ begin
   end loop;
 end
 $doblock$;
+---END---

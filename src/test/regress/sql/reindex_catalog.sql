@@ -1,3 +1,4 @@
+---START---
 --
 -- Check that system tables can be reindexed.
 --
@@ -24,29 +25,85 @@
 
 
 -- Check reindexing of whole tables
-REINDEX TABLE pg_class; -- mapped, non-shared, critical
-REINDEX TABLE pg_index; -- non-mapped, non-shared, critical
-REINDEX TABLE pg_operator; -- non-mapped, non-shared, critical
-REINDEX TABLE pg_database; -- mapped, shared, critical
-REINDEX TABLE pg_shdescription; -- mapped, shared non-critical
+REINDEX TABLE pg_class;
+---END---
+---START---
+-- mapped, non-shared, critical
+REINDEX TABLE pg_index;
+---END---
+---START---
+-- non-mapped, non-shared, critical
+REINDEX TABLE pg_operator;
+---END---
+---START---
+-- non-mapped, non-shared, critical
+REINDEX TABLE pg_database;
+---END---
+---START---
+-- mapped, shared, critical
+REINDEX TABLE pg_shdescription;
+---END---
+---START---
+-- mapped, shared non-critical
 
 -- Check that individual system indexes can be reindexed. That's a bit
 -- different from the entire-table case because reindex_relation
 -- treats e.g. pg_class special.
-REINDEX INDEX pg_class_oid_index; -- mapped, non-shared, critical
-REINDEX INDEX pg_class_relname_nsp_index; -- mapped, non-shared, non-critical
-REINDEX INDEX pg_index_indexrelid_index; -- non-mapped, non-shared, critical
-REINDEX INDEX pg_index_indrelid_index; -- non-mapped, non-shared, non-critical
-REINDEX INDEX pg_database_oid_index; -- mapped, shared, critical
-REINDEX INDEX pg_shdescription_o_c_index; -- mapped, shared, non-critical
+REINDEX INDEX pg_class_oid_index;
+---END---
+---START---
+-- mapped, non-shared, critical
+REINDEX INDEX pg_class_relname_nsp_index;
+---END---
+---START---
+-- mapped, non-shared, non-critical
+REINDEX INDEX pg_index_indexrelid_index;
+---END---
+---START---
+-- non-mapped, non-shared, critical
+REINDEX INDEX pg_index_indrelid_index;
+---END---
+---START---
+-- non-mapped, non-shared, non-critical
+REINDEX INDEX pg_database_oid_index;
+---END---
+---START---
+-- mapped, shared, critical
+REINDEX INDEX pg_shdescription_o_c_index;
+---END---
+---START---
+-- mapped, shared, non-critical
 
 -- Check the same REINDEX INDEX statements under parallelism.
 BEGIN;
+---END---
+---START---
 SET min_parallel_table_scan_size = 0;
-REINDEX INDEX pg_class_oid_index; -- mapped, non-shared, critical
-REINDEX INDEX pg_class_relname_nsp_index; -- mapped, non-shared, non-critical
-REINDEX INDEX pg_index_indexrelid_index; -- non-mapped, non-shared, critical
-REINDEX INDEX pg_index_indrelid_index; -- non-mapped, non-shared, non-critical
-REINDEX INDEX pg_database_oid_index; -- mapped, shared, critical
-REINDEX INDEX pg_shdescription_o_c_index; -- mapped, shared, non-critical
+---END---
+---START---
+REINDEX INDEX pg_class_oid_index;
+---END---
+---START---
+-- mapped, non-shared, critical
+REINDEX INDEX pg_class_relname_nsp_index;
+---END---
+---START---
+-- mapped, non-shared, non-critical
+REINDEX INDEX pg_index_indexrelid_index;
+---END---
+---START---
+-- non-mapped, non-shared, critical
+REINDEX INDEX pg_index_indrelid_index;
+---END---
+---START---
+-- non-mapped, non-shared, non-critical
+REINDEX INDEX pg_database_oid_index;
+---END---
+---START---
+-- mapped, shared, critical
+REINDEX INDEX pg_shdescription_o_c_index;
+---END---
+---START---
+-- mapped, shared, non-critical
 ROLLBACK;
+---END---

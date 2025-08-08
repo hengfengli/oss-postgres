@@ -1,47 +1,56 @@
+---START---
 CREATE TEMP TABLE x (
 	a serial,
 	b int,
 	c text not null default 'stuff',
 	d text,
 	e text
-) ;
-
+);
+---END---
+---START---
 CREATE FUNCTION fn_x_before () RETURNS TRIGGER AS '
   BEGIN
 		NEW.e := ''before trigger fired''::text;
 		return NEW;
 	END;
 ' LANGUAGE plpgsql;
-
+---END---
+---START---
 CREATE FUNCTION fn_x_after () RETURNS TRIGGER AS '
   BEGIN
 		UPDATE x set e=''after trigger fired'' where c=''stuff'';
 		return NULL;
 	END;
 ' LANGUAGE plpgsql;
-
+---END---
+---START---
 CREATE TRIGGER trg_x_after AFTER INSERT ON x
 FOR EACH ROW EXECUTE PROCEDURE fn_x_after();
-
+---END---
+---START---
 CREATE TRIGGER trg_x_before BEFORE INSERT ON x
 FOR EACH ROW EXECUTE PROCEDURE fn_x_before();
-
+---END---
+---START---
 COPY x (a, b, c, d, e) from stdin;
 9999	\N	\\N	\NN	\N
 10000	21	31	41	51
 \.
-
+---END---
+---START---
 COPY x (b, d) from stdin;
 1	test_1
 \.
-
+---END---
+---START---
 COPY x (b, d) from stdin;
 2	test_2
 3	test_3
 4	test_4
 5	test_5
 \.
-
+---END---
+---START---
 COPY x (a, b, c, d, e) from stdin;
 10001	22	32	42	52
 10002	23	33	43	53
@@ -49,8 +58,8 @@ COPY x (a, b, c, d, e) from stdin;
 10004	25	35	45	55
 10005	26	36	46	56
 \.
-
--- non-existent column in column list: should fail
+---END---
+---START---
 COPY x (xyz) from stdin;
 
 -- redundant options
@@ -84,29 +93,36 @@ COPY x (a, b, c, d, e, d, c) from stdin;
 COPY x from stdin;
 
 \.
+---END---
+---START---
 COPY x from stdin;
 2000	230	23	23
 \.
+---END---
+---START---
 COPY x from stdin;
 2001	231	\N	\N
 \.
-
--- extra data: should fail
+---END---
+---START---
 COPY x from stdin;
 2002	232	40	50	60	70	80
 \.
-
--- various COPY options: delimiters, oids, NULL string, encoding
+---END---
+---START---
+COPY options: delimiters, oids, NULL string, encoding
 COPY x (b, c, d, e) from stdin delimiter ',' null 'x';
 x,45,80,90
 x,\x,\\x,\\\x
 x,\,,\\\,,\\
 \.
-
+---END---
+---START---
 COPY x from stdin WITH DELIMITER AS ';' NULL AS '';
 3000;;c;;
 \.
-
+---END---
+---START---
 COPY x from stdin WITH DELIMITER AS ':' NULL AS E'\\X' ENCODING 'sql_ascii';
 4000:\X:C:\X:\X
 4001:1:empty::
@@ -118,14 +134,16 @@ COPY x from stdin WITH DELIMITER AS ':' NULL AS E'\\X' ENCODING 'sql_ascii';
 4007:7:XX:\XX:\XX
 4008:8:Delimiter:\::\:
 \.
-
+---END---
+---START---
 COPY x TO stdout WHERE a = 1;
 COPY x from stdin WHERE a = 50004;
 50003	24	34	44	54
 50004	25	35	45	55
 50005	26	36	46	56
 \.
-
+---END---
+---START---
 COPY x from stdin WHERE a > 60003;
 60001	22	32	42	52
 60002	23	33	43	53
@@ -133,7 +151,8 @@ COPY x from stdin WHERE a > 60003;
 60004	25	35	45	55
 60005	26	36	46	56
 \.
-
+---END---
+---START---
 COPY x from stdin WHERE f > 60003;
 
 COPY x from stdin WHERE a = max(x.b);
@@ -188,8 +207,9 @@ COPY testnl FROM stdin CSV;
 
 inside",2
 \.
-
--- test end of copy marker
+---END---
+---START---
+copy marker
 CREATE TEMP TABLE testeoc (a text);
 
 COPY testeoc FROM stdin CSV;
@@ -198,7 +218,8 @@ a\.
 c\.d
 "\."
 \.
-
+---END---
+---START---
 COPY testeoc TO stdout CSV;
 
 -- test handling of nonstandard null marker that violates escaping rules
@@ -212,82 +233,170 @@ COPY testnull FROM stdin WITH NULL AS E'\\0';
 42	\\0
 \0	\0
 \.
-
+---END---
+---START---
 SELECT * FROM testnull;
-
+---END---
+---START---
 BEGIN;
+---END---
+---START---
 CREATE TABLE vistest (LIKE testeoc);
+---END---
+---START---
 COPY vistest FROM stdin CSV;
 a0
 b
 \.
+---END---
+---START---
 COMMIT;
+---END---
+---START---
 SELECT * FROM vistest;
+---END---
+---START---
 BEGIN;
+---END---
+---START---
 TRUNCATE vistest;
+---END---
+---START---
 COPY vistest FROM stdin CSV;
 a1
 b
 \.
+---END---
+---START---
 SELECT * FROM vistest;
+---END---
+---START---
 SAVEPOINT s1;
+---END---
+---START---
 TRUNCATE vistest;
+---END---
+---START---
 COPY vistest FROM stdin CSV;
 d1
 e
 \.
+---END---
+---START---
 SELECT * FROM vistest;
+---END---
+---START---
 COMMIT;
+---END---
+---START---
 SELECT * FROM vistest;
-
+---END---
+---START---
 BEGIN;
+---END---
+---START---
 TRUNCATE vistest;
+---END---
+---START---
 COPY vistest FROM stdin CSV FREEZE;
 a2
 b
 \.
+---END---
+---START---
 SELECT * FROM vistest;
+---END---
+---START---
 SAVEPOINT s1;
+---END---
+---START---
 TRUNCATE vistest;
+---END---
+---START---
 COPY vistest FROM stdin CSV FREEZE;
 d2
 e
 \.
+---END---
+---START---
 SELECT * FROM vistest;
+---END---
+---START---
 COMMIT;
+---END---
+---START---
 SELECT * FROM vistest;
-
+---END---
+---START---
 BEGIN;
+---END---
+---START---
 TRUNCATE vistest;
+---END---
+---START---
 COPY vistest FROM stdin CSV FREEZE;
 x
 y
 \.
+---END---
+---START---
 SELECT * FROM vistest;
+---END---
+---START---
 COMMIT;
+---END---
+---START---
 TRUNCATE vistest;
+---END---
+---START---
 COPY vistest FROM stdin CSV FREEZE;
 p
 g
 \.
+---END---
+---START---
 BEGIN;
+---END---
+---START---
 TRUNCATE vistest;
+---END---
+---START---
 SAVEPOINT s1;
+---END---
+---START---
 COPY vistest FROM stdin CSV FREEZE;
 m
 k
 \.
+---END---
+---START---
 COMMIT;
+---END---
+---START---
 BEGIN;
+---END---
+---START---
 INSERT INTO vistest VALUES ('z');
+---END---
+---START---
 SAVEPOINT s1;
+---END---
+---START---
 TRUNCATE vistest;
+---END---
+---START---
 ROLLBACK TO SAVEPOINT s1;
+---END---
+---START---
 COPY vistest FROM stdin CSV FREEZE;
 d3
 e
 \.
+---END---
+---START---
 COMMIT;
+---END---
+---START---
 CREATE FUNCTION truncate_in_subxact() RETURNS VOID AS
 $$
 BEGIN
@@ -297,16 +406,32 @@ EXCEPTION
 	INSERT INTO vistest VALUES ('subxact failure');
 END;
 $$ language plpgsql;
+---END---
+---START---
 BEGIN;
+---END---
+---START---
 INSERT INTO vistest VALUES ('z');
+---END---
+---START---
 SELECT truncate_in_subxact();
+---END---
+---START---
 COPY vistest FROM stdin CSV FREEZE;
 d4
 e
 \.
+---END---
+---START---
 SELECT * FROM vistest;
+---END---
+---START---
 COMMIT;
+---END---
+---START---
 SELECT * FROM vistest;
+---END---
+---START---
 -- Test FORCE_NOT_NULL and FORCE_NULL options
 CREATE TEMP TABLE forcetest (
     a INT NOT NULL,
@@ -315,29 +440,55 @@ CREATE TEMP TABLE forcetest (
     d TEXT,
     e TEXT
 );
+---END---
+---START---
 \pset null NULL
 -- should succeed with no effect ("b" remains an empty string, "c" remains NULL)
 BEGIN;
+---END---
+---START---
 COPY forcetest (a, b, c) FROM STDIN WITH (FORMAT csv, FORCE_NOT_NULL(b), FORCE_NULL(c));
 1,,""
 \.
+---END---
+---START---
 COMMIT;
+---END---
+---START---
 SELECT b, c FROM forcetest WHERE a = 1;
+---END---
+---START---
 -- should succeed, FORCE_NULL and FORCE_NOT_NULL can be both specified
 BEGIN;
+---END---
+---START---
 COPY forcetest (a, b, c, d) FROM STDIN WITH (FORMAT csv, FORCE_NOT_NULL(c,d), FORCE_NULL(c,d));
 2,'a',,""
 \.
+---END---
+---START---
 COMMIT;
+---END---
+---START---
 SELECT c, d FROM forcetest WHERE a = 2;
+---END---
+---START---
 -- should fail with not-null constraint violation
 BEGIN;
+---END---
+---START---
 COPY forcetest (a, b, c) FROM STDIN WITH (FORMAT csv, FORCE_NULL(b), FORCE_NOT_NULL(c));
 3,,""
 \.
+---END---
+---START---
 ROLLBACK;
+---END---
+---START---
 -- should fail with "not referenced by COPY" error
 BEGIN;
+---END---
+---START---
 COPY forcetest (d, e) FROM STDIN WITH (FORMAT csv, FORCE_NOT_NULL(b));
 ROLLBACK;
 -- should fail with "not referenced by COPY" error
@@ -358,32 +509,49 @@ alter table check_con_tbl add check (check_con_function(check_con_tbl.*));
 copy check_con_tbl from stdin;
 1
 \N
-\.
+---END---
+---START---
 copy check_con_tbl from stdin;
 0
 \.
+---END---
+---START---
 select * from check_con_tbl;
-
+---END---
+---START---
 -- test with RLS enabled.
 CREATE ROLE regress_rls_copy_user;
+---END---
+---START---
 CREATE ROLE regress_rls_copy_user_colperms;
+---END---
+---START---
 CREATE TABLE rls_t1 (a int, b int, c int);
-
+---END---
+---START---
 COPY rls_t1 (a, b, c) from stdin;
 1	4	1
 2	3	2
 3	2	3
 4	1	4
 \.
-
+---END---
+---START---
 CREATE POLICY p1 ON rls_t1 FOR SELECT USING (a % 2 = 0);
+---END---
+---START---
 ALTER TABLE rls_t1 ENABLE ROW LEVEL SECURITY;
+---END---
+---START---
 ALTER TABLE rls_t1 FORCE ROW LEVEL SECURITY;
-
+---END---
+---START---
 GRANT SELECT ON TABLE rls_t1 TO regress_rls_copy_user;
+---END---
+---START---
 GRANT SELECT (a, b) ON TABLE rls_t1 TO regress_rls_copy_user_colperms;
-
--- all columns
+---END---
+---START---
 COPY rls_t1 TO stdout;
 COPY rls_t1 (a, b, c) TO stdout;
 
@@ -431,24 +599,30 @@ CREATE VIEW instead_of_insert_tbl_view AS SELECT ''::text AS str;
 COPY instead_of_insert_tbl_view FROM stdin; -- fail
 test1
 \.
-
+---END---
+---START---
 CREATE FUNCTION fun_instead_of_insert_tbl() RETURNS trigger AS $$
 BEGIN
   INSERT INTO instead_of_insert_tbl (name) VALUES (NEW.str);
   RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
+---END---
+---START---
 CREATE TRIGGER trig_instead_of_insert_tbl_view
   INSTEAD OF INSERT ON instead_of_insert_tbl_view
   FOR EACH ROW EXECUTE PROCEDURE fun_instead_of_insert_tbl();
-
+---END---
+---START---
 COPY instead_of_insert_tbl_view FROM stdin;
 test1
 \.
-
+---END---
+---START---
 SELECT * FROM instead_of_insert_tbl;
-
--- Test of COPY optimization with view using INSTEAD OF INSERT
+---END---
+---START---
+COPY optimization with view using INSTEAD OF INSERT
 -- trigger when relation is created in the same transaction as
 -- when COPY is executed.
 BEGIN;
@@ -460,27 +634,55 @@ CREATE TRIGGER trig_instead_of_insert_tbl_view_2
 COPY instead_of_insert_tbl_view_2 FROM stdin;
 test1
 \.
-
+---END---
+---START---
 SELECT * FROM instead_of_insert_tbl;
+---END---
+---START---
 COMMIT;
-
+---END---
+---START---
 -- clean up
 DROP TABLE forcetest;
+---END---
+---START---
 DROP TABLE vistest;
+---END---
+---START---
 DROP FUNCTION truncate_in_subxact();
+---END---
+---START---
 DROP TABLE x, y;
+---END---
+---START---
 DROP TABLE rls_t1 CASCADE;
+---END---
+---START---
 DROP ROLE regress_rls_copy_user;
+---END---
+---START---
 DROP ROLE regress_rls_copy_user_colperms;
+---END---
+---START---
 DROP FUNCTION fn_x_before();
+---END---
+---START---
 DROP FUNCTION fn_x_after();
+---END---
+---START---
 DROP TABLE instead_of_insert_tbl;
+---END---
+---START---
 DROP VIEW instead_of_insert_tbl_view;
+---END---
+---START---
 DROP VIEW instead_of_insert_tbl_view_2;
+---END---
+---START---
 DROP FUNCTION fun_instead_of_insert_tbl();
-
---
--- COPY FROM ... DEFAULT
+---END---
+---START---
+COPY FROM ... DEFAULT
 --
 
 create temp table copy_default (
@@ -494,21 +696,26 @@ copy copy_default from stdin;
 1	value	'2022-07-04'
 2	\D	'2022-07-05'
 \.
-
+---END---
+---START---
 select id, text_value, ts_value from copy_default;
-
+---END---
+---START---
 truncate copy_default;
-
+---END---
+---START---
 copy copy_default from stdin with (format csv);
 1,value,2022-07-04
 2,\D,2022-07-05
 \.
-
+---END---
+---START---
 select id, text_value, ts_value from copy_default;
-
+---END---
+---START---
 truncate copy_default;
-
--- DEFAULT cannot be used in binary mode
+---END---
+---START---
 copy copy_default from stdin with (format binary, default '\D');
 
 -- DEFAULT cannot be new line nor carriage return
@@ -529,53 +736,66 @@ copy copy_default from stdin with (default '\D');
 \D	value	'2022-07-04'
 2	\D	'2022-07-05'
 \.
-
+---END---
+---START---
 copy copy_default from stdin with (format csv, default '\D');
 \D,value,2022-07-04
 2,\D,2022-07-05
 \.
-
--- The DEFAULT marker must be unquoted and unescaped or it's not recognized
+---END---
+---START---
 copy copy_default from stdin with (default '\D');
 1	\D	'2022-07-04'
 2	\\D	'2022-07-04'
 3	"\D"	'2022-07-04'
 \.
-
+---END---
+---START---
 select id, text_value, ts_value from copy_default;
-
+---END---
+---START---
 truncate copy_default;
-
+---END---
+---START---
 copy copy_default from stdin with (format csv, default '\D');
 1,\D,2022-07-04
 2,\\D,2022-07-04
 3,"\D",2022-07-04
 \.
-
+---END---
+---START---
 select id, text_value, ts_value from copy_default;
-
+---END---
+---START---
 truncate copy_default;
-
--- successful usage of DEFAULT option in COPY
+---END---
+---START---
 copy copy_default from stdin with (default '\D');
 1	value	'2022-07-04'
 2	\D	'2022-07-03'
 3	\D	\D
 \.
-
+---END---
+---START---
 select id, text_value, ts_value from copy_default;
-
+---END---
+---START---
 truncate copy_default;
-
+---END---
+---START---
 copy copy_default from stdin with (format csv, default '\D');
 1,value,2022-07-04
 2,\D,2022-07-03
 3,\D,\D
 \.
-
+---END---
+---START---
 select id, text_value, ts_value from copy_default;
-
+---END---
+---START---
 truncate copy_default;
-
+---END---
+---START---
 -- DEFAULT cannot be used in COPY TO
 copy (select 1 as test) TO stdout with (default '\D');
+---END---

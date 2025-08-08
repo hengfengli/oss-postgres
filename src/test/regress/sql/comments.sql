@@ -1,17 +1,29 @@
+---START---
 --
 -- COMMENTS
 --
 
-SELECT 'trailing' AS first; -- trailing single line
+SELECT 'trailing' AS first;
+---END---
+---START---
+-- trailing single line
 SELECT /* embedded single line */ 'embedded' AS second;
-SELECT /* both embedded and trailing single line */ 'both' AS third; -- trailing single line
+---END---
+---START---
+SELECT /* both embedded and trailing single line */ 'both' AS third;
+---END---
+---START---
+-- trailing single line
 
 SELECT 'before multi-line' AS fourth;
+---END---
+---START---
 /* This is an example of SQL which should not execute:
  * select 'multi-line';
  */
 SELECT 'after multi-line' AS fifth;
-
+---END---
+---START---
 --
 -- Nested comments
 --
@@ -38,5 +50,4 @@ Hoo boy. Still two deep...
 Now just one deep...
 */
 'deeply nested example' AS sixth;
-
-/* and this is the end of the file */
+---END---

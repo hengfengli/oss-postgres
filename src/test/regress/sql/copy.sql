@@ -1,3 +1,4 @@
+---START---
 --
 -- COPY
 --
@@ -13,13 +14,23 @@ create temp table copytest (
 	style	text,
 	test 	text,
 	filler	int);
-
+---END---
+---START---
 insert into copytest values('DOS',E'abc\r\ndef',1);
+---END---
+---START---
 insert into copytest values('Unix',E'abc\ndef',2);
+---END---
+---START---
 insert into copytest values('Mac',E'abc\rdef',3);
+---END---
+---START---
 insert into copytest values(E'esc\\ape',E'a\\r\\\r\\\n\\nb',4);
-
-\set filename :abs_builddir '/results/copytest.csv'
+---END---
+---START---
+\set filename :abs_builddir '/results/copytest.csv';
+---END---
+---START---
 copy copytest to :'filename' csv;
 
 create temp table copytest2 (like copytest);
@@ -51,7 +62,8 @@ this is just a line full of junk that would error out if parsed
 1,a,1
 2,b,2
 \.
-
+---END---
+---START---
 copy copytest3 to stdout csv header;
 
 create temp table copytest4 (
@@ -63,7 +75,8 @@ this is just a line full of junk that would error out if parsed
 1	a
 2	b
 \.
-
+---END---
+---START---
 copy copytest4 to stdout (header);
 
 -- test copy from with a partitioned table
@@ -128,13 +141,18 @@ copy parted_copytest from stdin;
 1	1	str1
 2	2	str2
 \.
-
+---END---
+---START---
 -- Ensure index entries were properly added during the copy.
 select * from parted_copytest where b = 1;
+---END---
+---START---
 select * from parted_copytest where b = 2;
-
+---END---
+---START---
 drop table parted_copytest;
-
+---END---
+---START---
 --
 -- Progress reporting for COPY
 --
@@ -145,9 +163,9 @@ create table tab_progress_reporting (
 	salary int4,
 	manager name
 );
-
--- Add a trigger to catch and print the contents of the catalog view
--- pg_stat_progress_copy during data insertion.  This allows to test
+---END---
+---START---
+copy during data insertion.  This allows to test
 -- the validation of some progress reports for COPY FROM where the trigger
 -- would fire.
 create function notice_after_tab_progress_reporting() returns trigger AS
@@ -187,8 +205,9 @@ sharon	25	(15,12)	1000	sam
 sam	30	(10,5)	2000	bill
 bill	20	(11,10)	1000	sharon
 \.
-
--- Generate COPY FROM report with FILE, with some excluded tuples.
+---END---
+---START---
+COPY FROM report with FILE, with some excluded tuples.
 truncate tab_progress_reporting;
 \set filename :abs_srcdir '/data/emp.data'
 copy tab_progress_reporting from :'filename'
@@ -214,57 +233,83 @@ copy header_copytest from stdin with (header match);
 a	b	c
 1	2	foo
 \.
+---END---
+---START---
 copy header_copytest (c, a, b) from stdin with (header match);
 c	a	b
 bar	3	4
 \.
+---END---
+---START---
 copy header_copytest from stdin with (header match, format csv);
 a,b,c
 5,6,baz
 \.
--- errors
+---END---
+---START---
 copy header_copytest (c, b, a) from stdin with (header match);
 a	b	c
 1	2	foo
 \.
+---END---
+---START---
 copy header_copytest from stdin with (header match);
 a	b	\N
 1	2	foo
 \.
+---END---
+---START---
 copy header_copytest from stdin with (header match);
 a	b
 1	2
 \.
+---END---
+---START---
 copy header_copytest from stdin with (header match);
 a	b	c	d
 1	2	foo	bar
 \.
+---END---
+---START---
 copy header_copytest from stdin with (header match);
 a	b	d
 1	2	foo
 \.
+---END---
+---START---
 SELECT * FROM header_copytest ORDER BY a;
-
+---END---
+---START---
 -- Drop an extra column, in the middle of the existing set.
 alter table header_copytest drop column b;
--- works
+---END---
+---START---
 copy header_copytest (c, a) from stdin with (header match);
 c	a
 foo	7
 \.
+---END---
+---START---
 copy header_copytest (a, c) from stdin with (header match);
 a	c
 8	foo
 \.
--- errors
+---END---
+---START---
 copy header_copytest from stdin with (header match);
 a	........pg.dropped.2........	c
 1	2	foo
 \.
+---END---
+---START---
 copy header_copytest (a, c) from stdin with (header match);
 a	c	b
 1	foo	2
 \.
-
+---END---
+---START---
 SELECT * FROM header_copytest ORDER BY a;
+---END---
+---START---
 drop table header_copytest;
+---END---

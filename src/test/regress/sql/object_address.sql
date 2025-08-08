@@ -1,64 +1,139 @@
+---START---
 --
 -- Test for pg_get_object_address
 --
 
 -- Clean up in case a prior regression run failed
 SET client_min_messages TO 'warning';
+---END---
+---START---
 DROP ROLE IF EXISTS regress_addr_user;
+---END---
+---START---
 RESET client_min_messages;
-
+---END---
+---START---
 CREATE USER regress_addr_user;
-
+---END---
+---START---
 -- Test generic object addressing/identification functions
 CREATE SCHEMA addr_nsp;
+---END---
+---START---
 SET search_path TO 'addr_nsp';
+---END---
+---START---
 CREATE FOREIGN DATA WRAPPER addr_fdw;
+---END---
+---START---
 CREATE SERVER addr_fserv FOREIGN DATA WRAPPER addr_fdw;
+---END---
+---START---
 CREATE TEXT SEARCH DICTIONARY addr_ts_dict (template=simple);
+---END---
+---START---
 CREATE TEXT SEARCH CONFIGURATION addr_ts_conf (copy=english);
+---END---
+---START---
 CREATE TEXT SEARCH TEMPLATE addr_ts_temp (lexize=dsimple_lexize);
+---END---
+---START---
 CREATE TEXT SEARCH PARSER addr_ts_prs
     (start = prsd_start, gettoken = prsd_nexttoken, end = prsd_end, lextypes = prsd_lextype);
+---END---
+---START---
 CREATE TABLE addr_nsp.gentable (
     a serial primary key CONSTRAINT a_chk CHECK (a > 0),
     b text DEFAULT 'hello'
 );
+---END---
+---START---
 CREATE TABLE addr_nsp.parttable (
     a int PRIMARY KEY
 ) PARTITION BY RANGE (a);
+---END---
+---START---
 CREATE VIEW addr_nsp.genview AS SELECT * from addr_nsp.gentable;
+---END---
+---START---
 CREATE MATERIALIZED VIEW addr_nsp.genmatview AS SELECT * FROM addr_nsp.gentable;
+---END---
+---START---
 CREATE TYPE addr_nsp.gencomptype AS (a int);
+---END---
+---START---
 CREATE TYPE addr_nsp.genenum AS ENUM ('one', 'two');
+---END---
+---START---
 CREATE FOREIGN TABLE addr_nsp.genftable (a int) SERVER addr_fserv;
+---END---
+---START---
 CREATE AGGREGATE addr_nsp.genaggr(int4) (sfunc = int4pl, stype = int4);
+---END---
+---START---
 CREATE DOMAIN addr_nsp.gendomain AS int4 CONSTRAINT domconstr CHECK (value > 0);
+---END---
+---START---
 CREATE FUNCTION addr_nsp.trig() RETURNS TRIGGER LANGUAGE plpgsql AS $$ BEGIN END; $$;
+---END---
+---START---
 CREATE TRIGGER t BEFORE INSERT ON addr_nsp.gentable FOR EACH ROW EXECUTE PROCEDURE addr_nsp.trig();
+---END---
+---START---
 CREATE POLICY genpol ON addr_nsp.gentable;
+---END---
+---START---
 CREATE PROCEDURE addr_nsp.proc(int4) LANGUAGE SQL AS $$ $$;
+---END---
+---START---
 CREATE SERVER "integer" FOREIGN DATA WRAPPER addr_fdw;
+---END---
+---START---
 CREATE USER MAPPING FOR regress_addr_user SERVER "integer";
+---END---
+---START---
 ALTER DEFAULT PRIVILEGES FOR ROLE regress_addr_user IN SCHEMA public GRANT ALL ON TABLES TO regress_addr_user;
+---END---
+---START---
 ALTER DEFAULT PRIVILEGES FOR ROLE regress_addr_user REVOKE DELETE ON TABLES FROM regress_addr_user;
+---END---
+---START---
 -- this transform would be quite unsafe to leave lying around,
 -- except that the SQL language pays no attention to transforms:
 CREATE TRANSFORM FOR int LANGUAGE SQL (
     FROM SQL WITH FUNCTION prsd_lextype(internal),
     TO SQL WITH FUNCTION int4recv(internal));
+---END---
+---START---
 -- suppress warning that depends on wal_level
 SET client_min_messages = 'ERROR';
+---END---
+---START---
 CREATE PUBLICATION addr_pub FOR TABLE addr_nsp.gentable;
+---END---
+---START---
 CREATE PUBLICATION addr_pub_schema FOR TABLES IN SCHEMA addr_nsp;
+---END---
+---START---
 RESET client_min_messages;
+---END---
+---START---
 CREATE SUBSCRIPTION regress_addr_sub CONNECTION '' PUBLICATION bar WITH (connect = false, slot_name = NONE);
+---END---
+---START---
 CREATE STATISTICS addr_nsp.gentable_stat ON a, b FROM addr_nsp.gentable;
-
+---END---
+---START---
 -- test some error cases
 SELECT pg_get_object_address('stone', '{}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('table', '{}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('table', '{NULL}', '{}');
-
+---END---
+---START---
 -- unrecognized object types
 DO $$
 DECLARE
@@ -75,13 +150,21 @@ BEGIN
     END LOOP;
 END;
 $$;
-
+---END---
+---START---
 -- miscellaneous other errors
 select * from pg_get_object_address('operator of access method', '{btree,integer_ops,1}', '{int4,bool}');
+---END---
+---START---
 select * from pg_get_object_address('operator of access method', '{btree,integer_ops,99}', '{int4,int4}');
+---END---
+---START---
 select * from pg_get_object_address('function of access method', '{btree,integer_ops,1}', '{int4,bool}');
+---END---
+---START---
 select * from pg_get_object_address('function of access method', '{btree,integer_ops,99}', '{int4,int4}');
-
+---END---
+---START---
 DO $$
 DECLARE
     objtype text;
@@ -115,36 +198,90 @@ BEGIN
     END LOOP;
 END;
 $$;
-
+---END---
+---START---
 -- these object types cannot be qualified names
 SELECT pg_get_object_address('language', '{one}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('language', '{one,two}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('large object', '{123}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('large object', '{123,456}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('large object', '{blargh}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('schema', '{one}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('schema', '{one,two}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('role', '{one}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('role', '{one,two}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('database', '{one}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('database', '{one,two}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('tablespace', '{one}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('tablespace', '{one,two}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('foreign-data wrapper', '{one}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('foreign-data wrapper', '{one,two}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('server', '{one}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('server', '{one,two}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('extension', '{one}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('extension', '{one,two}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('event trigger', '{one}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('event trigger', '{one,two}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('access method', '{one}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('access method', '{one,two}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('publication', '{one}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('publication', '{one,two}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('subscription', '{one}', '{}');
+---END---
+---START---
 SELECT pg_get_object_address('subscription', '{one,two}', '{}');
-
+---END---
+---START---
 -- Make sure that NULL handling is correct.
 \pset null 'NULL'
 
@@ -220,20 +357,32 @@ FROM objects,
      pg_identify_object_as_address(classid, objid, objsubid) AS ioa (typ, nms, args),
      pg_get_object_address(typ, nms, ioa.args) AS addr2
 ORDER BY addr1.classid, addr1.objid, addr1.objsubid;
-
+---END---
+---START---
 ---
 --- Cleanup resources
 ---
 DROP FOREIGN DATA WRAPPER addr_fdw CASCADE;
+---END---
+---START---
 DROP PUBLICATION addr_pub;
+---END---
+---START---
 DROP PUBLICATION addr_pub_schema;
+---END---
+---START---
 DROP SUBSCRIPTION regress_addr_sub;
-
+---END---
+---START---
 DROP SCHEMA addr_nsp CASCADE;
-
+---END---
+---START---
 DROP OWNED BY regress_addr_user;
+---END---
+---START---
 DROP USER regress_addr_user;
-
+---END---
+---START---
 --
 -- Checks for invalid objects
 --
@@ -292,6 +441,4 @@ SELECT ROW(pg_identify_object(objects.classid, objects.objid, objects.objsubid))
          AS descr
 FROM objects
 ORDER BY objects.classid, objects.objid, objects.objsubid;
-
--- restore normal output mode
-\a\t
+---END---

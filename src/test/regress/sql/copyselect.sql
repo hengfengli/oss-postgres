@@ -1,5 +1,5 @@
---
--- Test cases for COPY (select) TO
+---START---
+COPY (select) TO
 --
 create table test1 (id serial, t text);
 insert into test1 (t) values ('a');
@@ -90,7 +90,12 @@ create table test3 (c int);
 select 0\; copy test3 from stdin\; copy test3 from stdin\; select 1; -- 0 1
 1
 \.
+---END---
+---START---
 2
 \.
 select * from test3;
+---END---
+---START---
 drop table test3;
+---END---

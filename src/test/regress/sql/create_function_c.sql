@@ -1,3 +1,4 @@
+---START---
 --
 -- CREATE_FUNCTION_C
 --
@@ -17,19 +18,25 @@
 -- is checked in many other test scripts.)
 --
 LOAD :'regresslib';
-
+---END---
+---START---
 -- Things that shouldn't work:
 
 CREATE FUNCTION test1 (int) RETURNS int LANGUAGE C
     AS 'nosuchfile';
-
+---END---
+---START---
 -- To produce stable regression test output, we have to filter the name
 -- of the regresslib file out of the error message in this test.
 \set VERBOSITY sqlstate
 CREATE FUNCTION test1 (int) RETURNS int LANGUAGE C
     AS :'regresslib', 'nosuchsymbol';
+---END---
+---START---
 \set VERBOSITY default
 SELECT regexp_replace(:'LAST_ERROR_MESSAGE', 'file ".*"', 'file "..."');
-
+---END---
+---START---
 CREATE FUNCTION test1 (int) RETURNS int LANGUAGE internal
     AS 'nosuch';
+---END---

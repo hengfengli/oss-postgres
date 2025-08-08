@@ -1,3 +1,4 @@
+---START---
 --
 -- EXPLAIN
 --
@@ -32,7 +33,8 @@ begin
     end loop;
 end;
 $$;
-
+---END---
+---START---
 -- To produce valid JSON output, replace numbers with "0" or "0.0" not "N"
 create function explain_filter_to_json(text) returns jsonb
 language plpgsql as
@@ -50,50 +52,85 @@ begin
     return data::jsonb;
 end;
 $$;
-
+---END---
+---START---
 -- Disable JIT, or we'll get different output on machines where that's been
 -- forced on
 set jit = off;
-
+---END---
+---START---
 -- Similarly, disable track_io_timing, to avoid output differences when
 -- enabled.
 set track_io_timing = off;
-
+---END---
+---START---
 -- Simple cases
 
 select explain_filter('explain select * from int8_tbl i8');
+---END---
+---START---
 select explain_filter('explain (analyze) select * from int8_tbl i8');
+---END---
+---START---
 select explain_filter('explain (analyze, verbose) select * from int8_tbl i8');
+---END---
+---START---
 select explain_filter('explain (analyze, buffers, format text) select * from int8_tbl i8');
+---END---
+---START---
 select explain_filter('explain (analyze, buffers, format xml) select * from int8_tbl i8');
+---END---
+---START---
 select explain_filter('explain (analyze, buffers, format yaml) select * from int8_tbl i8');
+---END---
+---START---
 select explain_filter('explain (buffers, format text) select * from int8_tbl i8');
+---END---
+---START---
 select explain_filter('explain (buffers, format json) select * from int8_tbl i8');
-
+---END---
+---START---
 -- Check output including I/O timings.  These fields are conditional
 -- but always set in JSON format, so check them only in this case.
 set track_io_timing = on;
+---END---
+---START---
 select explain_filter('explain (analyze, buffers, format json) select * from int8_tbl i8');
+---END---
+---START---
 set track_io_timing = off;
-
+---END---
+---START---
 -- SETTINGS option
 -- We have to ignore other settings that might be imposed by the environment,
 -- so printing the whole Settings field unfortunately won't do.
 
 begin;
+---END---
+---START---
 set local plan_cache_mode = force_generic_plan;
+---END---
+---START---
 select true as "OK"
   from explain_filter('explain (settings) select * from int8_tbl i8') ln
   where ln ~ '^ *Settings: .*plan_cache_mode = ''force_generic_plan''';
+---END---
+---START---
 select explain_filter_to_json('explain (settings, format json) select * from int8_tbl i8') #> '{0,Settings,plan_cache_mode}';
+---END---
+---START---
 rollback;
-
+---END---
+---START---
 -- GENERIC_PLAN option
 
 select explain_filter('explain (generic_plan) select unique1 from tenk1 where thousand = $1');
+---END---
+---START---
 -- should fail
 select explain_filter('explain (analyze, generic_plan) select unique1 from tenk1 where thousand = $1');
-
+---END---
+---START---
 -- Test EXPLAIN (GENERIC_PLAN) with partition pruning
 -- partitions should be pruned at plan time, based on constants,
 -- but there should be no pruning based on parameter placeholders
@@ -101,19 +138,32 @@ create table gen_part (
   key1 integer not null,
   key2 integer not null
 ) partition by list (key1);
+---END---
+---START---
 create table gen_part_1
   partition of gen_part for values in (1)
   partition by range (key2);
+---END---
+---START---
 create table gen_part_1_1
   partition of gen_part_1 for values from (1) to (2);
+---END---
+---START---
 create table gen_part_1_2
   partition of gen_part_1 for values from (2) to (3);
+---END---
+---START---
 create table gen_part_2
   partition of gen_part for values in (2);
+---END---
+---START---
 -- should scan gen_part_1_1 and gen_part_1_2, but not gen_part_2
 select explain_filter('explain (generic_plan) select key1, key2 from gen_part where key1 = 1 and key2 = $1');
+---END---
+---START---
 drop table gen_part;
-
+---END---
+---START---
 --
 -- Test production of per-worker data
 --
@@ -123,12 +173,21 @@ drop table gen_part;
 -- remove it from the displayed results.
 
 begin;
+---END---
+---START---
 -- encourage use of parallel plans
 set parallel_setup_cost=0;
+---END---
+---START---
 set parallel_tuple_cost=0;
+---END---
+---START---
 set min_parallel_table_scan_size=0;
+---END---
+---START---
 set max_parallel_workers_per_gather=4;
-
+---END---
+---START---
 select jsonb_pretty(
   explain_filter_to_json('explain (analyze, verbose, buffers, format json)
                          select * from tenk1 order by tenthous')
@@ -140,17 +199,25 @@ select jsonb_pretty(
   #- '{0,Plan,Plans,0,Sort Method}'
   #- '{0,Plan,Plans,0,Sort Space Type}'
 );
-
+---END---
+---START---
 rollback;
-
+---END---
+---START---
 -- Test display of temporary objects
 create temp table t1(f1 float8);
-
+---END---
+---START---
 create function pg_temp.mysin(float8) returns float8 language plpgsql
 as 'begin return sin($1); end';
-
+---END---
+---START---
 select explain_filter('explain (verbose) select * from t1 where pg_temp.mysin(f1) < 0.5');
-
+---END---
+---START---
 -- Test compute_query_id
 set compute_query_id = on;
+---END---
+---START---
 select explain_filter('explain (verbose) select * from int8_tbl i8');
+---END---

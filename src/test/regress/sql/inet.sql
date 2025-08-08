@@ -1,3 +1,4 @@
+---START---
 --
 -- INET
 --
@@ -5,50 +6,108 @@
 -- prepare the table...
 
 DROP TABLE INET_TBL;
+---END---
+---START---
 CREATE TABLE INET_TBL (c cidr, i inet);
+---END---
+---START---
 INSERT INTO INET_TBL (c, i) VALUES ('192.168.1', '192.168.1.226/24');
+---END---
+---START---
 INSERT INTO INET_TBL (c, i) VALUES ('192.168.1.0/26', '192.168.1.226');
+---END---
+---START---
 INSERT INTO INET_TBL (c, i) VALUES ('192.168.1', '192.168.1.0/24');
+---END---
+---START---
 INSERT INTO INET_TBL (c, i) VALUES ('192.168.1', '192.168.1.0/25');
+---END---
+---START---
 INSERT INTO INET_TBL (c, i) VALUES ('192.168.1', '192.168.1.255/24');
+---END---
+---START---
 INSERT INTO INET_TBL (c, i) VALUES ('192.168.1', '192.168.1.255/25');
+---END---
+---START---
 INSERT INTO INET_TBL (c, i) VALUES ('10', '10.1.2.3/8');
+---END---
+---START---
 INSERT INTO INET_TBL (c, i) VALUES ('10.0.0.0', '10.1.2.3/8');
+---END---
+---START---
 INSERT INTO INET_TBL (c, i) VALUES ('10.1.2.3', '10.1.2.3/32');
+---END---
+---START---
 INSERT INTO INET_TBL (c, i) VALUES ('10.1.2', '10.1.2.3/24');
+---END---
+---START---
 INSERT INTO INET_TBL (c, i) VALUES ('10.1', '10.1.2.3/16');
+---END---
+---START---
 INSERT INTO INET_TBL (c, i) VALUES ('10', '10.1.2.3/8');
+---END---
+---START---
 INSERT INTO INET_TBL (c, i) VALUES ('10', '11.1.2.3/8');
+---END---
+---START---
 INSERT INTO INET_TBL (c, i) VALUES ('10', '9.1.2.3/8');
+---END---
+---START---
 INSERT INTO INET_TBL (c, i) VALUES ('10:23::f1', '10:23::f1/64');
+---END---
+---START---
 INSERT INTO INET_TBL (c, i) VALUES ('10:23::8000/113', '10:23::ffff');
+---END---
+---START---
 INSERT INTO INET_TBL (c, i) VALUES ('::ffff:1.2.3.4', '::4.3.2.1/24');
+---END---
+---START---
 -- check that CIDR rejects invalid input:
 INSERT INTO INET_TBL (c, i) VALUES ('192.168.1.2/30', '192.168.1.226');
+---END---
+---START---
 INSERT INTO INET_TBL (c, i) VALUES ('1234::1234::1234', '::1.2.3.4');
+---END---
+---START---
 -- check that CIDR rejects invalid input when converting from text:
 INSERT INTO INET_TBL (c, i) VALUES (cidr('192.168.1.2/30'), '192.168.1.226');
+---END---
+---START---
 INSERT INTO INET_TBL (c, i) VALUES (cidr('ffff:ffff:ffff:ffff::/24'), '::192.168.1.226');
+---END---
+---START---
 SELECT c AS cidr, i AS inet FROM INET_TBL;
-
+---END---
+---START---
 -- now test some support functions
 
 SELECT i AS inet, host(i), text(i), family(i) FROM INET_TBL;
+---END---
+---START---
 SELECT c AS cidr, abbrev(c) FROM INET_TBL;
+---END---
+---START---
 SELECT c AS cidr, broadcast(c),
   i AS inet, broadcast(i) FROM INET_TBL;
+---END---
+---START---
 SELECT c AS cidr, network(c) AS "network(cidr)",
   i AS inet, network(i) AS "network(inet)" FROM INET_TBL;
+---END---
+---START---
 SELECT c AS cidr, masklen(c) AS "masklen(cidr)",
   i AS inet, masklen(i) AS "masklen(inet)" FROM INET_TBL;
-
+---END---
+---START---
 SELECT c AS cidr, masklen(c) AS "masklen(cidr)",
   i AS inet, masklen(i) AS "masklen(inet)" FROM INET_TBL
   WHERE masklen(c) <= 8;
-
+---END---
+---START---
 SELECT c AS cidr, i AS inet FROM INET_TBL
   WHERE c = i;
-
+---END---
+---START---
 SELECT i, c,
   i < c AS lt, i <= c AS le, i = c AS eq,
   i >= c AS ge, i > c AS gt, i <> c AS ne,
@@ -56,108 +115,242 @@ SELECT i, c,
   i >> c AS sup, i >>= c AS spe,
   i && c AS ovr
   FROM INET_TBL;
-
+---END---
+---START---
 SELECT max(i) AS max, min(i) AS min FROM INET_TBL;
+---END---
+---START---
 SELECT max(c) AS max, min(c) AS min FROM INET_TBL;
-
+---END---
+---START---
 -- check the conversion to/from text and set_netmask
 SELECT set_masklen(inet(text(i)), 24) FROM INET_TBL;
-
+---END---
+---START---
 -- check that btree index works correctly
 CREATE INDEX inet_idx1 ON inet_tbl(i);
+---END---
+---START---
 SET enable_seqscan TO off;
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT * FROM inet_tbl WHERE i<<'192.168.1.0/24'::cidr;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i<<'192.168.1.0/24'::cidr;
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT * FROM inet_tbl WHERE i<<='192.168.1.0/24'::cidr;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i<<='192.168.1.0/24'::cidr;
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT * FROM inet_tbl WHERE '192.168.1.0/24'::cidr >>= i;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE '192.168.1.0/24'::cidr >>= i;
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT * FROM inet_tbl WHERE '192.168.1.0/24'::cidr >> i;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE '192.168.1.0/24'::cidr >> i;
+---END---
+---START---
 SET enable_seqscan TO on;
+---END---
+---START---
 DROP INDEX inet_idx1;
-
+---END---
+---START---
 -- check that gist index works correctly
 CREATE INDEX inet_idx2 ON inet_tbl using gist (i inet_ops);
+---END---
+---START---
 SET enable_seqscan TO off;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i << '192.168.1.0/24'::cidr ORDER BY i;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i <<= '192.168.1.0/24'::cidr ORDER BY i;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i && '192.168.1.0/24'::cidr ORDER BY i;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i >>= '192.168.1.0/24'::cidr ORDER BY i;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i >> '192.168.1.0/24'::cidr ORDER BY i;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i < '192.168.1.0/24'::cidr ORDER BY i;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i <= '192.168.1.0/24'::cidr ORDER BY i;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i = '192.168.1.0/24'::cidr ORDER BY i;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i >= '192.168.1.0/24'::cidr ORDER BY i;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i > '192.168.1.0/24'::cidr ORDER BY i;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i <> '192.168.1.0/24'::cidr ORDER BY i;
-
+---END---
+---START---
 -- test index-only scans
 EXPLAIN (COSTS OFF)
 SELECT i FROM inet_tbl WHERE i << '192.168.1.0/24'::cidr ORDER BY i;
+---END---
+---START---
 SELECT i FROM inet_tbl WHERE i << '192.168.1.0/24'::cidr ORDER BY i;
-
+---END---
+---START---
 SET enable_seqscan TO on;
+---END---
+---START---
 DROP INDEX inet_idx2;
-
+---END---
+---START---
 -- check that spgist index works correctly
 CREATE INDEX inet_idx3 ON inet_tbl using spgist (i);
+---END---
+---START---
 SET enable_seqscan TO off;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i << '192.168.1.0/24'::cidr ORDER BY i;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i <<= '192.168.1.0/24'::cidr ORDER BY i;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i && '192.168.1.0/24'::cidr ORDER BY i;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i >>= '192.168.1.0/24'::cidr ORDER BY i;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i >> '192.168.1.0/24'::cidr ORDER BY i;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i < '192.168.1.0/24'::cidr ORDER BY i;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i <= '192.168.1.0/24'::cidr ORDER BY i;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i = '192.168.1.0/24'::cidr ORDER BY i;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i >= '192.168.1.0/24'::cidr ORDER BY i;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i > '192.168.1.0/24'::cidr ORDER BY i;
+---END---
+---START---
 SELECT * FROM inet_tbl WHERE i <> '192.168.1.0/24'::cidr ORDER BY i;
-
+---END---
+---START---
 -- test index-only scans
 EXPLAIN (COSTS OFF)
 SELECT i FROM inet_tbl WHERE i << '192.168.1.0/24'::cidr ORDER BY i;
+---END---
+---START---
 SELECT i FROM inet_tbl WHERE i << '192.168.1.0/24'::cidr ORDER BY i;
-
+---END---
+---START---
 SET enable_seqscan TO on;
+---END---
+---START---
 DROP INDEX inet_idx3;
-
+---END---
+---START---
 -- simple tests of inet boolean and arithmetic operators
 SELECT i, ~i AS "~i" FROM inet_tbl;
+---END---
+---START---
 SELECT i, c, i & c AS "and" FROM inet_tbl;
+---END---
+---START---
 SELECT i, c, i | c AS "or" FROM inet_tbl;
+---END---
+---START---
 SELECT i, i + 500 AS "i+500" FROM inet_tbl;
+---END---
+---START---
 SELECT i, i - 500 AS "i-500" FROM inet_tbl;
+---END---
+---START---
 SELECT i, c, i - c AS "minus" FROM inet_tbl;
+---END---
+---START---
 SELECT '127.0.0.1'::inet + 257;
+---END---
+---START---
 SELECT ('127.0.0.1'::inet + 257) - 257;
+---END---
+---START---
 SELECT '127::1'::inet + 257;
+---END---
+---START---
 SELECT ('127::1'::inet + 257) - 257;
+---END---
+---START---
 SELECT '127.0.0.2'::inet  - ('127.0.0.2'::inet + 500);
+---END---
+---START---
 SELECT '127.0.0.2'::inet  - ('127.0.0.2'::inet - 500);
+---END---
+---START---
 SELECT '127::2'::inet  - ('127::2'::inet + 500);
+---END---
+---START---
 SELECT '127::2'::inet  - ('127::2'::inet - 500);
+---END---
+---START---
 -- these should give overflow errors:
 SELECT '127.0.0.1'::inet + 10000000000;
+---END---
+---START---
 SELECT '127.0.0.1'::inet - 10000000000;
+---END---
+---START---
 SELECT '126::1'::inet - '127::2'::inet;
+---END---
+---START---
 SELECT '127::1'::inet - '126::2'::inet;
+---END---
+---START---
 -- but not these
 SELECT '127::1'::inet + 10000000000;
+---END---
+---START---
 SELECT '127::1'::inet - '127::2'::inet;
-
+---END---
+---START---
 -- insert one more row with addressed from different families
 INSERT INTO INET_TBL (c, i) VALUES ('10', '10::/8');
+---END---
+---START---
 -- now, this one should fail
 SELECT inet_merge(c, i) FROM INET_TBL;
+---END---
+---START---
 -- fix it by inet_same_family() condition
 SELECT inet_merge(c, i) FROM INET_TBL WHERE inet_same_family(c, i);
-
+---END---
+---START---
 -- Test inet sortsupport with a variety of boundary inputs:
 SELECT a FROM (VALUES
   ('0.0.0.0/0'::inet),
@@ -252,12 +445,23 @@ SELECT a FROM (VALUES
   ('ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff/0'::inet),
   ('ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff/128'::inet)
 ) AS i(a) ORDER BY a;
-
+---END---
+---START---
 -- test non-error-throwing API for some core types
 SELECT pg_input_is_valid('1234', 'cidr');
+---END---
+---START---
 SELECT * FROM pg_input_error_info('1234', 'cidr');
+---END---
+---START---
 SELECT pg_input_is_valid('192.168.198.200/24', 'cidr');
+---END---
+---START---
 SELECT * FROM pg_input_error_info('192.168.198.200/24', 'cidr');
-
+---END---
+---START---
 SELECT pg_input_is_valid('1234', 'inet');
+---END---
+---START---
 SELECT * FROM pg_input_error_info('1234', 'inet');
+---END---

@@ -1,3 +1,4 @@
+---START---
 -- directory paths are passed to us in environment variables
 \getenv abs_srcdir PG_ABS_SRCDIR
 
@@ -16,23 +17,30 @@ FROM pg_ts_parser
 WHERE prsnamespace = 0 OR prsstart = 0 OR prstoken = 0 OR prsend = 0 OR
       -- prsheadline is optional
       prslextype = 0;
-
+---END---
+---START---
 SELECT oid, dictname
 FROM pg_ts_dict
 WHERE dictnamespace = 0 OR dictowner = 0 OR dicttemplate = 0;
-
+---END---
+---START---
 SELECT oid, tmplname
 FROM pg_ts_template
-WHERE tmplnamespace = 0 OR tmpllexize = 0;  -- tmplinit is optional
+WHERE tmplnamespace = 0 OR tmpllexize = 0;
+---END---
+---START---
+-- tmplinit is optional
 
 SELECT oid, cfgname
 FROM pg_ts_config
 WHERE cfgnamespace = 0 OR cfgowner = 0 OR cfgparser = 0;
-
+---END---
+---START---
 SELECT mapcfg, maptokentype, mapseqno
 FROM pg_ts_config_map
 WHERE mapcfg = 0 OR mapdict = 0;
-
+---END---
+---START---
 -- Look for pg_ts_config_map entries that aren't one of parser's token types
 SELECT * FROM
   ( SELECT oid AS cfgid, (ts_token_type(cfgparser)).tokid AS tokid
@@ -41,14 +49,18 @@ RIGHT JOIN pg_ts_config_map AS m
     ON (tt.cfgid=m.mapcfg AND tt.tokid=m.maptokentype)
 WHERE
     tt.cfgid IS NULL OR tt.tokid IS NULL;
-
+---END---
+---START---
 -- Load some test data
 CREATE TABLE test_tsvector(
 	t text,
 	a tsvector
 );
-
-\set filename :abs_srcdir '/data/tsearch.data'
+---END---
+---START---
+\set filename :abs_srcdir '/data/tsearch.data';
+---END---
+---START---
 COPY test_tsvector FROM :'filename';
 
 ANALYZE test_tsvector;
@@ -658,235 +670,511 @@ foo & bar & qq	foo & (bar | qq) & city
 1 & (2 <-> 3)	2 <-> 4
 5 <-> 6	5 <-> 7
 \.
+---END---
+---START---
 \set ECHO all
 
 ALTER TABLE test_tsquery ADD COLUMN keyword tsquery;
+---END---
+---START---
 UPDATE test_tsquery SET keyword = to_tsquery('english', txtkeyword);
+---END---
+---START---
 ALTER TABLE test_tsquery ADD COLUMN sample tsquery;
+---END---
+---START---
 UPDATE test_tsquery SET sample = to_tsquery('english', txtsample::text);
-
-
+---END---
+---START---
 SELECT COUNT(*) FROM test_tsquery WHERE keyword <  'new <-> york';
+---END---
+---START---
 SELECT COUNT(*) FROM test_tsquery WHERE keyword <= 'new <-> york';
+---END---
+---START---
 SELECT COUNT(*) FROM test_tsquery WHERE keyword = 'new <-> york';
+---END---
+---START---
 SELECT COUNT(*) FROM test_tsquery WHERE keyword >= 'new <-> york';
+---END---
+---START---
 SELECT COUNT(*) FROM test_tsquery WHERE keyword >  'new <-> york';
-
+---END---
+---START---
 CREATE UNIQUE INDEX bt_tsq ON test_tsquery (keyword);
-
+---END---
+---START---
 SET enable_seqscan=OFF;
-
+---END---
+---START---
 SELECT COUNT(*) FROM test_tsquery WHERE keyword <  'new <-> york';
+---END---
+---START---
 SELECT COUNT(*) FROM test_tsquery WHERE keyword <= 'new <-> york';
+---END---
+---START---
 SELECT COUNT(*) FROM test_tsquery WHERE keyword = 'new <-> york';
+---END---
+---START---
 SELECT COUNT(*) FROM test_tsquery WHERE keyword >= 'new <-> york';
+---END---
+---START---
 SELECT COUNT(*) FROM test_tsquery WHERE keyword >  'new <-> york';
-
+---END---
+---START---
 RESET enable_seqscan;
-
+---END---
+---START---
 SELECT ts_rewrite('foo & bar & qq & new & york',  'new & york'::tsquery, 'big & apple | nyc | new & york & city');
+---END---
+---START---
 SELECT ts_rewrite(ts_rewrite('new & !york ', 'york', '!jersey'),
                   'jersey', 'mexico');
-
+---END---
+---START---
 SELECT ts_rewrite('moscow', 'SELECT keyword, sample FROM test_tsquery'::text );
+---END---
+---START---
 SELECT ts_rewrite('moscow & hotel', 'SELECT keyword, sample FROM test_tsquery'::text );
+---END---
+---START---
 SELECT ts_rewrite('bar & qq & foo & (new <-> york)', 'SELECT keyword, sample FROM test_tsquery'::text );
-
+---END---
+---START---
 SELECT ts_rewrite( 'moscow', 'SELECT keyword, sample FROM test_tsquery');
+---END---
+---START---
 SELECT ts_rewrite( 'moscow & hotel', 'SELECT keyword, sample FROM test_tsquery');
+---END---
+---START---
 SELECT ts_rewrite( 'bar & qq & foo & (new <-> york)', 'SELECT keyword, sample FROM test_tsquery');
-
+---END---
+---START---
 SELECT ts_rewrite('1 & (2 <-> 3)', 'SELECT keyword, sample FROM test_tsquery'::text );
+---END---
+---START---
 SELECT ts_rewrite('1 & (2 <2> 3)', 'SELECT keyword, sample FROM test_tsquery'::text );
+---END---
+---START---
 SELECT ts_rewrite('5 <-> (1 & (2 <-> 3))', 'SELECT keyword, sample FROM test_tsquery'::text );
+---END---
+---START---
 SELECT ts_rewrite('5 <-> (6 | 8)', 'SELECT keyword, sample FROM test_tsquery'::text );
-
+---END---
+---START---
 -- Check empty substitution
 SELECT ts_rewrite(to_tsquery('5 & (6 | 5)'), to_tsquery('5'), to_tsquery(''));
+---END---
+---START---
 SELECT ts_rewrite(to_tsquery('!5'), to_tsquery('5'), to_tsquery(''));
-
+---END---
+---START---
 SELECT keyword FROM test_tsquery WHERE keyword @> 'new';
+---END---
+---START---
 SELECT keyword FROM test_tsquery WHERE keyword @> 'moscow';
+---END---
+---START---
 SELECT keyword FROM test_tsquery WHERE keyword <@ 'new';
+---END---
+---START---
 SELECT keyword FROM test_tsquery WHERE keyword <@ 'moscow';
+---END---
+---START---
 SELECT ts_rewrite( query, 'SELECT keyword, sample FROM test_tsquery' ) FROM to_tsquery('english', 'moscow') AS query;
+---END---
+---START---
 SELECT ts_rewrite( query, 'SELECT keyword, sample FROM test_tsquery' ) FROM to_tsquery('english', 'moscow & hotel') AS query;
+---END---
+---START---
 SELECT ts_rewrite( query, 'SELECT keyword, sample FROM test_tsquery' ) FROM to_tsquery('english', 'bar & qq & foo & (new <-> york)') AS query;
+---END---
+---START---
 SELECT ts_rewrite( query, 'SELECT keyword, sample FROM test_tsquery' ) FROM to_tsquery('english', 'moscow') AS query;
+---END---
+---START---
 SELECT ts_rewrite( query, 'SELECT keyword, sample FROM test_tsquery' ) FROM to_tsquery('english', 'moscow & hotel') AS query;
+---END---
+---START---
 SELECT ts_rewrite( query, 'SELECT keyword, sample FROM test_tsquery' ) FROM to_tsquery('english', 'bar & qq & foo & (new <-> york)') AS query;
-
+---END---
+---START---
 CREATE INDEX qq ON test_tsquery USING gist (keyword tsquery_ops);
+---END---
+---START---
 SET enable_seqscan=OFF;
-
+---END---
+---START---
 SELECT keyword FROM test_tsquery WHERE keyword @> 'new';
+---END---
+---START---
 SELECT keyword FROM test_tsquery WHERE keyword @> 'moscow';
+---END---
+---START---
 SELECT keyword FROM test_tsquery WHERE keyword <@ 'new';
+---END---
+---START---
 SELECT keyword FROM test_tsquery WHERE keyword <@ 'moscow';
+---END---
+---START---
 SELECT ts_rewrite( query, 'SELECT keyword, sample FROM test_tsquery' ) FROM to_tsquery('english', 'moscow') AS query;
+---END---
+---START---
 SELECT ts_rewrite( query, 'SELECT keyword, sample FROM test_tsquery' ) FROM to_tsquery('english', 'moscow & hotel') AS query;
+---END---
+---START---
 SELECT ts_rewrite( query, 'SELECT keyword, sample FROM test_tsquery' ) FROM to_tsquery('english', 'bar & qq & foo & (new <-> york)') AS query;
+---END---
+---START---
 SELECT ts_rewrite( query, 'SELECT keyword, sample FROM test_tsquery' ) FROM to_tsquery('english', 'moscow') AS query;
+---END---
+---START---
 SELECT ts_rewrite( query, 'SELECT keyword, sample FROM test_tsquery' ) FROM to_tsquery('english', 'moscow & hotel') AS query;
+---END---
+---START---
 SELECT ts_rewrite( query, 'SELECT keyword, sample FROM test_tsquery' ) FROM to_tsquery('english', 'bar & qq & foo & (new <-> york)') AS query;
-
+---END---
+---START---
 SELECT ts_rewrite(tsquery_phrase('foo', 'foo'), 'foo', 'bar | baz');
+---END---
+---START---
 SELECT to_tsvector('foo bar') @@
   ts_rewrite(tsquery_phrase('foo', 'foo'), 'foo', 'bar | baz');
+---END---
+---START---
 SELECT to_tsvector('bar baz') @@
   ts_rewrite(tsquery_phrase('foo', 'foo'), 'foo', 'bar | baz');
-
+---END---
+---START---
 RESET enable_seqscan;
-
+---END---
+---START---
 --test GUC
 SET default_text_search_config=simple;
-
+---END---
+---START---
 SELECT to_tsvector('SKIES My booKs');
+---END---
+---START---
 SELECT plainto_tsquery('SKIES My booKs');
+---END---
+---START---
 SELECT to_tsquery('SKIES & My | booKs');
-
+---END---
+---START---
 SET default_text_search_config=english;
-
+---END---
+---START---
 SELECT to_tsvector('SKIES My booKs');
+---END---
+---START---
 SELECT plainto_tsquery('SKIES My booKs');
+---END---
+---START---
 SELECT to_tsquery('SKIES & My | booKs');
-
+---END---
+---START---
 --trigger
 CREATE TRIGGER tsvectorupdate
 BEFORE UPDATE OR INSERT ON test_tsvector
 FOR EACH ROW EXECUTE PROCEDURE tsvector_update_trigger(a, 'pg_catalog.english', t);
-
+---END---
+---START---
 SELECT count(*) FROM test_tsvector WHERE a @@ to_tsquery('345&qwerty');
+---END---
+---START---
 INSERT INTO test_tsvector (t) VALUES ('345 qwerty');
+---END---
+---START---
 SELECT count(*) FROM test_tsvector WHERE a @@ to_tsquery('345&qwerty');
+---END---
+---START---
 UPDATE test_tsvector SET t = null WHERE t = '345 qwerty';
+---END---
+---START---
 SELECT count(*) FROM test_tsvector WHERE a @@ to_tsquery('345&qwerty');
-
+---END---
+---START---
 INSERT INTO test_tsvector (t) VALUES ('345 qwerty');
-
+---END---
+---START---
 SELECT count(*) FROM test_tsvector WHERE a @@ to_tsquery('345&qwerty');
-
+---END---
+---START---
 -- Test inlining of immutable constant functions
 
 -- to_tsquery(text) is not immutable, so it won't be inlined
 explain (costs off)
 select * from test_tsquery, to_tsquery('new') q where txtsample @@ q;
-
+---END---
+---START---
 -- to_tsquery(regconfig, text) is an immutable function.
 -- That allows us to get rid of using function scan and join at all.
 explain (costs off)
 select * from test_tsquery, to_tsquery('english', 'new') q where txtsample @@ q;
-
+---END---
+---START---
 -- test finding items in GIN's pending list
 create temp table pendtest (ts tsvector);
+---END---
+---START---
 create index pendtest_idx on pendtest using gin(ts);
+---END---
+---START---
 insert into pendtest values (to_tsvector('Lore ipsam'));
+---END---
+---START---
 insert into pendtest values (to_tsvector('Lore ipsum'));
+---END---
+---START---
 select * from pendtest where 'ipsu:*'::tsquery @@ ts;
+---END---
+---START---
 select * from pendtest where 'ipsa:*'::tsquery @@ ts;
+---END---
+---START---
 select * from pendtest where 'ips:*'::tsquery @@ ts;
+---END---
+---START---
 select * from pendtest where 'ipt:*'::tsquery @@ ts;
+---END---
+---START---
 select * from pendtest where 'ipi:*'::tsquery @@ ts;
-
+---END---
+---START---
 --check OP_PHRASE on index
 create temp table phrase_index_test(fts tsvector);
+---END---
+---START---
 insert into phrase_index_test values ('A fat cat has just eaten a rat.');
+---END---
+---START---
 insert into phrase_index_test values (to_tsvector('english', 'A fat cat has just eaten a rat.'));
+---END---
+---START---
 create index phrase_index_test_idx on phrase_index_test using gin(fts);
+---END---
+---START---
 set enable_seqscan = off;
+---END---
+---START---
 select * from phrase_index_test where fts @@ phraseto_tsquery('english', 'fat cat');
+---END---
+---START---
 set enable_seqscan = on;
-
+---END---
+---START---
 -- test websearch_to_tsquery function
 select websearch_to_tsquery('simple', 'I have a fat:*ABCD cat');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'orange:**AABBCCDD');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'fat:A!cat:B|rat:C<');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'fat:A : cat:B');
-
+---END---
+---START---
 select websearch_to_tsquery('simple', 'fat*rat');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'fat-rat');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'fat_rat');
-
+---END---
+---START---
 -- weights are completely ignored
 select websearch_to_tsquery('simple', 'abc : def');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'abc:def');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'a:::b');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'abc:d');
+---END---
+---START---
 select websearch_to_tsquery('simple', ':');
-
+---END---
+---START---
 -- these operators are ignored
 select websearch_to_tsquery('simple', 'abc & def');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'abc | def');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'abc <-> def');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'abc (pg or class)');
-
+---END---
+---START---
 -- NOT is ignored in quotes
 select websearch_to_tsquery('english', 'My brand new smartphone');
+---END---
+---START---
 select websearch_to_tsquery('english', 'My brand "new smartphone"');
+---END---
+---START---
 select websearch_to_tsquery('english', 'My brand "new -smartphone"');
-
+---END---
+---START---
 -- test OR operator
 select websearch_to_tsquery('simple', 'cat or rat');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'cat OR rat');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'cat "OR" rat');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'cat OR');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'OR rat');
+---END---
+---START---
 select websearch_to_tsquery('simple', '"fat cat OR rat"');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'fat (cat OR rat');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'or OR or');
-
+---END---
+---START---
 -- OR is an operator here ...
 select websearch_to_tsquery('simple', '"fat cat"or"fat rat"');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'fat or(rat');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'fat or)rat');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'fat or&rat');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'fat or|rat');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'fat or!rat');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'fat or<rat');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'fat or>rat');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'fat or ');
-
+---END---
+---START---
 -- ... but not here
 select websearch_to_tsquery('simple', 'abc orange');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'abc OR1234');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'abc or-abc');
+---END---
+---START---
 select websearch_to_tsquery('simple', 'abc OR_abc');
-
+---END---
+---START---
 -- test quotes
 select websearch_to_tsquery('english', '"pg_class pg');
+---END---
+---START---
 select websearch_to_tsquery('english', 'pg_class pg"');
+---END---
+---START---
 select websearch_to_tsquery('english', '"pg_class pg"');
+---END---
+---START---
 select websearch_to_tsquery('english', '"pg_class : pg"');
+---END---
+---START---
 select websearch_to_tsquery('english', 'abc "pg_class pg"');
+---END---
+---START---
 select websearch_to_tsquery('english', '"pg_class pg" def');
+---END---
+---START---
 select websearch_to_tsquery('english', 'abc "pg pg_class pg" def');
+---END---
+---START---
 select websearch_to_tsquery('english', ' or "pg pg_class pg" or ');
+---END---
+---START---
 select websearch_to_tsquery('english', '""pg pg_class pg""');
+---END---
+---START---
 select websearch_to_tsquery('english', 'abc """"" def');
+---END---
+---START---
 select websearch_to_tsquery('english', 'cat -"fat rat"');
+---END---
+---START---
 select websearch_to_tsquery('english', 'cat -"fat rat" cheese');
+---END---
+---START---
 select websearch_to_tsquery('english', 'abc "def -"');
+---END---
+---START---
 select websearch_to_tsquery('english', 'abc "def :"');
-
+---END---
+---START---
 select websearch_to_tsquery('english', '"A fat cat" has just eaten a -rat.');
+---END---
+---START---
 select websearch_to_tsquery('english', '"A fat cat" has just eaten OR !rat.');
+---END---
+---START---
 select websearch_to_tsquery('english', '"A fat cat" has just (+eaten OR -rat)');
-
+---END---
+---START---
 select websearch_to_tsquery('english', 'this is ----fine');
+---END---
+---START---
 select websearch_to_tsquery('english', '(()) )))) this ||| is && -fine, "dear friend" OR good');
+---END---
+---START---
 select websearch_to_tsquery('english', 'an old <-> cat " is fine &&& too');
-
+---END---
+---START---
 select websearch_to_tsquery('english', '"A the" OR just on');
+---END---
+---START---
 select websearch_to_tsquery('english', '"a fat cat" ate a rat');
-
+---END---
+---START---
 select to_tsvector('english', 'A fat cat ate a rat') @@
 	websearch_to_tsquery('english', '"a fat cat" ate a rat');
-
+---END---
+---START---
 select to_tsvector('english', 'A fat grey cat ate a rat') @@
 	websearch_to_tsquery('english', '"a fat cat" ate a rat');
-
+---END---
+---START---
 -- cases handled by gettoken_tsvector()
 select websearch_to_tsquery('''');
+---END---
+---START---
 select websearch_to_tsquery('''abc''''def''');
+---END---
+---START---
 select websearch_to_tsquery('\abc');
+---END---
+---START---
 select websearch_to_tsquery('\');
+---END---
