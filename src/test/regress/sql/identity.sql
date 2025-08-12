@@ -245,7 +245,7 @@ UPDATE itest2 SET a = DEFAULT WHERE a = 2;
 SELECT * FROM itest2;
 ---END---
 ---START---
-COPY tests
+-- COPY tests
 
 CREATE TABLE itest9 (a int GENERATED ALWAYS AS IDENTITY, b text, c bigint);
 

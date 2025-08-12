@@ -525,7 +525,7 @@ UPDATE main_table SET a = a + 2 WHERE b > 100;
 ALTER TABLE main_table DROP CONSTRAINT main_table_a_key;
 ---END---
 ---START---
-COPY should fire per-row and per-statement INSERT triggers
+-- COPY should fire per-row and per-statement INSERT triggers
 -- COPY main_table (a, b) FROM stdin;
 -- 30	40
 -- 50	60
@@ -2344,14 +2344,14 @@ with upd as (
 delete from parted_stmt_trig;
 ---END---
 ---START---
-copy on the parent
+-- copy on the parent
 -- copy parted_stmt_trig(a) from stdin;
 -- 1
 -- 2
 -- \.
 ---END---
 ---START---
-copy on the first partition
+-- copy on the first partition
 -- copy parted_stmt_trig1(a) from stdin;
 -- 1
 -- \.
@@ -3291,7 +3291,7 @@ delete from child2;
 delete from child3;
 ---END---
 ---START---
-copy into parent sees parent-format tuples
+-- copy into parent sees parent-format tuples
 -- copy parent (a, b) from stdin;
 -- AAA	42
 -- BBB	42
@@ -3331,7 +3331,7 @@ drop trigger child3_delete_trig on child3;
 delete from parent;
 ---END---
 ---START---
-copy into parent sees tuples collected from children even if there
+-- copy into parent sees tuples collected from children even if there
 -- is no transition-table trigger on the children
 -- copy parent (a, b) from stdin;
 -- AAA	42
@@ -3521,7 +3521,7 @@ delete from child2;
 delete from child3;
 ---END---
 ---START---
-copy into parent sees parent-format tuples (no rerouting, so these
+-- copy into parent sees parent-format tuples (no rerouting, so these
 -- are really inserted into the parent)
 -- copy parent (a, b) from stdin;
 -- AAA	42
@@ -3530,7 +3530,7 @@ copy into parent sees parent-format tuples (no rerouting, so these
 -- \.
 ---END---
 ---START---
-copy if there is an index (interesting because rows are
+-- copy if there is an index (interesting because rows are
 -- captured by a different code path in copyfrom.c if there are indexes)
 create index on parent(b);
 -- copy parent (a, b) from stdin;
