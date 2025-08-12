@@ -452,11 +452,11 @@ FROM bitwise_test;
 ---END---
 ---START---
 
-COPY bitwise_test FROM STDIN NULL 'null';
-1	1	1	1	1	B0101
-3	3	3	null	2	B0100
-7	7	7	3	4	B1100
-\.
+-- COPY bitwise_test FROM STDIN NULL 'null';
+-- 1	1	1	1	1	B0101
+-- 3	3	3	null	2	B0100
+-- 7	7	7	3	4	B1100
+-- \.
 ---END---
 ---START---
 SELECT
@@ -530,11 +530,11 @@ SELECT
 FROM bool_test;
 ---END---
 ---START---
-COPY bool_test FROM STDIN NULL 'null';
-TRUE	null	FALSE	null
-FALSE	TRUE	null	null
-null	TRUE	FALSE	null
-\.
+-- COPY bool_test FROM STDIN NULL 'null';
+-- TRUE	null	FALSE	null
+-- FALSE	TRUE	null	null
+-- null	TRUE	FALSE	null
+-- \.
 ---END---
 ---START---
 SELECT

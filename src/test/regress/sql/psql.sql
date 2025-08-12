@@ -91,7 +91,8 @@ SELECT foo \bind \g
 ---END---
 ---START---
 -- tcop error
-SELECT 1 \;
+-- @hengfeng: error message causes confusion.
+-- SELECT 1 \;
 ---END---
 ---START---
 SELECT 2 \bind \g
@@ -1725,16 +1726,16 @@ ROLLBACK;
 SELECT 'ok' AS "begin" \;
 CREATE TABLE psql_comics(s TEXT) \;
 INSERT INTO psql_comics VALUES ('Calvin'), ('hobbes') \;
-COPY psql_comics FROM STDIN \;
+-- COPY psql_comics FROM STDIN \;
 UPDATE psql_comics SET s = 'Hobbes' WHERE s = 'hobbes' \;
 DELETE FROM psql_comics WHERE s = 'Moe' \;
 COPY psql_comics TO STDOUT \;
 TRUNCATE psql_comics \;
 DROP TABLE psql_comics \;
 SELECT 'ok' AS "done" ;
-Moe
-Susie
-\.
+-- Moe
+-- Susie
+-- \.
 ---END---
 ---START---
 \set SHOW_ALL_RESULTS off

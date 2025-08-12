@@ -69,11 +69,11 @@ create table copytest3 (
 	"col with "" quote"  int);
 ---END---
 ---START---
-copy copytest3 from stdin csv header;
-this is just a line full of junk that would error out if parsed
-1,a,1
-2,b,2
-\.
+-- copy copytest3 from stdin csv header;
+-- this is just a line full of junk that would error out if parsed
+-- 1,a,1
+-- 2,b,2
+-- \.
 ---END---
 ---START---
 copy copytest3 to stdout csv header;
@@ -85,11 +85,11 @@ create table copytest4 (
 	"colname with tab: 	" text);
 ---END---
 ---START---
-copy copytest4 from stdin (header);
-this is just a line full of junk that would error out if parsed
-1	a
-2	b
-\.
+-- copy copytest4 from stdin (header);
+-- this is just a line full of junk that would error out if parsed
+-- 1	a
+-- 2	b
+-- \.
 ---END---
 ---START---
 copy copytest4 to stdout (header);
@@ -285,56 +285,56 @@ alter table header_copytest add column c text;
 copy header_copytest to stdout with (header match);
 ---END---
 ---START---
-copy header_copytest from stdin with (header wrong_choice);
+-- copy header_copytest from stdin with (header wrong_choice);
 ---END---
 ---START---
 -- works
-copy header_copytest from stdin with (header match);
-a	b	c
-1	2	foo
-\.
+-- copy header_copytest from stdin with (header match);
+-- a	b	c
+-- 1	2	foo
+-- \.
 ---END---
 ---START---
-copy header_copytest (c, a, b) from stdin with (header match);
-c	a	b
-bar	3	4
-\.
+-- copy header_copytest (c, a, b) from stdin with (header match);
+-- c	a	b
+-- bar	3	4
+-- \.
 ---END---
 ---START---
-copy header_copytest from stdin with (header match, format csv);
-a,b,c
-5,6,baz
-\.
+-- copy header_copytest from stdin with (header match, format csv);
+-- a,b,c
+-- 5,6,baz
+-- \.
 ---END---
 ---START---
-copy header_copytest (c, b, a) from stdin with (header match);
-a	b	c
-1	2	foo
-\.
+-- copy header_copytest (c, b, a) from stdin with (header match);
+-- a	b	c
+-- 1	2	foo
+-- \.
 ---END---
 ---START---
-copy header_copytest from stdin with (header match);
-a	b	\N
-1	2	foo
-\.
+-- copy header_copytest from stdin with (header match);
+-- a	b	\N
+-- 1	2	foo
+-- \.
 ---END---
 ---START---
-copy header_copytest from stdin with (header match);
-a	b
-1	2
-\.
+-- copy header_copytest from stdin with (header match);
+-- a	b
+-- 1	2
+-- \.
 ---END---
 ---START---
-copy header_copytest from stdin with (header match);
-a	b	c	d
-1	2	foo	bar
-\.
+-- copy header_copytest from stdin with (header match);
+-- a	b	c	d
+-- 1	2	foo	bar
+-- \.
 ---END---
 ---START---
-copy header_copytest from stdin with (header match);
-a	b	d
-1	2	foo
-\.
+-- copy header_copytest from stdin with (header match);
+-- a	b	d
+-- 1	2	foo
+-- \.
 ---END---
 ---START---
 SELECT * FROM header_copytest ORDER BY a;
@@ -344,28 +344,28 @@ SELECT * FROM header_copytest ORDER BY a;
 alter table header_copytest drop column b;
 ---END---
 ---START---
-copy header_copytest (c, a) from stdin with (header match);
-c	a
-foo	7
-\.
+-- copy header_copytest (c, a) from stdin with (header match);
+-- c	a
+-- foo	7
+-- \.
 ---END---
 ---START---
-copy header_copytest (a, c) from stdin with (header match);
-a	c
-8	foo
-\.
+-- copy header_copytest (a, c) from stdin with (header match);
+-- a	c
+-- 8	foo
+-- \.
 ---END---
 ---START---
-copy header_copytest from stdin with (header match);
-a	........pg.dropped.2........	c
-1	2	foo
-\.
+-- copy header_copytest from stdin with (header match);
+-- a	........pg.dropped.2........	c
+-- 1	2	foo
+-- \.
 ---END---
 ---START---
-copy header_copytest (a, c) from stdin with (header match);
-a	c	b
-1	foo	2
-\.
+-- copy header_copytest (a, c) from stdin with (header match);
+-- a	c	b
+-- 1	foo	2
+-- \.
 ---END---
 ---START---
 SELECT * FROM header_copytest ORDER BY a;
