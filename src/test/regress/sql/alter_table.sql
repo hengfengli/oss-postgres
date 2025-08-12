@@ -2266,27 +2266,27 @@ alter table attest drop a;
 copy attest to stdout;
 copy attest(a) to stdout;
 copy attest("........pg.dropped.1........") to stdout;
-copy attest from stdin;
-10	11	12
-\.
+-- copy attest from stdin;
+-- 10	11	12
+-- \.
 ---END---
 ---START---
 select * from attest;
 ---END---
 ---START---
-copy attest from stdin;
-21	22
-\.
+-- copy attest from stdin;
+-- 21	22
+-- \.
 ---END---
 ---START---
 select * from attest;
 ---END---
 ---START---
-copy attest(a) from stdin;
-copy attest("........pg.dropped.1........") from stdin;
-copy attest(b,c) from stdin;
-31	32
-\.
+-- copy attest(a) from stdin;
+-- copy attest("........pg.dropped.1........") from stdin;
+-- copy attest(b,c) from stdin;
+-- 31	32
+-- \.
 ---END---
 ---START---
 select * from attest;

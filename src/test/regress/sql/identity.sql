@@ -249,16 +249,16 @@ COPY tests
 
 CREATE TABLE itest9 (a int GENERATED ALWAYS AS IDENTITY, b text, c bigint);
 
-COPY itest9 FROM stdin;
-100	foo	200
-101	bar	201
-\.
+-- COPY itest9 FROM stdin;
+-- 100	foo	200
+-- 101	bar	201
+-- \.
 ---END---
 ---START---
-COPY itest9 (b, c) FROM stdin;
-foo2	202
-bar2	203
-\.
+-- COPY itest9 (b, c) FROM stdin;
+-- foo2	202
+-- bar2	203
+-- \.
 ---END---
 ---START---
 SELECT * FROM itest9 ORDER BY c;

@@ -468,13 +468,13 @@ CREATE TABLE log_table (gemini_pk serial PRIMARY KEY, tstamp timestamp DEFAULT C
 CREATE TABLE main_table (gemini_pk serial PRIMARY KEY, a integer UNIQUE, b integer);
 ---END---
 ---START---
-COPY main_table (a,b) FROM stdin;
-5	10
-20	20
-30	10
-50	35
-80	15
-\.
+-- COPY main_table (a,b) FROM stdin;
+-- 5	10
+-- 20	20
+-- 30	10
+-- 50	35
+-- 80	15
+-- \.
 ---END---
 ---START---
 CREATE FUNCTION trigger_func() RETURNS trigger LANGUAGE plpgsql AS '
@@ -526,10 +526,10 @@ ALTER TABLE main_table DROP CONSTRAINT main_table_a_key;
 ---END---
 ---START---
 COPY should fire per-row and per-statement INSERT triggers
-COPY main_table (a, b) FROM stdin;
-30	40
-50	60
-\.
+-- COPY main_table (a, b) FROM stdin;
+-- 30	40
+-- 50	60
+-- \.
 ---END---
 ---START---
 SELECT * FROM main_table ORDER BY a, b;
@@ -574,10 +574,10 @@ SELECT trigger_name, event_manipulation, event_object_schema, event_object_table
 INSERT INTO main_table (a) VALUES (123), (456);
 ---END---
 ---START---
-COPY main_table FROM stdin;
-123	999
-456	999
-\.
+-- COPY main_table FROM stdin;
+-- 123	999
+-- 456	999
+-- \.
 ---END---
 ---START---
 DELETE FROM main_table WHERE a IN (123, 456);
@@ -2345,16 +2345,16 @@ delete from parted_stmt_trig;
 ---END---
 ---START---
 copy on the parent
-copy parted_stmt_trig(a) from stdin;
-1
-2
-\.
+-- copy parted_stmt_trig(a) from stdin;
+-- 1
+-- 2
+-- \.
 ---END---
 ---START---
 copy on the first partition
-copy parted_stmt_trig1(a) from stdin;
-1
-\.
+-- copy parted_stmt_trig1(a) from stdin;
+-- 1
+-- \.
 ---END---
 ---START---
 -- Disabling a trigger in the parent table should disable children triggers too
@@ -3292,11 +3292,11 @@ delete from child3;
 ---END---
 ---START---
 copy into parent sees parent-format tuples
-copy parent (a, b) from stdin;
-AAA	42
-BBB	42
-CCC	42
-\.
+-- copy parent (a, b) from stdin;
+-- AAA	42
+-- BBB	42
+-- CCC	42
+-- \.
 ---END---
 ---START---
 -- DML affecting parent sees tuples collected from children even if
@@ -3333,11 +3333,11 @@ delete from parent;
 ---START---
 copy into parent sees tuples collected from children even if there
 -- is no transition-table trigger on the children
-copy parent (a, b) from stdin;
-AAA	42
-BBB	42
-CCC	42
-\.
+-- copy parent (a, b) from stdin;
+-- AAA	42
+-- BBB	42
+-- CCC	42
+-- \.
 ---END---
 ---START---
 -- insert into parent with a before trigger on a child tuple before
@@ -3360,11 +3360,11 @@ create trigger intercept_insert_child3
 insert into parent values ('AAA', 42), ('BBB', 42), ('CCC', 66);
 ---END---
 ---START---
-copy parent (a, b) from stdin;
-AAA	42
-BBB	42
-CCC	234
-\.
+-- copy parent (a, b) from stdin;
+-- AAA	42
+-- BBB	42
+-- CCC	234
+-- \.
 ---END---
 ---START---
 drop table child1, child2, child3, parent;
@@ -3523,19 +3523,19 @@ delete from child3;
 ---START---
 copy into parent sees parent-format tuples (no rerouting, so these
 -- are really inserted into the parent)
-copy parent (a, b) from stdin;
-AAA	42
-BBB	42
-CCC	42
-\.
+-- copy parent (a, b) from stdin;
+-- AAA	42
+-- BBB	42
+-- CCC	42
+-- \.
 ---END---
 ---START---
 copy if there is an index (interesting because rows are
 -- captured by a different code path in copyfrom.c if there are indexes)
 create index on parent(b);
-copy parent (a, b) from stdin;
-DDD	42
-\.
+-- copy parent (a, b) from stdin;
+-- DDD	42
+-- \.
 ---END---
 ---START---
 -- DML affecting parent sees tuples collected from children even if

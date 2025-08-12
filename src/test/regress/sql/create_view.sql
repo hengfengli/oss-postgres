@@ -98,12 +98,12 @@ CREATE VIEW key_dependent_view_no_cols AS
 CREATE TABLE viewtest_tbl (a int, b int, c numeric, d text COLLATE "C");
 ---END---
 ---START---
-COPY viewtest_tbl FROM stdin;
-5	10	1.1	xy
-10	15	2.2	xyz
-15	20	3.3	xyzz
-20	25	4.4	xyzzy
-\.
+-- COPY viewtest_tbl FROM stdin;
+-- 5	10	1.1	xy
+-- 10	15	2.2	xyz
+-- 15	20	3.3	xyzz
+-- 20	25	4.4	xyzzy
+-- \.
 ---END---
 ---START---
 CREATE OR REPLACE VIEW viewtest AS

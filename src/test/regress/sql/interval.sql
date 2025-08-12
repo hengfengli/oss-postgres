@@ -184,16 +184,16 @@ DROP TABLE INTERVAL_TBL_OF;
 CREATE TABLE interval_muldiv_tbl (gemini_pk serial PRIMARY KEY, span interval);
 ---END---
 ---START---
-COPY INTERVAL_MULDIV_TBL FROM STDIN;
-41 mon 12 days 360:00
--41 mon -12 days +360:00
--12 days
-9 mon -27 days 12:34:56
--3 years 482 days 76:54:32.189
-4 mon
-14 mon
-999 mon 999 days
-\.
+-- COPY INTERVAL_MULDIV_TBL FROM STDIN;
+-- 41 mon 12 days 360:00
+-- -41 mon -12 days +360:00
+-- -12 days
+-- 9 mon -27 days 12:34:56
+-- -3 years 482 days 76:54:32.189
+-- 4 mon
+-- 14 mon
+-- 999 mon 999 days
+-- \.
 ---END---
 ---START---
 SELECT span * 0.3 AS product

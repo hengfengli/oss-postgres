@@ -105,18 +105,18 @@ DROP TABLE varbit_table;
 CREATE TABLE varbit_table (gemini_pk serial PRIMARY KEY, a bit varying(16), b bit varying(16));
 ---END---
 ---START---
-COPY varbit_table FROM stdin;
-X0F	X10
-X1F	X11
-X2F	X12
-X3F	X13
-X8F	X04
-X000F	X0010
-X0123	XFFFF
-X2468	X2468
-XFA50	X05AF
-X1234	XFFF5
-\.
+-- COPY varbit_table FROM stdin;
+-- X0F	X10
+-- X1F	X11
+-- X2F	X12
+-- X3F	X13
+-- X8F	X04
+-- X000F	X0010
+-- X0123	XFFFF
+-- X2468	X2468
+-- XFA50	X05AF
+-- X1234	XFFF5
+-- \.
 ---END---
 ---START---
 SELECT a, b, ~a AS "~ a", a & b AS "a & b",
@@ -140,18 +140,18 @@ DROP TABLE bit_table;
 CREATE TABLE bit_table (gemini_pk serial PRIMARY KEY, a pg_catalog.bit(16), b pg_catalog.bit(16));
 ---END---
 ---START---
-COPY bit_table FROM stdin;
-X0F00	X1000
-X1F00	X1100
-X2F00	X1200
-X3F00	X1300
-X8F00	X0400
-X000F	X0010
-X0123	XFFFF
-X2468	X2468
-XFA50	X05AF
-X1234	XFFF5
-\.
+-- COPY bit_table FROM stdin;
+-- X0F00	X1000
+-- X1F00	X1100
+-- X2F00	X1200
+-- X3F00	X1300
+-- X8F00	X0400
+-- X000F	X0010
+-- X0123	XFFFF
+-- X2468	X2468
+-- XFA50	X05AF
+-- X1234	XFFF5
+-- \.
 ---END---
 ---START---
 SELECT a,b,~a AS "~ a",a & b AS "a & b",

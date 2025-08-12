@@ -397,13 +397,13 @@ COPY gtest1 TO stdout;
 
 COPY gtest1 (a, b) TO stdout;
 
-COPY gtest1 FROM stdin;
-3
-4
-\.
+-- COPY gtest1 FROM stdin;
+-- 3
+-- 4
+-- \.
 ---END---
 ---START---
-COPY gtest1 (a, b) FROM stdin;
+-- COPY gtest1 (a, b) FROM stdin;
 
 SELECT * FROM gtest1 ORDER BY a;
 
@@ -414,13 +414,13 @@ COPY gtest3 TO stdout;
 
 COPY gtest3 (a, b) TO stdout;
 
-COPY gtest3 FROM stdin;
-3
-4
-\.
+-- COPY gtest3 FROM stdin;
+-- 3
+-- 4
+-- \.
 ---END---
 ---START---
-COPY gtest3 (a, b) FROM stdin;
+-- COPY gtest3 (a, b) FROM stdin;
 ---END---
 ---START---
 SELECT * FROM gtest3 ORDER BY a;

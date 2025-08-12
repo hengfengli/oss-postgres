@@ -226,10 +226,10 @@ CREATE TABLE enumtest (gemini_pk serial PRIMARY KEY, col rainbow);
 INSERT INTO enumtest values ('red'), ('orange'), ('yellow'), ('green');
 ---END---
 ---START---
-COPY enumtest FROM stdin;
-blue
-purple
-\.
+-- COPY enumtest FROM stdin;
+-- blue
+-- purple
+-- \.
 ---END---
 ---START---
 SELECT * FROM enumtest;

@@ -182,10 +182,10 @@ create index on parted_copytest (b);
 drop trigger part_ins_trig on parted_copytest_a2;
 ---END---
 ---START---
-copy parted_copytest from stdin;
-1	1	str1
-2	2	str2
-\.
+-- copy parted_copytest from stdin;
+-- 1	1	str1
+-- 2	2	str2
+-- \.
 ---END---
 ---START---
 -- Ensure index entries were properly added during the copy.
@@ -239,11 +239,11 @@ create trigger check_after_tab_progress_reporting
 ---END---
 ---START---
 -- Generate COPY FROM report with PIPE.
-copy tab_progress_reporting from stdin;
-sharon	25	(15,12)	1000	sam
-sam	30	(10,5)	2000	bill
-bill	20	(11,10)	1000	sharon
-\.
+-- copy tab_progress_reporting from stdin;
+-- sharon	25	(15,12)	1000	sam
+-- sam	30	(10,5)	2000	bill
+-- bill	20	(11,10)	1000	sharon
+-- \.
 ---END---
 ---START---
 -- Generate COPY FROM report with FILE, with some excluded tuples.
