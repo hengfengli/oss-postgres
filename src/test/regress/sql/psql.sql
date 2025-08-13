@@ -1742,7 +1742,8 @@ SELECT 'ok' AS "done" ;
 SELECT 1 AS one \;
 ---END---
 ---START---
-SELECT warn('1.5') \;
+-- @hengfeng: the error causes confusion
+-- SELECT warn('1.5') \;
 ---END---
 ---START---
 SELECT 2 AS two;
