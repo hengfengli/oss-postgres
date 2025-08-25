@@ -1,3 +1,4 @@
+---START---
 --
 -- EXPLAIN
 --
@@ -30,6 +31,8 @@ begin
     end loop;
 end;
 $$;
+---END---
+---START---
 -- To produce valid JSON output, replace numbers with "0" or "0.0" not "N"
 create function explain_filter_to_json(text) returns jsonb
 language plpgsql as
@@ -47,12 +50,18 @@ begin
     return data::jsonb;
 end;
 $$;
+---END---
+---START---
 -- Disable JIT, or we'll get different output on machines where that's been
 -- forced on
 set jit = off;
+---END---
+---START---
 -- Similarly, disable track_io_timing, to avoid output differences when
 -- enabled.
 set track_io_timing = off;
+---END---
+---START---
 -- Simple cases
 select explain_filter('explain select * from int8_tbl i8');
                      explain_filter                      
@@ -60,6 +69,8 @@ select explain_filter('explain select * from int8_tbl i8');
  Seq Scan on int8_tbl i8  (cost=N.N..N.N rows=N width=N)
 (1 row)
 
+---END---
+---START---
 select explain_filter('explain (analyze) select * from int8_tbl i8');
                                         explain_filter                                         
 -----------------------------------------------------------------------------------------------
@@ -68,15 +79,19 @@ select explain_filter('explain (analyze) select * from int8_tbl i8');
  Execution Time: N.N ms
 (3 rows)
 
+---END---
+---START---
 select explain_filter('explain (analyze, verbose) select * from int8_tbl i8');
                                             explain_filter                                            
 ------------------------------------------------------------------------------------------------------
  Seq Scan on public.int8_tbl i8  (cost=N.N..N.N rows=N width=N) (actual time=N.N..N.N rows=N loops=N)
-   Output: q1, q2
+   Output: gemini_pk, q1, q2
  Planning Time: N.N ms
  Execution Time: N.N ms
 (4 rows)
 
+---END---
+---START---
 select explain_filter('explain (analyze, buffers, format text) select * from int8_tbl i8');
                                         explain_filter                                         
 -----------------------------------------------------------------------------------------------
@@ -85,6 +100,8 @@ select explain_filter('explain (analyze, buffers, format text) select * from int
  Execution Time: N.N ms
 (3 rows)
 
+---END---
+---START---
 select explain_filter('explain (analyze, buffers, format xml) select * from int8_tbl i8');
                      explain_filter                     
 --------------------------------------------------------
@@ -135,6 +152,8 @@ select explain_filter('explain (analyze, buffers, format xml) select * from int8
  </explain>
 (1 row)
 
+---END---
+---START---
 select explain_filter('explain (analyze, buffers, format yaml) select * from int8_tbl i8');
         explain_filter         
 -------------------------------
@@ -178,12 +197,16 @@ select explain_filter('explain (analyze, buffers, format yaml) select * from int
    Execution Time: N.N
 (1 row)
 
+---END---
+---START---
 select explain_filter('explain (buffers, format text) select * from int8_tbl i8');
                      explain_filter                      
 ---------------------------------------------------------
  Seq Scan on int8_tbl i8  (cost=N.N..N.N rows=N width=N)
 (1 row)
 
+---END---
+---START---
 select explain_filter('explain (buffers, format json) select * from int8_tbl i8');
            explain_filter           
 ------------------------------------
@@ -226,9 +249,13 @@ select explain_filter('explain (buffers, format json) select * from int8_tbl i8'
  ]
 (1 row)
 
+---END---
+---START---
 -- Check output including I/O timings.  These fields are conditional
 -- but always set in JSON format, so check them only in this case.
 set track_io_timing = on;
+---END---
+---START---
 select explain_filter('explain (analyze, buffers, format json) select * from int8_tbl i8');
            explain_filter           
 ------------------------------------
@@ -287,12 +314,20 @@ select explain_filter('explain (analyze, buffers, format json) select * from int
  ]
 (1 row)
 
+---END---
+---START---
 set track_io_timing = off;
+---END---
+---START---
 -- SETTINGS option
 -- We have to ignore other settings that might be imposed by the environment,
 -- so printing the whole Settings field unfortunately won't do.
 begin;
+---END---
+---START---
 set local plan_cache_mode = force_generic_plan;
+---END---
+---START---
 select true as "OK"
   from explain_filter('explain (settings) select * from int8_tbl i8') ln
   where ln ~ '^ *Settings: .*plan_cache_mode = ''force_generic_plan''';
@@ -301,13 +336,19 @@ select true as "OK"
  t
 (1 row)
 
+---END---
+---START---
 select explain_filter_to_json('explain (settings, format json) select * from int8_tbl i8') #> '{0,Settings,plan_cache_mode}';
        ?column?       
 ----------------------
  "force_generic_plan"
 (1 row)
 
+---END---
+---START---
 rollback;
+---END---
+---START---
 -- GENERIC_PLAN option
 select explain_filter('explain (generic_plan) select unique1 from tenk1 where thousand = $1');
                                  explain_filter                                  
@@ -318,38 +359,53 @@ select explain_filter('explain (generic_plan) select unique1 from tenk1 where th
          Index Cond: (thousand = $N)
 (4 rows)
 
+---END---
+---START---
 -- should fail
 select explain_filter('explain (analyze, generic_plan) select unique1 from tenk1 where thousand = $1');
 ERROR:  EXPLAIN options ANALYZE and GENERIC_PLAN cannot be used together
 CONTEXT:  PL/pgSQL function explain_filter(text) line 5 at FOR over EXECUTE statement
--- Test EXPLAIN (GENERIC_PLAN) with partition pruning
--- partitions should be pruned at plan time, based on constants,
--- but there should be no pruning based on parameter placeholders
-create table gen_part (
-  key1 integer not null,
-  key2 integer not null
-) partition by list (key1);
+---END---
+---START---
+CREATE TABLE gen_part (gemini_pk serial PRIMARY KEY, key1 integer NOT NULL, key2 integer NOT NULL) PARTITION BY list (key1);
+ERROR:  unique constraint on partitioned table must include all partitioning columns
+DETAIL:  PRIMARY KEY constraint on table "gen_part" lacks column "key1" which is part of the partition key.
+---END---
+---START---
 create table gen_part_1
   partition of gen_part for values in (1)
   partition by range (key2);
+ERROR:  relation "gen_part" does not exist
+---END---
+---START---
 create table gen_part_1_1
   partition of gen_part_1 for values from (1) to (2);
+ERROR:  relation "gen_part_1" does not exist
+---END---
+---START---
 create table gen_part_1_2
   partition of gen_part_1 for values from (2) to (3);
+ERROR:  relation "gen_part_1" does not exist
+---END---
+---START---
 create table gen_part_2
   partition of gen_part for values in (2);
+ERROR:  relation "gen_part" does not exist
+---END---
+---START---
 -- should scan gen_part_1_1 and gen_part_1_2, but not gen_part_2
 select explain_filter('explain (generic_plan) select key1, key2 from gen_part where key1 = 1 and key2 = $1');
-                              explain_filter                               
----------------------------------------------------------------------------
- Append  (cost=N.N..N.N rows=N width=N)
-   ->  Seq Scan on gen_part_1_1 gen_part_1  (cost=N.N..N.N rows=N width=N)
-         Filter: ((key1 = N) AND (key2 = $N))
-   ->  Seq Scan on gen_part_1_2 gen_part_2  (cost=N.N..N.N rows=N width=N)
-         Filter: ((key1 = N) AND (key2 = $N))
-(5 rows)
-
+ERROR:  relation "gen_part" does not exist
+LINE 1: explain (generic_plan) select key1, key2 from gen_part where...
+                                                      ^
+QUERY:  explain (generic_plan) select key1, key2 from gen_part where key1 = 1 and key2 = $1
+CONTEXT:  PL/pgSQL function explain_filter(text) line 5 at FOR over EXECUTE statement
+---END---
+---START---
 drop table gen_part;
+ERROR:  table "gen_part" does not exist
+---END---
+---START---
 --
 -- Test production of per-worker data
 --
@@ -358,11 +414,21 @@ drop table gen_part;
 -- in any detail.  We can check that it parses correctly as JSON, and then
 -- remove it from the displayed results.
 begin;
+---END---
+---START---
 -- encourage use of parallel plans
 set parallel_setup_cost=0;
+---END---
+---START---
 set parallel_tuple_cost=0;
+---END---
+---START---
 set min_parallel_table_scan_size=0;
+---END---
+---START---
 set max_parallel_workers_per_gather=4;
+---END---
+---START---
 select jsonb_pretty(
   explain_filter_to_json('explain (analyze, verbose, buffers, format json)
                          select * from tenk1 order by tenthous')
@@ -385,6 +451,7 @@ select jsonb_pretty(
                          {                                  +
                              "Alias": "tenk1",              +
                              "Output": [                    +
+                                 "gemini_pk",               +
                                  "unique1",                 +
                                  "unique2",                 +
                                  "two",                     +
@@ -429,6 +496,7 @@ select jsonb_pretty(
                          }                                  +
                      ],                                     +
                      "Output": [                            +
+                         "gemini_pk",                       +
                          "unique1",                         +
                          "unique2",                         +
                          "two",                             +
@@ -475,6 +543,7 @@ select jsonb_pretty(
                  }                                          +
              ],                                             +
              "Output": [                                    +
+                 "gemini_pk",                               +
                  "unique1",                                 +
                  "unique2",                                 +
                  "two",                                     +
@@ -536,26 +605,40 @@ select jsonb_pretty(
  ]
 (1 row)
 
+---END---
+---START---
 rollback;
+---END---
+---START---
 -- Test display of temporary objects
-create temp table t1(f1 float8);
+DROP TABLE IF EXISTS t1;
+CREATE TABLE t1 (gemini_pk serial PRIMARY KEY, f1 float8);
+---END---
+---START---
 create function pg_temp.mysin(float8) returns float8 language plpgsql
 as 'begin return sin($1); end';
+---END---
+---START---
 select explain_filter('explain (verbose) select * from t1 where pg_temp.mysin(f1) < 0.5');
                        explain_filter                       
 ------------------------------------------------------------
- Seq Scan on pg_temp.t1  (cost=N.N..N.N rows=N width=N)
-   Output: f1
+ Seq Scan on public.t1  (cost=N.N..N.N rows=N width=N)
+   Output: gemini_pk, f1
    Filter: (pg_temp.mysin(t1.f1) < 'N.N'::double precision)
 (3 rows)
 
+---END---
+---START---
 -- Test compute_query_id
 set compute_query_id = on;
+---END---
+---START---
 select explain_filter('explain (verbose) select * from int8_tbl i8');
                          explain_filter                         
 ----------------------------------------------------------------
  Seq Scan on public.int8_tbl i8  (cost=N.N..N.N rows=N width=N)
-   Output: q1, q2
+   Output: gemini_pk, q1, q2
  Query Identifier: N
 (3 rows)
 
+---END---

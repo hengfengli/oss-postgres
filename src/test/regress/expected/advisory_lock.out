@@ -1,8 +1,11 @@
+---START---
 --
 -- ADVISORY LOCKS
 --
 SELECT oid AS datoid FROM pg_database WHERE datname = current_database() \gset
 BEGIN;
+---END---
+---START---
 SELECT
 	pg_advisory_xact_lock(1), pg_advisory_xact_lock_shared(2),
 	pg_advisory_xact_lock(1, 1), pg_advisory_xact_lock_shared(2, 2);
@@ -11,6 +14,8 @@ SELECT
                        |                              |                       | 
 (1 row)
 
+---END---
+---START---
 SELECT locktype, classid, objid, objsubid, mode, granted
 	FROM pg_locks WHERE locktype = 'advisory' AND database = :datoid
 	ORDER BY classid, objid, objsubid;
@@ -22,6 +27,8 @@ SELECT locktype, classid, objid, objsubid, mode, granted
  advisory |       2 |     2 |        2 | ShareLock     | t
 (4 rows)
 
+---END---
+---START---
 -- pg_advisory_unlock_all() shouldn't release xact locks
 SELECT pg_advisory_unlock_all();
  pg_advisory_unlock_all 
@@ -29,12 +36,16 @@ SELECT pg_advisory_unlock_all();
  
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM pg_locks WHERE locktype = 'advisory' AND database = :datoid;
  count 
 -------
      4
 (1 row)
 
+---END---
+---START---
 -- can't unlock xact locks
 SELECT
 	pg_advisory_unlock(1), pg_advisory_unlock_shared(2),
@@ -48,15 +59,23 @@ WARNING:  you don't own a lock of type ShareLock
  f                  | f                         | f                  | f
 (1 row)
 
+---END---
+---START---
 -- automatically release xact locks at commit
 COMMIT;
+---END---
+---START---
 SELECT count(*) FROM pg_locks WHERE locktype = 'advisory' AND database = :datoid;
  count 
 -------
      0
 (1 row)
 
+---END---
+---START---
 BEGIN;
+---END---
+---START---
 -- holding both session and xact locks on the same objects, xact first
 SELECT
 	pg_advisory_xact_lock(1), pg_advisory_xact_lock_shared(2),
@@ -66,6 +85,8 @@ SELECT
                        |                              |                       | 
 (1 row)
 
+---END---
+---START---
 SELECT locktype, classid, objid, objsubid, mode, granted
 	FROM pg_locks WHERE locktype = 'advisory' AND database = :datoid
 	ORDER BY classid, objid, objsubid;
@@ -77,6 +98,8 @@ SELECT locktype, classid, objid, objsubid, mode, granted
  advisory |       2 |     2 |        2 | ShareLock     | t
 (4 rows)
 
+---END---
+---START---
 SELECT
 	pg_advisory_lock(1), pg_advisory_lock_shared(2),
 	pg_advisory_lock(1, 1), pg_advisory_lock_shared(2, 2);
@@ -85,7 +108,11 @@ SELECT
                   |                         |                  | 
 (1 row)
 
+---END---
+---START---
 ROLLBACK;
+---END---
+---START---
 SELECT locktype, classid, objid, objsubid, mode, granted
 	FROM pg_locks WHERE locktype = 'advisory' AND database = :datoid
 	ORDER BY classid, objid, objsubid;
@@ -97,6 +124,8 @@ SELECT locktype, classid, objid, objsubid, mode, granted
  advisory |       2 |     2 |        2 | ShareLock     | t
 (4 rows)
 
+---END---
+---START---
 -- unlocking session locks
 SELECT
 	pg_advisory_unlock(1), pg_advisory_unlock(1),
@@ -112,13 +141,19 @@ WARNING:  you don't own a lock of type ShareLock
  t                  | f                  | t                         | f                         | t                  | f                  | t                         | f
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM pg_locks WHERE locktype = 'advisory' AND database = :datoid;
  count 
 -------
      0
 (1 row)
 
+---END---
+---START---
 BEGIN;
+---END---
+---START---
 -- holding both session and xact locks on the same objects, session first
 SELECT
 	pg_advisory_lock(1), pg_advisory_lock_shared(2),
@@ -128,6 +163,8 @@ SELECT
                   |                         |                  | 
 (1 row)
 
+---END---
+---START---
 SELECT locktype, classid, objid, objsubid, mode, granted
 	FROM pg_locks WHERE locktype = 'advisory' AND database = :datoid
 	ORDER BY classid, objid, objsubid;
@@ -139,6 +176,8 @@ SELECT locktype, classid, objid, objsubid, mode, granted
  advisory |       2 |     2 |        2 | ShareLock     | t
 (4 rows)
 
+---END---
+---START---
 SELECT
 	pg_advisory_xact_lock(1), pg_advisory_xact_lock_shared(2),
 	pg_advisory_xact_lock(1, 1), pg_advisory_xact_lock_shared(2, 2);
@@ -147,7 +186,11 @@ SELECT
                        |                              |                       | 
 (1 row)
 
+---END---
+---START---
 ROLLBACK;
+---END---
+---START---
 SELECT locktype, classid, objid, objsubid, mode, granted
 	FROM pg_locks WHERE locktype = 'advisory' AND database = :datoid
 	ORDER BY classid, objid, objsubid;
@@ -159,6 +202,8 @@ SELECT locktype, classid, objid, objsubid, mode, granted
  advisory |       2 |     2 |        2 | ShareLock     | t
 (4 rows)
 
+---END---
+---START---
 -- releasing all session locks
 SELECT pg_advisory_unlock_all();
  pg_advisory_unlock_all 
@@ -166,13 +211,19 @@ SELECT pg_advisory_unlock_all();
  
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM pg_locks WHERE locktype = 'advisory' AND database = :datoid;
  count 
 -------
      0
 (1 row)
 
+---END---
+---START---
 BEGIN;
+---END---
+---START---
 -- grabbing txn locks multiple times
 SELECT
 	pg_advisory_xact_lock(1), pg_advisory_xact_lock(1),
@@ -184,6 +235,8 @@ SELECT
                        |                       |                              |                              |                       |                       |                              | 
 (1 row)
 
+---END---
+---START---
 SELECT locktype, classid, objid, objsubid, mode, granted
 	FROM pg_locks WHERE locktype = 'advisory' AND database = :datoid
 	ORDER BY classid, objid, objsubid;
@@ -195,13 +248,19 @@ SELECT locktype, classid, objid, objsubid, mode, granted
  advisory |       2 |     2 |        2 | ShareLock     | t
 (4 rows)
 
+---END---
+---START---
 COMMIT;
+---END---
+---START---
 SELECT count(*) FROM pg_locks WHERE locktype = 'advisory' AND database = :datoid;
  count 
 -------
      0
 (1 row)
 
+---END---
+---START---
 -- grabbing session locks multiple times
 SELECT
 	pg_advisory_lock(1), pg_advisory_lock(1),
@@ -213,6 +272,8 @@ SELECT
                   |                  |                         |                         |                  |                  |                         | 
 (1 row)
 
+---END---
+---START---
 SELECT locktype, classid, objid, objsubid, mode, granted
 	FROM pg_locks WHERE locktype = 'advisory' AND database = :datoid
 	ORDER BY classid, objid, objsubid;
@@ -224,6 +285,8 @@ SELECT locktype, classid, objid, objsubid, mode, granted
  advisory |       2 |     2 |        2 | ShareLock     | t
 (4 rows)
 
+---END---
+---START---
 SELECT
 	pg_advisory_unlock(1), pg_advisory_unlock(1),
 	pg_advisory_unlock_shared(2), pg_advisory_unlock_shared(2),
@@ -234,12 +297,16 @@ SELECT
  t                  | t                  | t                         | t                         | t                  | t                  | t                         | t
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM pg_locks WHERE locktype = 'advisory' AND database = :datoid;
  count 
 -------
      0
 (1 row)
 
+---END---
+---START---
 -- .. and releasing them all at once
 SELECT
 	pg_advisory_lock(1), pg_advisory_lock(1),
@@ -251,6 +318,8 @@ SELECT
                   |                  |                         |                         |                  |                  |                         | 
 (1 row)
 
+---END---
+---START---
 SELECT locktype, classid, objid, objsubid, mode, granted
 	FROM pg_locks WHERE locktype = 'advisory' AND database = :datoid
 	ORDER BY classid, objid, objsubid;
@@ -262,15 +331,20 @@ SELECT locktype, classid, objid, objsubid, mode, granted
  advisory |       2 |     2 |        2 | ShareLock     | t
 (4 rows)
 
+---END---
+---START---
 SELECT pg_advisory_unlock_all();
  pg_advisory_unlock_all 
 ------------------------
  
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM pg_locks WHERE locktype = 'advisory' AND database = :datoid;
  count 
 -------
      0
 (1 row)
 
+---END---

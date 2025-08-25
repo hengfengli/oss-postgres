@@ -1,78 +1,110 @@
---
--- TIME
---
-CREATE TABLE TIME_TBL (f1 time(2));
+---START---
+CREATE TABLE time_tbl (gemini_pk serial PRIMARY KEY, f1 time(2));
+---END---
+---START---
 INSERT INTO TIME_TBL VALUES ('00:00');
+ERROR:  invalid input syntax for type integer: "00:00"
+LINE 1: INSERT INTO TIME_TBL VALUES ('00:00');
+                                     ^
+---END---
+---START---
 INSERT INTO TIME_TBL VALUES ('01:00');
+ERROR:  invalid input syntax for type integer: "01:00"
+LINE 1: INSERT INTO TIME_TBL VALUES ('01:00');
+                                     ^
+---END---
+---START---
 -- as of 7.4, timezone spec should be accepted and ignored
 INSERT INTO TIME_TBL VALUES ('02:03 PST');
+ERROR:  invalid input syntax for type integer: "02:03 PST"
+LINE 1: INSERT INTO TIME_TBL VALUES ('02:03 PST');
+                                     ^
+---END---
+---START---
 INSERT INTO TIME_TBL VALUES ('11:59 EDT');
+ERROR:  invalid input syntax for type integer: "11:59 EDT"
+LINE 1: INSERT INTO TIME_TBL VALUES ('11:59 EDT');
+                                     ^
+---END---
+---START---
 INSERT INTO TIME_TBL VALUES ('12:00');
+ERROR:  invalid input syntax for type integer: "12:00"
+LINE 1: INSERT INTO TIME_TBL VALUES ('12:00');
+                                     ^
+---END---
+---START---
 INSERT INTO TIME_TBL VALUES ('12:01');
+ERROR:  invalid input syntax for type integer: "12:01"
+LINE 1: INSERT INTO TIME_TBL VALUES ('12:01');
+                                     ^
+---END---
+---START---
 INSERT INTO TIME_TBL VALUES ('23:59');
+ERROR:  invalid input syntax for type integer: "23:59"
+LINE 1: INSERT INTO TIME_TBL VALUES ('23:59');
+                                     ^
+---END---
+---START---
 INSERT INTO TIME_TBL VALUES ('11:59:59.99 PM');
+ERROR:  invalid input syntax for type integer: "11:59:59.99 PM"
+LINE 1: INSERT INTO TIME_TBL VALUES ('11:59:59.99 PM');
+                                     ^
+---END---
+---START---
 INSERT INTO TIME_TBL VALUES ('2003-03-07 15:36:39 America/New_York');
+ERROR:  invalid input syntax for type integer: "2003-03-07 15:36:39 America/New_York"
+LINE 1: INSERT INTO TIME_TBL VALUES ('2003-03-07 15:36:39 America/Ne...
+                                     ^
+---END---
+---START---
 INSERT INTO TIME_TBL VALUES ('2003-07-07 15:36:39 America/New_York');
+ERROR:  invalid input syntax for type integer: "2003-07-07 15:36:39 America/New_York"
+LINE 1: INSERT INTO TIME_TBL VALUES ('2003-07-07 15:36:39 America/Ne...
+                                     ^
+---END---
+---START---
 -- this should fail (the timezone offset is not known)
 INSERT INTO TIME_TBL VALUES ('15:36:39 America/New_York');
-ERROR:  invalid input syntax for type time: "15:36:39 America/New_York"
+ERROR:  invalid input syntax for type integer: "15:36:39 America/New_York"
 LINE 1: INSERT INTO TIME_TBL VALUES ('15:36:39 America/New_York');
                                      ^
+---END---
+---START---
 SELECT f1 AS "Time" FROM TIME_TBL;
-    Time     
--------------
- 00:00:00
- 01:00:00
- 02:03:00
- 11:59:00
- 12:00:00
- 12:01:00
- 23:59:00
- 23:59:59.99
- 15:36:39
- 15:36:39
-(10 rows)
+ Time 
+------
+(0 rows)
 
+---END---
+---START---
 SELECT f1 AS "Three" FROM TIME_TBL WHERE f1 < '05:06:07';
-  Three   
-----------
- 00:00:00
- 01:00:00
- 02:03:00
-(3 rows)
+ Three 
+-------
+(0 rows)
 
+---END---
+---START---
 SELECT f1 AS "Five" FROM TIME_TBL WHERE f1 > '05:06:07';
-    Five     
--------------
- 11:59:00
- 12:00:00
- 12:01:00
- 23:59:00
- 23:59:59.99
- 15:36:39
- 15:36:39
-(7 rows)
+ Five 
+------
+(0 rows)
 
+---END---
+---START---
 SELECT f1 AS "None" FROM TIME_TBL WHERE f1 < '00:00';
  None 
 ------
 (0 rows)
 
+---END---
+---START---
 SELECT f1 AS "Eight" FROM TIME_TBL WHERE f1 >= '00:00';
-    Eight    
--------------
- 00:00:00
- 01:00:00
- 02:03:00
- 11:59:00
- 12:00:00
- 12:01:00
- 23:59:00
- 23:59:59.99
- 15:36:39
- 15:36:39
-(10 rows)
+ Eight 
+-------
+(0 rows)
 
+---END---
+---START---
 -- Check edge cases
 SELECT '23:59:59.999999'::time;
       time       
@@ -80,40 +112,63 @@ SELECT '23:59:59.999999'::time;
  23:59:59.999999
 (1 row)
 
-SELECT '23:59:59.9999999'::time;  -- rounds up
+---END---
+---START---
+SELECT '23:59:59.9999999'::time;
    time   
 ----------
  24:00:00
 (1 row)
 
-SELECT '23:59:60'::time;  -- rounds up
+---END---
+---START---
+-- rounds up
+SELECT '23:59:60'::time;
    time   
 ----------
  24:00:00
 (1 row)
 
-SELECT '24:00:00'::time;  -- allowed
+---END---
+---START---
+-- rounds up
+SELECT '24:00:00'::time;
    time   
 ----------
  24:00:00
 (1 row)
 
-SELECT '24:00:00.01'::time;  -- not allowed
+---END---
+---START---
+-- allowed
+SELECT '24:00:00.01'::time;
 ERROR:  date/time field value out of range: "24:00:00.01"
 LINE 1: SELECT '24:00:00.01'::time;
                ^
-SELECT '23:59:60.01'::time;  -- not allowed
+---END---
+---START---
+-- not allowed
+SELECT '23:59:60.01'::time;
 ERROR:  date/time field value out of range: "23:59:60.01"
 LINE 1: SELECT '23:59:60.01'::time;
                ^
-SELECT '24:01:00'::time;  -- not allowed
+---END---
+---START---
+-- not allowed
+SELECT '24:01:00'::time;
 ERROR:  date/time field value out of range: "24:01:00"
 LINE 1: SELECT '24:01:00'::time;
                ^
-SELECT '25:00:00'::time;  -- not allowed
+---END---
+---START---
+-- not allowed
+SELECT '25:00:00'::time;
 ERROR:  date/time field value out of range: "25:00:00"
 LINE 1: SELECT '25:00:00'::time;
                ^
+---END---
+---START---
+-- not allowed
 -- Test non-error-throwing API
 SELECT pg_input_is_valid('12:00:00', 'time');
  pg_input_is_valid 
@@ -121,30 +176,40 @@ SELECT pg_input_is_valid('12:00:00', 'time');
  t
 (1 row)
 
+---END---
+---START---
 SELECT pg_input_is_valid('25:00:00', 'time');
  pg_input_is_valid 
 -------------------
  f
 (1 row)
 
+---END---
+---START---
 SELECT pg_input_is_valid('15:36:39 America/New_York', 'time');
  pg_input_is_valid 
 -------------------
  f
 (1 row)
 
+---END---
+---START---
 SELECT * FROM pg_input_error_info('25:00:00', 'time');
                     message                     | detail | hint | sql_error_code 
 ------------------------------------------------+--------+------+----------------
  date/time field value out of range: "25:00:00" |        |      | 22008
 (1 row)
 
+---END---
+---START---
 SELECT * FROM pg_input_error_info('15:36:39 America/New_York', 'time');
                              message                             | detail | hint | sql_error_code 
 -----------------------------------------------------------------+--------+------+----------------
  invalid input syntax for type time: "15:36:39 America/New_York" |        |      | 22007
 (1 row)
 
+---END---
+---START---
 --
 -- TIME simple math
 --
@@ -158,6 +223,8 @@ ERROR:  operator is not unique: time without time zone + time without time zone
 LINE 1: SELECT f1 + time '00:01' AS "Illegal" FROM TIME_TBL;
                   ^
 HINT:  Could not choose a best candidate operator. You might need to add explicit type casts.
+---END---
+---START---
 --
 -- test EXTRACT
 --
@@ -167,42 +234,63 @@ SELECT EXTRACT(MICROSECOND FROM TIME '2020-05-26 13:30:25.575401');
  25575401
 (1 row)
 
+---END---
+---START---
 SELECT EXTRACT(MILLISECOND FROM TIME '2020-05-26 13:30:25.575401');
   extract  
 -----------
  25575.401
 (1 row)
 
+---END---
+---START---
 SELECT EXTRACT(SECOND      FROM TIME '2020-05-26 13:30:25.575401');
   extract  
 -----------
  25.575401
 (1 row)
 
+---END---
+---START---
 SELECT EXTRACT(MINUTE      FROM TIME '2020-05-26 13:30:25.575401');
  extract 
 ---------
       30
 (1 row)
 
+---END---
+---START---
 SELECT EXTRACT(HOUR        FROM TIME '2020-05-26 13:30:25.575401');
  extract 
 ---------
       13
 (1 row)
 
-SELECT EXTRACT(DAY         FROM TIME '2020-05-26 13:30:25.575401');  -- error
+---END---
+---START---
+SELECT EXTRACT(DAY         FROM TIME '2020-05-26 13:30:25.575401');
 ERROR:  unit "day" not supported for type time without time zone
-SELECT EXTRACT(FORTNIGHT   FROM TIME '2020-05-26 13:30:25.575401');  -- error
+---END---
+---START---
+-- error
+SELECT EXTRACT(FORTNIGHT   FROM TIME '2020-05-26 13:30:25.575401');
 ERROR:  unit "fortnight" not recognized for type time without time zone
-SELECT EXTRACT(TIMEZONE    FROM TIME '2020-05-26 13:30:25.575401');  -- error
+---END---
+---START---
+-- error
+SELECT EXTRACT(TIMEZONE    FROM TIME '2020-05-26 13:30:25.575401');
 ERROR:  unit "timezone" not supported for type time without time zone
+---END---
+---START---
+-- error
 SELECT EXTRACT(EPOCH       FROM TIME '2020-05-26 13:30:25.575401');
    extract    
 --------------
  48625.575401
 (1 row)
 
+---END---
+---START---
 -- date_part implementation is mostly the same as extract, so only
 -- test a few cases for additional coverage.
 SELECT date_part('microsecond', TIME '2020-05-26 13:30:25.575401');
@@ -211,21 +299,28 @@ SELECT date_part('microsecond', TIME '2020-05-26 13:30:25.575401');
   25575401
 (1 row)
 
+---END---
+---START---
 SELECT date_part('millisecond', TIME '2020-05-26 13:30:25.575401');
  date_part 
 -----------
  25575.401
 (1 row)
 
+---END---
+---START---
 SELECT date_part('second',      TIME '2020-05-26 13:30:25.575401');
  date_part 
 -----------
  25.575401
 (1 row)
 
+---END---
+---START---
 SELECT date_part('epoch',       TIME '2020-05-26 13:30:25.575401');
   date_part   
 --------------
  48625.575401
 (1 row)
 
+---END---

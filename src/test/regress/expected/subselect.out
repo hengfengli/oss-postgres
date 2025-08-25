@@ -1,3 +1,4 @@
+---START---
 --
 -- SUBSELECT
 --
@@ -7,16 +8,22 @@ SELECT 1 AS one WHERE 1 IN (SELECT 1);
    1
 (1 row)
 
+---END---
+---START---
 SELECT 1 AS zero WHERE 1 NOT IN (SELECT 1);
  zero 
 ------
 (0 rows)
 
+---END---
+---START---
 SELECT 1 AS zero WHERE 1 IN (SELECT 2);
  zero 
 ------
 (0 rows)
 
+---END---
+---START---
 -- Check grammar's handling of extra parens in assorted contexts
 SELECT * FROM (SELECT 1 AS x) ss;
  x 
@@ -24,247 +31,274 @@ SELECT * FROM (SELECT 1 AS x) ss;
  1
 (1 row)
 
+---END---
+---START---
 SELECT * FROM ((SELECT 1 AS x)) ss;
  x 
 ---
  1
 (1 row)
 
+---END---
+---START---
 SELECT * FROM ((SELECT 1 AS x)), ((SELECT * FROM ((SELECT 2 AS y))));
  x | y 
 ---+---
  1 | 2
 (1 row)
 
+---END---
+---START---
 (SELECT 2) UNION SELECT 2;
  ?column? 
 ----------
         2
 (1 row)
 
+---END---
+---START---
 ((SELECT 2)) UNION SELECT 2;
  ?column? 
 ----------
         2
 (1 row)
 
+---END---
+---START---
 SELECT ((SELECT 2) UNION SELECT 2);
  ?column? 
 ----------
         2
 (1 row)
 
+---END---
+---START---
 SELECT (((SELECT 2)) UNION SELECT 2);
  ?column? 
 ----------
         2
 (1 row)
 
+---END---
+---START---
 SELECT (SELECT ARRAY[1,2,3])[1];
  array 
 -------
      1
 (1 row)
 
+---END---
+---START---
 SELECT ((SELECT ARRAY[1,2,3]))[2];
  array 
 -------
      2
 (1 row)
 
+---END---
+---START---
 SELECT (((SELECT ARRAY[1,2,3])))[3];
  array 
 -------
      3
 (1 row)
 
--- Set up some simple test tables
-CREATE TABLE SUBSELECT_TBL (
-  f1 integer,
-  f2 integer,
-  f3 float
-);
+---END---
+---START---
+CREATE TABLE subselect_tbl (gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, f3 double precision);
+---END---
+---START---
 INSERT INTO SUBSELECT_TBL VALUES (1, 2, 3);
+---END---
+---START---
 INSERT INTO SUBSELECT_TBL VALUES (2, 3, 4);
+---END---
+---START---
 INSERT INTO SUBSELECT_TBL VALUES (3, 4, 5);
+---END---
+---START---
 INSERT INTO SUBSELECT_TBL VALUES (1, 1, 1);
+ERROR:  duplicate key value violates unique constraint "subselect_tbl_pkey"
+DETAIL:  Key (gemini_pk)=(1) already exists.
+---END---
+---START---
 INSERT INTO SUBSELECT_TBL VALUES (2, 2, 2);
+ERROR:  duplicate key value violates unique constraint "subselect_tbl_pkey"
+DETAIL:  Key (gemini_pk)=(2) already exists.
+---END---
+---START---
 INSERT INTO SUBSELECT_TBL VALUES (3, 3, 3);
+ERROR:  duplicate key value violates unique constraint "subselect_tbl_pkey"
+DETAIL:  Key (gemini_pk)=(3) already exists.
+---END---
+---START---
 INSERT INTO SUBSELECT_TBL VALUES (6, 7, 8);
+---END---
+---START---
 INSERT INTO SUBSELECT_TBL VALUES (8, 9, NULL);
+---END---
+---START---
 SELECT * FROM SUBSELECT_TBL;
- f1 | f2 | f3 
-----+----+----
-  1 |  2 |  3
-  2 |  3 |  4
-  3 |  4 |  5
-  1 |  1 |  1
-  2 |  2 |  2
-  3 |  3 |  3
-  6 |  7 |  8
-  8 |  9 |   
-(8 rows)
+ gemini_pk | f1 | f2 | f3 
+-----------+----+----+----
+         1 |  2 |  3 |   
+         2 |  3 |  4 |   
+         3 |  4 |  5 |   
+         6 |  7 |  8 |   
+         8 |  9 |    |   
+(5 rows)
 
+---END---
+---START---
 -- Uncorrelated subselects
 SELECT f1 AS "Constant Select" FROM SUBSELECT_TBL
   WHERE f1 IN (SELECT 1);
  Constant Select 
 -----------------
-               1
-               1
-(2 rows)
+(0 rows)
 
+---END---
+---START---
 SELECT f1 AS "Uncorrelated Field" FROM SUBSELECT_TBL
   WHERE f1 IN (SELECT f2 FROM SUBSELECT_TBL);
  Uncorrelated Field 
 --------------------
-                  1
-                  2
                   3
-                  1
-                  2
-                  3
-(6 rows)
+                  4
+(2 rows)
 
+---END---
+---START---
 SELECT f1 AS "Uncorrelated Field" FROM SUBSELECT_TBL
   WHERE f1 IN (SELECT f2 FROM SUBSELECT_TBL WHERE
     f2 IN (SELECT f1 FROM SUBSELECT_TBL));
  Uncorrelated Field 
 --------------------
-                  1
-                  2
                   3
-                  1
-                  2
-                  3
-(6 rows)
+                  4
+(2 rows)
 
+---END---
+---START---
 SELECT f1, f2
   FROM SUBSELECT_TBL
   WHERE (f1, f2) NOT IN (SELECT f2, CAST(f3 AS int4) FROM SUBSELECT_TBL
                          WHERE f3 IS NOT NULL);
  f1 | f2 
 ----+----
-  1 |  2
-  6 |  7
-  8 |  9
-(3 rows)
+  2 |  3
+  3 |  4
+  4 |  5
+  7 |  8
+  9 |   
+(5 rows)
 
+---END---
+---START---
 -- Correlated subselects
 SELECT f1 AS "Correlated Field", f2 AS "Second Field"
   FROM SUBSELECT_TBL upper
   WHERE f1 IN (SELECT f2 FROM SUBSELECT_TBL WHERE f1 = upper.f1);
  Correlated Field | Second Field 
 ------------------+--------------
-                1 |            2
-                2 |            3
-                3 |            4
-                1 |            1
-                2 |            2
-                3 |            3
-(6 rows)
+(0 rows)
 
-SELECT f1 AS "Correlated Field", f3 AS "Second Field"
-  FROM SUBSELECT_TBL upper
-  WHERE f1 IN
-    (SELECT f2 FROM SUBSELECT_TBL WHERE CAST(upper.f2 AS float) = f3);
- Correlated Field | Second Field 
-------------------+--------------
-                2 |            4
-                3 |            5
-                1 |            1
-                2 |            2
-                3 |            3
-(5 rows)
-
-SELECT f1 AS "Correlated Field", f3 AS "Second Field"
-  FROM SUBSELECT_TBL upper
-  WHERE f3 IN (SELECT upper.f1 + f2 FROM SUBSELECT_TBL
-               WHERE f2 = CAST(f3 AS integer));
- Correlated Field | Second Field 
-------------------+--------------
-                1 |            3
-                2 |            4
-                3 |            5
-                6 |            8
-(4 rows)
-
+---END---
+---START---
+-- @hengfeng: this crashes the emulator
+-- SELECT f1 AS "Correlated Field", f3 AS "Second Field"
+--   FROM SUBSELECT_TBL upper
+--   WHERE f1 IN
+--     (SELECT f2 FROM SUBSELECT_TBL WHERE CAST(upper.f2 AS float) = f3);
+---END---
+---START---
+-- @hengfeng: this crashes the emulator
+-- SELECT f1 AS "Correlated Field", f3 AS "Second Field"
+--   FROM SUBSELECT_TBL upper
+--   WHERE f3 IN (SELECT upper.f1 + f2 FROM SUBSELECT_TBL
+--                WHERE f2 = CAST(f3 AS integer));
+---END---
+---START---
 SELECT f1 AS "Correlated Field"
   FROM SUBSELECT_TBL
   WHERE (f1, f2) IN (SELECT f2, CAST(f3 AS int4) FROM SUBSELECT_TBL
                      WHERE f3 IS NOT NULL);
  Correlated Field 
 ------------------
-                2
-                3
-                1
-                2
-                3
-(5 rows)
+(0 rows)
 
+---END---
+---START---
 -- Subselects without aliases
 SELECT count FROM (SELECT COUNT(DISTINCT name) FROM road);
  count 
 -------
-  2911
+     0
 (1 row)
 
+---END---
+---START---
 SELECT COUNT(*) FROM (SELECT DISTINCT name FROM road);
  count 
 -------
-  2911
+     0
 (1 row)
 
+---END---
+---START---
 SELECT * FROM (SELECT * FROM int4_tbl), (VALUES (123456)) WHERE f1 = column1;
-   f1   | column1 
---------+---------
- 123456 |  123456
+ gemini_pk |   f1   | column1 
+-----------+--------+---------
+         2 | 123456 |  123456
 (1 row)
 
+---END---
+---START---
 CREATE VIEW view_unnamed_ss AS
 SELECT * FROM (SELECT * FROM (SELECT abs(f1) AS a1 FROM int4_tbl)),
               (SELECT * FROM int8_tbl)
   WHERE a1 < 10 AND q1 > a1 ORDER BY q1, q2;
+---END---
+---START---
 SELECT * FROM view_unnamed_ss;
- a1 |        q1        |        q2         
-----+------------------+-------------------
-  0 |              123 |               456
-  0 |              123 |  4567890123456789
-  0 | 4567890123456789 | -4567890123456789
-  0 | 4567890123456789 |               123
-  0 | 4567890123456789 |  4567890123456789
-(5 rows)
+ a1 | gemini_pk | q1 | q2 
+----+-----------+----+----
+(0 rows)
 
+---END---
+---START---
 \sv view_unnamed_ss
 CREATE OR REPLACE VIEW public.view_unnamed_ss AS
  SELECT unnamed_subquery.a1,
+    unnamed_subquery_1.gemini_pk,
     unnamed_subquery_1.q1,
     unnamed_subquery_1.q2
    FROM ( SELECT unnamed_subquery_2.a1
            FROM ( SELECT abs(int4_tbl.f1) AS a1
                    FROM int4_tbl) unnamed_subquery_2) unnamed_subquery,
-    ( SELECT int8_tbl.q1,
+    ( SELECT int8_tbl.gemini_pk,
+            int8_tbl.q1,
             int8_tbl.q2
            FROM int8_tbl) unnamed_subquery_1
   WHERE unnamed_subquery.a1 < 10 AND unnamed_subquery_1.q1 > unnamed_subquery.a1
   ORDER BY unnamed_subquery_1.q1, unnamed_subquery_1.q2
 DROP VIEW view_unnamed_ss;
+---END---
+---START---
 -- Test matching of locking clause to correct alias
 CREATE VIEW view_unnamed_ss_locking AS
 SELECT * FROM (SELECT * FROM int4_tbl), int8_tbl AS unnamed_subquery
   WHERE f1 = q1
   FOR UPDATE OF unnamed_subquery;
+ERROR:  column "gemini_pk" specified more than once
+---END---
+---START---
 \sv view_unnamed_ss_locking
-CREATE OR REPLACE VIEW public.view_unnamed_ss_locking AS
- SELECT unnamed_subquery.f1,
-    unnamed_subquery_1.q1,
-    unnamed_subquery_1.q2
-   FROM ( SELECT int4_tbl.f1
-           FROM int4_tbl) unnamed_subquery,
-    int8_tbl unnamed_subquery_1
-  WHERE unnamed_subquery.f1 = unnamed_subquery_1.q1
- FOR UPDATE OF unnamed_subquery_1
+ERROR:  relation "view_unnamed_ss_locking" does not exist
 DROP VIEW view_unnamed_ss_locking;
+ERROR:  view "view_unnamed_ss_locking" does not exist
+---END---
+---START---
 --
 -- Use some existing tables in the regression test
 --
@@ -274,22 +308,23 @@ SELECT ss.f1 AS "Correlated Field", ss.f3 AS "Second Field"
                    WHERE f1 != ss.f1 AND f1 < 2147483647);
  Correlated Field | Second Field 
 ------------------+--------------
-                2 |            4
-                3 |            5
-                2 |            2
-                3 |            3
-                6 |            8
-                8 |             
-(6 rows)
+                2 |             
+                3 |             
+                4 |             
+                7 |             
+                9 |             
+(5 rows)
 
+---END---
+---START---
 select q1, float8(count(*)) / (select count(*) from int8_tbl)
 from int8_tbl group by q1 order by q1;
-        q1        | ?column? 
-------------------+----------
-              123 |      0.4
- 4567890123456789 |      0.6
-(2 rows)
+ q1 | ?column? 
+----+----------
+(0 rows)
 
+---END---
+---START---
 -- Unspecified-type literals in output columns should resolve as text
 SELECT *, pg_typeof(f1) FROM
   (SELECT 'foo' AS f1 FROM generate_series(1,3)) ss ORDER BY 1;
@@ -300,6 +335,8 @@ SELECT *, pg_typeof(f1) FROM
  foo | text
 (3 rows)
 
+---END---
+---START---
 -- ... unless there's context to suggest differently
 explain (verbose, costs off) select '42' union all select '43';
          QUERY PLAN         
@@ -311,6 +348,8 @@ explain (verbose, costs off) select '42' union all select '43';
          Output: '43'::text
 (5 rows)
 
+---END---
+---START---
 explain (verbose, costs off) select '42' union all select 43;
      QUERY PLAN     
 --------------------
@@ -321,6 +360,8 @@ explain (verbose, costs off) select '42' union all select 43;
          Output: 43
 (5 rows)
 
+---END---
+---START---
 -- check materialization of an initplan reference (bug #14524)
 explain (verbose, costs off)
 select 1 = all (select (select 1));
@@ -338,12 +379,16 @@ select 1 = all (select (select 1));
                  Output: $0
 (10 rows)
 
+---END---
+---START---
 select 1 = all (select (select 1));
  ?column? 
 ----------
  t
 (1 row)
 
+---END---
+---START---
 --
 -- Check EXISTS simplification with LIMIT
 --
@@ -359,6 +404,8 @@ select * from int4_tbl o where exists
          ->  Seq Scan on int4_tbl i
 (5 rows)
 
+---END---
+---START---
 explain (costs off)
 select * from int4_tbl o where not exists
   (select 1 from int4_tbl i where i.f1=o.f1 limit 1);
@@ -371,6 +418,8 @@ select * from int4_tbl o where not exists
          ->  Seq Scan on int4_tbl i
 (5 rows)
 
+---END---
+---START---
 explain (costs off)
 select * from int4_tbl o where exists
   (select 1 from int4_tbl i where i.f1=o.f1 limit 0);
@@ -384,119 +433,194 @@ select * from int4_tbl o where exists
                  Filter: (f1 = o.f1)
 (6 rows)
 
+---END---
+---START---
 --
 -- Test cases to catch unpleasant interactions between IN-join processing
 -- and subquery pullup.
 --
-select count(*) from
-  (select 1 from tenk1 a
-   where unique1 IN (select hundred from tenk1 b)) ss;
- count 
--------
-   100
-(1 row)
-
-select count(distinct ss.ten) from
-  (select ten from tenk1 a
-   where unique1 IN (select hundred from tenk1 b)) ss;
- count 
--------
-    10
-(1 row)
-
-select count(*) from
-  (select 1 from tenk1 a
-   where unique1 IN (select distinct hundred from tenk1 b)) ss;
- count 
--------
-   100
-(1 row)
-
-select count(distinct ss.ten) from
-  (select ten from tenk1 a
-   where unique1 IN (select distinct hundred from tenk1 b)) ss;
- count 
--------
-    10
-(1 row)
-
+-- @hengfeng: this query gets stuck
+--select count(*) from
+--  (select 1 from tenk1 a
+--   where unique1 IN (select hundred from tenk1 b)) ss;
+---END---
+---START---
+-- @hengfeng: this query gets stuck
+--select count(distinct ss.ten) from
+--  (select ten from tenk1 a
+--   where unique1 IN (select hundred from tenk1 b)) ss;
+---END---
+---START---
+-- @hengfeng: this query gets stuck
+--select count(*) from
+--  (select 1 from tenk1 a
+--   where unique1 IN (select distinct hundred from tenk1 b)) ss;
+---END---
+---START---
+-- @hengfeng: this query gets stuck
+--select count(distinct ss.ten) from
+--  (select ten from tenk1 a
+--   where unique1 IN (select distinct hundred from tenk1 b)) ss;
+---END---
+---START---
 --
 -- Test cases to check for overenthusiastic optimization of
 -- "IN (SELECT DISTINCT ...)" and related cases.  Per example from
 -- Luca Pireddu and Michael Fuhr.
 --
-CREATE TEMP TABLE foo (id integer);
-CREATE TEMP TABLE bar (id1 integer, id2 integer);
+DROP TABLE IF EXISTS foo;
+CREATE TABLE foo (gemini_pk serial PRIMARY KEY, id integer);
+---END---
+---START---
+DROP TABLE IF EXISTS bar;
+NOTICE:  table "bar" does not exist, skipping
+CREATE TABLE bar (gemini_pk serial PRIMARY KEY, id1 integer, id2 integer);
+---END---
+---START---
 INSERT INTO foo VALUES (1);
+---END---
+---START---
 INSERT INTO bar VALUES (1, 1);
+---END---
+---START---
 INSERT INTO bar VALUES (2, 2);
+---END---
+---START---
 INSERT INTO bar VALUES (3, 1);
+---END---
+---START---
 -- These cases require an extra level of distinct-ing above subquery s
 SELECT * FROM foo WHERE id IN
     (SELECT id2 FROM (SELECT DISTINCT id1, id2 FROM bar) AS s);
- id 
-----
-  1
-(1 row)
+ gemini_pk | id 
+-----------+----
+(0 rows)
 
+---END---
+---START---
 SELECT * FROM foo WHERE id IN
     (SELECT id2 FROM (SELECT id1,id2 FROM bar GROUP BY id1,id2) AS s);
- id 
-----
-  1
-(1 row)
+ gemini_pk | id 
+-----------+----
+(0 rows)
 
+---END---
+---START---
 SELECT * FROM foo WHERE id IN
     (SELECT id2 FROM (SELECT id1, id2 FROM bar UNION
                       SELECT id1, id2 FROM bar) AS s);
- id 
-----
-  1
-(1 row)
+ gemini_pk | id 
+-----------+----
+(0 rows)
 
+---END---
+---START---
 -- These cases do not
 SELECT * FROM foo WHERE id IN
     (SELECT id2 FROM (SELECT DISTINCT ON (id2) id1, id2 FROM bar) AS s);
- id 
-----
-  1
-(1 row)
+ gemini_pk | id 
+-----------+----
+(0 rows)
 
+---END---
+---START---
 SELECT * FROM foo WHERE id IN
     (SELECT id2 FROM (SELECT id2 FROM bar GROUP BY id2) AS s);
- id 
-----
-  1
-(1 row)
+ gemini_pk | id 
+-----------+----
+(0 rows)
 
+---END---
+---START---
 SELECT * FROM foo WHERE id IN
     (SELECT id2 FROM (SELECT id2 FROM bar UNION
                       SELECT id2 FROM bar) AS s);
- id 
-----
-  1
-(1 row)
+ gemini_pk | id 
+-----------+----
+(0 rows)
 
---
--- Test case to catch problems with multiply nested sub-SELECTs not getting
--- recalculated properly.  Per bug report from Didier Moens.
---
-CREATE TABLE orderstest (
-    approver_ref integer,
-    po_ref integer,
-    ordercanceled boolean
-);
+---END---
+---START---
+CREATE TABLE orderstest (gemini_pk serial PRIMARY KEY, approver_ref integer, po_ref integer, ordercanceled boolean);
+---END---
+---START---
 INSERT INTO orderstest VALUES (1, 1, false);
+ERROR:  column "po_ref" is of type integer but expression is of type boolean
+LINE 1: INSERT INTO orderstest VALUES (1, 1, false);
+                                             ^
+HINT:  You will need to rewrite or cast the expression.
+---END---
+---START---
 INSERT INTO orderstest VALUES (66, 5, false);
+ERROR:  column "po_ref" is of type integer but expression is of type boolean
+LINE 1: INSERT INTO orderstest VALUES (66, 5, false);
+                                              ^
+HINT:  You will need to rewrite or cast the expression.
+---END---
+---START---
 INSERT INTO orderstest VALUES (66, 6, false);
+ERROR:  column "po_ref" is of type integer but expression is of type boolean
+LINE 1: INSERT INTO orderstest VALUES (66, 6, false);
+                                              ^
+HINT:  You will need to rewrite or cast the expression.
+---END---
+---START---
 INSERT INTO orderstest VALUES (66, 7, false);
+ERROR:  column "po_ref" is of type integer but expression is of type boolean
+LINE 1: INSERT INTO orderstest VALUES (66, 7, false);
+                                              ^
+HINT:  You will need to rewrite or cast the expression.
+---END---
+---START---
 INSERT INTO orderstest VALUES (66, 1, true);
+ERROR:  column "po_ref" is of type integer but expression is of type boolean
+LINE 1: INSERT INTO orderstest VALUES (66, 1, true);
+                                              ^
+HINT:  You will need to rewrite or cast the expression.
+---END---
+---START---
 INSERT INTO orderstest VALUES (66, 8, false);
+ERROR:  column "po_ref" is of type integer but expression is of type boolean
+LINE 1: INSERT INTO orderstest VALUES (66, 8, false);
+                                              ^
+HINT:  You will need to rewrite or cast the expression.
+---END---
+---START---
 INSERT INTO orderstest VALUES (66, 1, false);
+ERROR:  column "po_ref" is of type integer but expression is of type boolean
+LINE 1: INSERT INTO orderstest VALUES (66, 1, false);
+                                              ^
+HINT:  You will need to rewrite or cast the expression.
+---END---
+---START---
 INSERT INTO orderstest VALUES (77, 1, false);
+ERROR:  column "po_ref" is of type integer but expression is of type boolean
+LINE 1: INSERT INTO orderstest VALUES (77, 1, false);
+                                              ^
+HINT:  You will need to rewrite or cast the expression.
+---END---
+---START---
 INSERT INTO orderstest VALUES (1, 1, false);
+ERROR:  column "po_ref" is of type integer but expression is of type boolean
+LINE 1: INSERT INTO orderstest VALUES (1, 1, false);
+                                             ^
+HINT:  You will need to rewrite or cast the expression.
+---END---
+---START---
 INSERT INTO orderstest VALUES (66, 1, false);
+ERROR:  column "po_ref" is of type integer but expression is of type boolean
+LINE 1: INSERT INTO orderstest VALUES (66, 1, false);
+                                              ^
+HINT:  You will need to rewrite or cast the expression.
+---END---
+---START---
 INSERT INTO orderstest VALUES (1, 1, false);
+ERROR:  column "po_ref" is of type integer but expression is of type boolean
+LINE 1: INSERT INTO orderstest VALUES (1, 1, false);
+                                             ^
+HINT:  You will need to rewrite or cast the expression.
+---END---
+---START---
 CREATE VIEW orders_view AS
 SELECT *,
 (SELECT CASE
@@ -533,98 +657,109 @@ END) AS "Status",
 	END)
 END) AS "Status_OK"
 FROM orderstest ord;
+---END---
+---START---
 SELECT * FROM orders_view;
- approver_ref | po_ref | ordercanceled | Approved |  Status  | Status_OK 
---------------+--------+---------------+----------+----------+-----------
-            1 |      1 | f             | ---      | ---      | ---
-           66 |      5 | f             | Approved | PO       | PO
-           66 |      6 | f             | Approved | PO       | PO
-           66 |      7 | f             | Approved | PO       | PO
-           66 |      1 | t             | Approved | Canceled | Canceled
-           66 |      8 | f             | Approved | PO       | PO
-           66 |      1 | f             | Approved | Approved | Approved
-           77 |      1 | f             | Approved | Approved | Approved
-            1 |      1 | f             | ---      | ---      | ---
-           66 |      1 | f             | Approved | Approved | Approved
-            1 |      1 | f             | ---      | ---      | ---
-(11 rows)
+ gemini_pk | approver_ref | po_ref | ordercanceled | Approved | Status | Status_OK 
+-----------+--------------+--------+---------------+----------+--------+-----------
+(0 rows)
 
+---END---
+---START---
 DROP TABLE orderstest cascade;
 NOTICE:  drop cascades to view orders_view
+---END---
+---START---
 --
 -- Test cases to catch situations where rule rewriter fails to propagate
 -- hasSubLinks flag correctly.  Per example from Kyle Bateman.
 --
-create temp table parts (
-    partnum     text,
-    cost        float8
-);
-create temp table shipped (
-    ttype       char(2),
-    ordnum      int4,
-    partnum     text,
-    value       float8
-);
+DROP TABLE IF EXISTS parts;
+NOTICE:  table "parts" does not exist, skipping
+CREATE TABLE parts (gemini_pk serial PRIMARY KEY, partnum text, cost float8);
+---END---
+---START---
+DROP TABLE IF EXISTS shipped;
+NOTICE:  table "shipped" does not exist, skipping
+CREATE TABLE shipped (gemini_pk serial PRIMARY KEY, ttype varchar, ordnum int8, partnum text, value float8);
+---END---
+---START---
 create temp view shipped_view as
     select * from shipped where ttype = 'wt';
+---END---
+---START---
 create rule shipped_view_insert as on insert to shipped_view do instead
     insert into shipped values('wt', new.ordnum, new.partnum, new.value);
+ERROR:  invalid input syntax for type integer: "wt"
+LINE 2:     insert into shipped values('wt', new.ordnum, new.partnum...
+                                       ^
+---END---
+---START---
 insert into parts (partnum, cost) values (1, 1234.56);
+---END---
+---START---
 insert into shipped_view (ordnum, partnum, value)
     values (0, 1, (select cost from parts where partnum = '1'));
+---END---
+---START---
 select * from shipped_view;
- ttype | ordnum | partnum |  value  
--------+--------+---------+---------
- wt    |      0 | 1       | 1234.56
-(1 row)
+ gemini_pk | ttype | ordnum | partnum | value 
+-----------+-------+--------+---------+-------
+(0 rows)
 
+---END---
+---START---
 create rule shipped_view_update as on update to shipped_view do instead
     update shipped set partnum = new.partnum, value = new.value
         where ttype = new.ttype and ordnum = new.ordnum;
+---END---
+---START---
 update shipped_view set value = 11
     from int4_tbl a join int4_tbl b
       on (a.f1 = (select f1 from int4_tbl c where c.f1=b.f1))
     where ordnum = a.f1;
+---END---
+---START---
 select * from shipped_view;
- ttype | ordnum | partnum | value 
--------+--------+---------+-------
- wt    |      0 | 1       |    11
-(1 row)
+ gemini_pk | ttype | ordnum | partnum | value 
+-----------+-------+--------+---------+-------
+(0 rows)
 
+---END---
+---START---
 select f1, ss1 as relabel from
     (select *, (select sum(f1) from int4_tbl b where f1 >= a.f1) as ss1
      from int4_tbl a) ss;
-     f1      |  relabel   
--------------+------------
-           0 | 2147607103
-      123456 | 2147607103
-     -123456 | 2147483647
-  2147483647 | 2147483647
- -2147483647 |          0
-(5 rows)
+      f1       |    relabel    
+---------------+---------------
+             0 | 1002147607103
+        123456 | 1002147607103
+       -123456 | 1002147483647
+    2147483647 | 1002147483647
+   -2147483647 | 1000000000000
+ 1000000000000 | 1000000000000
+(6 rows)
 
+---END---
+---START---
 --
 -- Test cases involving PARAM_EXEC parameters and min/max index optimizations.
 -- Per bug report from David Sanchez i Gregori.
 --
-select * from (
-  select max(unique1) from tenk1 as a
-  where exists (select 1 from tenk1 as b where b.thousand = a.unique2)
-) ss;
- max  
-------
- 9997
-(1 row)
-
-select * from (
-  select min(unique1) from tenk1 as a
-  where not exists (select 1 from tenk1 as b where b.unique2 = 10000)
-) ss;
- min 
------
-   0
-(1 row)
-
+-- @hengfeng: extremely slow
+--select * from (
+--  select max(unique1) from tenk1 as a
+--  where exists (select 1 from tenk1 as b where b.thousand = a.unique2)
+--) ss;
+---END---
+---START---
+-- @hengfeng: extremely slow
+--select * from (
+--  select min(unique1) from tenk1 as a
+--  where not exists (select 1 from tenk1 as b where b.unique2 = 10000)
+--) ss;
+---END---
+---START---
 --
 -- Test that an IN implemented using a UniquePath does unique-ification
 -- with the right semantics, as per bug #4113.  (Unfortunately we have
@@ -633,43 +768,82 @@ select * from (
 -- here might mean that some other plan type is being used, rendering the test
 -- pointless.)
 --
-create temp table numeric_table (num_col numeric);
+DROP TABLE IF EXISTS numeric_table;
+NOTICE:  table "numeric_table" does not exist, skipping
+CREATE TABLE numeric_table (gemini_pk serial PRIMARY KEY, num_col numeric);
+---END---
+---START---
 insert into numeric_table values (1), (1.000000000000000000001), (2), (3);
-create temp table float_table (float_col float8);
+ERROR:  duplicate key value violates unique constraint "numeric_table_pkey"
+DETAIL:  Key (gemini_pk)=(1) already exists.
+---END---
+---START---
+DROP TABLE IF EXISTS float_table;
+NOTICE:  table "float_table" does not exist, skipping
+CREATE TABLE float_table (gemini_pk serial PRIMARY KEY, float_col float8);
+---END---
+---START---
 insert into float_table values (1), (2), (3);
+---END---
+---START---
 select * from float_table
   where float_col in (select num_col from numeric_table);
- float_col 
------------
-         1
-         2
-         3
-(3 rows)
+ gemini_pk | float_col 
+-----------+-----------
+(0 rows)
 
+---END---
+---START---
 select * from numeric_table
   where num_col in (select float_col from float_table);
-         num_col         
--------------------------
-                       1
- 1.000000000000000000001
-                       2
-                       3
-(4 rows)
+ gemini_pk | num_col 
+-----------+---------
+(0 rows)
 
+---END---
+---START---
 --
 -- Test case for bug #4290: bogus calculation of subplan param sets
 --
-create temp table ta (id int primary key, val int);
+DROP TABLE IF EXISTS ta;
+NOTICE:  table "ta" does not exist, skipping
+create table ta (id int primary key, val int);
+---END---
+---START---
 insert into ta values(1,1);
+---END---
+---START---
 insert into ta values(2,2);
-create temp table tb (id int primary key, aval int);
+---END---
+---START---
+DROP TABLE IF EXISTS tb;
+NOTICE:  table "tb" does not exist, skipping
+create table tb (id int primary key, aval int);
+---END---
+---START---
 insert into tb values(1,1);
+---END---
+---START---
 insert into tb values(2,1);
+---END---
+---START---
 insert into tb values(3,2);
+---END---
+---START---
 insert into tb values(4,2);
-create temp table tc (id int primary key, aid int);
+---END---
+---START---
+DROP TABLE IF EXISTS tc;
+NOTICE:  table "tc" does not exist, skipping
+create table tc (id int primary key, aid int);
+---END---
+---START---
 insert into tc values(1,1);
+---END---
+---START---
 insert into tc values(2,2);
+---END---
+---START---
 select
   ( select min(tb.id) from tb
     where tb.aval = (select ta.val from ta where ta.id = tc.aid) ) as min_tb_id
@@ -680,78 +854,113 @@ from tc;
          3
 (2 rows)
 
+---END---
+---START---
 --
 -- Test case for 8.3 "failed to locate grouping columns" bug
 --
-create temp table t1 (f1 numeric(14,0), f2 varchar(30));
+DROP TABLE IF EXISTS t1;
+ERROR:  cannot drop table t1 because other objects depend on it
+DETAIL:  constraint t2_b_fkey on table t2 depends on table t1
+HINT:  Use DROP ... CASCADE to drop the dependent objects too.
+CREATE TABLE t1 (gemini_pk serial PRIMARY KEY, f1 numeric, f2 varchar(30));
+ERROR:  relation "t1" already exists
+---END---
+---START---
 select * from
   (select distinct f1, f2, (select f2 from t1 x where x.f1 = up.f1) as fs
    from t1 up) ss
 group by f1,f2,fs;
- f1 | f2 | fs 
-----+----+----
-(0 rows)
-
+ERROR:  column "f1" does not exist
+LINE 2:   (select distinct f1, f2, (select f2 from t1 x where x.f1 =...
+                           ^
+---END---
+---START---
 --
 -- Test case for bug #5514 (mishandling of whole-row Vars in subselects)
 --
-create temp table table_a(id integer);
+DROP TABLE IF EXISTS table_a;
+NOTICE:  table "table_a" does not exist, skipping
+CREATE TABLE table_a (gemini_pk serial PRIMARY KEY, id integer);
+---END---
+---START---
 insert into table_a values (42);
+---END---
+---START---
 create temp view view_a as select * from table_a;
+---END---
+---START---
 select view_a from view_a;
  view_a 
 --------
- (42)
+ (42,)
 (1 row)
 
+---END---
+---START---
 select (select view_a) from view_a;
  view_a 
 --------
- (42)
+ (42,)
 (1 row)
 
+---END---
+---START---
 select (select (select view_a)) from view_a;
  view_a 
 --------
- (42)
+ (42,)
 (1 row)
 
+---END---
+---START---
 select (select (a.*)::text) from view_a a;
-  a   
-------
- (42)
+   a   
+-------
+ (42,)
 (1 row)
 
+---END---
+---START---
 --
 -- Check that whole-row Vars reading the result of a subselect don't include
 -- any junk columns therein
 --
 select q from (select max(f1) from int4_tbl group by f1 order by f1) q;
-       q       
----------------
+        q        
+-----------------
  (-2147483647)
  (-123456)
  (0)
  (123456)
  (2147483647)
-(5 rows)
+ (1000000000000)
+(6 rows)
 
+---END---
+---START---
 with q as (select max(f1) from int4_tbl group by f1 order by f1)
   select q from q;
-       q       
----------------
+        q        
+-----------------
  (-2147483647)
  (-123456)
  (0)
  (123456)
  (2147483647)
-(5 rows)
+ (1000000000000)
+(6 rows)
 
+---END---
+---START---
 --
 -- Test case for sublinks pulled up into joinaliasvars lists in an
 -- inherited update/delete query
 --
-begin;  --  this shouldn't delete anything, but be safe
+begin;
+---END---
+---START---
+--  this shouldn't delete anything, but be safe
 delete from road
 where exists (
   select 1
@@ -760,7 +969,11 @@ where exists (
     ( select f1, array(select q1 from int8_tbl) as arr
       from text_tbl ) ss
   where road.name = ss.f1 );
+---END---
+---START---
 rollback;
+---END---
+---START---
 --
 -- Test case for sublinks pushed down into subselects via join alias expansion
 --
@@ -775,18 +988,30 @@ from
 -----
 (0 rows)
 
+---END---
+---START---
 --
 -- Test case for subselect within UPDATE of INSERT...ON CONFLICT DO UPDATE
 --
-create temp table upsert(key int4 primary key, val text);
+DROP TABLE IF EXISTS upsert;
+NOTICE:  table "upsert" does not exist, skipping
+create table upsert(key int8 primary key, val text);
+---END---
+---START---
 insert into upsert values(1, 'val') on conflict (key) do update set val = 'not seen';
+---END---
+---START---
 insert into upsert values(1, 'val') on conflict (key) do update set val = 'seen with subselect ' || (select f1 from int4_tbl where f1 != 0 limit 1)::text;
+---END---
+---START---
 select * from upsert;
  key |            val             
 -----+----------------------------
    1 | seen with subselect 123456
 (1 row)
 
+---END---
+---START---
 with aa as (select 'int4_tbl' u from int4_tbl limit 1)
 insert into upsert values (1, 'x'), (999, 'y')
 on conflict (key) do update set val = (select u from aa)
@@ -797,43 +1022,100 @@ returning *;
  999 | y
 (2 rows)
 
+---END---
+---START---
 --
 -- Test case for cross-type partial matching in hashed subplan (bug #7597)
 --
-create temp table outer_7597 (f1 int4, f2 int4);
+DROP TABLE IF EXISTS outer_7597;
+NOTICE:  table "outer_7597" does not exist, skipping
+CREATE TABLE outer_7597 (gemini_pk serial PRIMARY KEY, f1 int8, f2 int8);
+---END---
+---START---
 insert into outer_7597 values (0, 0);
+---END---
+---START---
 insert into outer_7597 values (1, 0);
+---END---
+---START---
 insert into outer_7597 values (0, null);
+ERROR:  duplicate key value violates unique constraint "outer_7597_pkey"
+DETAIL:  Key (gemini_pk)=(0) already exists.
+---END---
+---START---
 insert into outer_7597 values (1, null);
-create temp table inner_7597(c1 int8, c2 int8);
+ERROR:  duplicate key value violates unique constraint "outer_7597_pkey"
+DETAIL:  Key (gemini_pk)=(1) already exists.
+---END---
+---START---
+DROP TABLE IF EXISTS inner_7597;
+NOTICE:  table "inner_7597" does not exist, skipping
+CREATE TABLE inner_7597 (gemini_pk serial PRIMARY KEY, c1 int8, c2 int8);
+---END---
+---START---
 insert into inner_7597 values(0, null);
+---END---
+---START---
 select * from outer_7597 where (f1, f2) not in (select * from inner_7597);
- f1 | f2 
-----+----
-  1 |  0
-  1 |   
-(2 rows)
-
+ERROR:  subquery has too many columns
+LINE 1: select * from outer_7597 where (f1, f2) not in (select * fro...
+                                                ^
+---END---
+---START---
 --
 -- Similar test case using text that verifies that collation
 -- information is passed through by execTuplesEqual() in nodeSubplan.c
 -- (otherwise it would error in texteq())
 --
-create temp table outer_text (f1 text, f2 text);
+DROP TABLE IF EXISTS outer_text;
+NOTICE:  table "outer_text" does not exist, skipping
+CREATE TABLE outer_text (gemini_pk serial PRIMARY KEY, f1 text, f2 text);
+---END---
+---START---
 insert into outer_text values ('a', 'a');
+ERROR:  invalid input syntax for type integer: "a"
+LINE 1: insert into outer_text values ('a', 'a');
+                                       ^
+---END---
+---START---
 insert into outer_text values ('b', 'a');
+ERROR:  invalid input syntax for type integer: "b"
+LINE 1: insert into outer_text values ('b', 'a');
+                                       ^
+---END---
+---START---
 insert into outer_text values ('a', null);
+ERROR:  invalid input syntax for type integer: "a"
+LINE 1: insert into outer_text values ('a', null);
+                                       ^
+---END---
+---START---
 insert into outer_text values ('b', null);
-create temp table inner_text (c1 text, c2 text);
+ERROR:  invalid input syntax for type integer: "b"
+LINE 1: insert into outer_text values ('b', null);
+                                       ^
+---END---
+---START---
+DROP TABLE IF EXISTS inner_text;
+NOTICE:  table "inner_text" does not exist, skipping
+CREATE TABLE inner_text (gemini_pk serial PRIMARY KEY, c1 text, c2 text);
+---END---
+---START---
 insert into inner_text values ('a', null);
+ERROR:  invalid input syntax for type integer: "a"
+LINE 1: insert into inner_text values ('a', null);
+                                       ^
+---END---
+---START---
 insert into inner_text values ('123', '456');
+---END---
+---START---
 select * from outer_text where (f1, f2) not in (select * from inner_text);
- f1 | f2 
-----+----
- b  | a
- b  | 
-(2 rows)
-
+ERROR:  subquery has too many columns
+LINE 1: select * from outer_text where (f1, f2) not in (select * fro...
+                                                ^
+---END---
+---START---
 --
 -- Another test case for cross-type hashed subplans: comparison of
 -- inner-side values must be done with appropriate operator
@@ -852,12 +1134,16 @@ select 'foo'::text in (select 'bar'::name union all select 'bar'::name);
                  Output: 'bar'::name
 (8 rows)
 
+---END---
+---START---
 select 'foo'::text in (select 'bar'::name union all select 'bar'::name);
  ?column? 
 ----------
  f
 (1 row)
 
+---END---
+---START---
 --
 -- Test that we don't try to hash nested records (bug #17363)
 -- (Hashing could be supported, but for now we don't)
@@ -875,12 +1161,16 @@ select row(row(row(1))) = any (select row(row(1)));
                  Output: '("(1)")'::record
 (7 rows)
 
+---END---
+---START---
 select row(row(row(1))) = any (select row(row(1)));
  ?column? 
 ----------
  t
 (1 row)
 
+---END---
+---START---
 --
 -- Test case for premature memory release during hashing of subplan output
 --
@@ -890,6 +1180,8 @@ select '1'::text in (select '1'::name union all select '1'::name);
  t
 (1 row)
 
+---END---
+---START---
 --
 -- Test that we don't try to use a hashed subplan if the simplified
 -- testexpr isn't of the right shape
@@ -900,11 +1192,19 @@ ERROR:  operator does not exist: bigint = text
 LINE 1: select * from int8_tbl where q1 in (select c1 from inner_tex...
                                         ^
 HINT:  No operator matches the given name and argument types. You might need to add explicit type casts.
+---END---
+---START---
 begin;
+---END---
+---START---
 -- make an operator to allow it to succeed
 create function bogus_int8_text_eq(int8, text) returns boolean
 language sql as 'select $1::text = $2';
+---END---
+---START---
 create operator = (procedure=bogus_int8_text_eq, leftarg=int8, rightarg=text);
+---END---
+---START---
 explain (costs off)
 select * from int8_tbl where q1 in (select c1 from inner_text);
            QUERY PLAN           
@@ -915,17 +1215,21 @@ select * from int8_tbl where q1 in (select c1 from inner_text);
      ->  Seq Scan on inner_text
 (4 rows)
 
+---END---
+---START---
 select * from int8_tbl where q1 in (select c1 from inner_text);
- q1  |        q2        
------+------------------
- 123 |              456
- 123 | 4567890123456789
-(2 rows)
+ gemini_pk | q1 | q2 
+-----------+----+----
+(0 rows)
 
+---END---
+---START---
 -- inlining of this function results in unusual number of hash clauses,
 -- which we can still cope with
 create or replace function bogus_int8_text_eq(int8, text) returns boolean
 language sql as 'select $1::text = $2 and $1::text = $2';
+---END---
+---START---
 explain (costs off)
 select * from int8_tbl where q1 in (select c1 from inner_text);
            QUERY PLAN           
@@ -936,17 +1240,21 @@ select * from int8_tbl where q1 in (select c1 from inner_text);
      ->  Seq Scan on inner_text
 (4 rows)
 
+---END---
+---START---
 select * from int8_tbl where q1 in (select c1 from inner_text);
- q1  |        q2        
------+------------------
- 123 |              456
- 123 | 4567890123456789
-(2 rows)
+ gemini_pk | q1 | q2 
+-----------+----+----
+(0 rows)
 
+---END---
+---START---
 -- inlining of this function causes LHS and RHS to be switched,
 -- which we can't cope with, so hashing should be abandoned
 create or replace function bogus_int8_text_eq(int8, text) returns boolean
 language sql as 'select $2 = $1::text';
+---END---
+---START---
 explain (costs off)
 select * from int8_tbl where q1 in (select c1 from inner_text);
               QUERY PLAN              
@@ -958,113 +1266,102 @@ select * from int8_tbl where q1 in (select c1 from inner_text);
            ->  Seq Scan on inner_text
 (5 rows)
 
+---END---
+---START---
 select * from int8_tbl where q1 in (select c1 from inner_text);
- q1  |        q2        
------+------------------
- 123 |              456
- 123 | 4567890123456789
-(2 rows)
+ gemini_pk | q1 | q2 
+-----------+----+----
+(0 rows)
 
-rollback;  -- to get rid of the bogus operator
+---END---
+---START---
+rollback;
+---END---
+---START---
+-- to get rid of the bogus operator
 --
 -- Test resolution of hashed vs non-hashed implementation of EXISTS subplan
 --
-explain (costs off)
-select count(*) from tenk1 t
-where (exists(select 1 from tenk1 k where k.unique1 = t.unique2) or ten < 0);
-                          QUERY PLAN                          
---------------------------------------------------------------
- Aggregate
-   ->  Seq Scan on tenk1 t
-         Filter: ((hashed SubPlan 2) OR (ten < 0))
-         SubPlan 2
-           ->  Index Only Scan using tenk1_unique1 on tenk1 k
-(5 rows)
-
-select count(*) from tenk1 t
-where (exists(select 1 from tenk1 k where k.unique1 = t.unique2) or ten < 0);
- count 
--------
- 10000
-(1 row)
-
-explain (costs off)
-select count(*) from tenk1 t
-where (exists(select 1 from tenk1 k where k.unique1 = t.unique2) or ten < 0)
-  and thousand = 1;
-                          QUERY PLAN                          
---------------------------------------------------------------
- Aggregate
-   ->  Bitmap Heap Scan on tenk1 t
-         Recheck Cond: (thousand = 1)
-         Filter: ((SubPlan 1) OR (ten < 0))
-         ->  Bitmap Index Scan on tenk1_thous_tenthous
-               Index Cond: (thousand = 1)
-         SubPlan 1
-           ->  Index Only Scan using tenk1_unique1 on tenk1 k
-                 Index Cond: (unique1 = t.unique2)
-(9 rows)
-
-select count(*) from tenk1 t
-where (exists(select 1 from tenk1 k where k.unique1 = t.unique2) or ten < 0)
-  and thousand = 1;
- count 
--------
-    10
-(1 row)
-
+-- @hengfeng: extremely slow
+--explain (costs off)
+--select count(*) from tenk1 t
+--where (exists(select 1 from tenk1 k where k.unique1 = t.unique2) or ten < 0);
+---END---
+---START---
+-- @hengfeng: extremely slow
+--select count(*) from tenk1 t
+--where (exists(select 1 from tenk1 k where k.unique1 = t.unique2) or ten < 0);
+---END---
+---START---
+-- @hengfeng: extremely slow
+--explain (costs off)
+--select count(*) from tenk1 t
+--where (exists(select 1 from tenk1 k where k.unique1 = t.unique2) or ten < 0)
+--  and thousand = 1;
+---END---
+---START---
+-- @hengfeng: extremely slow
+--select count(*) from tenk1 t
+--where (exists(select 1 from tenk1 k where k.unique1 = t.unique2) or ten < 0)
+--  and thousand = 1;
+---END---
+---START---
 -- It's possible for the same EXISTS to get resolved both ways
-create temp table exists_tbl (c1 int, c2 int, c3 int) partition by list (c1);
-create temp table exists_tbl_null partition of exists_tbl for values in (null);
-create temp table exists_tbl_def partition of exists_tbl default;
+DROP TABLE IF EXISTS exists_tbl;
+NOTICE:  table "exists_tbl" does not exist, skipping
+CREATE TABLE exists_tbl (gemini_pk serial PRIMARY KEY, c1 integer, c2 integer, c3 integer) PARTITION BY list (c1);
+ERROR:  unique constraint on partitioned table must include all partitioning columns
+DETAIL:  PRIMARY KEY constraint on table "exists_tbl" lacks column "c1" which is part of the partition key.
+---END---
+---START---
+DROP TABLE IF EXISTS exists_tbl_null;
+NOTICE:  table "exists_tbl_null" does not exist, skipping
+create table exists_tbl_null partition of exists_tbl for values in (null);
+ERROR:  relation "exists_tbl" does not exist
+---END---
+---START---
+DROP TABLE IF EXISTS exists_tbl_def;
+NOTICE:  table "exists_tbl_def" does not exist, skipping
+create table exists_tbl_def partition of exists_tbl default;
+ERROR:  relation "exists_tbl" does not exist
+---END---
+---START---
 insert into exists_tbl select x, x/2, x+1 from generate_series(0,10) x;
+ERROR:  relation "exists_tbl" does not exist
+LINE 1: insert into exists_tbl select x, x/2, x+1 from generate_seri...
+                    ^
+---END---
+---START---
 analyze exists_tbl;
+ERROR:  relation "exists_tbl" does not exist
+---END---
+---START---
 explain (costs off)
 select * from exists_tbl t1
   where (exists(select 1 from exists_tbl t2 where t1.c1 = t2.c2) or c3 < 0);
-                      QUERY PLAN                      
-------------------------------------------------------
- Append
-   ->  Seq Scan on exists_tbl_null t1_1
-         Filter: ((SubPlan 1) OR (c3 < 0))
-         SubPlan 1
-           ->  Append
-                 ->  Seq Scan on exists_tbl_null t2_1
-                       Filter: (t1_1.c1 = c2)
-                 ->  Seq Scan on exists_tbl_def t2_2
-                       Filter: (t1_1.c1 = c2)
-   ->  Seq Scan on exists_tbl_def t1_2
-         Filter: ((hashed SubPlan 2) OR (c3 < 0))
-         SubPlan 2
-           ->  Append
-                 ->  Seq Scan on exists_tbl_null t2_4
-                 ->  Seq Scan on exists_tbl_def t2_5
-(15 rows)
-
+ERROR:  relation "exists_tbl" does not exist
+LINE 2: select * from exists_tbl t1
+                      ^
+---END---
+---START---
 select * from exists_tbl t1
   where (exists(select 1 from exists_tbl t2 where t1.c1 = t2.c2) or c3 < 0);
- c1 | c2 | c3 
-----+----+----
-  0 |  0 |  1
-  1 |  0 |  2
-  2 |  1 |  3
-  3 |  1 |  4
-  4 |  2 |  5
-  5 |  2 |  6
-(6 rows)
-
+ERROR:  relation "exists_tbl" does not exist
+LINE 1: select * from exists_tbl t1
+                      ^
+---END---
+---START---
 --
 -- Test case for planner bug with nested EXISTS handling
 --
-select a.thousand from tenk1 a, tenk1 b
-where a.thousand = b.thousand
-  and exists ( select 1 from tenk1 c where b.hundred = c.hundred
-                   and not exists ( select 1 from tenk1 d
-                                    where a.thousand = d.thousand ) );
- thousand 
-----------
-(0 rows)
-
+-- hengfeng@: this query gets stuck
+--select a.thousand from tenk1 a, tenk1 b
+--where a.thousand = b.thousand
+--  and exists ( select 1 from tenk1 c where b.hundred = c.hundred
+--                   and not exists ( select 1 from tenk1 d
+--                                    where a.thousand = d.thousand ) );
+---END---
+---START---
 --
 -- Check that nested sub-selects are not pulled up if they contain volatiles
 --
@@ -1083,6 +1380,8 @@ explain (verbose, costs off)
            Output: now()
 (8 rows)
 
+---END---
+---START---
 explain (verbose, costs off)
   select x, x from
     (select (select random()) as x from (values(1),(2)) v(y)) ss;
@@ -1097,6 +1396,8 @@ explain (verbose, costs off)
                  Output: random()
 (7 rows)
 
+---END---
+---START---
 explain (verbose, costs off)
   select x, x from
     (select (select now() where y=y) as x from (values(1),(2)) v(y)) ss;
@@ -1114,6 +1415,8 @@ explain (verbose, costs off)
            One-Time Filter: ("*VALUES*".column1 = "*VALUES*".column1)
 (10 rows)
 
+---END---
+---START---
 explain (verbose, costs off)
   select x, x from
     (select (select random() where y=y) as x from (values(1),(2)) v(y)) ss;
@@ -1129,6 +1432,8 @@ explain (verbose, costs off)
                  One-Time Filter: ("*VALUES*".column1 = "*VALUES*".column1)
 (8 rows)
 
+---END---
+---START---
 --
 -- Test rescan of a hashed subplan (the use of random() is to prevent the
 -- sub-select from being pulled up, which would result in not hashing)
@@ -1140,24 +1445,26 @@ select sum(ss.tst::int) from
          random() as r
   from onek i where i.unique1 = o.unique1 ) ss
 where o.ten = 0;
-                                                                                         QUERY PLAN                                                                                          
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                                                                                                QUERY PLAN                                                                                                
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  Aggregate
    Output: sum((((hashed SubPlan 1)))::integer)
    ->  Nested Loop
          Output: ((hashed SubPlan 1))
          ->  Seq Scan on public.onek o
-               Output: o.unique1, o.unique2, o.two, o.four, o.ten, o.twenty, o.hundred, o.thousand, o.twothousand, o.fivethous, o.tenthous, o.odd, o.even, o.stringu1, o.stringu2, o.string4
+               Output: o.gemini_pk, o.unique1, o.unique2, o.two, o.four, o.ten, o.twenty, o.hundred, o.thousand, o.twothousand, o.fivethous, o.tenthous, o.odd, o.even, o.stringu1, o.stringu2, o.string4
                Filter: (o.ten = 0)
-         ->  Index Scan using onek_unique1 on public.onek i
+         ->  Seq Scan on public.onek i
                Output: (hashed SubPlan 1), random()
-               Index Cond: (i.unique1 = o.unique1)
+               Filter: (i.unique1 = o.unique1)
                SubPlan 1
                  ->  Seq Scan on public.int4_tbl
                        Output: int4_tbl.f1
                        Filter: (int4_tbl.f1 <= o.hundred)
 (14 rows)
 
+---END---
+---START---
 select sum(ss.tst::int) from
   onek o cross join lateral (
   select i.ten in (select f1 from int4_tbl where f1 <= o.hundred) as tst,
@@ -1169,6 +1476,8 @@ where o.ten = 0;
  100
 (1 row)
 
+---END---
+---START---
 --
 -- Test rescan of a SetOp node
 --
@@ -1180,8 +1489,8 @@ select count(*) from
     select * from onek i2 where i2.unique1 = o.unique2
   ) ss
 where o.ten = 1;
-                                  QUERY PLAN                                  
-------------------------------------------------------------------------------
+                             QUERY PLAN                              
+---------------------------------------------------------------------
  Aggregate
    ->  Nested Loop
          ->  Seq Scan on onek o
@@ -1190,13 +1499,15 @@ where o.ten = 1;
                ->  HashSetOp Except
                      ->  Append
                            ->  Subquery Scan on "*SELECT* 1"
-                                 ->  Index Scan using onek_unique1 on onek i1
-                                       Index Cond: (unique1 = o.unique1)
+                                 ->  Seq Scan on onek i1
+                                       Filter: (unique1 = o.unique1)
                            ->  Subquery Scan on "*SELECT* 2"
-                                 ->  Index Scan using onek_unique1 on onek i2
-                                       Index Cond: (unique1 = o.unique2)
+                                 ->  Seq Scan on onek i2
+                                       Filter: (unique1 = o.unique2)
 (13 rows)
 
+---END---
+---START---
 select count(*) from
   onek o cross join lateral (
     select * from onek i1 where i1.unique1 = o.unique1
@@ -1209,6 +1520,8 @@ where o.ten = 1;
    100
 (1 row)
 
+---END---
+---START---
 --
 -- Test rescan of a RecursiveUnion node
 --
@@ -1223,23 +1536,22 @@ select sum(o.four), sum(ss.a) from
     select * from x
   ) ss
 where o.ten = 1;
-                       QUERY PLAN                        
----------------------------------------------------------
+                    QUERY PLAN                     
+---------------------------------------------------
  Aggregate
    ->  Nested Loop
          ->  Seq Scan on onek o
                Filter: (ten = 1)
-         ->  Memoize
-               Cache Key: o.four
-               Cache Mode: binary
-               ->  CTE Scan on x
-                     CTE x
-                       ->  Recursive Union
-                             ->  Result
-                             ->  WorkTable Scan on x x_1
-                                   Filter: (a < 10)
-(13 rows)
+         ->  CTE Scan on x
+               CTE x
+                 ->  Recursive Union
+                       ->  Result
+                       ->  WorkTable Scan on x x_1
+                             Filter: (a < 10)
+(10 rows)
 
+---END---
+---START---
 select sum(o.four), sum(ss.a) from
   onek o cross join lateral (
     with recursive x(a) as
@@ -1255,29 +1567,49 @@ where o.ten = 1;
  1700 | 5350
 (1 row)
 
+---END---
+---START---
 --
 -- Check we don't misoptimize a NOT IN where the subquery returns no rows.
 --
-create temp table notinouter (a int);
-create temp table notininner (b int not null);
+DROP TABLE IF EXISTS notinouter;
+NOTICE:  table "notinouter" does not exist, skipping
+CREATE TABLE notinouter (gemini_pk serial PRIMARY KEY, a integer);
+---END---
+---START---
+DROP TABLE IF EXISTS notininner;
+NOTICE:  table "notininner" does not exist, skipping
+CREATE TABLE notininner (gemini_pk serial PRIMARY KEY, b integer NOT NULL);
+---END---
+---START---
 insert into notinouter values (null), (1);
+ERROR:  null value in column "gemini_pk" of relation "notinouter" violates not-null constraint
+DETAIL:  Failing row contains (null, null).
+---END---
+---START---
 select * from notinouter where a not in (select b from notininner);
- a 
----
-  
- 1
-(2 rows)
+ gemini_pk | a 
+-----------+---
+(0 rows)
 
+---END---
+---START---
 --
 -- Check we behave sanely in corner case of empty SELECT list (bug #8648)
 --
-create temp table nocolumns();
+DROP TABLE IF EXISTS nocolumns;
+NOTICE:  table "nocolumns" does not exist, skipping
+CREATE TABLE nocolumns (gemini_pk serial PRIMARY KEY);
+---END---
+---START---
 select exists(select * from nocolumns);
  exists 
 --------
  f
 (1 row)
 
+---END---
+---START---
 --
 -- Check behavior with a SubPlan in VALUES (bug #14924)
 --
@@ -1308,6 +1640,8 @@ where s.i < 10 and (select val.x) < 110;
   10
 (17 rows)
 
+---END---
+---START---
 -- another variant of that (bug #16213)
 explain (verbose, costs off)
 select * from
@@ -1324,6 +1658,8 @@ select * from
            Output: "*VALUES*_1".column1
 (5 rows)
 
+---END---
+---START---
 select * from
 (values
   (3 not in (select * from (values (1), (2)) ss1)),
@@ -1335,6 +1671,8 @@ select * from
  f
 (2 rows)
 
+---END---
+---START---
 --
 -- Check sane behavior with nested IN SubLinks
 --
@@ -1342,28 +1680,37 @@ explain (verbose, costs off)
 select * from int4_tbl where
   (case when f1 in (select unique1 from tenk1 a) then f1 else null end) in
   (select ten from tenk1 b);
-                                                                                      QUERY PLAN                                                                                       
----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
- Nested Loop Semi Join
-   Output: int4_tbl.f1
-   Join Filter: (CASE WHEN (hashed SubPlan 1) THEN int4_tbl.f1 ELSE NULL::integer END = b.ten)
-   ->  Seq Scan on public.int4_tbl
-         Output: int4_tbl.f1
-   ->  Seq Scan on public.tenk1 b
-         Output: b.unique1, b.unique2, b.two, b.four, b.ten, b.twenty, b.hundred, b.thousand, b.twothousand, b.fivethous, b.tenthous, b.odd, b.even, b.stringu1, b.stringu2, b.string4
-   SubPlan 1
-     ->  Index Only Scan using tenk1_unique1 on public.tenk1 a
-           Output: a.unique1
-(10 rows)
+                                                                                                QUERY PLAN                                                                                                
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Hash Join
+   Output: int4_tbl.gemini_pk, int4_tbl.f1
+   Hash Cond: (b.ten = CASE WHEN (hashed SubPlan 1) THEN int4_tbl.f1 ELSE NULL::bigint END)
+   ->  HashAggregate
+         Output: b.ten
+         Group Key: b.ten
+         ->  Seq Scan on public.tenk1 b
+               Output: b.gemini_pk, b.unique1, b.unique2, b.two, b.four, b.ten, b.twenty, b.hundred, b.thousand, b.twothousand, b.fivethous, b.tenthous, b.odd, b.even, b.stringu1, b.stringu2, b.string4
+   ->  Hash
+         Output: int4_tbl.gemini_pk, int4_tbl.f1
+         ->  Seq Scan on public.int4_tbl
+               Output: int4_tbl.gemini_pk, int4_tbl.f1
+         SubPlan 1
+           ->  Seq Scan on public.tenk1 a
+                 Output: a.unique1
+(15 rows)
 
+---END---
+---START---
 select * from int4_tbl where
   (case when f1 in (select unique1 from tenk1 a) then f1 else null end) in
   (select ten from tenk1 b);
- f1 
-----
-  0
+ gemini_pk | f1 
+-----------+----
+         1 |  0
 (1 row)
 
+---END---
+---START---
 --
 -- Check for incorrect optimization when IN subquery contains a SRF
 --
@@ -1373,10 +1720,10 @@ select * from int4_tbl o where (f1, f1) in
                             QUERY PLAN                             
 -------------------------------------------------------------------
  Nested Loop Semi Join
-   Output: o.f1
+   Output: o.gemini_pk, o.f1
    Join Filter: (o.f1 = "ANY_subquery".f1)
    ->  Seq Scan on public.int4_tbl o
-         Output: o.f1
+         Output: o.gemini_pk, o.f1
    ->  Materialize
          Output: "ANY_subquery".f1, "ANY_subquery".g
          ->  Subquery Scan on "ANY_subquery"
@@ -1390,16 +1737,20 @@ select * from int4_tbl o where (f1, f1) in
                                  Output: i.f1
                                  Group Key: i.f1
                                  ->  Seq Scan on public.int4_tbl i
-                                       Output: i.f1
+                                       Output: i.gemini_pk, i.f1
 (19 rows)
 
+---END---
+---START---
 select * from int4_tbl o where (f1, f1) in
   (select f1, generate_series(1,50) / 10 g from int4_tbl i group by f1);
- f1 
-----
-  0
+ gemini_pk | f1 
+-----------+----
+         1 |  0
 (1 row)
 
+---END---
+---START---
 --
 -- check for over-optimization of whole-row Var referencing an Append plan
 --
@@ -1416,8 +1767,11 @@ from int4_tbl;
  (4,5,6.0)
  (1,2,3)
  (4,5,6.0)
-(5 rows)
+ (1,2,3)
+(6 rows)
 
+---END---
+---START---
 --
 -- Check for sane handling of a lateral reference in a subquery's quals
 -- (most of the complication here is to prevent the test case from being
@@ -1433,12 +1787,12 @@ select * from
         select true as b, 2 as id
     ) as t2
 where b and f1 >= 0;
-                 QUERY PLAN                 
---------------------------------------------
+                    QUERY PLAN                     
+---------------------------------------------------
  Nested Loop
-   Output: i4.f1, ((i4.f1 > 1)), (1)
+   Output: i4.gemini_pk, i4.f1, ((i4.f1 > 1)), (1)
    ->  Seq Scan on public.int4_tbl i4
-         Output: i4.f1
+         Output: i4.gemini_pk, i4.f1
          Filter: (i4.f1 >= 0)
    ->  Append
          ->  Subquery Scan on t1
@@ -1453,6 +1807,8 @@ where b and f1 >= 0;
                Output: true, 2
 (16 rows)
 
+---END---
+---START---
 select * from
     int4_tbl i4,
     lateral (
@@ -1462,20 +1818,26 @@ select * from
         select true as b, 2 as id
     ) as t2
 where b and f1 >= 0;
-     f1     | b | id 
-------------+---+----
-          0 | t |  2
-     123456 | t |  1
-     123456 | t |  2
- 2147483647 | t |  1
- 2147483647 | t |  2
-(5 rows)
+ gemini_pk |      f1       | b | id 
+-----------+---------------+---+----
+         1 |             0 | t |  2
+         2 |        123456 | t |  1
+         2 |        123456 | t |  2
+         4 |    2147483647 | t |  1
+         4 |    2147483647 | t |  2
+         6 | 1000000000000 | t |  1
+         6 | 1000000000000 | t |  2
+(7 rows)
 
+---END---
+---START---
 --
 -- Check that volatile quals aren't pushed down past a DISTINCT:
 -- nextval() should not be called more than the nominal number of times
 --
 create temp sequence ts1;
+---END---
+---START---
 select * from
   (select distinct ten from tenk1) ss
   where ten < 10 + nextval('ts1')
@@ -1494,12 +1856,16 @@ select * from
    9
 (10 rows)
 
+---END---
+---START---
 select nextval('ts1');
  nextval 
 ---------
       11
 (1 row)
 
+---END---
+---START---
 --
 -- Check that volatile quals aren't pushed down past a set-returning function;
 -- while a nonvolatile qual can be, if it doesn't reference the SRF.
@@ -1510,6 +1876,8 @@ begin
   raise notice 'x = %, y = %', x, y;
   return x > y;
 end$$;
+---END---
+---START---
 explain (verbose, costs off)
 select * from
   (select 9 as x, unnest(array[1,2,3,11,12,13]) as u) ss
@@ -1524,6 +1892,8 @@ select * from
          ->  Result
 (6 rows)
 
+---END---
+---START---
 select * from
   (select 9 as x, unnest(array[1,2,3,11,12,13]) as u) ss
   where tattle(x, 8);
@@ -1543,8 +1913,12 @@ NOTICE:  x = 9, y = 8
  9 | 13
 (6 rows)
 
+---END---
+---START---
 -- if we pretend it's stable, we get different results:
 alter function tattle(x int, y int) stable;
+---END---
+---START---
 explain (verbose, costs off)
 select * from
   (select 9 as x, unnest(array[1,2,3,11,12,13]) as u) ss
@@ -1557,6 +1931,8 @@ select * from
          One-Time Filter: tattle(9, 8)
 (4 rows)
 
+---END---
+---START---
 select * from
   (select 9 as x, unnest(array[1,2,3,11,12,13]) as u) ss
   where tattle(x, 8);
@@ -1571,6 +1947,8 @@ NOTICE:  x = 9, y = 8
  9 | 13
 (6 rows)
 
+---END---
+---START---
 -- although even a stable qual should not be pushed down if it references SRF
 explain (verbose, costs off)
 select * from
@@ -1586,6 +1964,8 @@ select * from
          ->  Result
 (6 rows)
 
+---END---
+---START---
 select * from
   (select 9 as x, unnest(array[1,2,3,11,12,13]) as u) ss
   where tattle(x, u);
@@ -1602,7 +1982,11 @@ NOTICE:  x = 9, y = 13
  9 | 3
 (3 rows)
 
+---END---
+---START---
 drop function tattle(x int, y int);
+---END---
+---START---
 --
 -- Test that LIMIT can be pushed to SORT through a subquery that just projects
 -- columns.  We check for that having happened by looking to see if EXPLAIN
@@ -1610,6 +1994,8 @@ drop function tattle(x int, y int);
 -- all the non-invariant parts of the EXPLAIN ANALYZE output.
 --
 create table sq_limit (pk int primary key, c1 int, c2 int);
+---END---
+---START---
 insert into sq_limit values
     (1, 1, 1),
     (2, 2, 2),
@@ -1619,6 +2005,8 @@ insert into sq_limit values
     (6, 2, 2),
     (7, 3, 3),
     (8, 4, 4);
+---END---
+---START---
 create function explain_sq_limit() returns setof text language plpgsql as
 $$
 declare ln text;
@@ -1632,6 +2020,8 @@ begin
     end loop;
 end;
 $$;
+---END---
+---START---
 select * from explain_sq_limit();
                         explain_sq_limit                        
 ----------------------------------------------------------------
@@ -1643,6 +2033,8 @@ select * from explain_sq_limit();
                ->  Seq Scan on sq_limit (actual rows=8 loops=1)
 (6 rows)
 
+---END---
+---START---
 select * from (select pk,c2 from sq_limit order by c1,pk) as x limit 3;
  pk | c2 
 ----+----
@@ -1651,17 +2043,29 @@ select * from (select pk,c2 from sq_limit order by c1,pk) as x limit 3;
   2 |  2
 (3 rows)
 
+---END---
+---START---
 drop function explain_sq_limit();
+---END---
+---START---
 drop table sq_limit;
+---END---
+---START---
 --
 -- Ensure that backward scan direction isn't propagated into
 -- expression subqueries (bug #15336)
 --
 begin;
+---END---
+---START---
 declare c1 scroll cursor for
  select * from generate_series(1,4) i
   where i <> all (values (2),(3));
+---END---
+---START---
 move forward all in c1;
+---END---
+---START---
 fetch backward all in c1;
  i 
 ---
@@ -1669,7 +2073,11 @@ fetch backward all in c1;
  1
 (2 rows)
 
+---END---
+---START---
 commit;
+---END---
+---START---
 --
 -- Tests for CTE inlining behavior
 --
@@ -1684,6 +2092,8 @@ select * from x where f1 = 1;
    Filter: (subselect_tbl.f1 = 1)
 (3 rows)
 
+---END---
+---START---
 -- Explicitly request materialization
 explain (verbose, costs off)
 with x as materialized (select * from (select f1 from subselect_tbl) ss)
@@ -1698,6 +2108,8 @@ select * from x where f1 = 1;
            Output: subselect_tbl.f1
 (6 rows)
 
+---END---
+---START---
 -- Stable functions are safe to inline
 explain (verbose, costs off)
 with x as (select * from (select f1, now() from subselect_tbl) ss)
@@ -1709,6 +2121,8 @@ select * from x where f1 = 1;
    Filter: (subselect_tbl.f1 = 1)
 (3 rows)
 
+---END---
+---START---
 -- Volatile functions prevent inlining
 explain (verbose, costs off)
 with x as (select * from (select f1, random() from subselect_tbl) ss)
@@ -1723,6 +2137,8 @@ select * from x where f1 = 1;
            Output: subselect_tbl.f1, random()
 (6 rows)
 
+---END---
+---START---
 -- SELECT FOR UPDATE cannot be inlined
 explain (verbose, costs off)
 with x as (select * from (select f1 from subselect_tbl for update) ss)
@@ -1741,6 +2157,8 @@ select * from x where f1 = 1;
                        Output: subselect_tbl.f1, subselect_tbl.ctid
 (10 rows)
 
+---END---
+---START---
 -- Multiply-referenced CTEs are inlined only when requested
 explain (verbose, costs off)
 with x as (select * from (select f1, now() as n from subselect_tbl) ss)
@@ -1765,24 +2183,28 @@ select * from x, x x2 where x.n = x2.n;
                Output: x2.f1, x2.n
 (16 rows)
 
+---END---
+---START---
 explain (verbose, costs off)
 with x as not materialized (select * from (select f1, now() as n from subselect_tbl) ss)
 select * from x, x x2 where x.n = x2.n;
-                                 QUERY PLAN                                 
-----------------------------------------------------------------------------
+                                             QUERY PLAN                                              
+-----------------------------------------------------------------------------------------------------
  Result
    Output: subselect_tbl.f1, now(), subselect_tbl_1.f1, now()
    One-Time Filter: (now() = now())
    ->  Nested Loop
          Output: subselect_tbl.f1, subselect_tbl_1.f1
          ->  Seq Scan on public.subselect_tbl
-               Output: subselect_tbl.f1, subselect_tbl.f2, subselect_tbl.f3
+               Output: subselect_tbl.gemini_pk, subselect_tbl.f1, subselect_tbl.f2, subselect_tbl.f3
          ->  Materialize
                Output: subselect_tbl_1.f1
                ->  Seq Scan on public.subselect_tbl subselect_tbl_1
                      Output: subselect_tbl_1.f1
 (11 rows)
 
+---END---
+---START---
 -- Multiply-referenced CTEs can't be inlined if they contain outer self-refs
 explain (verbose, costs off)
 with recursive x(a) as
@@ -1812,6 +2234,8 @@ select * from x;
                        Output: z1.a
 (16 rows)
 
+---END---
+---START---
 with recursive x(a) as
   ((values ('a'), ('b'))
    union all
@@ -1845,6 +2269,8 @@ select * from x;
  bbbb
 (22 rows)
 
+---END---
+---START---
 explain (verbose, costs off)
 with recursive x(a) as
   ((values ('a'), ('b'))
@@ -1866,6 +2292,8 @@ select * from x;
                  Filter: (length((x_1.a || x_1.a)) < 5)
 (9 rows)
 
+---END---
+---START---
 with recursive x(a) as
   ((values ('a'), ('b'))
    union all
@@ -1883,28 +2311,34 @@ select * from x;
  bbbb
 (6 rows)
 
+---END---
+---START---
 -- Check handling of outer references
 explain (verbose, costs off)
 with x as (select * from int4_tbl)
 select * from (with y as (select * from x) select * from y) ss;
-         QUERY PLAN          
------------------------------
+                QUERY PLAN                 
+-------------------------------------------
  Seq Scan on public.int4_tbl
-   Output: int4_tbl.f1
+   Output: int4_tbl.gemini_pk, int4_tbl.f1
 (2 rows)
 
+---END---
+---START---
 explain (verbose, costs off)
 with x as materialized (select * from int4_tbl)
 select * from (with y as (select * from x) select * from y) ss;
-             QUERY PLAN              
--------------------------------------
+                    QUERY PLAN                     
+---------------------------------------------------
  CTE Scan on x
-   Output: x.f1
+   Output: x.gemini_pk, x.f1
    CTE x
      ->  Seq Scan on public.int4_tbl
-           Output: int4_tbl.f1
+           Output: int4_tbl.gemini_pk, int4_tbl.f1
 (5 rows)
 
+---END---
+---START---
 -- Ensure that we inline the currect CTE when there are
 -- multiple CTEs with the same name
 explain (verbose, costs off)
@@ -1916,13 +2350,16 @@ select * from (with x as (select 2 as y) select * from x) ss;
    Output: 2
 (2 rows)
 
+---END---
+---START---
 -- Row marks are not pushed into CTEs
 explain (verbose, costs off)
 with x as (select * from subselect_tbl)
 select * from x for update;
-                           QUERY PLAN                           
-----------------------------------------------------------------
+                                       QUERY PLAN                                        
+-----------------------------------------------------------------------------------------
  Seq Scan on public.subselect_tbl
-   Output: subselect_tbl.f1, subselect_tbl.f2, subselect_tbl.f3
+   Output: subselect_tbl.gemini_pk, subselect_tbl.f1, subselect_tbl.f2, subselect_tbl.f3
 (2 rows)
 
+---END---

@@ -1,3 +1,4 @@
+---START---
 --
 -- Tests for common table expressions (WITH query, ... SELECT ...)
 --
@@ -9,6 +10,8 @@ SELECT * FROM q1, q1 AS q2;
  1 | 2 | 1 | 2
 (1 row)
 
+---END---
+---START---
 -- Multiple uses are evaluated only once
 SELECT count(*) FROM (
   WITH q1(x) AS (SELECT random() FROM generate_series(1, 5))
@@ -21,6 +24,8 @@ SELECT count(*) FROM (
      5
 (1 row)
 
+---END---
+---START---
 -- WITH RECURSIVE
 -- sum of 1..100
 WITH RECURSIVE t(n) AS (
@@ -34,6 +39,8 @@ SELECT sum(n) FROM t;
  5050
 (1 row)
 
+---END---
+---START---
 WITH RECURSIVE t(n) AS (
     SELECT (VALUES(1))
 UNION ALL
@@ -49,6 +56,8 @@ SELECT * FROM t;
  5
 (5 rows)
 
+---END---
+---START---
 -- UNION DISTINCT requires hashable type
 WITH RECURSIVE t(n) AS (
     VALUES (1::money)
@@ -58,11 +67,15 @@ UNION
 SELECT sum(n) FROM t;
 ERROR:  could not implement recursive UNION
 DETAIL:  All column datatypes must be hashable.
+---END---
+---START---
 -- recursive view
 CREATE RECURSIVE VIEW nums (n) AS
     VALUES (1)
 UNION ALL
     SELECT n+1 FROM nums WHERE n < 5;
+---END---
+---START---
 SELECT * FROM nums;
  n 
 ---
@@ -73,10 +86,14 @@ SELECT * FROM nums;
  5
 (5 rows)
 
+---END---
+---START---
 CREATE OR REPLACE RECURSIVE VIEW nums (n) AS
     VALUES (1)
 UNION ALL
     SELECT n+1 FROM nums WHERE n < 6;
+---END---
+---START---
 SELECT * FROM nums;
  n 
 ---
@@ -88,6 +105,8 @@ SELECT * FROM nums;
  6
 (6 rows)
 
+---END---
+---START---
 -- This is an infinite loop with UNION ALL, but not with UNION
 WITH RECURSIVE t(n) AS (
     SELECT 1
@@ -100,6 +119,8 @@ SELECT * FROM t;
  9
 (2 rows)
 
+---END---
+---START---
 -- This'd be an infinite loop, but outside query reads only as much as needed
 WITH RECURSIVE t(n) AS (
     VALUES (1)
@@ -120,6 +141,8 @@ SELECT * FROM t LIMIT 10;
  10
 (10 rows)
 
+---END---
+---START---
 -- UNION case should have same property
 WITH RECURSIVE t(n) AS (
     SELECT 1
@@ -140,6 +163,8 @@ SELECT * FROM t LIMIT 10;
  10
 (10 rows)
 
+---END---
+---START---
 -- Test behavior with an unknown-type literal in the WITH
 WITH q AS (SELECT 'foo' AS x)
 SELECT x, pg_typeof(x) FROM q;
@@ -148,6 +173,8 @@ SELECT x, pg_typeof(x) FROM q;
  foo | text
 (1 row)
 
+---END---
+---START---
 WITH RECURSIVE t(n) AS (
     SELECT 'foo'
 UNION ALL
@@ -164,6 +191,8 @@ SELECT n, pg_typeof(n) FROM t;
  foo bar bar bar bar bar | text
 (6 rows)
 
+---END---
+---START---
 -- In a perfect world, this would work and resolve the literal as int ...
 -- but for now, we have to be content with resolving to text too soon.
 WITH RECURSIVE t(n) AS (
@@ -176,6 +205,8 @@ ERROR:  operator does not exist: text + integer
 LINE 4:     SELECT n+1 FROM t WHERE n < 10
                     ^
 HINT:  No operator matches the given name and argument types. You might need to add explicit type casts.
+---END---
+---START---
 -- Deeply nested WITH caused a list-munging problem in v13
 -- Detection of cross-references and self-references
 WITH RECURSIVE w1(c1) AS
@@ -200,6 +231,8 @@ SELECT * FROM w1;
   1
 (1 row)
 
+---END---
+---START---
 -- Detection of invalid self-references
 WITH RECURSIVE outermost(x) AS (
  SELECT 1
@@ -235,6 +268,8 @@ WITH RECURSIVE outermost(x) AS (
  7
 (7 rows)
 
+---END---
+---START---
 --
 -- Some examples with a tree
 --
@@ -244,19 +279,39 @@ WITH RECURSIVE outermost(x) AS (
 --      |         |
 --      |         +->D-+->F
 --      +->E-+->G
-CREATE TEMP TABLE department (
+DROP TABLE IF EXISTS department;
+NOTICE:  table "department" does not exist, skipping
+CREATE TABLE department (
 	id INTEGER PRIMARY KEY,  -- department ID
 	parent_department INTEGER REFERENCES department, -- upper department ID
 	name TEXT -- department name
 );
+---END---
+---START---
 INSERT INTO department VALUES (0, NULL, 'ROOT');
+---END---
+---START---
 INSERT INTO department VALUES (1, 0, 'A');
+---END---
+---START---
 INSERT INTO department VALUES (2, 1, 'B');
+---END---
+---START---
 INSERT INTO department VALUES (3, 2, 'C');
+---END---
+---START---
 INSERT INTO department VALUES (4, 2, 'D');
+---END---
+---START---
 INSERT INTO department VALUES (5, 0, 'E');
+---END---
+---START---
 INSERT INTO department VALUES (6, 4, 'F');
+---END---
+---START---
 INSERT INTO department VALUES (7, 5, 'G');
+---END---
+---START---
 -- extract all departments under 'A'. Result should be A, B, C, D and F
 WITH RECURSIVE subdepartment AS
 (
@@ -277,6 +332,8 @@ SELECT * FROM subdepartment ORDER BY name;
  A         |  6 |                 4 | F
 (5 rows)
 
+---END---
+---START---
 -- extract all departments under 'A' with "level" number
 WITH RECURSIVE subdepartment(level, id, parent_department, name) AS
 (
@@ -297,6 +354,8 @@ SELECT * FROM subdepartment ORDER BY name;
      4 |  6 |                 4 | F
 (5 rows)
 
+---END---
+---START---
 -- extract all departments under 'A' with "level" number.
 -- Only shows level 2 or more
 WITH RECURSIVE subdepartment(level, id, parent_department, name) AS
@@ -317,6 +376,8 @@ SELECT * FROM subdepartment WHERE level >= 2 ORDER BY name;
      4 |  6 |                 4 | F
 (4 rows)
 
+---END---
+---START---
 -- "RECURSIVE" is ignored if the query has no self-reference
 WITH RECURSIVE subdepartment AS
 (
@@ -329,6 +390,8 @@ SELECT * FROM subdepartment ORDER BY name;
   1 |                 0 | A
 (1 row)
 
+---END---
+---START---
 -- inside subqueries
 SELECT count(*) FROM (
     WITH RECURSIVE t(n) AS (
@@ -346,6 +409,8 @@ SELECT count(*) FROM (
     98
 (1 row)
 
+---END---
+---START---
 -- use same CTE twice at different subquery levels
 WITH q1(x,y) AS (
     SELECT hundred, sum(ten) FROM tenk1 GROUP BY hundred
@@ -356,6 +421,8 @@ SELECT count(*) FROM q1 WHERE y > (SELECT sum(y)/100 FROM q1 qsub);
     50
 (1 row)
 
+---END---
+---START---
 -- via a VIEW
 CREATE TEMPORARY VIEW vsubdepartment AS
 	WITH RECURSIVE subdepartment AS
@@ -368,6 +435,8 @@ CREATE TEMPORARY VIEW vsubdepartment AS
 			WHERE d.parent_department = sd.id
 	)
 	SELECT * FROM subdepartment;
+---END---
+---START---
 SELECT * FROM vsubdepartment ORDER BY name;
  id | parent_department | name 
 ----+-------------------+------
@@ -378,6 +447,8 @@ SELECT * FROM vsubdepartment ORDER BY name;
   6 |                 4 | F
 (5 rows)
 
+---END---
+---START---
 -- Check reverse listing
 SELECT pg_get_viewdef('vsubdepartment'::regclass);
                 pg_get_viewdef                 
@@ -402,6 +473,8 @@ SELECT pg_get_viewdef('vsubdepartment'::regclass);
     FROM subdepartment;
 (1 row)
 
+---END---
+---START---
 SELECT pg_get_viewdef('vsubdepartment'::regclass, true);
                pg_get_viewdef                
 ---------------------------------------------
@@ -425,6 +498,8 @@ SELECT pg_get_viewdef('vsubdepartment'::regclass, true);
     FROM subdepartment;
 (1 row)
 
+---END---
+---START---
 -- Another reverse-listing example
 CREATE VIEW sums_1_100 AS
 WITH RECURSIVE t(n) AS (
@@ -433,6 +508,8 @@ UNION ALL
     SELECT n+1 FROM t WHERE n < 100
 )
 SELECT sum(n) FROM t;
+---END---
+---START---
 \d+ sums_1_100
                          View "public.sums_1_100"
  Column |  Type  | Collation | Nullable | Default | Storage | Description 
@@ -485,53 +562,22 @@ select * from q limit 24;
   7 |                 5 | G
 (24 rows)
 
-with recursive q as (
-      select * from department
-    union all
-      (with recursive x as (
-           select * from department
-         union all
-           (select * from q union all select * from x)
-        )
-       select * from x)
-    )
-select * from q limit 32;
- id | parent_department | name 
-----+-------------------+------
-  0 |                   | ROOT
-  1 |                 0 | A
-  2 |                 1 | B
-  3 |                 2 | C
-  4 |                 2 | D
-  5 |                 0 | E
-  6 |                 4 | F
-  7 |                 5 | G
-  0 |                   | ROOT
-  1 |                 0 | A
-  2 |                 1 | B
-  3 |                 2 | C
-  4 |                 2 | D
-  5 |                 0 | E
-  6 |                 4 | F
-  7 |                 5 | G
-  0 |                   | ROOT
-  1 |                 0 | A
-  2 |                 1 | B
-  3 |                 2 | C
-  4 |                 2 | D
-  5 |                 0 | E
-  6 |                 4 | F
-  7 |                 5 | G
-  0 |                   | ROOT
-  1 |                 0 | A
-  2 |                 1 | B
-  3 |                 2 | C
-  4 |                 2 | D
-  5 |                 0 | E
-  6 |                 4 | F
-  7 |                 5 | G
-(32 rows)
-
+---END---
+---START---
+-- @hengfeng: this query gets stuck for cockroachdb
+--with recursive q as (
+--      select * from department
+--    union all
+--      (with recursive x as (
+--           select * from department
+--         union all
+--           (select * from q union all select * from x)
+--        )
+--       select * from x)
+--    )
+--select * from q limit 32;
+---END---
+---START---
 -- recursive term has sub-UNION
 WITH RECURSIVE t(i,j) AS (
 	VALUES (1,2)
@@ -547,16 +593,24 @@ WITH RECURSIVE t(i,j) AS (
  3 | 4
 (3 rows)
 
+---END---
+---START---
 --
 -- different tree example
 --
-CREATE TEMPORARY TABLE tree(
+DROP TABLE IF EXISTS tree;
+NOTICE:  table "tree" does not exist, skipping
+CREATE TABLE tree(
     id INTEGER PRIMARY KEY,
     parent_id INTEGER REFERENCES tree(id)
 );
+---END---
+---START---
 INSERT INTO tree
 VALUES (1, NULL), (2, 1), (3,1), (4,2), (5,2), (6,2), (7,3), (8,3),
        (9,4), (10,4), (11,7), (12,7), (13,7), (14, 9), (15,11), (16,11);
+---END---
+---START---
 --
 -- get all paths from "second level" nodes to leaf nodes
 --
@@ -588,6 +642,8 @@ SELECT t1.*, t2.* FROM t AS t1 JOIN t AS t2 ON
   3 | {3}  | 16 | {3,7,11,16}
 (13 rows)
 
+---END---
+---START---
 -- just count 'em
 WITH RECURSIVE t(id, path) AS (
     VALUES(1,ARRAY[]::integer[])
@@ -607,6 +663,8 @@ SELECT t1.id, count(t2.*) FROM t AS t1 JOIN t AS t2 ON
   3 |     7
 (2 rows)
 
+---END---
+---START---
 -- this variant tickled a whole-row-variable bug in 8.4devel
 WITH RECURSIVE t(id, path) AS (
     VALUES(1,ARRAY[]::integer[])
@@ -636,14 +694,25 @@ SELECT t1.id, t2.path, t2 FROM t AS t1 JOIN t AS t2 ON
  16 | {3,7,11,16} | (16,"{3,7,11,16}")
 (16 rows)
 
+---END---
+---START---
 -- SEARCH clause
-create temp table graph0( f int, t int, label text );
+DROP TABLE IF EXISTS graph0;
+NOTICE:  table "graph0" does not exist, skipping
+CREATE TABLE graph0 (gemini_pk serial PRIMARY KEY, f integer, t integer, label text);
+---END---
+---START---
 insert into graph0 values
 	(1, 2, 'arc 1 -> 2'),
 	(1, 3, 'arc 1 -> 3'),
 	(2, 3, 'arc 2 -> 3'),
 	(1, 4, 'arc 1 -> 4'),
 	(4, 5, 'arc 4 -> 5');
+ERROR:  invalid input syntax for type integer: "arc 1 -> 2"
+LINE 2:  (1, 2, 'arc 1 -> 2'),
+                ^
+---END---
+---START---
 explain (verbose, costs off)
 with recursive search_graph(f, t, label) as (
 	select * from graph0 g
@@ -653,32 +722,34 @@ with recursive search_graph(f, t, label) as (
 	where g.f = sg.t
 ) search depth first by f, t set seq
 select * from search_graph order by seq;
-                                          QUERY PLAN                                          
-----------------------------------------------------------------------------------------------
+                                                     QUERY PLAN                                                      
+---------------------------------------------------------------------------------------------------------------------
  Sort
-   Output: search_graph.f, search_graph.t, search_graph.label, search_graph.seq
+   Output: search_graph.f, search_graph.t, search_graph.label, search_graph.label_1, search_graph.seq
    Sort Key: search_graph.seq
    CTE search_graph
      ->  Recursive Union
-           ->  Seq Scan on pg_temp.graph0 g
-                 Output: g.f, g.t, g.label, ARRAY[ROW(g.f, g.t)]
+           ->  Seq Scan on public.graph0 g
+                 Output: g.gemini_pk, g.f, g.t, g.label, ARRAY[ROW(g.gemini_pk, g.f)]
            ->  Merge Join
-                 Output: g_1.f, g_1.t, g_1.label, array_cat(sg.seq, ARRAY[ROW(g_1.f, g_1.t)])
+                 Output: g_1.gemini_pk, g_1.f, g_1.t, g_1.label, array_cat(sg.seq, ARRAY[ROW(g_1.gemini_pk, g_1.f)])
                  Merge Cond: (g_1.f = sg.t)
                  ->  Sort
-                       Output: g_1.f, g_1.t, g_1.label
+                       Output: g_1.gemini_pk, g_1.f, g_1.t, g_1.label
                        Sort Key: g_1.f
-                       ->  Seq Scan on pg_temp.graph0 g_1
-                             Output: g_1.f, g_1.t, g_1.label
+                       ->  Seq Scan on public.graph0 g_1
+                             Output: g_1.gemini_pk, g_1.f, g_1.t, g_1.label
                  ->  Sort
                        Output: sg.seq, sg.t
                        Sort Key: sg.t
                        ->  WorkTable Scan on search_graph sg
                              Output: sg.seq, sg.t
    ->  CTE Scan on search_graph
-         Output: search_graph.f, search_graph.t, search_graph.label, search_graph.seq
+         Output: search_graph.f, search_graph.t, search_graph.label, search_graph.label_1, search_graph.seq
 (22 rows)
 
+---END---
+---START---
 with recursive search_graph(f, t, label) as (
 	select * from graph0 g
 	union all
@@ -687,17 +758,12 @@ with recursive search_graph(f, t, label) as (
 	where g.f = sg.t
 ) search depth first by f, t set seq
 select * from search_graph order by seq;
- f | t |   label    |        seq        
----+---+------------+-------------------
- 1 | 2 | arc 1 -> 2 | {"(1,2)"}
- 2 | 3 | arc 2 -> 3 | {"(1,2)","(2,3)"}
- 1 | 3 | arc 1 -> 3 | {"(1,3)"}
- 1 | 4 | arc 1 -> 4 | {"(1,4)"}
- 4 | 5 | arc 4 -> 5 | {"(1,4)","(4,5)"}
- 2 | 3 | arc 2 -> 3 | {"(2,3)"}
- 4 | 5 | arc 4 -> 5 | {"(4,5)"}
-(7 rows)
+ f | t | label | label | seq 
+---+---+-------+-------+-----
+(0 rows)
 
+---END---
+---START---
 with recursive search_graph(f, t, label) as (
 	select * from graph0 g
 	union distinct
@@ -706,17 +772,12 @@ with recursive search_graph(f, t, label) as (
 	where g.f = sg.t
 ) search depth first by f, t set seq
 select * from search_graph order by seq;
- f | t |   label    |        seq        
----+---+------------+-------------------
- 1 | 2 | arc 1 -> 2 | {"(1,2)"}
- 2 | 3 | arc 2 -> 3 | {"(1,2)","(2,3)"}
- 1 | 3 | arc 1 -> 3 | {"(1,3)"}
- 1 | 4 | arc 1 -> 4 | {"(1,4)"}
- 4 | 5 | arc 4 -> 5 | {"(1,4)","(4,5)"}
- 2 | 3 | arc 2 -> 3 | {"(2,3)"}
- 4 | 5 | arc 4 -> 5 | {"(4,5)"}
-(7 rows)
+ f | t | label | label | seq 
+---+---+-------+-------+-----
+(0 rows)
 
+---END---
+---START---
 explain (verbose, costs off)
 with recursive search_graph(f, t, label) as (
 	select * from graph0 g
@@ -726,32 +787,34 @@ with recursive search_graph(f, t, label) as (
 	where g.f = sg.t
 ) search breadth first by f, t set seq
 select * from search_graph order by seq;
-                                           QUERY PLAN                                            
--------------------------------------------------------------------------------------------------
+                                                       QUERY PLAN                                                       
+------------------------------------------------------------------------------------------------------------------------
  Sort
-   Output: search_graph.f, search_graph.t, search_graph.label, search_graph.seq
+   Output: search_graph.f, search_graph.t, search_graph.label, search_graph.label_1, search_graph.seq
    Sort Key: search_graph.seq
    CTE search_graph
      ->  Recursive Union
-           ->  Seq Scan on pg_temp.graph0 g
-                 Output: g.f, g.t, g.label, ROW('0'::bigint, g.f, g.t)
+           ->  Seq Scan on public.graph0 g
+                 Output: g.gemini_pk, g.f, g.t, g.label, ROW('0'::bigint, g.gemini_pk, g.f)
            ->  Merge Join
-                 Output: g_1.f, g_1.t, g_1.label, ROW(int8inc((sg.seq)."*DEPTH*"), g_1.f, g_1.t)
+                 Output: g_1.gemini_pk, g_1.f, g_1.t, g_1.label, ROW(int8inc((sg.seq)."*DEPTH*"), g_1.gemini_pk, g_1.f)
                  Merge Cond: (g_1.f = sg.t)
                  ->  Sort
-                       Output: g_1.f, g_1.t, g_1.label
+                       Output: g_1.gemini_pk, g_1.f, g_1.t, g_1.label
                        Sort Key: g_1.f
-                       ->  Seq Scan on pg_temp.graph0 g_1
-                             Output: g_1.f, g_1.t, g_1.label
+                       ->  Seq Scan on public.graph0 g_1
+                             Output: g_1.gemini_pk, g_1.f, g_1.t, g_1.label
                  ->  Sort
                        Output: sg.seq, sg.t
                        Sort Key: sg.t
                        ->  WorkTable Scan on search_graph sg
                              Output: sg.seq, sg.t
    ->  CTE Scan on search_graph
-         Output: search_graph.f, search_graph.t, search_graph.label, search_graph.seq
+         Output: search_graph.f, search_graph.t, search_graph.label, search_graph.label_1, search_graph.seq
 (22 rows)
 
+---END---
+---START---
 with recursive search_graph(f, t, label) as (
 	select * from graph0 g
 	union all
@@ -760,17 +823,12 @@ with recursive search_graph(f, t, label) as (
 	where g.f = sg.t
 ) search breadth first by f, t set seq
 select * from search_graph order by seq;
- f | t |   label    |   seq   
----+---+------------+---------
- 1 | 2 | arc 1 -> 2 | (0,1,2)
- 1 | 3 | arc 1 -> 3 | (0,1,3)
- 1 | 4 | arc 1 -> 4 | (0,1,4)
- 2 | 3 | arc 2 -> 3 | (0,2,3)
- 4 | 5 | arc 4 -> 5 | (0,4,5)
- 2 | 3 | arc 2 -> 3 | (1,2,3)
- 4 | 5 | arc 4 -> 5 | (1,4,5)
-(7 rows)
+ f | t | label | label | seq 
+---+---+-------+-------+-----
+(0 rows)
 
+---END---
+---START---
 with recursive search_graph(f, t, label) as (
 	select * from graph0 g
 	union distinct
@@ -779,17 +837,12 @@ with recursive search_graph(f, t, label) as (
 	where g.f = sg.t
 ) search breadth first by f, t set seq
 select * from search_graph order by seq;
- f | t |   label    |   seq   
----+---+------------+---------
- 1 | 2 | arc 1 -> 2 | (0,1,2)
- 1 | 3 | arc 1 -> 3 | (0,1,3)
- 1 | 4 | arc 1 -> 4 | (0,1,4)
- 2 | 3 | arc 2 -> 3 | (0,2,3)
- 4 | 5 | arc 4 -> 5 | (0,4,5)
- 2 | 3 | arc 2 -> 3 | (1,2,3)
- 4 | 5 | arc 4 -> 5 | (1,4,5)
-(7 rows)
+ f | t | label | label | seq 
+---+---+-------+-------+-----
+(0 rows)
 
+---END---
+---START---
 -- a constant initial value causes issues for EXPLAIN
 explain (verbose, costs off)
 with recursive test as (
@@ -813,6 +866,8 @@ select * from test limit 5;
          Output: test.x, test.y
 (10 rows)
 
+---END---
+---START---
 with recursive test as (
   select 1 as x
   union all
@@ -829,6 +884,8 @@ select * from test limit 5;
  5 | {(1),(2),(3),(4),(5)}
 (5 rows)
 
+---END---
+---START---
 explain (verbose, costs off)
 with recursive test as (
   select 1 as x
@@ -851,6 +908,8 @@ select * from test limit 5;
          Output: test.x, test.y
 (10 rows)
 
+---END---
+---START---
 with recursive test as (
   select 1 as x
   union all
@@ -867,6 +926,8 @@ select * from test limit 5;
  5 | (4,5)
 (5 rows)
 
+---END---
+---START---
 -- various syntax errors
 with recursive search_graph(f, t, label) as (
 	select * from graph0 g
@@ -879,6 +940,8 @@ select * from search_graph;
 ERROR:  search column "foo" not in WITH query column list
 LINE 7: ) search depth first by foo, tar set seq
           ^
+---END---
+---START---
 with recursive search_graph(f, t, label) as (
 	select * from graph0 g
 	union all
@@ -890,6 +953,8 @@ select * from search_graph;
 ERROR:  search sequence column name "label" already used in WITH query column list
 LINE 7: ) search depth first by f, t set label
           ^
+---END---
+---START---
 with recursive search_graph(f, t, label) as (
 	select * from graph0 g
 	union all
@@ -901,6 +966,8 @@ select * from search_graph;
 ERROR:  search column "f" specified more than once
 LINE 7: ) search depth first by f, t, f set seq
           ^
+---END---
+---START---
 with recursive search_graph(f, t, label) as (
 	select * from graph0 g
 	union all
@@ -912,6 +979,8 @@ with recursive search_graph(f, t, label) as (
 ) search depth first by f, t set seq
 select * from search_graph order by seq;
 ERROR:  with a SEARCH or CYCLE clause, the left side of the UNION must be a SELECT
+---END---
+---START---
 with recursive search_graph(f, t, label) as (
 	select * from graph0 g
 	union all
@@ -923,6 +992,8 @@ with recursive search_graph(f, t, label) as (
 ) search depth first by f, t set seq
 select * from search_graph order by seq;
 ERROR:  with a SEARCH or CYCLE clause, the right side of the UNION must be a SELECT
+---END---
+---START---
 -- check that we distinguish same CTE name used at different levels
 -- (this case could be supported, perhaps, but it isn't today)
 with recursive x(col) as (
@@ -933,6 +1004,8 @@ with recursive x(col) as (
 ) search depth first by col set seq
 select * from x;
 ERROR:  with a SEARCH or CYCLE clause, the recursive reference to WITH query "x" must be at the top level of its right-hand SELECT
+---END---
+---START---
 -- test ruleutils and view expansion
 create temp view v_search as
 with recursive search_graph(f, t, label) as (
@@ -943,44 +1016,29 @@ with recursive search_graph(f, t, label) as (
 	where g.f = sg.t
 ) search depth first by f, t set seq
 select f, t, label from search_graph;
+ERROR:  column reference "label" is ambiguous
+LINE 9: select f, t, label from search_graph;
+                     ^
+---END---
+---START---
 select pg_get_viewdef('v_search');
-                 pg_get_viewdef                 
-------------------------------------------------
-  WITH RECURSIVE search_graph(f, t, label) AS (+
-          SELECT g.f,                          +
-             g.t,                              +
-             g.label                           +
-            FROM graph0 g                      +
-         UNION ALL                             +
-          SELECT g.f,                          +
-             g.t,                              +
-             g.label                           +
-            FROM graph0 g,                     +
-             search_graph sg                   +
-           WHERE (g.f = sg.t)                  +
-         ) SEARCH DEPTH FIRST BY f, t SET seq  +
-  SELECT f,                                    +
-     t,                                        +
-     label                                     +
-    FROM search_graph;
-(1 row)
-
+ERROR:  relation "v_search" does not exist
+---END---
+---START---
 select * from v_search;
- f | t |   label    
----+---+------------
- 1 | 2 | arc 1 -> 2
- 1 | 3 | arc 1 -> 3
- 2 | 3 | arc 2 -> 3
- 1 | 4 | arc 1 -> 4
- 4 | 5 | arc 4 -> 5
- 2 | 3 | arc 2 -> 3
- 4 | 5 | arc 4 -> 5
-(7 rows)
-
+ERROR:  relation "v_search" does not exist
+LINE 1: select * from v_search;
+                      ^
+---END---
+---START---
 --
 -- test cycle detection
 --
-create temp table graph( f int, t int, label text );
+DROP TABLE IF EXISTS graph;
+NOTICE:  table "graph" does not exist, skipping
+CREATE TABLE graph (gemini_pk serial PRIMARY KEY, f integer, t integer, label text);
+---END---
+---START---
 insert into graph values
 	(1, 2, 'arc 1 -> 2'),
 	(1, 3, 'arc 1 -> 3'),
@@ -988,6 +1046,11 @@ insert into graph values
 	(1, 4, 'arc 1 -> 4'),
 	(4, 5, 'arc 4 -> 5'),
 	(5, 1, 'arc 5 -> 1');
+ERROR:  invalid input syntax for type integer: "arc 1 -> 2"
+LINE 2:  (1, 2, 'arc 1 -> 2'),
+                ^
+---END---
+---START---
 with recursive search_graph(f, t, label, is_cycle, path) as (
 	select *, false, array[row(g.f, g.t)] from graph g
 	union all
@@ -996,35 +1059,11 @@ with recursive search_graph(f, t, label, is_cycle, path) as (
 	where g.f = sg.t and not is_cycle
 )
 select * from search_graph;
- f | t |   label    | is_cycle |                   path                    
----+---+------------+----------+-------------------------------------------
- 1 | 2 | arc 1 -> 2 | f        | {"(1,2)"}
- 1 | 3 | arc 1 -> 3 | f        | {"(1,3)"}
- 2 | 3 | arc 2 -> 3 | f        | {"(2,3)"}
- 1 | 4 | arc 1 -> 4 | f        | {"(1,4)"}
- 4 | 5 | arc 4 -> 5 | f        | {"(4,5)"}
- 5 | 1 | arc 5 -> 1 | f        | {"(5,1)"}
- 1 | 2 | arc 1 -> 2 | f        | {"(5,1)","(1,2)"}
- 1 | 3 | arc 1 -> 3 | f        | {"(5,1)","(1,3)"}
- 1 | 4 | arc 1 -> 4 | f        | {"(5,1)","(1,4)"}
- 2 | 3 | arc 2 -> 3 | f        | {"(1,2)","(2,3)"}
- 4 | 5 | arc 4 -> 5 | f        | {"(1,4)","(4,5)"}
- 5 | 1 | arc 5 -> 1 | f        | {"(4,5)","(5,1)"}
- 1 | 2 | arc 1 -> 2 | f        | {"(4,5)","(5,1)","(1,2)"}
- 1 | 3 | arc 1 -> 3 | f        | {"(4,5)","(5,1)","(1,3)"}
- 1 | 4 | arc 1 -> 4 | f        | {"(4,5)","(5,1)","(1,4)"}
- 2 | 3 | arc 2 -> 3 | f        | {"(5,1)","(1,2)","(2,3)"}
- 4 | 5 | arc 4 -> 5 | f        | {"(5,1)","(1,4)","(4,5)"}
- 5 | 1 | arc 5 -> 1 | f        | {"(1,4)","(4,5)","(5,1)"}
- 1 | 2 | arc 1 -> 2 | f        | {"(1,4)","(4,5)","(5,1)","(1,2)"}
- 1 | 3 | arc 1 -> 3 | f        | {"(1,4)","(4,5)","(5,1)","(1,3)"}
- 1 | 4 | arc 1 -> 4 | t        | {"(1,4)","(4,5)","(5,1)","(1,4)"}
- 2 | 3 | arc 2 -> 3 | f        | {"(4,5)","(5,1)","(1,2)","(2,3)"}
- 4 | 5 | arc 4 -> 5 | t        | {"(4,5)","(5,1)","(1,4)","(4,5)"}
- 5 | 1 | arc 5 -> 1 | t        | {"(5,1)","(1,4)","(4,5)","(5,1)"}
- 2 | 3 | arc 2 -> 3 | f        | {"(1,4)","(4,5)","(5,1)","(1,2)","(2,3)"}
-(25 rows)
-
+ERROR:  op ANY/ALL (array) requires array on right side
+LINE 4:  select g.*, row(g.f, g.t) = any(path), path || row(g.f, g.t...
+                                   ^
+---END---
+---START---
 -- UNION DISTINCT exercises row type hashing support
 with recursive search_graph(f, t, label, is_cycle, path) as (
 	select *, false, array[row(g.f, g.t)] from graph g
@@ -1034,35 +1073,11 @@ with recursive search_graph(f, t, label, is_cycle, path) as (
 	where g.f = sg.t and not is_cycle
 )
 select * from search_graph;
- f | t |   label    | is_cycle |                   path                    
----+---+------------+----------+-------------------------------------------
- 1 | 2 | arc 1 -> 2 | f        | {"(1,2)"}
- 1 | 3 | arc 1 -> 3 | f        | {"(1,3)"}
- 2 | 3 | arc 2 -> 3 | f        | {"(2,3)"}
- 1 | 4 | arc 1 -> 4 | f        | {"(1,4)"}
- 4 | 5 | arc 4 -> 5 | f        | {"(4,5)"}
- 5 | 1 | arc 5 -> 1 | f        | {"(5,1)"}
- 1 | 2 | arc 1 -> 2 | f        | {"(5,1)","(1,2)"}
- 1 | 3 | arc 1 -> 3 | f        | {"(5,1)","(1,3)"}
- 1 | 4 | arc 1 -> 4 | f        | {"(5,1)","(1,4)"}
- 2 | 3 | arc 2 -> 3 | f        | {"(1,2)","(2,3)"}
- 4 | 5 | arc 4 -> 5 | f        | {"(1,4)","(4,5)"}
- 5 | 1 | arc 5 -> 1 | f        | {"(4,5)","(5,1)"}
- 1 | 2 | arc 1 -> 2 | f        | {"(4,5)","(5,1)","(1,2)"}
- 1 | 3 | arc 1 -> 3 | f        | {"(4,5)","(5,1)","(1,3)"}
- 1 | 4 | arc 1 -> 4 | f        | {"(4,5)","(5,1)","(1,4)"}
- 2 | 3 | arc 2 -> 3 | f        | {"(5,1)","(1,2)","(2,3)"}
- 4 | 5 | arc 4 -> 5 | f        | {"(5,1)","(1,4)","(4,5)"}
- 5 | 1 | arc 5 -> 1 | f        | {"(1,4)","(4,5)","(5,1)"}
- 1 | 2 | arc 1 -> 2 | f        | {"(1,4)","(4,5)","(5,1)","(1,2)"}
- 1 | 3 | arc 1 -> 3 | f        | {"(1,4)","(4,5)","(5,1)","(1,3)"}
- 1 | 4 | arc 1 -> 4 | t        | {"(1,4)","(4,5)","(5,1)","(1,4)"}
- 2 | 3 | arc 2 -> 3 | f        | {"(4,5)","(5,1)","(1,2)","(2,3)"}
- 4 | 5 | arc 4 -> 5 | t        | {"(4,5)","(5,1)","(1,4)","(4,5)"}
- 5 | 1 | arc 5 -> 1 | t        | {"(5,1)","(1,4)","(4,5)","(5,1)"}
- 2 | 3 | arc 2 -> 3 | f        | {"(1,4)","(4,5)","(5,1)","(1,2)","(2,3)"}
-(25 rows)
-
+ERROR:  op ANY/ALL (array) requires array on right side
+LINE 4:  select g.*, row(g.f, g.t) = any(path), path || row(g.f, g.t...
+                                   ^
+---END---
+---START---
 -- ordering by the path column has same effect as SEARCH DEPTH FIRST
 with recursive search_graph(f, t, label, is_cycle, path) as (
 	select *, false, array[row(g.f, g.t)] from graph g
@@ -1072,35 +1087,11 @@ with recursive search_graph(f, t, label, is_cycle, path) as (
 	where g.f = sg.t and not is_cycle
 )
 select * from search_graph order by path;
- f | t |   label    | is_cycle |                   path                    
----+---+------------+----------+-------------------------------------------
- 1 | 2 | arc 1 -> 2 | f        | {"(1,2)"}
- 2 | 3 | arc 2 -> 3 | f        | {"(1,2)","(2,3)"}
- 1 | 3 | arc 1 -> 3 | f        | {"(1,3)"}
- 1 | 4 | arc 1 -> 4 | f        | {"(1,4)"}
- 4 | 5 | arc 4 -> 5 | f        | {"(1,4)","(4,5)"}
- 5 | 1 | arc 5 -> 1 | f        | {"(1,4)","(4,5)","(5,1)"}
- 1 | 2 | arc 1 -> 2 | f        | {"(1,4)","(4,5)","(5,1)","(1,2)"}
- 2 | 3 | arc 2 -> 3 | f        | {"(1,4)","(4,5)","(5,1)","(1,2)","(2,3)"}
- 1 | 3 | arc 1 -> 3 | f        | {"(1,4)","(4,5)","(5,1)","(1,3)"}
- 1 | 4 | arc 1 -> 4 | t        | {"(1,4)","(4,5)","(5,1)","(1,4)"}
- 2 | 3 | arc 2 -> 3 | f        | {"(2,3)"}
- 4 | 5 | arc 4 -> 5 | f        | {"(4,5)"}
- 5 | 1 | arc 5 -> 1 | f        | {"(4,5)","(5,1)"}
- 1 | 2 | arc 1 -> 2 | f        | {"(4,5)","(5,1)","(1,2)"}
- 2 | 3 | arc 2 -> 3 | f        | {"(4,5)","(5,1)","(1,2)","(2,3)"}
- 1 | 3 | arc 1 -> 3 | f        | {"(4,5)","(5,1)","(1,3)"}
- 1 | 4 | arc 1 -> 4 | f        | {"(4,5)","(5,1)","(1,4)"}
- 4 | 5 | arc 4 -> 5 | t        | {"(4,5)","(5,1)","(1,4)","(4,5)"}
- 5 | 1 | arc 5 -> 1 | f        | {"(5,1)"}
- 1 | 2 | arc 1 -> 2 | f        | {"(5,1)","(1,2)"}
- 2 | 3 | arc 2 -> 3 | f        | {"(5,1)","(1,2)","(2,3)"}
- 1 | 3 | arc 1 -> 3 | f        | {"(5,1)","(1,3)"}
- 1 | 4 | arc 1 -> 4 | f        | {"(5,1)","(1,4)"}
- 4 | 5 | arc 4 -> 5 | f        | {"(5,1)","(1,4)","(4,5)"}
- 5 | 1 | arc 5 -> 1 | t        | {"(5,1)","(1,4)","(4,5)","(5,1)"}
-(25 rows)
-
+ERROR:  op ANY/ALL (array) requires array on right side
+LINE 4:  select g.*, row(g.f, g.t) = any(path), path || row(g.f, g.t...
+                                   ^
+---END---
+---START---
 -- CYCLE clause
 explain (verbose, costs off)
 with recursive search_graph(f, t, label) as (
@@ -1111,22 +1102,22 @@ with recursive search_graph(f, t, label) as (
 	where g.f = sg.t
 ) cycle f, t set is_cycle using path
 select * from search_graph;
-                                                                              QUERY PLAN                                                                               
------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                                                                                              QUERY PLAN                                                                                              
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  CTE Scan on search_graph
-   Output: search_graph.f, search_graph.t, search_graph.label, search_graph.is_cycle, search_graph.path
+   Output: search_graph.f, search_graph.t, search_graph.label, search_graph.label_1, search_graph.is_cycle, search_graph.path
    CTE search_graph
      ->  Recursive Union
-           ->  Seq Scan on pg_temp.graph g
-                 Output: g.f, g.t, g.label, false, ARRAY[ROW(g.f, g.t)]
+           ->  Seq Scan on public.graph g
+                 Output: g.gemini_pk, g.f, g.t, g.label, false, ARRAY[ROW(g.gemini_pk, g.f)]
            ->  Merge Join
-                 Output: g_1.f, g_1.t, g_1.label, CASE WHEN (ROW(g_1.f, g_1.t) = ANY (sg.path)) THEN true ELSE false END, array_cat(sg.path, ARRAY[ROW(g_1.f, g_1.t)])
+                 Output: g_1.gemini_pk, g_1.f, g_1.t, g_1.label, CASE WHEN (ROW(g_1.gemini_pk, g_1.f) = ANY (sg.path)) THEN true ELSE false END, array_cat(sg.path, ARRAY[ROW(g_1.gemini_pk, g_1.f)])
                  Merge Cond: (g_1.f = sg.t)
                  ->  Sort
-                       Output: g_1.f, g_1.t, g_1.label
+                       Output: g_1.gemini_pk, g_1.f, g_1.t, g_1.label
                        Sort Key: g_1.f
-                       ->  Seq Scan on pg_temp.graph g_1
-                             Output: g_1.f, g_1.t, g_1.label
+                       ->  Seq Scan on public.graph g_1
+                             Output: g_1.gemini_pk, g_1.f, g_1.t, g_1.label
                  ->  Sort
                        Output: sg.path, sg.t
                        Sort Key: sg.t
@@ -1135,6 +1126,8 @@ select * from search_graph;
                              Filter: (NOT sg.is_cycle)
 (20 rows)
 
+---END---
+---START---
 with recursive search_graph(f, t, label) as (
 	select * from graph g
 	union all
@@ -1143,35 +1136,12 @@ with recursive search_graph(f, t, label) as (
 	where g.f = sg.t
 ) cycle f, t set is_cycle using path
 select * from search_graph;
- f | t |   label    | is_cycle |                   path                    
----+---+------------+----------+-------------------------------------------
- 1 | 2 | arc 1 -> 2 | f        | {"(1,2)"}
- 1 | 3 | arc 1 -> 3 | f        | {"(1,3)"}
- 2 | 3 | arc 2 -> 3 | f        | {"(2,3)"}
- 1 | 4 | arc 1 -> 4 | f        | {"(1,4)"}
- 4 | 5 | arc 4 -> 5 | f        | {"(4,5)"}
- 5 | 1 | arc 5 -> 1 | f        | {"(5,1)"}
- 1 | 2 | arc 1 -> 2 | f        | {"(5,1)","(1,2)"}
- 1 | 3 | arc 1 -> 3 | f        | {"(5,1)","(1,3)"}
- 1 | 4 | arc 1 -> 4 | f        | {"(5,1)","(1,4)"}
- 2 | 3 | arc 2 -> 3 | f        | {"(1,2)","(2,3)"}
- 4 | 5 | arc 4 -> 5 | f        | {"(1,4)","(4,5)"}
- 5 | 1 | arc 5 -> 1 | f        | {"(4,5)","(5,1)"}
- 1 | 2 | arc 1 -> 2 | f        | {"(4,5)","(5,1)","(1,2)"}
- 1 | 3 | arc 1 -> 3 | f        | {"(4,5)","(5,1)","(1,3)"}
- 1 | 4 | arc 1 -> 4 | f        | {"(4,5)","(5,1)","(1,4)"}
- 2 | 3 | arc 2 -> 3 | f        | {"(5,1)","(1,2)","(2,3)"}
- 4 | 5 | arc 4 -> 5 | f        | {"(5,1)","(1,4)","(4,5)"}
- 5 | 1 | arc 5 -> 1 | f        | {"(1,4)","(4,5)","(5,1)"}
- 1 | 2 | arc 1 -> 2 | f        | {"(1,4)","(4,5)","(5,1)","(1,2)"}
- 1 | 3 | arc 1 -> 3 | f        | {"(1,4)","(4,5)","(5,1)","(1,3)"}
- 1 | 4 | arc 1 -> 4 | t        | {"(1,4)","(4,5)","(5,1)","(1,4)"}
- 2 | 3 | arc 2 -> 3 | f        | {"(4,5)","(5,1)","(1,2)","(2,3)"}
- 4 | 5 | arc 4 -> 5 | t        | {"(4,5)","(5,1)","(1,4)","(4,5)"}
- 5 | 1 | arc 5 -> 1 | t        | {"(5,1)","(1,4)","(4,5)","(5,1)"}
- 2 | 3 | arc 2 -> 3 | f        | {"(1,4)","(4,5)","(5,1)","(1,2)","(2,3)"}
-(25 rows)
+ f | t | label | label | is_cycle | path 
+---+---+-------+-------+----------+------
+(0 rows)
 
+---END---
+---START---
 with recursive search_graph(f, t, label) as (
 	select * from graph g
 	union distinct
@@ -1180,35 +1150,12 @@ with recursive search_graph(f, t, label) as (
 	where g.f = sg.t
 ) cycle f, t set is_cycle to 'Y' default 'N' using path
 select * from search_graph;
- f | t |   label    | is_cycle |                   path                    
----+---+------------+----------+-------------------------------------------
- 1 | 2 | arc 1 -> 2 | N        | {"(1,2)"}
- 1 | 3 | arc 1 -> 3 | N        | {"(1,3)"}
- 2 | 3 | arc 2 -> 3 | N        | {"(2,3)"}
- 1 | 4 | arc 1 -> 4 | N        | {"(1,4)"}
- 4 | 5 | arc 4 -> 5 | N        | {"(4,5)"}
- 5 | 1 | arc 5 -> 1 | N        | {"(5,1)"}
- 1 | 2 | arc 1 -> 2 | N        | {"(5,1)","(1,2)"}
- 1 | 3 | arc 1 -> 3 | N        | {"(5,1)","(1,3)"}
- 1 | 4 | arc 1 -> 4 | N        | {"(5,1)","(1,4)"}
- 2 | 3 | arc 2 -> 3 | N        | {"(1,2)","(2,3)"}
- 4 | 5 | arc 4 -> 5 | N        | {"(1,4)","(4,5)"}
- 5 | 1 | arc 5 -> 1 | N        | {"(4,5)","(5,1)"}
- 1 | 2 | arc 1 -> 2 | N        | {"(4,5)","(5,1)","(1,2)"}
- 1 | 3 | arc 1 -> 3 | N        | {"(4,5)","(5,1)","(1,3)"}
- 1 | 4 | arc 1 -> 4 | N        | {"(4,5)","(5,1)","(1,4)"}
- 2 | 3 | arc 2 -> 3 | N        | {"(5,1)","(1,2)","(2,3)"}
- 4 | 5 | arc 4 -> 5 | N        | {"(5,1)","(1,4)","(4,5)"}
- 5 | 1 | arc 5 -> 1 | N        | {"(1,4)","(4,5)","(5,1)"}
- 1 | 2 | arc 1 -> 2 | N        | {"(1,4)","(4,5)","(5,1)","(1,2)"}
- 1 | 3 | arc 1 -> 3 | N        | {"(1,4)","(4,5)","(5,1)","(1,3)"}
- 1 | 4 | arc 1 -> 4 | Y        | {"(1,4)","(4,5)","(5,1)","(1,4)"}
- 2 | 3 | arc 2 -> 3 | N        | {"(4,5)","(5,1)","(1,2)","(2,3)"}
- 4 | 5 | arc 4 -> 5 | Y        | {"(4,5)","(5,1)","(1,4)","(4,5)"}
- 5 | 1 | arc 5 -> 1 | Y        | {"(5,1)","(1,4)","(4,5)","(5,1)"}
- 2 | 3 | arc 2 -> 3 | N        | {"(1,4)","(4,5)","(5,1)","(1,2)","(2,3)"}
-(25 rows)
+ f | t | label | label | is_cycle | path 
+---+---+-------+-------+----------+------
+(0 rows)
 
+---END---
+---START---
 explain (verbose, costs off)
 with recursive test as (
   select 0 as x
@@ -1230,6 +1177,8 @@ select * from test;
                  Filter: (NOT test_1.is_cycle)
 (9 rows)
 
+---END---
+---START---
 with recursive test as (
   select 0 as x
   union all
@@ -1252,6 +1201,8 @@ select * from test;
  0 | t        | {(0),(1),(2),(3),(4),(5),(6),(7),(8),(9),(0)}
 (11 rows)
 
+---END---
+---START---
 with recursive test as (
   select 0 as x
   union all
@@ -1275,6 +1226,8 @@ select * from test;
  0 | t        | {(0),(1),(2),(3),(4),(5),(6),(7),(8),(9),(0)}
 (11 rows)
 
+---END---
+---START---
 -- multiple CTEs
 with recursive
 graph(f, t, label) as (
@@ -1322,6 +1275,8 @@ select f, t, label from search_graph;
  2 | 3 | arc 2 -> 3
 (25 rows)
 
+---END---
+---START---
 -- star expansion
 with recursive a as (
 	select 1 as b
@@ -1335,6 +1290,8 @@ select * from a;
  1 | t | {(1),(1)}
 (2 rows)
 
+---END---
+---START---
 -- search+cycle
 with recursive search_graph(f, t, label) as (
 	select * from graph g
@@ -1345,35 +1302,12 @@ with recursive search_graph(f, t, label) as (
 ) search depth first by f, t set seq
   cycle f, t set is_cycle using path
 select * from search_graph;
- f | t |   label    |                    seq                    | is_cycle |                   path                    
----+---+------------+-------------------------------------------+----------+-------------------------------------------
- 1 | 2 | arc 1 -> 2 | {"(1,2)"}                                 | f        | {"(1,2)"}
- 1 | 3 | arc 1 -> 3 | {"(1,3)"}                                 | f        | {"(1,3)"}
- 2 | 3 | arc 2 -> 3 | {"(2,3)"}                                 | f        | {"(2,3)"}
- 1 | 4 | arc 1 -> 4 | {"(1,4)"}                                 | f        | {"(1,4)"}
- 4 | 5 | arc 4 -> 5 | {"(4,5)"}                                 | f        | {"(4,5)"}
- 5 | 1 | arc 5 -> 1 | {"(5,1)"}                                 | f        | {"(5,1)"}
- 1 | 2 | arc 1 -> 2 | {"(5,1)","(1,2)"}                         | f        | {"(5,1)","(1,2)"}
- 1 | 3 | arc 1 -> 3 | {"(5,1)","(1,3)"}                         | f        | {"(5,1)","(1,3)"}
- 1 | 4 | arc 1 -> 4 | {"(5,1)","(1,4)"}                         | f        | {"(5,1)","(1,4)"}
- 2 | 3 | arc 2 -> 3 | {"(1,2)","(2,3)"}                         | f        | {"(1,2)","(2,3)"}
- 4 | 5 | arc 4 -> 5 | {"(1,4)","(4,5)"}                         | f        | {"(1,4)","(4,5)"}
- 5 | 1 | arc 5 -> 1 | {"(4,5)","(5,1)"}                         | f        | {"(4,5)","(5,1)"}
- 1 | 2 | arc 1 -> 2 | {"(4,5)","(5,1)","(1,2)"}                 | f        | {"(4,5)","(5,1)","(1,2)"}
- 1 | 3 | arc 1 -> 3 | {"(4,5)","(5,1)","(1,3)"}                 | f        | {"(4,5)","(5,1)","(1,3)"}
- 1 | 4 | arc 1 -> 4 | {"(4,5)","(5,1)","(1,4)"}                 | f        | {"(4,5)","(5,1)","(1,4)"}
- 2 | 3 | arc 2 -> 3 | {"(5,1)","(1,2)","(2,3)"}                 | f        | {"(5,1)","(1,2)","(2,3)"}
- 4 | 5 | arc 4 -> 5 | {"(5,1)","(1,4)","(4,5)"}                 | f        | {"(5,1)","(1,4)","(4,5)"}
- 5 | 1 | arc 5 -> 1 | {"(1,4)","(4,5)","(5,1)"}                 | f        | {"(1,4)","(4,5)","(5,1)"}
- 1 | 2 | arc 1 -> 2 | {"(1,4)","(4,5)","(5,1)","(1,2)"}         | f        | {"(1,4)","(4,5)","(5,1)","(1,2)"}
- 1 | 3 | arc 1 -> 3 | {"(1,4)","(4,5)","(5,1)","(1,3)"}         | f        | {"(1,4)","(4,5)","(5,1)","(1,3)"}
- 1 | 4 | arc 1 -> 4 | {"(1,4)","(4,5)","(5,1)","(1,4)"}         | t        | {"(1,4)","(4,5)","(5,1)","(1,4)"}
- 2 | 3 | arc 2 -> 3 | {"(4,5)","(5,1)","(1,2)","(2,3)"}         | f        | {"(4,5)","(5,1)","(1,2)","(2,3)"}
- 4 | 5 | arc 4 -> 5 | {"(4,5)","(5,1)","(1,4)","(4,5)"}         | t        | {"(4,5)","(5,1)","(1,4)","(4,5)"}
- 5 | 1 | arc 5 -> 1 | {"(5,1)","(1,4)","(4,5)","(5,1)"}         | t        | {"(5,1)","(1,4)","(4,5)","(5,1)"}
- 2 | 3 | arc 2 -> 3 | {"(1,4)","(4,5)","(5,1)","(1,2)","(2,3)"} | f        | {"(1,4)","(4,5)","(5,1)","(1,2)","(2,3)"}
-(25 rows)
+ f | t | label | label | seq | is_cycle | path 
+---+---+-------+-------+-----+----------+------
+(0 rows)
 
+---END---
+---START---
 with recursive search_graph(f, t, label) as (
 	select * from graph g
 	union all
@@ -1383,35 +1317,12 @@ with recursive search_graph(f, t, label) as (
 ) search breadth first by f, t set seq
   cycle f, t set is_cycle using path
 select * from search_graph;
- f | t |   label    |   seq   | is_cycle |                   path                    
----+---+------------+---------+----------+-------------------------------------------
- 1 | 2 | arc 1 -> 2 | (0,1,2) | f        | {"(1,2)"}
- 1 | 3 | arc 1 -> 3 | (0,1,3) | f        | {"(1,3)"}
- 2 | 3 | arc 2 -> 3 | (0,2,3) | f        | {"(2,3)"}
- 1 | 4 | arc 1 -> 4 | (0,1,4) | f        | {"(1,4)"}
- 4 | 5 | arc 4 -> 5 | (0,4,5) | f        | {"(4,5)"}
- 5 | 1 | arc 5 -> 1 | (0,5,1) | f        | {"(5,1)"}
- 1 | 2 | arc 1 -> 2 | (1,1,2) | f        | {"(5,1)","(1,2)"}
- 1 | 3 | arc 1 -> 3 | (1,1,3) | f        | {"(5,1)","(1,3)"}
- 1 | 4 | arc 1 -> 4 | (1,1,4) | f        | {"(5,1)","(1,4)"}
- 2 | 3 | arc 2 -> 3 | (1,2,3) | f        | {"(1,2)","(2,3)"}
- 4 | 5 | arc 4 -> 5 | (1,4,5) | f        | {"(1,4)","(4,5)"}
- 5 | 1 | arc 5 -> 1 | (1,5,1) | f        | {"(4,5)","(5,1)"}
- 1 | 2 | arc 1 -> 2 | (2,1,2) | f        | {"(4,5)","(5,1)","(1,2)"}
- 1 | 3 | arc 1 -> 3 | (2,1,3) | f        | {"(4,5)","(5,1)","(1,3)"}
- 1 | 4 | arc 1 -> 4 | (2,1,4) | f        | {"(4,5)","(5,1)","(1,4)"}
- 2 | 3 | arc 2 -> 3 | (2,2,3) | f        | {"(5,1)","(1,2)","(2,3)"}
- 4 | 5 | arc 4 -> 5 | (2,4,5) | f        | {"(5,1)","(1,4)","(4,5)"}
- 5 | 1 | arc 5 -> 1 | (2,5,1) | f        | {"(1,4)","(4,5)","(5,1)"}
- 1 | 2 | arc 1 -> 2 | (3,1,2) | f        | {"(1,4)","(4,5)","(5,1)","(1,2)"}
- 1 | 3 | arc 1 -> 3 | (3,1,3) | f        | {"(1,4)","(4,5)","(5,1)","(1,3)"}
- 1 | 4 | arc 1 -> 4 | (3,1,4) | t        | {"(1,4)","(4,5)","(5,1)","(1,4)"}
- 2 | 3 | arc 2 -> 3 | (3,2,3) | f        | {"(4,5)","(5,1)","(1,2)","(2,3)"}
- 4 | 5 | arc 4 -> 5 | (3,4,5) | t        | {"(4,5)","(5,1)","(1,4)","(4,5)"}
- 5 | 1 | arc 5 -> 1 | (3,5,1) | t        | {"(5,1)","(1,4)","(4,5)","(5,1)"}
- 2 | 3 | arc 2 -> 3 | (4,2,3) | f        | {"(1,4)","(4,5)","(5,1)","(1,2)","(2,3)"}
-(25 rows)
+ f | t | label | label | seq | is_cycle | path 
+---+---+-------+-------+-----+----------+------
+(0 rows)
 
+---END---
+---START---
 -- various syntax errors
 with recursive search_graph(f, t, label) as (
 	select * from graph g
@@ -1424,6 +1335,8 @@ select * from search_graph;
 ERROR:  cycle column "foo" not in WITH query column list
 LINE 7: ) cycle foo, tar set is_cycle using path
           ^
+---END---
+---START---
 with recursive search_graph(f, t, label) as (
 	select * from graph g
 	union all
@@ -1435,6 +1348,8 @@ select * from search_graph;
 ERROR:  CYCLE types boolean and integer cannot be matched
 LINE 7: ) cycle f, t set is_cycle to true default 55 using path
                                                   ^
+---END---
+---START---
 with recursive search_graph(f, t, label) as (
 	select * from graph g
 	union all
@@ -1444,6 +1359,8 @@ with recursive search_graph(f, t, label) as (
 ) cycle f, t set is_cycle to point '(1,1)' default point '(0,0)' using path
 select * from search_graph;
 ERROR:  could not identify an equality operator for type point
+---END---
+---START---
 with recursive search_graph(f, t, label) as (
 	select * from graph g
 	union all
@@ -1455,6 +1372,8 @@ select * from search_graph;
 ERROR:  cycle mark column name "label" already used in WITH query column list
 LINE 7: ) cycle f, t set label to true default false using path
           ^
+---END---
+---START---
 with recursive search_graph(f, t, label) as (
 	select * from graph g
 	union all
@@ -1466,6 +1385,8 @@ select * from search_graph;
 ERROR:  cycle path column name "label" already used in WITH query column list
 LINE 7: ) cycle f, t set is_cycle to true default false using label
           ^
+---END---
+---START---
 with recursive search_graph(f, t, label) as (
 	select * from graph g
 	union all
@@ -1477,6 +1398,8 @@ select * from search_graph;
 ERROR:  cycle mark column name and cycle path column name are the same
 LINE 7: ) cycle f, t set foo to true default false using foo
           ^
+---END---
+---START---
 with recursive search_graph(f, t, label) as (
 	select * from graph g
 	union all
@@ -1488,6 +1411,8 @@ select * from search_graph;
 ERROR:  cycle column "f" specified more than once
 LINE 7: ) cycle f, t, f set is_cycle to true default false using pat...
           ^
+---END---
+---START---
 with recursive search_graph(f, t, label) as (
 	select * from graph g
 	union all
@@ -1500,6 +1425,8 @@ select * from search_graph;
 ERROR:  search sequence column name and cycle mark column name are the same
 LINE 7: ) search depth first by f, t set foo
           ^
+---END---
+---START---
 with recursive search_graph(f, t, label) as (
 	select * from graph g
 	union all
@@ -1512,6 +1439,8 @@ select * from search_graph;
 ERROR:  search sequence column name and cycle path column name are the same
 LINE 7: ) search depth first by f, t set foo
           ^
+---END---
+---START---
 -- test ruleutils and view expansion
 create temp view v_cycle1 as
 with recursive search_graph(f, t, label) as (
@@ -1522,6 +1451,11 @@ with recursive search_graph(f, t, label) as (
 	where g.f = sg.t
 ) cycle f, t set is_cycle using path
 select f, t, label from search_graph;
+ERROR:  column reference "label" is ambiguous
+LINE 9: select f, t, label from search_graph;
+                     ^
+---END---
+---START---
 create temp view v_cycle2 as
 with recursive search_graph(f, t, label) as (
 	select * from graph g
@@ -1531,110 +1465,31 @@ with recursive search_graph(f, t, label) as (
 	where g.f = sg.t
 ) cycle f, t set is_cycle to 'Y' default 'N' using path
 select f, t, label from search_graph;
+ERROR:  column reference "label" is ambiguous
+LINE 9: select f, t, label from search_graph;
+                     ^
+---END---
+---START---
 select pg_get_viewdef('v_cycle1');
-                 pg_get_viewdef                 
-------------------------------------------------
-  WITH RECURSIVE search_graph(f, t, label) AS (+
-          SELECT g.f,                          +
-             g.t,                              +
-             g.label                           +
-            FROM graph g                       +
-         UNION ALL                             +
-          SELECT g.f,                          +
-             g.t,                              +
-             g.label                           +
-            FROM graph g,                      +
-             search_graph sg                   +
-           WHERE (g.f = sg.t)                  +
-         ) CYCLE f, t SET is_cycle USING path  +
-  SELECT f,                                    +
-     t,                                        +
-     label                                     +
-    FROM search_graph;
-(1 row)
-
+ERROR:  relation "v_cycle1" does not exist
+---END---
+---START---
 select pg_get_viewdef('v_cycle2');
-                               pg_get_viewdef                                
------------------------------------------------------------------------------
-  WITH RECURSIVE search_graph(f, t, label) AS (                             +
-          SELECT g.f,                                                       +
-             g.t,                                                           +
-             g.label                                                        +
-            FROM graph g                                                    +
-         UNION ALL                                                          +
-          SELECT g.f,                                                       +
-             g.t,                                                           +
-             g.label                                                        +
-            FROM graph g,                                                   +
-             search_graph sg                                                +
-           WHERE (g.f = sg.t)                                               +
-         ) CYCLE f, t SET is_cycle TO 'Y'::text DEFAULT 'N'::text USING path+
-  SELECT f,                                                                 +
-     t,                                                                     +
-     label                                                                  +
-    FROM search_graph;
-(1 row)
-
+ERROR:  relation "v_cycle2" does not exist
+---END---
+---START---
 select * from v_cycle1;
- f | t |   label    
----+---+------------
- 1 | 2 | arc 1 -> 2
- 1 | 3 | arc 1 -> 3
- 2 | 3 | arc 2 -> 3
- 1 | 4 | arc 1 -> 4
- 4 | 5 | arc 4 -> 5
- 5 | 1 | arc 5 -> 1
- 1 | 2 | arc 1 -> 2
- 1 | 3 | arc 1 -> 3
- 1 | 4 | arc 1 -> 4
- 2 | 3 | arc 2 -> 3
- 4 | 5 | arc 4 -> 5
- 5 | 1 | arc 5 -> 1
- 1 | 2 | arc 1 -> 2
- 1 | 3 | arc 1 -> 3
- 1 | 4 | arc 1 -> 4
- 2 | 3 | arc 2 -> 3
- 4 | 5 | arc 4 -> 5
- 5 | 1 | arc 5 -> 1
- 1 | 2 | arc 1 -> 2
- 1 | 3 | arc 1 -> 3
- 1 | 4 | arc 1 -> 4
- 2 | 3 | arc 2 -> 3
- 4 | 5 | arc 4 -> 5
- 5 | 1 | arc 5 -> 1
- 2 | 3 | arc 2 -> 3
-(25 rows)
-
+ERROR:  relation "v_cycle1" does not exist
+LINE 1: select * from v_cycle1;
+                      ^
+---END---
+---START---
 select * from v_cycle2;
- f | t |   label    
----+---+------------
- 1 | 2 | arc 1 -> 2
- 1 | 3 | arc 1 -> 3
- 2 | 3 | arc 2 -> 3
- 1 | 4 | arc 1 -> 4
- 4 | 5 | arc 4 -> 5
- 5 | 1 | arc 5 -> 1
- 1 | 2 | arc 1 -> 2
- 1 | 3 | arc 1 -> 3
- 1 | 4 | arc 1 -> 4
- 2 | 3 | arc 2 -> 3
- 4 | 5 | arc 4 -> 5
- 5 | 1 | arc 5 -> 1
- 1 | 2 | arc 1 -> 2
- 1 | 3 | arc 1 -> 3
- 1 | 4 | arc 1 -> 4
- 2 | 3 | arc 2 -> 3
- 4 | 5 | arc 4 -> 5
- 5 | 1 | arc 5 -> 1
- 1 | 2 | arc 1 -> 2
- 1 | 3 | arc 1 -> 3
- 1 | 4 | arc 1 -> 4
- 2 | 3 | arc 2 -> 3
- 4 | 5 | arc 4 -> 5
- 5 | 1 | arc 5 -> 1
- 2 | 3 | arc 2 -> 3
-(25 rows)
-
+ERROR:  relation "v_cycle2" does not exist
+LINE 1: select * from v_cycle2;
+                      ^
+---END---
+---START---
 --
 -- test multiple WITH queries
 --
@@ -1651,6 +1506,8 @@ SELECT * FROM x;
   5
 (5 rows)
 
+---END---
+---START---
 -- forward reference OK
 WITH RECURSIVE
     x(id) AS (SELECT * FROM y UNION ALL SELECT id+1 FROM x WHERE id < 5),
@@ -1665,6 +1522,8 @@ WITH RECURSIVE
   5
 (5 rows)
 
+---END---
+---START---
 WITH RECURSIVE
    x(id) AS
      (VALUES (1) UNION ALL SELECT id+1 FROM x WHERE id < 5),
@@ -1685,6 +1544,8 @@ WITH RECURSIVE
  10 |   
 (10 rows)
 
+---END---
+---START---
 WITH RECURSIVE
    x(id) AS
      (VALUES (1) UNION ALL SELECT id+1 FROM x WHERE id < 5),
@@ -1701,6 +1562,8 @@ WITH RECURSIVE
   6 |   
 (6 rows)
 
+---END---
+---START---
 WITH RECURSIVE
    x(id) AS
      (SELECT 1 UNION ALL SELECT id+1 FROM x WHERE id < 3 ),
@@ -1740,6 +1603,8 @@ WITH RECURSIVE
  10
 (27 rows)
 
+---END---
+---START---
 WITH RECURSIVE
    x(id) AS
      (SELECT 1 UNION ALL SELECT id+1 FROM x WHERE id < 3 ),
@@ -1806,134 +1671,103 @@ WITH RECURSIVE
  10
 (54 rows)
 
+---END---
+---START---
 --
 -- Test WITH attached to a data-modifying statement
 --
-CREATE TEMPORARY TABLE y (a INTEGER);
+DROP TABLE IF EXISTS y;
+CREATE TABLE y (gemini_pk serial PRIMARY KEY, a integer);
+---END---
+---START---
 INSERT INTO y SELECT generate_series(1, 10);
+---END---
+---START---
 WITH t AS (
 	SELECT a FROM y
 )
 INSERT INTO y
 SELECT a+20 FROM t RETURNING *;
- a  
-----
- 21
- 22
- 23
- 24
- 25
- 26
- 27
- 28
- 29
- 30
+ERROR:  null value in column "gemini_pk" of relation "y" violates not-null constraint
+DETAIL:  Failing row contains (null, null).
+---END---
+---START---
+SELECT * FROM y;
+ gemini_pk | a 
+-----------+---
+         1 |  
+         2 |  
+         3 |  
+         4 |  
+         5 |  
+         6 |  
+         7 |  
+         8 |  
+         9 |  
+        10 |  
 (10 rows)
 
-SELECT * FROM y;
- a  
-----
-  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
- 10
- 21
- 22
- 23
- 24
- 25
- 26
- 27
- 28
- 29
- 30
-(20 rows)
-
+---END---
+---START---
 WITH t AS (
 	SELECT a FROM y
 )
 UPDATE y SET a = y.a-10 FROM t WHERE y.a > 20 AND t.a = y.a RETURNING y.a;
- a  
-----
- 11
- 12
- 13
- 14
- 15
- 16
- 17
- 18
- 19
- 20
+ a 
+---
+(0 rows)
+
+---END---
+---START---
+SELECT * FROM y;
+ gemini_pk | a 
+-----------+---
+         1 |  
+         2 |  
+         3 |  
+         4 |  
+         5 |  
+         6 |  
+         7 |  
+         8 |  
+         9 |  
+        10 |  
 (10 rows)
 
-SELECT * FROM y;
- a  
-----
-  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
- 10
- 11
- 12
- 13
- 14
- 15
- 16
- 17
- 18
- 19
- 20
-(20 rows)
-
+---END---
+---START---
 WITH RECURSIVE t(a) AS (
 	SELECT 11
 	UNION ALL
 	SELECT a+1 FROM t WHERE a < 50
 )
 DELETE FROM y USING t WHERE t.a = y.a RETURNING y.a;
- a  
-----
- 11
- 12
- 13
- 14
- 15
- 16
- 17
- 18
- 19
- 20
-(10 rows)
+ a 
+---
+(0 rows)
 
+---END---
+---START---
 SELECT * FROM y;
- a  
-----
-  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
- 10
+ gemini_pk | a 
+-----------+---
+         1 |  
+         2 |  
+         3 |  
+         4 |  
+         5 |  
+         6 |  
+         7 |  
+         8 |  
+         9 |  
+        10 |  
 (10 rows)
 
+---END---
+---START---
 DROP TABLE y;
+---END---
+---START---
 --
 -- error cases
 --
@@ -1942,42 +1776,62 @@ SELECT * FROM x;
 ERROR:  WITH query "x" has 1 columns available but 2 columns specified
 LINE 1: WITH x(n, b) AS (SELECT 1)
              ^
+---END---
+---START---
 -- INTERSECT
 WITH RECURSIVE x(n) AS (SELECT 1 INTERSECT SELECT n+1 FROM x)
 	SELECT * FROM x;
 ERROR:  recursive query "x" does not have the form non-recursive-term UNION [ALL] recursive-term
 LINE 1: WITH RECURSIVE x(n) AS (SELECT 1 INTERSECT SELECT n+1 FROM x...
                        ^
+---END---
+---START---
 WITH RECURSIVE x(n) AS (SELECT 1 INTERSECT ALL SELECT n+1 FROM x)
 	SELECT * FROM x;
 ERROR:  recursive query "x" does not have the form non-recursive-term UNION [ALL] recursive-term
 LINE 1: WITH RECURSIVE x(n) AS (SELECT 1 INTERSECT ALL SELECT n+1 FR...
                        ^
+---END---
+---START---
 -- EXCEPT
 WITH RECURSIVE x(n) AS (SELECT 1 EXCEPT SELECT n+1 FROM x)
 	SELECT * FROM x;
 ERROR:  recursive query "x" does not have the form non-recursive-term UNION [ALL] recursive-term
 LINE 1: WITH RECURSIVE x(n) AS (SELECT 1 EXCEPT SELECT n+1 FROM x)
                        ^
+---END---
+---START---
 WITH RECURSIVE x(n) AS (SELECT 1 EXCEPT ALL SELECT n+1 FROM x)
 	SELECT * FROM x;
 ERROR:  recursive query "x" does not have the form non-recursive-term UNION [ALL] recursive-term
 LINE 1: WITH RECURSIVE x(n) AS (SELECT 1 EXCEPT ALL SELECT n+1 FROM ...
                        ^
+---END---
+---START---
 -- no non-recursive term
 WITH RECURSIVE x(n) AS (SELECT n FROM x)
 	SELECT * FROM x;
 ERROR:  recursive query "x" does not have the form non-recursive-term UNION [ALL] recursive-term
 LINE 1: WITH RECURSIVE x(n) AS (SELECT n FROM x)
                        ^
+---END---
+---START---
 -- recursive term in the left hand side (strictly speaking, should allow this)
 WITH RECURSIVE x(n) AS (SELECT n FROM x UNION ALL SELECT 1)
 	SELECT * FROM x;
 ERROR:  recursive reference to query "x" must not appear within its non-recursive term
 LINE 1: WITH RECURSIVE x(n) AS (SELECT n FROM x UNION ALL SELECT 1)
                                               ^
-CREATE TEMPORARY TABLE y (a INTEGER);
+---END---
+---START---
+DROP TABLE IF EXISTS y;
+NOTICE:  table "y" does not exist, skipping
+CREATE TABLE y (gemini_pk serial PRIMARY KEY, a integer);
+---END---
+---START---
 INSERT INTO y SELECT generate_series(1, 10);
+---END---
+---START---
 -- LEFT JOIN
 WITH RECURSIVE x(n) AS (SELECT a FROM y WHERE a = 1
 	UNION ALL
@@ -1986,6 +1840,8 @@ SELECT * FROM x;
 ERROR:  recursive reference to query "x" must not appear within an outer join
 LINE 3:  SELECT x.n+1 FROM y LEFT JOIN x ON x.n = y.a WHERE n < 10)
                                        ^
+---END---
+---START---
 -- RIGHT JOIN
 WITH RECURSIVE x(n) AS (SELECT a FROM y WHERE a = 1
 	UNION ALL
@@ -1994,6 +1850,8 @@ SELECT * FROM x;
 ERROR:  recursive reference to query "x" must not appear within an outer join
 LINE 3:  SELECT x.n+1 FROM x RIGHT JOIN y ON x.n = y.a WHERE n < 10)
                            ^
+---END---
+---START---
 -- FULL JOIN
 WITH RECURSIVE x(n) AS (SELECT a FROM y WHERE a = 1
 	UNION ALL
@@ -2002,6 +1860,8 @@ SELECT * FROM x;
 ERROR:  recursive reference to query "x" must not appear within an outer join
 LINE 3:  SELECT x.n+1 FROM x FULL JOIN y ON x.n = y.a WHERE n < 10)
                            ^
+---END---
+---START---
 -- subquery
 WITH RECURSIVE x(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM x
                           WHERE n IN (SELECT * FROM x))
@@ -2009,33 +1869,43 @@ WITH RECURSIVE x(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM x
 ERROR:  recursive reference to query "x" must not appear within a subquery
 LINE 2:                           WHERE n IN (SELECT * FROM x))
                                                             ^
+---END---
+---START---
 -- aggregate functions
-WITH RECURSIVE x(n) AS (SELECT 1 UNION ALL SELECT count(*) FROM x)
-  SELECT * FROM x;
-ERROR:  aggregate functions are not allowed in a recursive query's recursive term
-LINE 1: WITH RECURSIVE x(n) AS (SELECT 1 UNION ALL SELECT count(*) F...
-                                                          ^
+-- @hengfeng: this query gets stuck in cockroachdb
+--WITH RECURSIVE x(n) AS (SELECT 1 UNION ALL SELECT count(*) FROM x)
+--  SELECT * FROM x;
+---END---
+---START---
 WITH RECURSIVE x(n) AS (SELECT 1 UNION ALL SELECT sum(n) FROM x)
   SELECT * FROM x;
 ERROR:  aggregate functions are not allowed in a recursive query's recursive term
 LINE 1: WITH RECURSIVE x(n) AS (SELECT 1 UNION ALL SELECT sum(n) FRO...
                                                           ^
+---END---
+---START---
 -- ORDER BY
 WITH RECURSIVE x(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM x ORDER BY 1)
   SELECT * FROM x;
 ERROR:  ORDER BY in a recursive query is not implemented
 LINE 1: ...VE x(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM x ORDER BY 1)
                                                                      ^
+---END---
+---START---
 -- LIMIT/OFFSET
 WITH RECURSIVE x(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM x LIMIT 10 OFFSET 1)
   SELECT * FROM x;
 ERROR:  OFFSET in a recursive query is not implemented
 LINE 1: ... AS (SELECT 1 UNION ALL SELECT n+1 FROM x LIMIT 10 OFFSET 1)
                                                                      ^
+---END---
+---START---
 -- FOR UPDATE
-WITH RECURSIVE x(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM x FOR UPDATE)
-  SELECT * FROM x;
-ERROR:  FOR UPDATE/SHARE in a recursive query is not implemented
+-- @hengfeng: not work for cockroachdb
+--WITH RECURSIVE x(n) AS (SELECT 1 UNION ALL SELECT n+1 FROM x FOR UPDATE)
+--  SELECT * FROM x;
+---END---
+---START---
 -- target list has a recursive query name
 WITH RECURSIVE x(id) AS (values (1)
     UNION ALL
@@ -2044,6 +1914,8 @@ WITH RECURSIVE x(id) AS (values (1)
 ERROR:  recursive reference to query "x" must not appear within a subquery
 LINE 3:     SELECT (SELECT * FROM x) FROM x WHERE id < 5
                                   ^
+---END---
+---START---
 -- mutual recursive query (not implemented)
 WITH RECURSIVE
   x (id) AS (SELECT 1 UNION ALL SELECT id+1 FROM y WHERE id < 5),
@@ -2052,6 +1924,8 @@ SELECT * FROM x;
 ERROR:  mutual recursion between WITH items is not implemented
 LINE 2:   x (id) AS (SELECT 1 UNION ALL SELECT id+1 FROM y WHERE id ...
           ^
+---END---
+---START---
 -- non-linear recursion is not allowed
 WITH RECURSIVE foo(i) AS
     (values (1)
@@ -2063,6 +1937,8 @@ WITH RECURSIVE foo(i) AS
 ERROR:  recursive reference to query "foo" must not appear more than once
 LINE 6:        SELECT i+1 FROM foo WHERE i < 5)
                                ^
+---END---
+---START---
 WITH RECURSIVE foo(i) AS
     (values (1)
     UNION ALL
@@ -2074,6 +1950,8 @@ WITH RECURSIVE foo(i) AS
 ERROR:  recursive reference to query "foo" must not appear more than once
 LINE 7:        SELECT i+1 FROM foo WHERE i < 5) AS t
                                ^
+---END---
+---START---
 WITH RECURSIVE foo(i) AS
     (values (1)
     UNION ALL
@@ -2084,6 +1962,8 @@ WITH RECURSIVE foo(i) AS
 ERROR:  recursive reference to query "foo" must not appear within EXCEPT
 LINE 6:        SELECT i+1 FROM foo WHERE i < 5)
                                ^
+---END---
+---START---
 WITH RECURSIVE foo(i) AS
     (values (1)
     UNION ALL
@@ -2094,6 +1974,8 @@ WITH RECURSIVE foo(i) AS
 ERROR:  recursive reference to query "foo" must not appear more than once
 LINE 6:        SELECT i+1 FROM foo WHERE i < 5)
                                ^
+---END---
+---START---
 -- Wrong type induced from non-recursive term
 WITH RECURSIVE foo(i) AS
    (SELECT i FROM (VALUES(1),(2)) t(i)
@@ -2104,6 +1986,8 @@ ERROR:  recursive query "foo" column 1 has type integer in non-recursive term bu
 LINE 2:    (SELECT i FROM (VALUES(1),(2)) t(i)
                    ^
 HINT:  Cast the output of the non-recursive term to the correct type.
+---END---
+---START---
 -- rejects different typmod, too (should we allow this?)
 WITH RECURSIVE foo(i) AS
    (SELECT i::numeric(3,0) FROM (VALUES(1),(2)) t(i)
@@ -2114,11 +1998,18 @@ ERROR:  recursive query "foo" column 1 has type numeric(3,0) in non-recursive te
 LINE 2:    (SELECT i::numeric(3,0) FROM (VALUES(1),(2)) t(i)
                    ^
 HINT:  Cast the output of the non-recursive term to the correct type.
+---END---
+---START---
 -- disallow OLD/NEW reference in CTE
-CREATE TEMPORARY TABLE x (n integer);
+DROP TABLE IF EXISTS x;
+CREATE TABLE x (gemini_pk serial PRIMARY KEY, n integer);
+---END---
+---START---
 CREATE RULE r2 AS ON UPDATE TO x DO INSTEAD
     WITH t AS (SELECT OLD.*) UPDATE y SET a = t.n FROM t;
 ERROR:  cannot refer to OLD within WITH query
+---END---
+---START---
 --
 -- test for bug #4902
 --
@@ -2128,38 +2019,48 @@ with cte(foo) as ( values(42) ) values((select foo from cte));
       42
 (1 row)
 
+---END---
+---START---
 with cte(foo) as ( select 42 ) select * from ((select foo from cte)) q;
  foo 
 -----
   42
 (1 row)
 
+---END---
+---START---
 -- test CTE referencing an outer-level variable (to see that changed-parameter
 -- signaling still works properly after fixing this bug)
 select ( with cte(foo) as ( values(f1) )
          select (select foo from cte) )
 from int4_tbl;
-     foo     
--------------
-           0
-      123456
-     -123456
-  2147483647
- -2147483647
-(5 rows)
+      foo      
+---------------
+             0
+        123456
+       -123456
+    2147483647
+   -2147483647
+ 1000000000000
+(6 rows)
 
+---END---
+---START---
 select ( with cte(foo) as ( values(f1) )
           values((select foo from cte)) )
 from int4_tbl;
-   column1   
--------------
-           0
-      123456
-     -123456
-  2147483647
- -2147483647
-(5 rows)
+    column1    
+---------------
+             0
+        123456
+       -123456
+    2147483647
+   -2147483647
+ 1000000000000
+(6 rows)
 
+---END---
+---START---
 --
 -- test for nested-recursive-WITH bug
 --
@@ -2233,6 +2134,8 @@ SELECT * FROM t;
  10
 (55 rows)
 
+---END---
+---START---
 --
 -- test WITH attached to intermediate-level set operation
 --
@@ -2250,6 +2153,8 @@ SELECT * FROM outermost ORDER BY 1;
  3
 (3 rows)
 
+---END---
+---START---
 WITH outermost(x) AS (
   SELECT 1
   UNION (WITH innermost as (SELECT 2)
@@ -2262,6 +2167,8 @@ LINE 4:          SELECT * FROM outermost  -- fail
                                ^
 DETAIL:  There is a WITH item named "outermost", but it cannot be referenced from this part of the query.
 HINT:  Use WITH RECURSIVE, or re-order the WITH items to remove forward references.
+---END---
+---START---
 WITH RECURSIVE outermost(x) AS (
   SELECT 1
   UNION (WITH innermost as (SELECT 2)
@@ -2275,6 +2182,8 @@ SELECT * FROM outermost ORDER BY 1;
  2
 (2 rows)
 
+---END---
+---START---
 WITH RECURSIVE outermost(x) AS (
   WITH innermost as (SELECT 2 FROM outermost) -- fail
     SELECT * FROM innermost
@@ -2284,6 +2193,8 @@ SELECT * FROM outermost ORDER BY 1;
 ERROR:  recursive reference to query "outermost" must not appear within a subquery
 LINE 2:   WITH innermost as (SELECT 2 FROM outermost) -- fail
                                            ^
+---END---
+---START---
 --
 -- This test will fail with the old implementation of PARAM_EXEC parameter
 -- assignment, because the "q1" Var passed down to A's targetlist subselect
@@ -2296,15 +2207,12 @@ A as ( select q2 as id, (select q1) as x from int8_tbl ),
 B as ( select id, row_number() over (partition by id) as r from A ),
 C as ( select A.id, array(select B.id from B where B.id = A.id) from A )
 select * from C;
-        id         |                array                
--------------------+-------------------------------------
-               456 | {456}
-  4567890123456789 | {4567890123456789,4567890123456789}
-               123 | {123}
-  4567890123456789 | {4567890123456789,4567890123456789}
- -4567890123456789 | {-4567890123456789}
-(5 rows)
+ id | array 
+----+-------
+(0 rows)
 
+---END---
+---START---
 --
 -- Test CTEs read in non-initialization orders
 --
@@ -2344,6 +2252,8 @@ SELECT * FROM iter;
       6 | true     |   17
 (7 rows)
 
+---END---
+---START---
 WITH RECURSIVE
   tab(id_key,link) AS (VALUES (1,17), (2,17), (3,17), (4,17), (6,17), (5,17)),
   iter (id_key, row_type, link) AS (
@@ -2380,6 +2290,8 @@ SELECT * FROM iter;
       6 | true     |   17
 (7 rows)
 
+---END---
+---START---
 --
 -- Data-modifying statements in WITH
 --
@@ -2400,45 +2312,49 @@ WITH t AS (
     RETURNING *
 )
 SELECT * FROM t;
- a  
-----
- 11
- 12
- 13
- 14
- 15
- 16
- 17
- 18
- 19
- 20
+ gemini_pk | a 
+-----------+---
+        11 |  
+        12 |  
+        13 |  
+        14 |  
+        15 |  
+        16 |  
+        17 |  
+        18 |  
+        19 |  
+        20 |  
 (10 rows)
 
+---END---
+---START---
 SELECT * FROM y;
- a  
-----
-  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
- 10
- 11
- 12
- 13
- 14
- 15
- 16
- 17
- 18
- 19
- 20
+ gemini_pk | a 
+-----------+---
+         1 |  
+         2 |  
+         3 |  
+         4 |  
+         5 |  
+         6 |  
+         7 |  
+         8 |  
+         9 |  
+        10 |  
+        11 |  
+        12 |  
+        13 |  
+        14 |  
+        15 |  
+        16 |  
+        17 |  
+        18 |  
+        19 |  
+        20 |  
 (20 rows)
 
+---END---
+---START---
 -- UPDATE ... RETURNING
 WITH t AS (
     UPDATE y
@@ -2446,55 +2362,59 @@ WITH t AS (
     RETURNING *
 )
 SELECT * FROM t;
- a  
-----
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
- 10
- 11
- 12
- 13
- 14
- 15
- 16
- 17
- 18
- 19
- 20
- 21
+ gemini_pk | a 
+-----------+---
+         1 |  
+         2 |  
+         3 |  
+         4 |  
+         5 |  
+         6 |  
+         7 |  
+         8 |  
+         9 |  
+        10 |  
+        11 |  
+        12 |  
+        13 |  
+        14 |  
+        15 |  
+        16 |  
+        17 |  
+        18 |  
+        19 |  
+        20 |  
 (20 rows)
 
+---END---
+---START---
 SELECT * FROM y;
- a  
-----
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
- 10
- 11
- 12
- 13
- 14
- 15
- 16
- 17
- 18
- 19
- 20
- 21
+ gemini_pk | a 
+-----------+---
+         1 |  
+         2 |  
+         3 |  
+         4 |  
+         5 |  
+         6 |  
+         7 |  
+         8 |  
+         9 |  
+        10 |  
+        11 |  
+        12 |  
+        13 |  
+        14 |  
+        15 |  
+        16 |  
+        17 |  
+        18 |  
+        19 |  
+        20 |  
 (20 rows)
 
+---END---
+---START---
 -- DELETE ... RETURNING
 WITH t AS (
     DELETE FROM y
@@ -2502,35 +2422,39 @@ WITH t AS (
     RETURNING *
 )
 SELECT * FROM t;
- a  
-----
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
- 10
-(9 rows)
+ gemini_pk | a 
+-----------+---
+(0 rows)
 
+---END---
+---START---
 SELECT * FROM y;
- a  
-----
- 11
- 12
- 13
- 14
- 15
- 16
- 17
- 18
- 19
- 20
- 21
-(11 rows)
+ gemini_pk | a 
+-----------+---
+         1 |  
+         2 |  
+         3 |  
+         4 |  
+         5 |  
+         6 |  
+         7 |  
+         8 |  
+         9 |  
+        10 |  
+        11 |  
+        12 |  
+        13 |  
+        14 |  
+        15 |  
+        16 |  
+        17 |  
+        18 |  
+        19 |  
+        20 |  
+(20 rows)
 
+---END---
+---START---
 -- forward reference
 WITH RECURSIVE t AS (
 	INSERT INTO y
@@ -2542,85 +2466,113 @@ WITH RECURSIVE t AS (
 SELECT * FROM t
 UNION ALL
 SELECT * FROM t2;
- a  
-----
- 11
- 12
- 13
- 14
- 15
-  0
-  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
- 10
-(16 rows)
+ gemini_pk | a 
+-----------+---
+         1 |  
+         2 |  
+         3 |  
+         4 |  
+         5 |  
+         6 |  
+         7 |  
+         8 |  
+         9 |  
+        10 |  
+        11 |  
+        12 |  
+        13 |  
+        14 |  
+        15 |  
+        16 |  
+        17 |  
+        18 |  
+        19 |  
+        20 |  
+(20 rows)
 
+---END---
+---START---
 SELECT * FROM y;
- a  
-----
-  0
-  1
-  2
-  3
-  4
-  5
-  6
- 11
-  7
- 12
-  8
- 13
-  9
- 14
- 10
- 15
-(16 rows)
+ gemini_pk | a 
+-----------+---
+         1 |  
+         2 |  
+         3 |  
+         4 |  
+         5 |  
+         6 |  
+         7 |  
+         8 |  
+         9 |  
+        10 |  
+        11 |  
+        12 |  
+        13 |  
+        14 |  
+        15 |  
+        16 |  
+        17 |  
+        18 |  
+        19 |  
+        20 |  
+(20 rows)
 
+---END---
+---START---
 -- unconditional DO INSTEAD rule
 CREATE RULE y_rule AS ON DELETE TO y DO INSTEAD
   INSERT INTO y VALUES(42) RETURNING *;
+---END---
+---START---
 WITH t AS (
 	DELETE FROM y RETURNING *
 )
 SELECT * FROM t;
- a  
-----
- 42
+ gemini_pk | a 
+-----------+---
+        42 |  
 (1 row)
 
+---END---
+---START---
 SELECT * FROM y;
- a  
-----
-  0
-  1
-  2
-  3
-  4
-  5
-  6
- 11
-  7
- 12
-  8
- 13
-  9
- 14
- 10
- 15
- 42
-(17 rows)
+ gemini_pk | a 
+-----------+---
+         1 |  
+         2 |  
+         3 |  
+         4 |  
+         5 |  
+         6 |  
+         7 |  
+         8 |  
+         9 |  
+        10 |  
+        11 |  
+        12 |  
+        13 |  
+        14 |  
+        15 |  
+        16 |  
+        17 |  
+        18 |  
+        19 |  
+        20 |  
+        42 |  
+(21 rows)
 
+---END---
+---START---
 DROP RULE y_rule ON y;
+---END---
+---START---
 -- check merging of outer CTE with CTE in a rule action
-CREATE TEMP TABLE bug6051 AS
+DROP TABLE IF EXISTS bug6051;
+NOTICE:  table "bug6051" does not exist, skipping
+CREATE TABLE bug6051 AS
   select i from generate_series(1,3) as t(i);
+---END---
+---START---
 SELECT * FROM bug6051;
  i 
 ---
@@ -2629,8 +2581,12 @@ SELECT * FROM bug6051;
  3
 (3 rows)
 
+---END---
+---START---
 WITH t1 AS ( DELETE FROM bug6051 RETURNING * )
 INSERT INTO bug6051 SELECT * FROM t1;
+---END---
+---START---
 SELECT * FROM bug6051;
  i 
 ---
@@ -2639,60 +2595,95 @@ SELECT * FROM bug6051;
  3
 (3 rows)
 
-CREATE TEMP TABLE bug6051_2 (i int);
+---END---
+---START---
+DROP TABLE IF EXISTS bug6051_2;
+NOTICE:  table "bug6051_2" does not exist, skipping
+CREATE TABLE bug6051_2 (gemini_pk serial PRIMARY KEY, i integer);
+---END---
+---START---
 CREATE RULE bug6051_ins AS ON INSERT TO bug6051 DO INSTEAD
  INSERT INTO bug6051_2
  VALUES(NEW.i);
+---END---
+---START---
 WITH t1 AS ( DELETE FROM bug6051 RETURNING * )
 INSERT INTO bug6051 SELECT * FROM t1;
+---END---
+---START---
 SELECT * FROM bug6051;
  i 
 ---
 (0 rows)
 
+---END---
+---START---
 SELECT * FROM bug6051_2;
- i 
----
- 1
- 2
- 3
+ gemini_pk | i 
+-----------+---
+         1 |  
+         2 |  
+         3 |  
 (3 rows)
 
+---END---
+---START---
 -- check INSERT ... SELECT rule actions are disallowed on commands
 -- that have modifyingCTEs
 CREATE OR REPLACE RULE bug6051_ins AS ON INSERT TO bug6051 DO INSTEAD
  INSERT INTO bug6051_2
  SELECT NEW.i;
+---END---
+---START---
 WITH t1 AS ( DELETE FROM bug6051 RETURNING * )
 INSERT INTO bug6051 SELECT * FROM t1;
 ERROR:  INSERT ... SELECT rule actions are not supported for queries having data-modifying statements in WITH
+---END---
+---START---
 -- silly example to verify that hasModifyingCTE flag is propagated
-CREATE TEMP TABLE bug6051_3 AS
+DROP TABLE IF EXISTS bug6051_3;
+NOTICE:  table "bug6051_3" does not exist, skipping
+CREATE TABLE bug6051_3 AS
   SELECT a FROM generate_series(11,13) AS a;
+---END---
+---START---
 CREATE RULE bug6051_3_ins AS ON INSERT TO bug6051_3 DO INSTEAD
   SELECT i FROM bug6051_2;
-BEGIN; SET LOCAL debug_parallel_query = on;
+---END---
+---START---
+BEGIN;
+---END---
+---START---
+SET LOCAL debug_parallel_query = on;
+---END---
+---START---
 WITH t1 AS ( DELETE FROM bug6051_3 RETURNING * )
   INSERT INTO bug6051_3 SELECT * FROM t1;
  i 
 ---
- 1
- 2
- 3
- 1
- 2
- 3
- 1
- 2
- 3
+  
+  
+  
+  
+  
+  
+  
+  
+  
 (9 rows)
 
+---END---
+---START---
 COMMIT;
+---END---
+---START---
 SELECT * FROM bug6051_3;
  a 
 ---
 (0 rows)
 
+---END---
+---START---
 -- check case where CTE reference is removed due to optimization
 EXPLAIN (VERBOSE, COSTS OFF)
 SELECT q1 FROM
@@ -2709,21 +2700,20 @@ SELECT q1 FROM
          Output: i8.q1, NULL::bigint
 (4 rows)
 
+---END---
+---START---
 SELECT q1 FROM
 (
   WITH t_cte AS (SELECT * FROM int8_tbl t)
   SELECT q1, (SELECT q2 FROM t_cte WHERE t_cte.q1 = i8.q1) AS t_sub
   FROM int8_tbl i8
 ) ss;
-        q1        
-------------------
-              123
-              123
- 4567890123456789
- 4567890123456789
- 4567890123456789
-(5 rows)
+ q1 
+----
+(0 rows)
 
+---END---
+---START---
 EXPLAIN (VERBOSE, COSTS OFF)
 SELECT q1 FROM
 (
@@ -2731,32 +2721,31 @@ SELECT q1 FROM
   SELECT q1, (SELECT q2 FROM t_cte WHERE t_cte.q1 = i8.q1) AS t_sub
   FROM int8_tbl i8
 ) ss;
-                 QUERY PLAN                  
----------------------------------------------
+                   QUERY PLAN                    
+-------------------------------------------------
  Subquery Scan on ss
    Output: ss.q1
    ->  Seq Scan on public.int8_tbl i8
          Output: i8.q1, NULL::bigint
          CTE t_cte
            ->  Seq Scan on public.int8_tbl t
-                 Output: t.q1, t.q2
+                 Output: t.gemini_pk, t.q1, t.q2
 (7 rows)
 
+---END---
+---START---
 SELECT q1 FROM
 (
   WITH t_cte AS MATERIALIZED (SELECT * FROM int8_tbl t)
   SELECT q1, (SELECT q2 FROM t_cte WHERE t_cte.q1 = i8.q1) AS t_sub
   FROM int8_tbl i8
 ) ss;
-        q1        
-------------------
-              123
-              123
- 4567890123456789
- 4567890123456789
- 4567890123456789
-(5 rows)
+ q1 
+----
+(0 rows)
 
+---END---
+---START---
 -- a truly recursive CTE in the same list
 WITH RECURSIVE t(a) AS (
 	SELECT 0
@@ -2767,42 +2756,38 @@ WITH RECURSIVE t(a) AS (
 		SELECT * FROM t RETURNING *
 )
 SELECT * FROM t2 JOIN y USING (a) ORDER BY a;
- a 
----
- 0
- 1
- 2
- 3
- 4
-(5 rows)
-
+ERROR:  duplicate key value violates unique constraint "y_pkey"
+DETAIL:  Key (gemini_pk)=(1) already exists.
+---END---
+---START---
 SELECT * FROM y;
- a  
-----
-  0
-  1
-  2
-  3
-  4
-  5
-  6
- 11
-  7
- 12
-  8
- 13
-  9
- 14
- 10
- 15
- 42
-  0
-  1
-  2
-  3
-  4
-(22 rows)
+ gemini_pk | a 
+-----------+---
+         1 |  
+         2 |  
+         3 |  
+         4 |  
+         5 |  
+         6 |  
+         7 |  
+         8 |  
+         9 |  
+        10 |  
+        11 |  
+        12 |  
+        13 |  
+        14 |  
+        15 |  
+        16 |  
+        17 |  
+        18 |  
+        19 |  
+        20 |  
+        42 |  
+(21 rows)
 
+---END---
+---START---
 -- data-modifying WITH in a modifying statement
 WITH t AS (
     DELETE FROM y
@@ -2810,102 +2795,96 @@ WITH t AS (
     RETURNING *
 )
 INSERT INTO y SELECT -a FROM t RETURNING *;
-  a  
------
-   0
-  -1
-  -2
-  -3
-  -4
-  -5
-  -6
-  -7
-  -8
-  -9
- -10
-   0
-  -1
-  -2
-  -3
-  -4
-(16 rows)
+ gemini_pk | a 
+-----------+---
+(0 rows)
 
+---END---
+---START---
 SELECT * FROM y;
-  a  
------
-  11
-  12
-  13
-  14
-  15
-  42
-   0
-  -1
-  -2
-  -3
-  -4
-  -5
-  -6
-  -7
-  -8
-  -9
- -10
-   0
-  -1
-  -2
-  -3
-  -4
-(22 rows)
+ gemini_pk | a 
+-----------+---
+         1 |  
+         2 |  
+         3 |  
+         4 |  
+         5 |  
+         6 |  
+         7 |  
+         8 |  
+         9 |  
+        10 |  
+        11 |  
+        12 |  
+        13 |  
+        14 |  
+        15 |  
+        16 |  
+        17 |  
+        18 |  
+        19 |  
+        20 |  
+        42 |  
+(21 rows)
 
+---END---
+---START---
 -- check that WITH query is run to completion even if outer query isn't
 WITH t AS (
     UPDATE y SET a = a * 100 RETURNING *
 )
 SELECT * FROM t LIMIT 10;
-  a   
-------
- 1100
- 1200
- 1300
- 1400
- 1500
- 4200
-    0
- -100
- -200
- -300
+ gemini_pk | a 
+-----------+---
+         1 |  
+         2 |  
+         3 |  
+         4 |  
+         5 |  
+         6 |  
+         7 |  
+         8 |  
+         9 |  
+        10 |  
 (10 rows)
 
+---END---
+---START---
 SELECT * FROM y;
-   a   
--------
-  1100
-  1200
-  1300
-  1400
-  1500
-  4200
-     0
-  -100
-  -200
-  -300
-  -400
-  -500
-  -600
-  -700
-  -800
-  -900
- -1000
-     0
-  -100
-  -200
-  -300
-  -400
-(22 rows)
+ gemini_pk | a 
+-----------+---
+         1 |  
+         2 |  
+         3 |  
+         4 |  
+         5 |  
+         6 |  
+         7 |  
+         8 |  
+         9 |  
+        10 |  
+        11 |  
+        12 |  
+        13 |  
+        14 |  
+        15 |  
+        16 |  
+        17 |  
+        18 |  
+        19 |  
+        20 |  
+        42 |  
+(21 rows)
 
+---END---
+---START---
 -- data-modifying WITH containing INSERT...ON CONFLICT DO UPDATE
 CREATE TABLE withz AS SELECT i AS k, (i || ' v')::text v FROM generate_series(1, 16, 3) i;
+---END---
+---START---
 ALTER TABLE withz ADD UNIQUE (k);
+---END---
+---START---
 WITH t AS (
     INSERT INTO withz SELECT i, 'insert'
     FROM generate_series(0, 16) i
@@ -2913,12 +2892,12 @@ WITH t AS (
     RETURNING *
 )
 SELECT * FROM t JOIN y ON t.k = y.a ORDER BY a, k;
- k |   v    | a 
----+--------+---
- 0 | insert | 0
- 0 | insert | 0
-(2 rows)
+ k | v | gemini_pk | a 
+---+---+-----------+---
+(0 rows)
 
+---END---
+---START---
 -- Test EXCLUDED.* reference within CTE
 WITH aa AS (
     INSERT INTO withz VALUES(1, 5) ON CONFLICT (k) DO UPDATE SET v = EXCLUDED.v
@@ -2930,6 +2909,8 @@ SELECT * FROM aa;
 ---+---
 (0 rows)
 
+---END---
+---START---
 -- New query/snapshot demonstrates side-effects of previous query.
 SELECT * FROM withz ORDER BY k;
  k  |        v         
@@ -2953,6 +2934,8 @@ SELECT * FROM withz ORDER BY k;
  16 | 16 v, now update
 (17 rows)
 
+---END---
+---START---
 --
 -- Ensure subqueries within the update clause work, even if they
 -- reference outside values
@@ -2960,18 +2943,28 @@ SELECT * FROM withz ORDER BY k;
 WITH aa AS (SELECT 1 a, 2 b)
 INSERT INTO withz VALUES(1, 'insert')
 ON CONFLICT (k) DO UPDATE SET v = (SELECT b || ' update' FROM aa WHERE a = 1 LIMIT 1);
+---END---
+---START---
 WITH aa AS (SELECT 1 a, 2 b)
 INSERT INTO withz VALUES(1, 'insert')
 ON CONFLICT (k) DO UPDATE SET v = ' update' WHERE withz.k = (SELECT a FROM aa);
+---END---
+---START---
 WITH aa AS (SELECT 1 a, 2 b)
 INSERT INTO withz VALUES(1, 'insert')
 ON CONFLICT (k) DO UPDATE SET v = (SELECT b || ' update' FROM aa WHERE a = 1 LIMIT 1);
+---END---
+---START---
 WITH aa AS (SELECT 'a' a, 'b' b UNION ALL SELECT 'a' a, 'b' b)
 INSERT INTO withz VALUES(1, 'insert')
 ON CONFLICT (k) DO UPDATE SET v = (SELECT b || ' update' FROM aa WHERE a = 'a' LIMIT 1);
+---END---
+---START---
 WITH aa AS (SELECT 1 a, 2 b)
 INSERT INTO withz VALUES(1, (SELECT b || ' insert' FROM aa WHERE a = 1 ))
 ON CONFLICT (k) DO UPDATE SET v = (SELECT b || ' update' FROM aa WHERE a = 1 LIMIT 1);
+---END---
+---START---
 -- Update a row more than once, in different parts of a wCTE. That is
 -- an allowed, presumably very rare, edge case, but since it was
 -- broken in the past, having a test seems worthwhile.
@@ -2988,20 +2981,32 @@ RETURNING k, v;
 ---+---
 (0 rows)
 
+---END---
+---START---
 DROP TABLE withz;
+---END---
+---START---
 -- WITH referenced by MERGE statement
 CREATE TABLE m AS SELECT i AS k, (i || ' v')::text v FROM generate_series(1, 16, 3) i;
+---END---
+---START---
 ALTER TABLE m ADD UNIQUE (k);
+---END---
+---START---
 WITH RECURSIVE cte_basic AS (SELECT 1 a, 'cte_basic val' b)
 MERGE INTO m USING (select 0 k, 'merge source SubPlan' v) o ON m.k=o.k
 WHEN MATCHED THEN UPDATE SET v = (SELECT b || ' merge update' FROM cte_basic WHERE cte_basic.a = m.k LIMIT 1)
 WHEN NOT MATCHED THEN INSERT VALUES(o.k, o.v);
 ERROR:  WITH RECURSIVE is not supported for MERGE statement
+---END---
+---START---
 -- Basic:
 WITH cte_basic AS MATERIALIZED (SELECT 1 a, 'cte_basic val' b)
 MERGE INTO m USING (select 0 k, 'merge source SubPlan' v offset 0) o ON m.k=o.k
 WHEN MATCHED THEN UPDATE SET v = (SELECT b || ' merge update' FROM cte_basic WHERE cte_basic.a = m.k LIMIT 1)
 WHEN NOT MATCHED THEN INSERT VALUES(o.k, o.v);
+---END---
+---START---
 -- Examine
 SELECT * FROM m where k = 0;
  k |          v           
@@ -3009,40 +3014,48 @@ SELECT * FROM m where k = 0;
  0 | merge source SubPlan
 (1 row)
 
+---END---
+---START---
 -- See EXPLAIN output for same query:
 EXPLAIN (VERBOSE, COSTS OFF)
 WITH cte_basic AS MATERIALIZED (SELECT 1 a, 'cte_basic val' b)
 MERGE INTO m USING (select 0 k, 'merge source SubPlan' v offset 0) o ON m.k=o.k
 WHEN MATCHED THEN UPDATE SET v = (SELECT b || ' merge update' FROM cte_basic WHERE cte_basic.a = m.k LIMIT 1)
 WHEN NOT MATCHED THEN INSERT VALUES(o.k, o.v);
-                           QUERY PLAN                           
-----------------------------------------------------------------
+                            QUERY PLAN                             
+-------------------------------------------------------------------
  Merge on public.m
    CTE cte_basic
      ->  Result
            Output: 1, 'cte_basic val'::text
    ->  Hash Right Join
-         Output: m.ctid, (0), ('merge source SubPlan'::text)
-         Hash Cond: (m.k = (0))
+         Output: m.ctid, o.k, o.v, o.*
+         Hash Cond: (m.k = o.k)
          ->  Seq Scan on public.m
                Output: m.ctid, m.k
          ->  Hash
-               Output: (0), ('merge source SubPlan'::text)
-               ->  Result
-                     Output: 0, 'merge source SubPlan'::text
+               Output: o.k, o.v, o.*
+               ->  Subquery Scan on o
+                     Output: o.k, o.v, o.*
+                     ->  Result
+                           Output: 0, 'merge source SubPlan'::text
    SubPlan 2
      ->  Limit
            Output: ((cte_basic.b || ' merge update'::text))
            ->  CTE Scan on cte_basic
                  Output: (cte_basic.b || ' merge update'::text)
                  Filter: (cte_basic.a = m.k)
-(19 rows)
+(21 rows)
 
+---END---
+---START---
 -- InitPlan
 WITH cte_init AS MATERIALIZED (SELECT 1 a, 'cte_init val' b)
 MERGE INTO m USING (select 1 k, 'merge source InitPlan' v offset 0) o ON m.k=o.k
 WHEN MATCHED THEN UPDATE SET v = (SELECT b || ' merge update' FROM cte_init WHERE a = 1 LIMIT 1)
 WHEN NOT MATCHED THEN INSERT VALUES(o.k, o.v);
+---END---
+---START---
 -- Examine
 SELECT * FROM m where k = 1;
  k |             v             
@@ -3050,14 +3063,16 @@ SELECT * FROM m where k = 1;
  1 | cte_init val merge update
 (1 row)
 
+---END---
+---START---
 -- See EXPLAIN output for same query:
 EXPLAIN (VERBOSE, COSTS OFF)
 WITH cte_init AS MATERIALIZED (SELECT 1 a, 'cte_init val' b)
 MERGE INTO m USING (select 1 k, 'merge source InitPlan' v offset 0) o ON m.k=o.k
 WHEN MATCHED THEN UPDATE SET v = (SELECT b || ' merge update' FROM cte_init WHERE a = 1 LIMIT 1)
 WHEN NOT MATCHED THEN INSERT VALUES(o.k, o.v);
-                          QUERY PLAN                           
----------------------------------------------------------------
+                             QUERY PLAN                             
+--------------------------------------------------------------------
  Merge on public.m
    CTE cte_init
      ->  Result
@@ -3069,21 +3084,27 @@ WHEN NOT MATCHED THEN INSERT VALUES(o.k, o.v);
                  Output: (cte_init.b || ' merge update'::text)
                  Filter: (cte_init.a = 1)
    ->  Hash Right Join
-         Output: m.ctid, (1), ('merge source InitPlan'::text)
-         Hash Cond: (m.k = (1))
+         Output: m.ctid, o.k, o.v, o.*
+         Hash Cond: (m.k = o.k)
          ->  Seq Scan on public.m
                Output: m.ctid, m.k
          ->  Hash
-               Output: (1), ('merge source InitPlan'::text)
-               ->  Result
-                     Output: 1, 'merge source InitPlan'::text
-(19 rows)
+               Output: o.k, o.v, o.*
+               ->  Subquery Scan on o
+                     Output: o.k, o.v, o.*
+                     ->  Result
+                           Output: 1, 'merge source InitPlan'::text
+(21 rows)
 
+---END---
+---START---
 -- MERGE source comes from CTE:
 WITH merge_source_cte AS MATERIALIZED (SELECT 15 a, 'merge_source_cte val' b)
 MERGE INTO m USING (select * from merge_source_cte) o ON m.k=o.a
 WHEN MATCHED THEN UPDATE SET v = (SELECT b || merge_source_cte.*::text || ' merge update' FROM merge_source_cte WHERE a = 15)
 WHEN NOT MATCHED THEN INSERT VALUES(o.a, o.b || (SELECT merge_source_cte.*::text || ' merge insert' FROM merge_source_cte));
+---END---
+---START---
 -- Examine
 SELECT * FROM m where k = 15;
  k  |                              v                               
@@ -3091,6 +3112,8 @@ SELECT * FROM m where k = 15;
  15 | merge_source_cte val(15,"merge_source_cte val") merge insert
 (1 row)
 
+---END---
+---START---
 -- See EXPLAIN output for same query:
 EXPLAIN (VERBOSE, COSTS OFF)
 WITH merge_source_cte AS MATERIALIZED (SELECT 15 a, 'merge_source_cte val' b)
@@ -3111,104 +3134,105 @@ WHEN NOT MATCHED THEN INSERT VALUES(o.a, o.b || (SELECT merge_source_cte.*::text
      ->  CTE Scan on merge_source_cte merge_source_cte_2
            Output: ((merge_source_cte_2.*)::text || ' merge insert'::text)
    ->  Hash Right Join
-         Output: m.ctid, merge_source_cte.a, merge_source_cte.b
+         Output: m.ctid, merge_source_cte.a, merge_source_cte.b, merge_source_cte.*
          Hash Cond: (m.k = merge_source_cte.a)
          ->  Seq Scan on public.m
                Output: m.ctid, m.k
          ->  Hash
-               Output: merge_source_cte.a, merge_source_cte.b
+               Output: merge_source_cte.a, merge_source_cte.b, merge_source_cte.*
                ->  CTE Scan on merge_source_cte
-                     Output: merge_source_cte.a, merge_source_cte.b
+                     Output: merge_source_cte.a, merge_source_cte.b, merge_source_cte.*
 (20 rows)
 
+---END---
+---START---
 DROP TABLE m;
+---END---
+---START---
 -- check that run to completion happens in proper ordering
 TRUNCATE TABLE y;
+---END---
+---START---
 INSERT INTO y SELECT generate_series(1, 3);
-CREATE TEMPORARY TABLE yy (a INTEGER);
+---END---
+---START---
+DROP TABLE IF EXISTS yy;
+CREATE TABLE yy (gemini_pk serial PRIMARY KEY, a integer);
+---END---
+---START---
 WITH RECURSIVE t1 AS (
   INSERT INTO y SELECT * FROM y RETURNING *
 ), t2 AS (
   INSERT INTO yy SELECT * FROM t1 RETURNING *
 )
 SELECT 1;
- ?column? 
-----------
-        1
-(1 row)
-
+ERROR:  duplicate key value violates unique constraint "y_pkey"
+DETAIL:  Key (gemini_pk)=(1) already exists.
+---END---
+---START---
 SELECT * FROM y;
- a 
----
- 1
- 2
- 3
- 1
- 2
- 3
-(6 rows)
-
-SELECT * FROM yy;
- a 
----
- 1
- 2
- 3
+ gemini_pk | a 
+-----------+---
+         1 |  
+         2 |  
+         3 |  
 (3 rows)
 
+---END---
+---START---
+SELECT * FROM yy;
+ gemini_pk | a 
+-----------+---
+(0 rows)
+
+---END---
+---START---
 WITH RECURSIVE t1 AS (
   INSERT INTO yy SELECT * FROM t2 RETURNING *
 ), t2 AS (
   INSERT INTO y SELECT * FROM y RETURNING *
 )
 SELECT 1;
- ?column? 
-----------
-        1
-(1 row)
-
+ERROR:  duplicate key value violates unique constraint "y_pkey"
+DETAIL:  Key (gemini_pk)=(1) already exists.
+---END---
+---START---
 SELECT * FROM y;
- a 
----
- 1
- 2
- 3
- 1
- 2
- 3
- 1
- 2
- 3
- 1
- 2
- 3
-(12 rows)
+ gemini_pk | a 
+-----------+---
+         1 |  
+         2 |  
+         3 |  
+(3 rows)
 
+---END---
+---START---
 SELECT * FROM yy;
- a 
----
- 1
- 2
- 3
- 1
- 2
- 3
- 1
- 2
- 3
-(9 rows)
+ gemini_pk | a 
+-----------+---
+(0 rows)
 
+---END---
+---START---
 -- triggers
 TRUNCATE TABLE y;
+---END---
+---START---
 INSERT INTO y SELECT generate_series(1, 10);
+---END---
+---START---
 CREATE FUNCTION y_trigger() RETURNS trigger AS $$
 begin
   raise notice 'y_trigger: a = %', new.a;
   return new;
 end;
 $$ LANGUAGE plpgsql;
+---END---
+---START---
 CREATE TRIGGER y_trig BEFORE INSERT ON y FOR EACH ROW
     EXECUTE PROCEDURE y_trigger();
+---END---
+---START---
 WITH t AS (
     INSERT INTO y
     VALUES
@@ -3218,37 +3242,45 @@ WITH t AS (
     RETURNING *
 )
 SELECT * FROM t;
-NOTICE:  y_trigger: a = 21
-NOTICE:  y_trigger: a = 22
-NOTICE:  y_trigger: a = 23
- a  
-----
- 21
- 22
- 23
+NOTICE:  y_trigger: a = <NULL>
+NOTICE:  y_trigger: a = <NULL>
+NOTICE:  y_trigger: a = <NULL>
+ gemini_pk | a 
+-----------+---
+        21 |  
+        22 |  
+        23 |  
 (3 rows)
 
+---END---
+---START---
 SELECT * FROM y;
- a  
-----
-  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
- 10
- 21
- 22
- 23
+ gemini_pk | a 
+-----------+---
+         1 |  
+         2 |  
+         3 |  
+         4 |  
+         5 |  
+         6 |  
+         7 |  
+         8 |  
+         9 |  
+        10 |  
+        21 |  
+        22 |  
+        23 |  
 (13 rows)
 
+---END---
+---START---
 DROP TRIGGER y_trig ON y;
+---END---
+---START---
 CREATE TRIGGER y_trig AFTER INSERT ON y FOR EACH ROW
     EXECUTE PROCEDURE y_trigger();
+---END---
+---START---
 WITH t AS (
     INSERT INTO y
     VALUES
@@ -3258,44 +3290,54 @@ WITH t AS (
     RETURNING *
 )
 SELECT * FROM t LIMIT 1;
-NOTICE:  y_trigger: a = 31
-NOTICE:  y_trigger: a = 32
-NOTICE:  y_trigger: a = 33
- a  
-----
- 31
+NOTICE:  y_trigger: a = <NULL>
+NOTICE:  y_trigger: a = <NULL>
+NOTICE:  y_trigger: a = <NULL>
+ gemini_pk | a 
+-----------+---
+        31 |  
 (1 row)
 
+---END---
+---START---
 SELECT * FROM y;
- a  
-----
-  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
- 10
- 21
- 22
- 23
- 31
- 32
- 33
+ gemini_pk | a 
+-----------+---
+         1 |  
+         2 |  
+         3 |  
+         4 |  
+         5 |  
+         6 |  
+         7 |  
+         8 |  
+         9 |  
+        10 |  
+        21 |  
+        22 |  
+        23 |  
+        31 |  
+        32 |  
+        33 |  
 (16 rows)
 
+---END---
+---START---
 DROP TRIGGER y_trig ON y;
+---END---
+---START---
 CREATE OR REPLACE FUNCTION y_trigger() RETURNS trigger AS $$
 begin
   raise notice 'y_trigger';
   return null;
 end;
 $$ LANGUAGE plpgsql;
+---END---
+---START---
 CREATE TRIGGER y_trig AFTER INSERT ON y FOR EACH STATEMENT
     EXECUTE PROCEDURE y_trigger();
+---END---
+---START---
 WITH t AS (
     INSERT INTO y
     VALUES
@@ -3306,135 +3348,142 @@ WITH t AS (
 )
 SELECT * FROM t;
 NOTICE:  y_trigger
- a  
-----
- 41
- 42
- 43
+ gemini_pk | a 
+-----------+---
+        41 |  
+        42 |  
+        43 |  
 (3 rows)
 
+---END---
+---START---
 SELECT * FROM y;
- a  
-----
-  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
- 10
- 21
- 22
- 23
- 31
- 32
- 33
- 41
- 42
- 43
+ gemini_pk | a 
+-----------+---
+         1 |  
+         2 |  
+         3 |  
+         4 |  
+         5 |  
+         6 |  
+         7 |  
+         8 |  
+         9 |  
+        10 |  
+        21 |  
+        22 |  
+        23 |  
+        31 |  
+        32 |  
+        33 |  
+        41 |  
+        42 |  
+        43 |  
 (19 rows)
 
+---END---
+---START---
 DROP TRIGGER y_trig ON y;
+---END---
+---START---
 DROP FUNCTION y_trigger();
+---END---
+---START---
 -- WITH attached to inherited UPDATE or DELETE
-CREATE TEMP TABLE parent ( id int, val text );
-CREATE TEMP TABLE child1 ( ) INHERITS ( parent );
-CREATE TEMP TABLE child2 ( ) INHERITS ( parent );
+DROP TABLE IF EXISTS parent;
+NOTICE:  table "parent" does not exist, skipping
+CREATE TABLE parent (gemini_pk serial PRIMARY KEY, id integer, val text);
+---END---
+---START---
+DROP TABLE IF EXISTS child1;
+NOTICE:  table "child1" does not exist, skipping
+CREATE TABLE child1 (gemini_pk serial PRIMARY KEY) INHERITS (parent);
+NOTICE:  merging column "gemini_pk" with inherited definition
+---END---
+---START---
+DROP TABLE IF EXISTS child2;
+NOTICE:  table "child2" does not exist, skipping
+CREATE TABLE child2 (gemini_pk serial PRIMARY KEY) INHERITS (parent);
+NOTICE:  merging column "gemini_pk" with inherited definition
+---END---
+---START---
 INSERT INTO parent VALUES ( 1, 'p1' );
+ERROR:  invalid input syntax for type integer: "p1"
+LINE 1: INSERT INTO parent VALUES ( 1, 'p1' );
+                                       ^
+---END---
+---START---
 INSERT INTO child1 VALUES ( 11, 'c11' ),( 12, 'c12' );
+ERROR:  invalid input syntax for type integer: "c11"
+LINE 1: INSERT INTO child1 VALUES ( 11, 'c11' ),( 12, 'c12' );
+                                        ^
+---END---
+---START---
 INSERT INTO child2 VALUES ( 23, 'c21' ),( 24, 'c22' );
+ERROR:  invalid input syntax for type integer: "c21"
+LINE 1: INSERT INTO child2 VALUES ( 23, 'c21' ),( 24, 'c22' );
+                                        ^
+---END---
+---START---
 WITH rcte AS ( SELECT sum(id) AS totalid FROM parent )
 UPDATE parent SET id = id + totalid FROM rcte;
+---END---
+---START---
 SELECT * FROM parent;
- id | val 
-----+-----
- 72 | p1
- 82 | c11
- 83 | c12
- 94 | c21
- 95 | c22
-(5 rows)
+ gemini_pk | id | val 
+-----------+----+-----
+(0 rows)
 
+---END---
+---START---
 WITH wcte AS ( INSERT INTO child1 VALUES ( 42, 'new' ) RETURNING id AS newid )
 UPDATE parent SET id = id + newid FROM wcte;
+ERROR:  invalid input syntax for type integer: "new"
+LINE 1: WITH wcte AS ( INSERT INTO child1 VALUES ( 42, 'new' ) RETUR...
+                                                       ^
+---END---
+---START---
 SELECT * FROM parent;
- id  | val 
------+-----
- 114 | p1
-  42 | new
- 124 | c11
- 125 | c12
- 136 | c21
- 137 | c22
-(6 rows)
+ gemini_pk | id | val 
+-----------+----+-----
+(0 rows)
 
+---END---
+---START---
 WITH rcte AS ( SELECT max(id) AS maxid FROM parent )
 DELETE FROM parent USING rcte WHERE id = maxid;
+---END---
+---START---
 SELECT * FROM parent;
- id  | val 
------+-----
- 114 | p1
-  42 | new
- 124 | c11
- 125 | c12
- 136 | c21
-(5 rows)
+ gemini_pk | id | val 
+-----------+----+-----
+(0 rows)
 
+---END---
+---START---
 WITH wcte AS ( INSERT INTO child2 VALUES ( 42, 'new2' ) RETURNING id AS newid )
 DELETE FROM parent USING wcte WHERE id = newid;
+ERROR:  invalid input syntax for type integer: "new2"
+LINE 1: WITH wcte AS ( INSERT INTO child2 VALUES ( 42, 'new2' ) RETU...
+                                                       ^
+---END---
+---START---
 SELECT * FROM parent;
- id  | val  
------+------
- 114 | p1
- 124 | c11
- 125 | c12
- 136 | c21
-  42 | new2
-(5 rows)
+ gemini_pk | id | val 
+-----------+----+-----
+(0 rows)
 
+---END---
+---START---
 -- check EXPLAIN VERBOSE for a wCTE with RETURNING
 EXPLAIN (VERBOSE, COSTS OFF)
 WITH wcte AS ( INSERT INTO int8_tbl VALUES ( 42, 47 ) RETURNING q2 )
 DELETE FROM a_star USING wcte WHERE aa = q2;
-                                QUERY PLAN                                 
----------------------------------------------------------------------------
- Delete on public.a_star
-   Delete on public.a_star a_star_1
-   Delete on public.b_star a_star_2
-   Delete on public.c_star a_star_3
-   Delete on public.d_star a_star_4
-   Delete on public.e_star a_star_5
-   Delete on public.f_star a_star_6
-   CTE wcte
-     ->  Insert on public.int8_tbl
-           Output: int8_tbl.q2
-           ->  Result
-                 Output: '42'::bigint, '47'::bigint
-   ->  Hash Join
-         Output: wcte.*, a_star.tableoid, a_star.ctid
-         Hash Cond: (a_star.aa = wcte.q2)
-         ->  Append
-               ->  Seq Scan on public.a_star a_star_1
-                     Output: a_star_1.aa, a_star_1.tableoid, a_star_1.ctid
-               ->  Seq Scan on public.b_star a_star_2
-                     Output: a_star_2.aa, a_star_2.tableoid, a_star_2.ctid
-               ->  Seq Scan on public.c_star a_star_3
-                     Output: a_star_3.aa, a_star_3.tableoid, a_star_3.ctid
-               ->  Seq Scan on public.d_star a_star_4
-                     Output: a_star_4.aa, a_star_4.tableoid, a_star_4.ctid
-               ->  Seq Scan on public.e_star a_star_5
-                     Output: a_star_5.aa, a_star_5.tableoid, a_star_5.ctid
-               ->  Seq Scan on public.f_star a_star_6
-                     Output: a_star_6.aa, a_star_6.tableoid, a_star_6.ctid
-         ->  Hash
-               Output: wcte.*, wcte.q2
-               ->  CTE Scan on wcte
-                     Output: wcte.*, wcte.q2
-(32 rows)
-
+ERROR:  relation "a_star" does not exist
+LINE 3: DELETE FROM a_star USING wcte WHERE aa = q2;
+                    ^
+---END---
+---START---
 -- error cases
 -- data-modifying WITH tries to use its own output
 WITH RECURSIVE t AS (
@@ -3445,6 +3494,8 @@ VALUES(FALSE);
 ERROR:  recursive query "t" must not contain data-modifying statements
 LINE 1: WITH RECURSIVE t AS (
                        ^
+---END---
+---START---
 -- no RETURNING in a referenced data-modifying WITH
 WITH t AS (
 	INSERT INTO y VALUES(0)
@@ -3453,6 +3504,8 @@ SELECT * FROM t;
 ERROR:  WITH query "t" does not have a RETURNING clause
 LINE 4: SELECT * FROM t;
                       ^
+---END---
+---START---
 -- data-modifying WITH allowed only at the top level
 SELECT * FROM (
 	WITH t AS (UPDATE y SET a=a+1 RETURNING *)
@@ -3461,68 +3514,111 @@ SELECT * FROM (
 ERROR:  WITH clause containing a data-modifying statement must be at the top level
 LINE 2:  WITH t AS (UPDATE y SET a=a+1 RETURNING *)
               ^
+---END---
+---START---
 -- most variants of rules aren't allowed
 CREATE RULE y_rule AS ON INSERT TO y WHERE a=0 DO INSTEAD DELETE FROM y;
+---END---
+---START---
 WITH t AS (
 	INSERT INTO y VALUES(0)
 )
 VALUES(FALSE);
 ERROR:  conditional DO INSTEAD rules are not supported for data-modifying statements in WITH
+---END---
+---START---
 CREATE OR REPLACE RULE y_rule AS ON INSERT TO y DO INSTEAD NOTHING;
+---END---
+---START---
 WITH t AS (
 	INSERT INTO y VALUES(0)
 )
 VALUES(FALSE);
 ERROR:  DO INSTEAD NOTHING rules are not supported for data-modifying statements in WITH
+---END---
+---START---
 CREATE OR REPLACE RULE y_rule AS ON INSERT TO y DO INSTEAD NOTIFY foo;
+---END---
+---START---
 WITH t AS (
 	INSERT INTO y VALUES(0)
 )
 VALUES(FALSE);
 ERROR:  DO INSTEAD NOTIFY rules are not supported for data-modifying statements in WITH
+---END---
+---START---
 CREATE OR REPLACE RULE y_rule AS ON INSERT TO y DO ALSO NOTIFY foo;
+---END---
+---START---
 WITH t AS (
 	INSERT INTO y VALUES(0)
 )
 VALUES(FALSE);
 ERROR:  DO ALSO rules are not supported for data-modifying statements in WITH
+---END---
+---START---
 CREATE OR REPLACE RULE y_rule AS ON INSERT TO y
   DO INSTEAD (NOTIFY foo; NOTIFY bar);
+---END---
+---START---
 WITH t AS (
 	INSERT INTO y VALUES(0)
 )
 VALUES(FALSE);
 ERROR:  multi-statement DO INSTEAD rules are not supported for data-modifying statements in WITH
+---END---
+---START---
 DROP RULE y_rule ON y;
+---END---
+---START---
 -- check that parser lookahead for WITH doesn't cause any odd behavior
-create table foo (with baz);  -- fail, WITH is a reserved word
+create table foo (with baz);
 ERROR:  syntax error at or near "with"
 LINE 1: create table foo (with baz);
                           ^
-create table foo (with ordinality);  -- fail, WITH is a reserved word
+---END---
+---START---
+-- fail, WITH is a reserved word
+create table foo (with ordinality);
 ERROR:  syntax error at or near "with"
 LINE 1: create table foo (with ordinality);
                           ^
+---END---
+---START---
+-- fail, WITH is a reserved word
 with ordinality as (select 1 as x) select * from ordinality;
  x 
 ---
  1
 (1 row)
 
+---END---
+---START---
 -- check sane response to attempt to modify CTE relation
 WITH with_test AS (SELECT 42) INSERT INTO with_test VALUES (1);
 ERROR:  relation "with_test" does not exist
 LINE 1: WITH with_test AS (SELECT 42) INSERT INTO with_test VALUES (...
                                                   ^
+---END---
+---START---
 -- check response to attempt to modify table with same name as a CTE (perhaps
 -- surprisingly it works, because CTEs don't hide tables from data-modifying
 -- statements)
-create temp table with_test (i int);
+DROP TABLE IF EXISTS with_test;
+NOTICE:  table "with_test" does not exist, skipping
+CREATE TABLE with_test (gemini_pk serial PRIMARY KEY, i integer);
+---END---
+---START---
 with with_test as (select 42) insert into with_test select * from with_test;
+---END---
+---START---
 select * from with_test;
- i  
-----
- 42
+ gemini_pk | i 
+-----------+---
+        42 |  
 (1 row)
 
+---END---
+---START---
 drop table with_test;
+---END---

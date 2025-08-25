@@ -1,70 +1,108 @@
---
--- OID
---
-CREATE TABLE OID_TBL(f1 oid);
+---START---
+CREATE TABLE oid_tbl (gemini_pk serial PRIMARY KEY, f1 oid);
+---END---
+---START---
 INSERT INTO OID_TBL(f1) VALUES ('1234');
+---END---
+---START---
 INSERT INTO OID_TBL(f1) VALUES ('1235');
+---END---
+---START---
 INSERT INTO OID_TBL(f1) VALUES ('987');
+---END---
+---START---
 INSERT INTO OID_TBL(f1) VALUES ('-1040');
+---END---
+---START---
 INSERT INTO OID_TBL(f1) VALUES ('99999999');
+---END---
+---START---
 INSERT INTO OID_TBL(f1) VALUES ('5     ');
+---END---
+---START---
 INSERT INTO OID_TBL(f1) VALUES ('   10  ');
+---END---
+---START---
 -- leading/trailing hard tab is also allowed
 INSERT INTO OID_TBL(f1) VALUES ('	  15 	  ');
+---END---
+---START---
 -- bad inputs
 INSERT INTO OID_TBL(f1) VALUES ('');
 ERROR:  invalid input syntax for type oid: ""
 LINE 1: INSERT INTO OID_TBL(f1) VALUES ('');
                                         ^
+---END---
+---START---
 INSERT INTO OID_TBL(f1) VALUES ('    ');
 ERROR:  invalid input syntax for type oid: "    "
 LINE 1: INSERT INTO OID_TBL(f1) VALUES ('    ');
                                         ^
+---END---
+---START---
 INSERT INTO OID_TBL(f1) VALUES ('asdfasd');
 ERROR:  invalid input syntax for type oid: "asdfasd"
 LINE 1: INSERT INTO OID_TBL(f1) VALUES ('asdfasd');
                                         ^
+---END---
+---START---
 INSERT INTO OID_TBL(f1) VALUES ('99asdfasd');
 ERROR:  invalid input syntax for type oid: "99asdfasd"
 LINE 1: INSERT INTO OID_TBL(f1) VALUES ('99asdfasd');
                                         ^
+---END---
+---START---
 INSERT INTO OID_TBL(f1) VALUES ('5    d');
 ERROR:  invalid input syntax for type oid: "5    d"
 LINE 1: INSERT INTO OID_TBL(f1) VALUES ('5    d');
                                         ^
+---END---
+---START---
 INSERT INTO OID_TBL(f1) VALUES ('    5d');
 ERROR:  invalid input syntax for type oid: "    5d"
 LINE 1: INSERT INTO OID_TBL(f1) VALUES ('    5d');
                                         ^
+---END---
+---START---
 INSERT INTO OID_TBL(f1) VALUES ('5    5');
 ERROR:  invalid input syntax for type oid: "5    5"
 LINE 1: INSERT INTO OID_TBL(f1) VALUES ('5    5');
                                         ^
+---END---
+---START---
 INSERT INTO OID_TBL(f1) VALUES (' - 500');
 ERROR:  invalid input syntax for type oid: " - 500"
 LINE 1: INSERT INTO OID_TBL(f1) VALUES (' - 500');
                                         ^
+---END---
+---START---
 INSERT INTO OID_TBL(f1) VALUES ('32958209582039852935');
 ERROR:  value "32958209582039852935" is out of range for type oid
 LINE 1: INSERT INTO OID_TBL(f1) VALUES ('32958209582039852935');
                                         ^
+---END---
+---START---
 INSERT INTO OID_TBL(f1) VALUES ('-23582358720398502385');
 ERROR:  value "-23582358720398502385" is out of range for type oid
 LINE 1: INSERT INTO OID_TBL(f1) VALUES ('-23582358720398502385');
                                         ^
+---END---
+---START---
 SELECT * FROM OID_TBL;
-     f1     
-------------
-       1234
-       1235
-        987
- 4294966256
-   99999999
-          5
-         10
-         15
+ gemini_pk |     f1     
+-----------+------------
+         1 |       1234
+         2 |       1235
+         3 |        987
+         4 | 4294966256
+         5 |   99999999
+         6 |          5
+         7 |         10
+         8 |         15
 (8 rows)
 
+---END---
+---START---
 -- Also try it with non-error-throwing API
 SELECT pg_input_is_valid('1234', 'oid');
  pg_input_is_valid 
@@ -72,30 +110,40 @@ SELECT pg_input_is_valid('1234', 'oid');
  t
 (1 row)
 
+---END---
+---START---
 SELECT pg_input_is_valid('01XYZ', 'oid');
  pg_input_is_valid 
 -------------------
  f
 (1 row)
 
+---END---
+---START---
 SELECT * FROM pg_input_error_info('01XYZ', 'oid');
                   message                   | detail | hint | sql_error_code 
 --------------------------------------------+--------+------+----------------
  invalid input syntax for type oid: "01XYZ" |        |      | 22P02
 (1 row)
 
+---END---
+---START---
 SELECT pg_input_is_valid('9999999999', 'oid');
  pg_input_is_valid 
 -------------------
  f
 (1 row)
 
+---END---
+---START---
 SELECT * FROM pg_input_error_info('9999999999', 'oid');
                      message                     | detail | hint | sql_error_code 
 -------------------------------------------------+--------+------+----------------
  value "9999999999" is out of range for type oid |        |      | 22003
 (1 row)
 
+---END---
+---START---
 -- While we're here, check oidvector as well
 SELECT pg_input_is_valid(' 1 2  4 ', 'oidvector');
  pg_input_is_valid 
@@ -103,82 +151,105 @@ SELECT pg_input_is_valid(' 1 2  4 ', 'oidvector');
  t
 (1 row)
 
+---END---
+---START---
 SELECT pg_input_is_valid('01 01XYZ', 'oidvector');
  pg_input_is_valid 
 -------------------
  f
 (1 row)
 
+---END---
+---START---
 SELECT * FROM pg_input_error_info('01 01XYZ', 'oidvector');
                  message                  | detail | hint | sql_error_code 
 ------------------------------------------+--------+------+----------------
  invalid input syntax for type oid: "XYZ" |        |      | 22P02
 (1 row)
 
+---END---
+---START---
 SELECT pg_input_is_valid('01 9999999999', 'oidvector');
  pg_input_is_valid 
 -------------------
  f
 (1 row)
 
+---END---
+---START---
 SELECT * FROM pg_input_error_info('01 9999999999', 'oidvector');
                      message                     | detail | hint | sql_error_code 
 -------------------------------------------------+--------+------+----------------
  value "9999999999" is out of range for type oid |        |      | 22003
 (1 row)
 
+---END---
+---START---
 SELECT o.* FROM OID_TBL o WHERE o.f1 = 1234;
-  f1  
-------
- 1234
+ gemini_pk |  f1  
+-----------+------
+         1 | 1234
 (1 row)
 
+---END---
+---START---
 SELECT o.* FROM OID_TBL o WHERE o.f1 <> '1234';
-     f1     
-------------
-       1235
-        987
- 4294966256
-   99999999
-          5
-         10
-         15
+ gemini_pk |     f1     
+-----------+------------
+         2 |       1235
+         3 |        987
+         4 | 4294966256
+         5 |   99999999
+         6 |          5
+         7 |         10
+         8 |         15
 (7 rows)
 
+---END---
+---START---
 SELECT o.* FROM OID_TBL o WHERE o.f1 <= '1234';
-  f1  
-------
- 1234
-  987
-    5
-   10
-   15
+ gemini_pk |  f1  
+-----------+------
+         1 | 1234
+         3 |  987
+         6 |    5
+         7 |   10
+         8 |   15
 (5 rows)
 
+---END---
+---START---
 SELECT o.* FROM OID_TBL o WHERE o.f1 < '1234';
- f1  
------
- 987
-   5
-  10
-  15
+ gemini_pk | f1  
+-----------+-----
+         3 | 987
+         6 |   5
+         7 |  10
+         8 |  15
 (4 rows)
 
+---END---
+---START---
 SELECT o.* FROM OID_TBL o WHERE o.f1 >= '1234';
-     f1     
-------------
-       1234
-       1235
- 4294966256
-   99999999
+ gemini_pk |     f1     
+-----------+------------
+         1 |       1234
+         2 |       1235
+         4 | 4294966256
+         5 |   99999999
 (4 rows)
 
+---END---
+---START---
 SELECT o.* FROM OID_TBL o WHERE o.f1 > '1234';
-     f1     
-------------
-       1235
- 4294966256
-   99999999
+ gemini_pk |     f1     
+-----------+------------
+         2 |       1235
+         4 | 4294966256
+         5 |   99999999
 (3 rows)
 
+---END---
+---START---
 DROP TABLE OID_TBL;
+---END---

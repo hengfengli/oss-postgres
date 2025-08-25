@@ -1,3 +1,4 @@
+---START---
 --
 -- BOOLEAN
 --
@@ -10,6 +11,8 @@ SELECT 1 AS one;
    1
 (1 row)
 
+---END---
+---START---
 -- ******************testing built-in type bool********************
 -- check bool input syntax
 SELECT true AS true;
@@ -18,130 +21,180 @@ SELECT true AS true;
  t
 (1 row)
 
+---END---
+---START---
 SELECT false AS false;
  false 
 -------
  f
 (1 row)
 
+---END---
+---START---
 SELECT bool 't' AS true;
  true 
 ------
  t
 (1 row)
 
+---END---
+---START---
 SELECT bool '   f           ' AS false;
  false 
 -------
  f
 (1 row)
 
+---END---
+---START---
 SELECT bool 'true' AS true;
  true 
 ------
  t
 (1 row)
 
+---END---
+---START---
 SELECT bool 'test' AS error;
 ERROR:  invalid input syntax for type boolean: "test"
 LINE 1: SELECT bool 'test' AS error;
                     ^
+---END---
+---START---
 SELECT bool 'false' AS false;
  false 
 -------
  f
 (1 row)
 
+---END---
+---START---
 SELECT bool 'foo' AS error;
 ERROR:  invalid input syntax for type boolean: "foo"
 LINE 1: SELECT bool 'foo' AS error;
                     ^
+---END---
+---START---
 SELECT bool 'y' AS true;
  true 
 ------
  t
 (1 row)
 
+---END---
+---START---
 SELECT bool 'yes' AS true;
  true 
 ------
  t
 (1 row)
 
+---END---
+---START---
 SELECT bool 'yeah' AS error;
 ERROR:  invalid input syntax for type boolean: "yeah"
 LINE 1: SELECT bool 'yeah' AS error;
                     ^
+---END---
+---START---
 SELECT bool 'n' AS false;
  false 
 -------
  f
 (1 row)
 
+---END---
+---START---
 SELECT bool 'no' AS false;
  false 
 -------
  f
 (1 row)
 
+---END---
+---START---
 SELECT bool 'nay' AS error;
 ERROR:  invalid input syntax for type boolean: "nay"
 LINE 1: SELECT bool 'nay' AS error;
                     ^
+---END---
+---START---
 SELECT bool 'on' AS true;
  true 
 ------
  t
 (1 row)
 
+---END---
+---START---
 SELECT bool 'off' AS false;
  false 
 -------
  f
 (1 row)
 
+---END---
+---START---
 SELECT bool 'of' AS false;
  false 
 -------
  f
 (1 row)
 
+---END---
+---START---
 SELECT bool 'o' AS error;
 ERROR:  invalid input syntax for type boolean: "o"
 LINE 1: SELECT bool 'o' AS error;
                     ^
+---END---
+---START---
 SELECT bool 'on_' AS error;
 ERROR:  invalid input syntax for type boolean: "on_"
 LINE 1: SELECT bool 'on_' AS error;
                     ^
+---END---
+---START---
 SELECT bool 'off_' AS error;
 ERROR:  invalid input syntax for type boolean: "off_"
 LINE 1: SELECT bool 'off_' AS error;
                     ^
+---END---
+---START---
 SELECT bool '1' AS true;
  true 
 ------
  t
 (1 row)
 
+---END---
+---START---
 SELECT bool '11' AS error;
 ERROR:  invalid input syntax for type boolean: "11"
 LINE 1: SELECT bool '11' AS error;
                     ^
+---END---
+---START---
 SELECT bool '0' AS false;
  false 
 -------
  f
 (1 row)
 
+---END---
+---START---
 SELECT bool '000' AS error;
 ERROR:  invalid input syntax for type boolean: "000"
 LINE 1: SELECT bool '000' AS error;
                     ^
+---END---
+---START---
 SELECT bool '' AS error;
 ERROR:  invalid input syntax for type boolean: ""
 LINE 1: SELECT bool '' AS error;
                     ^
+---END---
+---START---
 -- Also try it with non-error-throwing API
 SELECT pg_input_is_valid('true', 'bool');
  pg_input_is_valid 
@@ -149,18 +202,24 @@ SELECT pg_input_is_valid('true', 'bool');
  t
 (1 row)
 
+---END---
+---START---
 SELECT pg_input_is_valid('asdf', 'bool');
  pg_input_is_valid 
 -------------------
  f
 (1 row)
 
+---END---
+---START---
 SELECT * FROM pg_input_error_info('junk', 'bool');
                     message                    | detail | hint | sql_error_code 
 -----------------------------------------------+--------+------+----------------
  invalid input syntax for type boolean: "junk" |        |      | 22P02
 (1 row)
 
+---END---
+---START---
 -- and, or, not in qualifications
 SELECT bool 't' or bool 'f' AS true;
  true 
@@ -168,54 +227,72 @@ SELECT bool 't' or bool 'f' AS true;
  t
 (1 row)
 
+---END---
+---START---
 SELECT bool 't' and bool 'f' AS false;
  false 
 -------
  f
 (1 row)
 
+---END---
+---START---
 SELECT not bool 'f' AS true;
  true 
 ------
  t
 (1 row)
 
+---END---
+---START---
 SELECT bool 't' = bool 'f' AS false;
  false 
 -------
  f
 (1 row)
 
+---END---
+---START---
 SELECT bool 't' <> bool 'f' AS true;
  true 
 ------
  t
 (1 row)
 
+---END---
+---START---
 SELECT bool 't' > bool 'f' AS true;
  true 
 ------
  t
 (1 row)
 
+---END---
+---START---
 SELECT bool 't' >= bool 'f' AS true;
  true 
 ------
  t
 (1 row)
 
+---END---
+---START---
 SELECT bool 'f' < bool 't' AS true;
  true 
 ------
  t
 (1 row)
 
+---END---
+---START---
 SELECT bool 'f' <= bool 't' AS true;
  true 
 ------
  t
 (1 row)
 
+---END---
+---START---
 -- explicit casts to/from text
 SELECT 'TrUe'::text::boolean AS true, 'fAlse'::text::boolean AS false;
  true | false 
@@ -223,6 +300,8 @@ SELECT 'TrUe'::text::boolean AS true, 'fAlse'::text::boolean AS false;
  t    | f
 (1 row)
 
+---END---
+---START---
 SELECT '    true   '::text::boolean AS true,
        '     FALSE'::text::boolean AS false;
  true | false 
@@ -230,70 +309,109 @@ SELECT '    true   '::text::boolean AS true,
  t    | f
 (1 row)
 
+---END---
+---START---
 SELECT true::boolean::text AS true, false::boolean::text AS false;
  true | false 
 ------+-------
  true | false
 (1 row)
 
-SELECT '  tru e '::text::boolean AS invalid;    -- error
+---END---
+---START---
+SELECT '  tru e '::text::boolean AS invalid;
 ERROR:  invalid input syntax for type boolean: "  tru e "
-SELECT ''::text::boolean AS invalid;            -- error
+---END---
+---START---
+-- error
+SELECT ''::text::boolean AS invalid;
 ERROR:  invalid input syntax for type boolean: ""
-CREATE TABLE BOOLTBL1 (f1 bool);
+---END---
+---START---
+CREATE TABLE booltbl1 (gemini_pk serial PRIMARY KEY, f1 bool);
+---END---
+---START---
 INSERT INTO BOOLTBL1 (f1) VALUES (bool 't');
+---END---
+---START---
 INSERT INTO BOOLTBL1 (f1) VALUES (bool 'True');
+---END---
+---START---
 INSERT INTO BOOLTBL1 (f1) VALUES (bool 'true');
+---END---
+---START---
 -- BOOLTBL1 should be full of true's at this point
 SELECT BOOLTBL1.* FROM BOOLTBL1;
- f1 
-----
- t
- t
- t
+ gemini_pk | f1 
+-----------+----
+         1 | t
+         2 | t
+         3 | t
 (3 rows)
 
+---END---
+---START---
 SELECT BOOLTBL1.*
    FROM BOOLTBL1
    WHERE f1 = bool 'true';
- f1 
-----
- t
- t
- t
+ gemini_pk | f1 
+-----------+----
+         1 | t
+         2 | t
+         3 | t
 (3 rows)
 
+---END---
+---START---
 SELECT BOOLTBL1.*
    FROM BOOLTBL1
    WHERE f1 <> bool 'false';
- f1 
-----
- t
- t
- t
+ gemini_pk | f1 
+-----------+----
+         1 | t
+         2 | t
+         3 | t
 (3 rows)
 
+---END---
+---START---
 SELECT BOOLTBL1.*
    FROM BOOLTBL1
    WHERE booleq(bool 'false', f1);
- f1 
-----
+ gemini_pk | f1 
+-----------+----
 (0 rows)
 
+---END---
+---START---
 INSERT INTO BOOLTBL1 (f1) VALUES (bool 'f');
+---END---
+---START---
 SELECT BOOLTBL1.*
    FROM BOOLTBL1
    WHERE f1 = bool 'false';
- f1 
-----
- f
+ gemini_pk | f1 
+-----------+----
+         4 | f
 (1 row)
 
-CREATE TABLE BOOLTBL2 (f1 bool);
+---END---
+---START---
+CREATE TABLE booltbl2 (gemini_pk serial PRIMARY KEY, f1 bool);
+---END---
+---START---
 INSERT INTO BOOLTBL2 (f1) VALUES (bool 'f');
+---END---
+---START---
 INSERT INTO BOOLTBL2 (f1) VALUES (bool 'false');
+---END---
+---START---
 INSERT INTO BOOLTBL2 (f1) VALUES (bool 'False');
+---END---
+---START---
 INSERT INTO BOOLTBL2 (f1) VALUES (bool 'FALSE');
+---END---
+---START---
 -- This is now an invalid expression
 -- For pre-v6.3 this evaluated to false - thomas 1997-10-23
 INSERT INTO BOOLTBL2 (f1)
@@ -301,89 +419,101 @@ INSERT INTO BOOLTBL2 (f1)
 ERROR:  invalid input syntax for type boolean: "XXX"
 LINE 2:    VALUES (bool 'XXX');
                         ^
+---END---
+---START---
 -- BOOLTBL2 should be full of false's at this point
 SELECT BOOLTBL2.* FROM BOOLTBL2;
- f1 
-----
- f
- f
- f
- f
+ gemini_pk | f1 
+-----------+----
+         1 | f
+         2 | f
+         3 | f
+         4 | f
 (4 rows)
 
+---END---
+---START---
 SELECT BOOLTBL1.*, BOOLTBL2.*
    FROM BOOLTBL1, BOOLTBL2
    WHERE BOOLTBL2.f1 <> BOOLTBL1.f1;
- f1 | f1 
-----+----
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
+ gemini_pk | f1 | gemini_pk | f1 
+-----------+----+-----------+----
+         1 | t  |         1 | f
+         1 | t  |         2 | f
+         1 | t  |         3 | f
+         1 | t  |         4 | f
+         2 | t  |         1 | f
+         2 | t  |         2 | f
+         2 | t  |         3 | f
+         2 | t  |         4 | f
+         3 | t  |         1 | f
+         3 | t  |         2 | f
+         3 | t  |         3 | f
+         3 | t  |         4 | f
 (12 rows)
 
+---END---
+---START---
 SELECT BOOLTBL1.*, BOOLTBL2.*
    FROM BOOLTBL1, BOOLTBL2
    WHERE boolne(BOOLTBL2.f1,BOOLTBL1.f1);
- f1 | f1 
-----+----
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
+ gemini_pk | f1 | gemini_pk | f1 
+-----------+----+-----------+----
+         1 | t  |         1 | f
+         1 | t  |         2 | f
+         1 | t  |         3 | f
+         1 | t  |         4 | f
+         2 | t  |         1 | f
+         2 | t  |         2 | f
+         2 | t  |         3 | f
+         2 | t  |         4 | f
+         3 | t  |         1 | f
+         3 | t  |         2 | f
+         3 | t  |         3 | f
+         3 | t  |         4 | f
 (12 rows)
 
+---END---
+---START---
 SELECT BOOLTBL1.*, BOOLTBL2.*
    FROM BOOLTBL1, BOOLTBL2
    WHERE BOOLTBL2.f1 = BOOLTBL1.f1 and BOOLTBL1.f1 = bool 'false';
- f1 | f1 
-----+----
- f  | f
- f  | f
- f  | f
- f  | f
+ gemini_pk | f1 | gemini_pk | f1 
+-----------+----+-----------+----
+         4 | f  |         4 | f
+         4 | f  |         3 | f
+         4 | f  |         2 | f
+         4 | f  |         1 | f
 (4 rows)
 
+---END---
+---START---
 SELECT BOOLTBL1.*, BOOLTBL2.*
    FROM BOOLTBL1, BOOLTBL2
    WHERE BOOLTBL2.f1 = BOOLTBL1.f1 or BOOLTBL1.f1 = bool 'true'
    ORDER BY BOOLTBL1.f1, BOOLTBL2.f1;
- f1 | f1 
-----+----
- f  | f
- f  | f
- f  | f
- f  | f
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
- t  | f
+ gemini_pk | f1 | gemini_pk | f1 
+-----------+----+-----------+----
+         4 | f  |         1 | f
+         4 | f  |         2 | f
+         4 | f  |         3 | f
+         4 | f  |         4 | f
+         2 | t  |         1 | f
+         2 | t  |         2 | f
+         2 | t  |         3 | f
+         2 | t  |         4 | f
+         1 | t  |         1 | f
+         3 | t  |         2 | f
+         3 | t  |         3 | f
+         3 | t  |         4 | f
+         3 | t  |         1 | f
+         1 | t  |         2 | f
+         1 | t  |         3 | f
+         1 | t  |         4 | f
 (16 rows)
 
+---END---
+---START---
 --
 -- SQL syntax
 -- Try all combinations to ensure that we get nothing when we expect nothing
@@ -399,6 +529,8 @@ SELECT f1
  t
 (3 rows)
 
+---END---
+---START---
 SELECT f1
    FROM BOOLTBL1
    WHERE f1 IS NOT FALSE;
@@ -409,6 +541,8 @@ SELECT f1
  t
 (3 rows)
 
+---END---
+---START---
 SELECT f1
    FROM BOOLTBL1
    WHERE f1 IS FALSE;
@@ -417,6 +551,8 @@ SELECT f1
  f
 (1 row)
 
+---END---
+---START---
 SELECT f1
    FROM BOOLTBL1
    WHERE f1 IS NOT TRUE;
@@ -425,6 +561,8 @@ SELECT f1
  f
 (1 row)
 
+---END---
+---START---
 SELECT f1
    FROM BOOLTBL2
    WHERE f1 IS TRUE;
@@ -432,6 +570,8 @@ SELECT f1
 ----
 (0 rows)
 
+---END---
+---START---
 SELECT f1
    FROM BOOLTBL2
    WHERE f1 IS NOT FALSE;
@@ -439,6 +579,8 @@ SELECT f1
 ----
 (0 rows)
 
+---END---
+---START---
 SELECT f1
    FROM BOOLTBL2
    WHERE f1 IS FALSE;
@@ -450,6 +592,8 @@ SELECT f1
  f
 (4 rows)
 
+---END---
+---START---
 SELECT f1
    FROM BOOLTBL2
    WHERE f1 IS NOT TRUE;
@@ -461,13 +605,20 @@ SELECT f1
  f
 (4 rows)
 
---
--- Tests for BooleanTest
---
-CREATE TABLE BOOLTBL3 (d text, b bool, o int);
+---END---
+---START---
+CREATE TABLE booltbl3 (gemini_pk serial PRIMARY KEY, d text, b bool, o integer);
+---END---
+---START---
 INSERT INTO BOOLTBL3 (d, b, o) VALUES ('true', true, 1);
+---END---
+---START---
 INSERT INTO BOOLTBL3 (d, b, o) VALUES ('false', false, 2);
+---END---
+---START---
 INSERT INTO BOOLTBL3 (d, b, o) VALUES ('null', null, 3);
+---END---
+---START---
 SELECT
     d,
     b IS TRUE AS istrue,
@@ -484,88 +635,107 @@ FROM booltbl3 ORDER BY o;
  null  | f      | t         | f       | t          | t         | f
 (3 rows)
 
--- Test to make sure short-circuiting and NULL handling is
--- correct. Use a table as source to prevent constant simplification
--- to interfer.
-CREATE TABLE booltbl4(isfalse bool, istrue bool, isnul bool);
+---END---
+---START---
+CREATE TABLE booltbl4 (gemini_pk serial PRIMARY KEY, isfalse bool, istrue bool, isnul bool);
+---END---
+---START---
 INSERT INTO booltbl4 VALUES (false, true, null);
+ERROR:  column "gemini_pk" is of type integer but expression is of type boolean
+LINE 1: INSERT INTO booltbl4 VALUES (false, true, null);
+                                     ^
+HINT:  You will need to rewrite or cast the expression.
+---END---
+---START---
 \pset null '(null)'
 -- AND expression need to return null if there's any nulls and not all
 -- of the value are true
 SELECT istrue AND isnul AND istrue FROM booltbl4;
  ?column? 
 ----------
- (null)
-(1 row)
+(0 rows)
 
+---END---
+---START---
 SELECT istrue AND istrue AND isnul FROM booltbl4;
  ?column? 
 ----------
- (null)
-(1 row)
+(0 rows)
 
+---END---
+---START---
 SELECT isnul AND istrue AND istrue FROM booltbl4;
  ?column? 
 ----------
- (null)
-(1 row)
+(0 rows)
 
+---END---
+---START---
 SELECT isfalse AND isnul AND istrue FROM booltbl4;
  ?column? 
 ----------
- f
-(1 row)
+(0 rows)
 
+---END---
+---START---
 SELECT istrue AND isfalse AND isnul FROM booltbl4;
  ?column? 
 ----------
- f
-(1 row)
+(0 rows)
 
+---END---
+---START---
 SELECT isnul AND istrue AND isfalse FROM booltbl4;
  ?column? 
 ----------
- f
-(1 row)
+(0 rows)
 
+---END---
+---START---
 -- OR expression need to return null if there's any nulls and none
 -- of the value is true
 SELECT isfalse OR isnul OR isfalse FROM booltbl4;
  ?column? 
 ----------
- (null)
-(1 row)
+(0 rows)
 
+---END---
+---START---
 SELECT isfalse OR isfalse OR isnul FROM booltbl4;
  ?column? 
 ----------
- (null)
-(1 row)
+(0 rows)
 
+---END---
+---START---
 SELECT isnul OR isfalse OR isfalse FROM booltbl4;
  ?column? 
 ----------
- (null)
-(1 row)
+(0 rows)
 
+---END---
+---START---
 SELECT isfalse OR isnul OR istrue FROM booltbl4;
  ?column? 
 ----------
- t
-(1 row)
+(0 rows)
 
+---END---
+---START---
 SELECT istrue OR isfalse OR isnul FROM booltbl4;
  ?column? 
 ----------
- t
-(1 row)
+(0 rows)
 
+---END---
+---START---
 SELECT isnul OR istrue OR isfalse FROM booltbl4;
  ?column? 
 ----------
- t
-(1 row)
+(0 rows)
 
+---END---
+---START---
 --
 -- Clean up
 -- Many tables are retained by the regression test, but these do not seem
@@ -573,6 +743,13 @@ SELECT isnul OR istrue OR isfalse FROM booltbl4;
 --  - thomas 1997-11-30
 --
 DROP TABLE  BOOLTBL1;
+---END---
+---START---
 DROP TABLE  BOOLTBL2;
+---END---
+---START---
 DROP TABLE  BOOLTBL3;
+---END---
+---START---
 DROP TABLE  BOOLTBL4;
+---END---

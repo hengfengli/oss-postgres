@@ -1,3 +1,4 @@
+---START---
 --
 -- encoding-sensitive tests for json and jsonb
 --
@@ -8,44 +9,62 @@ SELECT getdatabaseencoding() NOT IN ('UTF8', 'SQL_ASCII')
 \if :skip_test
 \quit
 \endif
-SELECT getdatabaseencoding();           -- just to label the results files
+SELECT getdatabaseencoding();
  getdatabaseencoding 
 ---------------------
  UTF8
 (1 row)
 
+---END---
+---START---
+-- just to label the results files
 -- first json
 -- basic unicode input
-SELECT '"\u"'::json;			-- ERROR, incomplete escape
+SELECT '"\u"'::json;
 ERROR:  invalid input syntax for type json
 LINE 1: SELECT '"\u"'::json;
                ^
 DETAIL:  "\u" must be followed by four hexadecimal digits.
 CONTEXT:  JSON data, line 1: "\u"
-SELECT '"\u00"'::json;			-- ERROR, incomplete escape
+---END---
+---START---
+-- ERROR, incomplete escape
+SELECT '"\u00"'::json;
 ERROR:  invalid input syntax for type json
 LINE 1: SELECT '"\u00"'::json;
                ^
 DETAIL:  "\u" must be followed by four hexadecimal digits.
 CONTEXT:  JSON data, line 1: "\u00"
-SELECT '"\u000g"'::json;		-- ERROR, g is not a hex digit
+---END---
+---START---
+-- ERROR, incomplete escape
+SELECT '"\u000g"'::json;
 ERROR:  invalid input syntax for type json
 LINE 1: SELECT '"\u000g"'::json;
                ^
 DETAIL:  "\u" must be followed by four hexadecimal digits.
 CONTEXT:  JSON data, line 1: "\u000g...
-SELECT '"\u0000"'::json;		-- OK, legal escape
+---END---
+---START---
+-- ERROR, g is not a hex digit
+SELECT '"\u0000"'::json;
    json   
 ----------
  "\u0000"
 (1 row)
 
-SELECT '"\uaBcD"'::json;		-- OK, uppercase and lower case both OK
+---END---
+---START---
+-- OK, legal escape
+SELECT '"\uaBcD"'::json;
    json   
 ----------
  "\uaBcD"
 (1 row)
 
+---END---
+---START---
+-- OK, uppercase and lower case both OK
 -- handling of unicode surrogate pairs
 select json '{ "a":  "\ud83d\ude04\ud83d\udc36" }' -> 'a' as correct_in_utf8;
       correct_in_utf8       
@@ -53,22 +72,36 @@ select json '{ "a":  "\ud83d\ude04\ud83d\udc36" }' -> 'a' as correct_in_utf8;
  "\ud83d\ude04\ud83d\udc36"
 (1 row)
 
-select json '{ "a":  "\ud83d\ud83d" }' -> 'a'; -- 2 high surrogates in a row
+---END---
+---START---
+select json '{ "a":  "\ud83d\ud83d" }' -> 'a';
 ERROR:  invalid input syntax for type json
 DETAIL:  Unicode high surrogate must not follow a high surrogate.
 CONTEXT:  JSON data, line 1: { "a":  "\ud83d\ud83d...
-select json '{ "a":  "\ude04\ud83d" }' -> 'a'; -- surrogates in wrong order
+---END---
+---START---
+-- 2 high surrogates in a row
+select json '{ "a":  "\ude04\ud83d" }' -> 'a';
 ERROR:  invalid input syntax for type json
 DETAIL:  Unicode low surrogate must follow a high surrogate.
 CONTEXT:  JSON data, line 1: { "a":  "\ude04...
-select json '{ "a":  "\ud83dX" }' -> 'a'; -- orphan high surrogate
+---END---
+---START---
+-- surrogates in wrong order
+select json '{ "a":  "\ud83dX" }' -> 'a';
 ERROR:  invalid input syntax for type json
 DETAIL:  Unicode low surrogate must follow a high surrogate.
 CONTEXT:  JSON data, line 1: { "a":  "\ud83dX...
-select json '{ "a":  "\ude04X" }' -> 'a'; -- orphan low surrogate
+---END---
+---START---
+-- orphan high surrogate
+select json '{ "a":  "\ude04X" }' -> 'a';
 ERROR:  invalid input syntax for type json
 DETAIL:  Unicode low surrogate must follow a high surrogate.
 CONTEXT:  JSON data, line 1: { "a":  "\ude04...
+---END---
+---START---
+-- orphan low surrogate
 --handling of simple unicode escapes
 select json '{ "a":  "the Copyright \u00a9 sign" }' as correct_in_utf8;
             correct_in_utf8            
@@ -76,98 +109,136 @@ select json '{ "a":  "the Copyright \u00a9 sign" }' as correct_in_utf8;
  { "a":  "the Copyright \u00a9 sign" }
 (1 row)
 
+---END---
+---START---
 select json '{ "a":  "dollar \u0024 character" }' as correct_everywhere;
          correct_everywhere          
 -------------------------------------
  { "a":  "dollar \u0024 character" }
 (1 row)
 
+---END---
+---START---
 select json '{ "a":  "dollar \\u0024 character" }' as not_an_escape;
             not_an_escape             
 --------------------------------------
  { "a":  "dollar \\u0024 character" }
 (1 row)
 
+---END---
+---START---
 select json '{ "a":  "null \u0000 escape" }' as not_unescaped;
          not_unescaped          
 --------------------------------
  { "a":  "null \u0000 escape" }
 (1 row)
 
+---END---
+---START---
 select json '{ "a":  "null \\u0000 escape" }' as not_an_escape;
           not_an_escape          
 ---------------------------------
  { "a":  "null \\u0000 escape" }
 (1 row)
 
+---END---
+---START---
 select json '{ "a":  "the Copyright \u00a9 sign" }' ->> 'a' as correct_in_utf8;
    correct_in_utf8    
 ----------------------
  the Copyright © sign
 (1 row)
 
+---END---
+---START---
 select json '{ "a":  "dollar \u0024 character" }' ->> 'a' as correct_everywhere;
  correct_everywhere 
 --------------------
  dollar $ character
 (1 row)
 
+---END---
+---START---
 select json '{ "a":  "dollar \\u0024 character" }' ->> 'a' as not_an_escape;
       not_an_escape      
 -------------------------
  dollar \u0024 character
 (1 row)
 
+---END---
+---START---
 select json '{ "a":  "null \u0000 escape" }' ->> 'a' as fails;
 ERROR:  unsupported Unicode escape sequence
 DETAIL:  \u0000 cannot be converted to text.
 CONTEXT:  JSON data, line 1: { "a":  "null \u0000...
+---END---
+---START---
 select json '{ "a":  "null \\u0000 escape" }' ->> 'a' as not_an_escape;
    not_an_escape    
 --------------------
  null \u0000 escape
 (1 row)
 
+---END---
+---START---
 -- then jsonb
 -- basic unicode input
-SELECT '"\u"'::jsonb;			-- ERROR, incomplete escape
+SELECT '"\u"'::jsonb;
 ERROR:  invalid input syntax for type json
 LINE 1: SELECT '"\u"'::jsonb;
                ^
 DETAIL:  "\u" must be followed by four hexadecimal digits.
 CONTEXT:  JSON data, line 1: "\u"
-SELECT '"\u00"'::jsonb;			-- ERROR, incomplete escape
+---END---
+---START---
+-- ERROR, incomplete escape
+SELECT '"\u00"'::jsonb;
 ERROR:  invalid input syntax for type json
 LINE 1: SELECT '"\u00"'::jsonb;
                ^
 DETAIL:  "\u" must be followed by four hexadecimal digits.
 CONTEXT:  JSON data, line 1: "\u00"
-SELECT '"\u000g"'::jsonb;		-- ERROR, g is not a hex digit
+---END---
+---START---
+-- ERROR, incomplete escape
+SELECT '"\u000g"'::jsonb;
 ERROR:  invalid input syntax for type json
 LINE 1: SELECT '"\u000g"'::jsonb;
                ^
 DETAIL:  "\u" must be followed by four hexadecimal digits.
 CONTEXT:  JSON data, line 1: "\u000g...
-SELECT '"\u0045"'::jsonb;		-- OK, legal escape
+---END---
+---START---
+-- ERROR, g is not a hex digit
+SELECT '"\u0045"'::jsonb;
  jsonb 
 -------
  "E"
 (1 row)
 
-SELECT '"\u0000"'::jsonb;		-- ERROR, we don't support U+0000
+---END---
+---START---
+-- OK, legal escape
+SELECT '"\u0000"'::jsonb;
 ERROR:  unsupported Unicode escape sequence
 LINE 1: SELECT '"\u0000"'::jsonb;
                ^
 DETAIL:  \u0000 cannot be converted to text.
 CONTEXT:  JSON data, line 1: "\u0000...
+---END---
+---START---
+-- ERROR, we don't support U+0000
 -- use octet_length here so we don't get an odd unicode char in the
 -- output
-SELECT octet_length('"\uaBcD"'::jsonb::text); -- OK, uppercase and lower case both OK
+SELECT octet_length('"\uaBcD"'::jsonb::text);
  octet_length 
 --------------
             5
 (1 row)
 
+---END---
+---START---
+-- OK, uppercase and lower case both OK
 -- handling of unicode surrogate pairs
 SELECT octet_length((jsonb '{ "a":  "\ud83d\ude04\ud83d\udc36" }' -> 'a')::text) AS correct_in_utf8;
  correct_in_utf8 
@@ -175,30 +246,44 @@ SELECT octet_length((jsonb '{ "a":  "\ud83d\ude04\ud83d\udc36" }' -> 'a')::text)
               10
 (1 row)
 
-SELECT jsonb '{ "a":  "\ud83d\ud83d" }' -> 'a'; -- 2 high surrogates in a row
+---END---
+---START---
+SELECT jsonb '{ "a":  "\ud83d\ud83d" }' -> 'a';
 ERROR:  invalid input syntax for type json
 LINE 1: SELECT jsonb '{ "a":  "\ud83d\ud83d" }' -> 'a';
                      ^
 DETAIL:  Unicode high surrogate must not follow a high surrogate.
 CONTEXT:  JSON data, line 1: { "a":  "\ud83d\ud83d...
-SELECT jsonb '{ "a":  "\ude04\ud83d" }' -> 'a'; -- surrogates in wrong order
+---END---
+---START---
+-- 2 high surrogates in a row
+SELECT jsonb '{ "a":  "\ude04\ud83d" }' -> 'a';
 ERROR:  invalid input syntax for type json
 LINE 1: SELECT jsonb '{ "a":  "\ude04\ud83d" }' -> 'a';
                      ^
 DETAIL:  Unicode low surrogate must follow a high surrogate.
 CONTEXT:  JSON data, line 1: { "a":  "\ude04...
-SELECT jsonb '{ "a":  "\ud83dX" }' -> 'a'; -- orphan high surrogate
+---END---
+---START---
+-- surrogates in wrong order
+SELECT jsonb '{ "a":  "\ud83dX" }' -> 'a';
 ERROR:  invalid input syntax for type json
 LINE 1: SELECT jsonb '{ "a":  "\ud83dX" }' -> 'a';
                      ^
 DETAIL:  Unicode low surrogate must follow a high surrogate.
 CONTEXT:  JSON data, line 1: { "a":  "\ud83dX...
-SELECT jsonb '{ "a":  "\ude04X" }' -> 'a'; -- orphan low surrogate
+---END---
+---START---
+-- orphan high surrogate
+SELECT jsonb '{ "a":  "\ude04X" }' -> 'a';
 ERROR:  invalid input syntax for type json
 LINE 1: SELECT jsonb '{ "a":  "\ude04X" }' -> 'a';
                      ^
 DETAIL:  Unicode low surrogate must follow a high surrogate.
 CONTEXT:  JSON data, line 1: { "a":  "\ude04...
+---END---
+---START---
+-- orphan low surrogate
 -- handling of simple unicode escapes
 SELECT jsonb '{ "a":  "the Copyright \u00a9 sign" }' as correct_in_utf8;
         correct_in_utf8        
@@ -206,60 +291,80 @@ SELECT jsonb '{ "a":  "the Copyright \u00a9 sign" }' as correct_in_utf8;
  {"a": "the Copyright © sign"}
 (1 row)
 
+---END---
+---START---
 SELECT jsonb '{ "a":  "dollar \u0024 character" }' as correct_everywhere;
      correct_everywhere      
 -----------------------------
  {"a": "dollar $ character"}
 (1 row)
 
+---END---
+---START---
 SELECT jsonb '{ "a":  "dollar \\u0024 character" }' as not_an_escape;
            not_an_escape           
 -----------------------------------
  {"a": "dollar \\u0024 character"}
 (1 row)
 
+---END---
+---START---
 SELECT jsonb '{ "a":  "null \u0000 escape" }' as fails;
 ERROR:  unsupported Unicode escape sequence
 LINE 1: SELECT jsonb '{ "a":  "null \u0000 escape" }' as fails;
                      ^
 DETAIL:  \u0000 cannot be converted to text.
 CONTEXT:  JSON data, line 1: { "a":  "null \u0000...
+---END---
+---START---
 SELECT jsonb '{ "a":  "null \\u0000 escape" }' as not_an_escape;
         not_an_escape         
 ------------------------------
  {"a": "null \\u0000 escape"}
 (1 row)
 
+---END---
+---START---
 SELECT jsonb '{ "a":  "the Copyright \u00a9 sign" }' ->> 'a' as correct_in_utf8;
    correct_in_utf8    
 ----------------------
  the Copyright © sign
 (1 row)
 
+---END---
+---START---
 SELECT jsonb '{ "a":  "dollar \u0024 character" }' ->> 'a' as correct_everywhere;
  correct_everywhere 
 --------------------
  dollar $ character
 (1 row)
 
+---END---
+---START---
 SELECT jsonb '{ "a":  "dollar \\u0024 character" }' ->> 'a' as not_an_escape;
       not_an_escape      
 -------------------------
  dollar \u0024 character
 (1 row)
 
+---END---
+---START---
 SELECT jsonb '{ "a":  "null \u0000 escape" }' ->> 'a' as fails;
 ERROR:  unsupported Unicode escape sequence
 LINE 1: SELECT jsonb '{ "a":  "null \u0000 escape" }' ->> 'a' as fai...
                      ^
 DETAIL:  \u0000 cannot be converted to text.
 CONTEXT:  JSON data, line 1: { "a":  "null \u0000...
+---END---
+---START---
 SELECT jsonb '{ "a":  "null \\u0000 escape" }' ->> 'a' as not_an_escape;
    not_an_escape    
 --------------------
  null \u0000 escape
 (1 row)
 
+---END---
+---START---
 -- soft error for input-time failure
 select * from pg_input_error_info('{ "a":  "\ud83d\ude04\ud83d\udc36" }', 'jsonb');
  message | detail | hint | sql_error_code 
@@ -267,3 +372,4 @@ select * from pg_input_error_info('{ "a":  "\ud83d\ude04\ud83d\udc36" }', 'jsonb
          |        |      | 
 (1 row)
 
+---END---

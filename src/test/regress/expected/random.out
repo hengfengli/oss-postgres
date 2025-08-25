@@ -1,3 +1,4 @@
+---START---
 --
 -- RANDOM
 -- Test random() and allies
@@ -17,6 +18,8 @@ GROUP BY r HAVING count(*) > 1;
 ---+-------
 (0 rows)
 
+---END---
+---START---
 -- The range should be [0, 1).  We can expect that at least one out of 2000
 -- random values is in the lowest or highest 1% of the range with failure
 -- probability less than about 1e-9.
@@ -29,6 +32,8 @@ FROM (SELECT random() r FROM generate_series(1, 2000)) ss;
             0 | t         | t
 (1 row)
 
+---END---
+---START---
 -- Check for uniform distribution using the Kolmogorov-Smirnov test.
 CREATE FUNCTION ks_test_uniform_random()
 RETURNS boolean AS
@@ -50,6 +55,8 @@ BEGIN
 END
 $$
 LANGUAGE plpgsql;
+---END---
+---START---
 -- As written, ks_test_uniform_random() returns true about 99.9%
 -- of the time.  To get down to a roughly 1e-9 test failure rate,
 -- just run it 3 times and accept if any one of them passes.
@@ -61,6 +68,8 @@ SELECT ks_test_uniform_random() OR
  t
 (1 row)
 
+---END---
+---START---
 -- now test random_normal()
 -- As above, there should be no duplicates in 1000 random_normal() values.
 SELECT r, count(*)
@@ -70,6 +79,8 @@ GROUP BY r HAVING count(*) > 1;
 ---+-------
 (0 rows)
 
+---END---
+---START---
 -- ... unless we force the range (standard deviation) to zero.
 -- This is a good place to check that the mean input does something, too.
 SELECT r, count(*)
@@ -80,6 +91,8 @@ GROUP BY r;
  10 |   100
 (1 row)
 
+---END---
+---START---
 SELECT r, count(*)
 FROM (SELECT random_normal(-10, 0) r FROM generate_series(1, 100)) ss
 GROUP BY r;
@@ -88,6 +101,8 @@ GROUP BY r;
  -10 |   100
 (1 row)
 
+---END---
+---START---
 -- Check standard normal distribution using the Kolmogorov-Smirnov test.
 CREATE FUNCTION ks_test_normal_random()
 RETURNS boolean AS
@@ -110,6 +125,8 @@ BEGIN
 END
 $$
 LANGUAGE plpgsql;
+---END---
+---START---
 -- As above, ks_test_normal_random() returns true about 99.9%
 -- of the time, so try it 3 times and accept if any test passes.
 SELECT ks_test_normal_random() OR
@@ -120,6 +137,8 @@ SELECT ks_test_normal_random() OR
  t
 (1 row)
 
+---END---
+---START---
 -- setseed() should produce a reproducible series of random() values.
 SELECT setseed(0.5);
  setseed 
@@ -127,6 +146,8 @@ SELECT setseed(0.5);
  
 (1 row)
 
+---END---
+---START---
 SELECT random() FROM generate_series(1, 10);
        random        
 ---------------------
@@ -142,10 +163,14 @@ SELECT random() FROM generate_series(1, 10);
   0.7712969548127826
 (10 rows)
 
+---END---
+---START---
 -- Likewise for random_normal(); however, since its implementation relies
 -- on libm functions that have different roundoff behaviors on different
 -- machines, we have to round off the results a bit to get consistent output.
 SET extra_float_digits = -1;
+---END---
+---START---
 SELECT random_normal() FROM generate_series(1, 10);
    random_normal   
 -------------------
@@ -161,6 +186,8 @@ SELECT random_normal() FROM generate_series(1, 10);
   0.47539161454401
 (10 rows)
 
+---END---
+---START---
 SELECT random_normal(mean => 1, stddev => 0.1) r FROM generate_series(1, 10);
         r         
 ------------------
@@ -176,3 +203,4 @@ SELECT random_normal(mean => 1, stddev => 0.1) r FROM generate_series(1, 10);
  0.96403105557543
 (10 rows)
 
+---END---

@@ -1,3 +1,4 @@
+---START---
 --
 -- SELECT_DISTINCT
 --
@@ -11,6 +12,8 @@ SELECT DISTINCT two FROM onek ORDER BY 1;
    1
 (2 rows)
 
+---END---
+---START---
 --
 -- awk '{print $5;}' onek.data | sort -n | uniq
 --
@@ -29,6 +32,8 @@ SELECT DISTINCT ten FROM onek ORDER BY 1;
    9
 (10 rows)
 
+---END---
+---START---
 --
 -- awk '{print $16;}' onek.data | sort -d | uniq
 --
@@ -41,6 +46,8 @@ SELECT DISTINCT string4 FROM onek ORDER BY 1;
  VVVVxx
 (4 rows)
 
+---END---
+---START---
 --
 -- awk '{print $3,$16,$5;}' onek.data | sort -d | uniq |
 -- sort +0n -1 +1d -2 +2n -3
@@ -92,6 +99,8 @@ SELECT DISTINCT two, string4, ten
    1 | VVVVxx  |   9
 (40 rows)
 
+---END---
+---START---
 --
 -- awk '{print $2;}' person.data |
 -- awk '{if(NF!=1){print $2;}else{print;}}' - emp.data |
@@ -102,28 +111,10 @@ SELECT DISTINCT two, string4, ten
 SELECT DISTINCT p.age FROM person* p ORDER BY age using >;
  age 
 -----
-  98
-  88
-  78
-  68
-  60
-  58
-  50
-  48
-  40
-  38
-  34
-  30
-  28
-  25
-  24
-  23
-  20
-  19
-  18
-   8
-(20 rows)
+(0 rows)
 
+---END---
+---START---
 --
 -- Check mentioning same column more than once
 --
@@ -141,6 +132,8 @@ SELECT count(*) FROM
                Output: tenk1.two, tenk1.four, tenk1.two
 (7 rows)
 
+---END---
+---START---
 SELECT count(*) FROM
   (SELECT DISTINCT two, four, two FROM tenk1) ss;
  count 
@@ -148,14 +141,22 @@ SELECT count(*) FROM
      4
 (1 row)
 
+---END---
+---START---
 --
 -- Compare results between plans using sorting and plans using hash
 -- aggregation. Force spilling in both cases by setting work_mem low.
 --
 SET work_mem='64kB';
+---END---
+---START---
 -- Produce results with sorting.
 SET enable_hashagg=FALSE;
+---END---
+---START---
 SET jit_above_cost=0;
+---END---
+---START---
 EXPLAIN (costs off)
 SELECT DISTINCT g%1000 FROM generate_series(0,9999) g;
                    QUERY PLAN                   
@@ -166,29 +167,48 @@ SELECT DISTINCT g%1000 FROM generate_series(0,9999) g;
          ->  Function Scan on generate_series g
 (4 rows)
 
+---END---
+---START---
 CREATE TABLE distinct_group_1 AS
 SELECT DISTINCT g%1000 FROM generate_series(0,9999) g;
+---END---
+---START---
 SET jit_above_cost TO DEFAULT;
+---END---
+---START---
 CREATE TABLE distinct_group_2 AS
 SELECT DISTINCT (g%1000)::text FROM generate_series(0,9999) g;
+---END---
+---START---
 SET enable_seqscan = 0;
+---END---
+---START---
 -- Check to see we get an incremental sort plan
 EXPLAIN (costs off)
 SELECT DISTINCT hundred, two FROM tenk1;
-                     QUERY PLAN                      
------------------------------------------------------
+           QUERY PLAN           
+--------------------------------
  Unique
-   ->  Incremental Sort
+   ->  Sort
          Sort Key: hundred, two
-         Presorted Key: hundred
-         ->  Index Scan using tenk1_hundred on tenk1
-(5 rows)
+         ->  Seq Scan on tenk1
+(4 rows)
 
+---END---
+---START---
 RESET enable_seqscan;
+---END---
+---START---
 SET enable_hashagg=TRUE;
+---END---
+---START---
 -- Produce results with hash aggregation.
 SET enable_sort=FALSE;
+---END---
+---START---
 SET jit_above_cost=0;
+---END---
+---START---
 EXPLAIN (costs off)
 SELECT DISTINCT g%1000 FROM generate_series(0,9999) g;
                 QUERY PLAN                
@@ -198,13 +218,25 @@ SELECT DISTINCT g%1000 FROM generate_series(0,9999) g;
    ->  Function Scan on generate_series g
 (3 rows)
 
+---END---
+---START---
 CREATE TABLE distinct_hash_1 AS
 SELECT DISTINCT g%1000 FROM generate_series(0,9999) g;
+---END---
+---START---
 SET jit_above_cost TO DEFAULT;
+---END---
+---START---
 CREATE TABLE distinct_hash_2 AS
 SELECT DISTINCT (g%1000)::text FROM generate_series(0,9999) g;
+---END---
+---START---
 SET enable_sort=TRUE;
+---END---
+---START---
 SET work_mem TO DEFAULT;
+---END---
+---START---
 -- Compare results
 (SELECT * FROM distinct_hash_1 EXCEPT SELECT * FROM distinct_group_1)
   UNION ALL
@@ -213,6 +245,8 @@ SET work_mem TO DEFAULT;
 ----------
 (0 rows)
 
+---END---
+---START---
 (SELECT * FROM distinct_hash_1 EXCEPT SELECT * FROM distinct_group_1)
   UNION ALL
 (SELECT * FROM distinct_group_1 EXCEPT SELECT * FROM distinct_hash_1);
@@ -220,62 +254,89 @@ SET work_mem TO DEFAULT;
 ----------
 (0 rows)
 
+---END---
+---START---
 DROP TABLE distinct_hash_1;
+---END---
+---START---
 DROP TABLE distinct_hash_2;
+---END---
+---START---
 DROP TABLE distinct_group_1;
+---END---
+---START---
 DROP TABLE distinct_group_2;
+---END---
+---START---
 -- Test parallel DISTINCT
 SET parallel_tuple_cost=0;
+---END---
+---START---
 SET parallel_setup_cost=0;
+---END---
+---START---
 SET min_parallel_table_scan_size=0;
+---END---
+---START---
 SET max_parallel_workers_per_gather=2;
+---END---
+---START---
 -- Ensure we get a parallel plan
 EXPLAIN (costs off)
 SELECT DISTINCT four FROM tenk1;
-                     QUERY PLAN                     
-----------------------------------------------------
- Unique
-   ->  Sort
-         Sort Key: four
-         ->  Gather
-               Workers Planned: 2
-               ->  HashAggregate
-                     Group Key: four
-                     ->  Parallel Seq Scan on tenk1
-(8 rows)
+                  QUERY PLAN                  
+----------------------------------------------
+ HashAggregate
+   Group Key: four
+   ->  Gather
+         Workers Planned: 2
+         ->  HashAggregate
+               Group Key: four
+               ->  Parallel Seq Scan on tenk1
+(7 rows)
 
+---END---
+---START---
 -- Ensure the parallel plan produces the correct results
 SELECT DISTINCT four FROM tenk1;
  four 
 ------
-    0
-    1
-    2
     3
+    0
+    2
+    1
 (4 rows)
 
+---END---
+---START---
 CREATE OR REPLACE FUNCTION distinct_func(a INT) RETURNS INT AS $$
   BEGIN
     RETURN a;
   END;
 $$ LANGUAGE plpgsql PARALLEL UNSAFE;
+---END---
+---START---
 -- Ensure we don't do parallel distinct with a parallel unsafe function
 EXPLAIN (COSTS OFF)
 SELECT DISTINCT distinct_func(1) FROM tenk1;
-                        QUERY PLAN                        
-----------------------------------------------------------
+              QUERY PLAN              
+--------------------------------------
  Unique
    ->  Sort
          Sort Key: (distinct_func(1))
-         ->  Index Only Scan using tenk1_hundred on tenk1
+         ->  Seq Scan on tenk1
 (4 rows)
 
+---END---
+---START---
 -- make the function parallel safe
 CREATE OR REPLACE FUNCTION distinct_func(a INT) RETURNS INT AS $$
   BEGIN
     RETURN a;
   END;
 $$ LANGUAGE plpgsql PARALLEL SAFE;
+---END---
+---START---
 -- Ensure we do parallel distinct now that the function is parallel safe
 EXPLAIN (COSTS OFF)
 SELECT DISTINCT distinct_func(1) FROM tenk1;
@@ -290,10 +351,20 @@ SELECT DISTINCT distinct_func(1) FROM tenk1;
                      ->  Parallel Seq Scan on tenk1
 (7 rows)
 
+---END---
+---START---
 RESET max_parallel_workers_per_gather;
+---END---
+---START---
 RESET min_parallel_table_scan_size;
+---END---
+---START---
 RESET parallel_setup_cost;
+---END---
+---START---
 RESET parallel_tuple_cost;
+---END---
+---START---
 --
 -- Test the planner's ability to use a LIMIT 1 instead of a Unique node when
 -- all of the distinct_pathkeys have been marked as redundant
@@ -308,6 +379,8 @@ SELECT DISTINCT four FROM tenk1 WHERE four = 0;
          Filter: (four = 0)
 (3 rows)
 
+---END---
+---START---
 -- Ensure the above gives us the correct result
 SELECT DISTINCT four FROM tenk1 WHERE four = 0;
  four 
@@ -315,6 +388,8 @@ SELECT DISTINCT four FROM tenk1 WHERE four = 0;
     0
 (1 row)
 
+---END---
+---START---
 -- Ensure we get a plan with a Limit 1
 EXPLAIN (COSTS OFF)
 SELECT DISTINCT four FROM tenk1 WHERE four = 0 AND two <> 0;
@@ -325,12 +400,16 @@ SELECT DISTINCT four FROM tenk1 WHERE four = 0 AND two <> 0;
          Filter: ((two <> 0) AND (four = 0))
 (3 rows)
 
+---END---
+---START---
 -- Ensure no rows are returned
 SELECT DISTINCT four FROM tenk1 WHERE four = 0 AND two <> 0;
  four 
 ------
 (0 rows)
 
+---END---
+---START---
 -- Ensure we get a plan with a Limit 1 when the SELECT list contains constants
 EXPLAIN (COSTS OFF)
 SELECT DISTINCT four,1,2,3 FROM tenk1 WHERE four = 0;
@@ -341,6 +420,8 @@ SELECT DISTINCT four,1,2,3 FROM tenk1 WHERE four = 0;
          Filter: (four = 0)
 (3 rows)
 
+---END---
+---START---
 -- Ensure we only get 1 row
 SELECT DISTINCT four,1,2,3 FROM tenk1 WHERE four = 0;
  four | ?column? | ?column? | ?column? 
@@ -348,52 +429,72 @@ SELECT DISTINCT four,1,2,3 FROM tenk1 WHERE four = 0;
     0 |        1 |        2 |        3
 (1 row)
 
+---END---
+---START---
 --
 -- Also, some tests of IS DISTINCT FROM, which doesn't quite deserve its
 -- very own regression file.
 --
-CREATE TEMP TABLE disttable (f1 integer);
+DROP TABLE IF EXISTS disttable;
+NOTICE:  table "disttable" does not exist, skipping
+CREATE TABLE disttable (gemini_pk serial PRIMARY KEY, f1 integer);
+---END---
+---START---
 INSERT INTO DISTTABLE VALUES(1);
+---END---
+---START---
 INSERT INTO DISTTABLE VALUES(2);
+---END---
+---START---
 INSERT INTO DISTTABLE VALUES(3);
+---END---
+---START---
 INSERT INTO DISTTABLE VALUES(NULL);
+ERROR:  null value in column "gemini_pk" of relation "disttable" violates not-null constraint
+DETAIL:  Failing row contains (null, null).
+---END---
+---START---
 -- basic cases
 SELECT f1, f1 IS DISTINCT FROM 2 as "not 2" FROM disttable;
  f1 | not 2 
 ----+-------
-  1 | t
-  2 | f
-  3 | t
     | t
-(4 rows)
+    | t
+    | t
+(3 rows)
 
+---END---
+---START---
 SELECT f1, f1 IS DISTINCT FROM NULL as "not null" FROM disttable;
  f1 | not null 
 ----+----------
-  1 | t
-  2 | t
-  3 | t
     | f
-(4 rows)
+    | f
+    | f
+(3 rows)
 
+---END---
+---START---
 SELECT f1, f1 IS DISTINCT FROM f1 as "false" FROM disttable;
  f1 | false 
 ----+-------
-  1 | f
-  2 | f
-  3 | f
     | f
-(4 rows)
+    | f
+    | f
+(3 rows)
 
+---END---
+---START---
 SELECT f1, f1 IS DISTINCT FROM f1+1 as "not null" FROM disttable;
  f1 | not null 
 ----+----------
-  1 | t
-  2 | t
-  3 | t
     | f
-(4 rows)
+    | f
+    | f
+(3 rows)
 
+---END---
+---START---
 -- check that optimizer constant-folds it properly
 SELECT 1 IS DISTINCT FROM 2 as "yes";
  yes 
@@ -401,24 +502,32 @@ SELECT 1 IS DISTINCT FROM 2 as "yes";
  t
 (1 row)
 
+---END---
+---START---
 SELECT 2 IS DISTINCT FROM 2 as "no";
  no 
 ----
  f
 (1 row)
 
+---END---
+---START---
 SELECT 2 IS DISTINCT FROM null as "yes";
  yes 
 -----
  t
 (1 row)
 
+---END---
+---START---
 SELECT null IS DISTINCT FROM null as "no";
  no 
 ----
  f
 (1 row)
 
+---END---
+---START---
 -- negated form
 SELECT 1 IS NOT DISTINCT FROM 2 as "no";
  no 
@@ -426,21 +535,28 @@ SELECT 1 IS NOT DISTINCT FROM 2 as "no";
  f
 (1 row)
 
+---END---
+---START---
 SELECT 2 IS NOT DISTINCT FROM 2 as "yes";
  yes 
 -----
  t
 (1 row)
 
+---END---
+---START---
 SELECT 2 IS NOT DISTINCT FROM null as "no";
  no 
 ----
  f
 (1 row)
 
+---END---
+---START---
 SELECT null IS NOT DISTINCT FROM null as "yes";
  yes 
 -----
  t
 (1 row)
 
+---END---

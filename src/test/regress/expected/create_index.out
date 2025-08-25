@@ -1,3 +1,4 @@
+---START---
 --
 -- CREATE_INDEX
 -- Create ancillary data structures (i.e. indices)
@@ -8,241 +9,321 @@
 -- BTREE
 --
 CREATE INDEX onek_unique1 ON onek USING btree(unique1 int4_ops);
+ERROR:  operator class "int4_ops" does not accept data type bigint
+---END---
+---START---
 CREATE INDEX IF NOT EXISTS onek_unique1 ON onek USING btree(unique1 int4_ops);
-NOTICE:  relation "onek_unique1" already exists, skipping
+ERROR:  operator class "int4_ops" does not accept data type bigint
+---END---
+---START---
 CREATE INDEX IF NOT EXISTS ON onek USING btree(unique1 int4_ops);
 ERROR:  syntax error at or near "ON"
 LINE 1: CREATE INDEX IF NOT EXISTS ON onek USING btree(unique1 int4_...
                                    ^
+---END---
+---START---
 CREATE INDEX onek_unique2 ON onek USING btree(unique2 int4_ops);
+ERROR:  operator class "int4_ops" does not accept data type bigint
+---END---
+---START---
 CREATE INDEX onek_hundred ON onek USING btree(hundred int4_ops);
+ERROR:  operator class "int4_ops" does not accept data type bigint
+---END---
+---START---
 CREATE INDEX onek_stringu1 ON onek USING btree(stringu1 name_ops);
+ERROR:  operator class "name_ops" does not accept data type character varying
+---END---
+---START---
 CREATE INDEX tenk1_unique1 ON tenk1 USING btree(unique1 int4_ops);
+ERROR:  operator class "int4_ops" does not accept data type bigint
+---END---
+---START---
 CREATE INDEX tenk1_unique2 ON tenk1 USING btree(unique2 int4_ops);
+ERROR:  operator class "int4_ops" does not accept data type bigint
+---END---
+---START---
 CREATE INDEX tenk1_hundred ON tenk1 USING btree(hundred int4_ops);
+ERROR:  operator class "int4_ops" does not accept data type bigint
+---END---
+---START---
 CREATE INDEX tenk1_thous_tenthous ON tenk1 (thousand, tenthous);
+---END---
+---START---
 CREATE INDEX tenk2_unique1 ON tenk2 USING btree(unique1 int4_ops);
+ERROR:  operator class "int4_ops" does not accept data type bigint
+---END---
+---START---
 CREATE INDEX tenk2_unique2 ON tenk2 USING btree(unique2 int4_ops);
+ERROR:  operator class "int4_ops" does not accept data type bigint
+---END---
+---START---
 CREATE INDEX tenk2_hundred ON tenk2 USING btree(hundred int4_ops);
+ERROR:  operator class "int4_ops" does not accept data type bigint
+---END---
+---START---
 CREATE INDEX rix ON road USING btree (name text_ops);
+---END---
+---START---
 CREATE INDEX iix ON ihighway USING btree (name text_ops);
+---END---
+---START---
 CREATE INDEX six ON shighway USING btree (name text_ops);
+---END---
+---START---
 -- test comments
 COMMENT ON INDEX six_wrong IS 'bad index';
 ERROR:  relation "six_wrong" does not exist
+---END---
+---START---
 COMMENT ON INDEX six IS 'good index';
+---END---
+---START---
 COMMENT ON INDEX six IS NULL;
+---END---
+---START---
 --
 -- BTREE partial indices
 --
 CREATE INDEX onek2_u1_prtl ON onek2 USING btree(unique1 int4_ops)
 	where unique1 < 20 or unique1 > 980;
+ERROR:  operator class "int4_ops" does not accept data type bigint
+---END---
+---START---
 CREATE INDEX onek2_u2_prtl ON onek2 USING btree(unique2 int4_ops)
 	where stringu1 < 'B';
+ERROR:  operator class "int4_ops" does not accept data type bigint
+---END---
+---START---
 CREATE INDEX onek2_stu1_prtl ON onek2 USING btree(stringu1 name_ops)
 	where onek2.stringu1 >= 'J' and onek2.stringu1 < 'K';
---
--- GiST (rtree-equivalent opclasses only)
---
-CREATE TABLE slow_emp4000 (
-	home_base	 box
-);
-CREATE TABLE fast_emp4000 (
-	home_base	 box
-);
+ERROR:  operator class "name_ops" does not accept data type character varying
+---END---
+---START---
+CREATE TABLE slow_emp4000 (gemini_pk serial PRIMARY KEY, home_base box);
+---END---
+---START---
+CREATE TABLE fast_emp4000 (gemini_pk serial PRIMARY KEY, home_base box);
+---END---
+---START---
 \set filename :abs_srcdir '/data/rect.data'
 COPY slow_emp4000 FROM :'filename';
+ERROR:  invalid input syntax for type integer: "(12699,9028,12654,8987)"
+CONTEXT:  COPY slow_emp4000, line 1, column gemini_pk: "(12699,9028,12654,8987)"
+---END---
+---START---
 INSERT INTO fast_emp4000 SELECT * FROM slow_emp4000;
+---END---
+---START---
 ANALYZE slow_emp4000;
+---END---
+---START---
 ANALYZE fast_emp4000;
+---END---
+---START---
 CREATE INDEX grect2ind ON fast_emp4000 USING gist (home_base);
+---END---
+---START---
 -- we want to work with a point_tbl that includes a null
-CREATE TEMP TABLE point_tbl AS SELECT * FROM public.point_tbl;
+DROP TABLE IF EXISTS point_tbl;
+NOTICE:  table "point_tbl" does not exist, skipping
+CREATE TABLE point_tbl AS SELECT * FROM public.point_tbl;
+ERROR:  relation "public.point_tbl" does not exist
+LINE 1: CREATE TABLE point_tbl AS SELECT * FROM public.point_tbl;
+                                                ^
+---END---
+---START---
 INSERT INTO POINT_TBL(f1) VALUES (NULL);
+ERROR:  relation "point_tbl" does not exist
+LINE 1: INSERT INTO POINT_TBL(f1) VALUES (NULL);
+                    ^
+---END---
+---START---
 CREATE INDEX gpointind ON point_tbl USING gist (f1);
-CREATE TEMP TABLE gpolygon_tbl AS
+ERROR:  relation "point_tbl" does not exist
+---END---
+---START---
+DROP TABLE IF EXISTS gpolygon_tbl;
+NOTICE:  table "gpolygon_tbl" does not exist, skipping
+CREATE TABLE gpolygon_tbl AS
     SELECT polygon(home_base) AS f1 FROM slow_emp4000;
+---END---
+---START---
 INSERT INTO gpolygon_tbl VALUES ( '(1000,0,0,1000)' );
+---END---
+---START---
 INSERT INTO gpolygon_tbl VALUES ( '(0,1000,1000,1000)' );
-CREATE TEMP TABLE gcircle_tbl AS
+---END---
+---START---
+DROP TABLE IF EXISTS gcircle_tbl;
+NOTICE:  table "gcircle_tbl" does not exist, skipping
+CREATE TABLE gcircle_tbl AS
     SELECT circle(home_base) AS f1 FROM slow_emp4000;
+---END---
+---START---
 CREATE INDEX ggpolygonind ON gpolygon_tbl USING gist (f1);
+---END---
+---START---
 CREATE INDEX ggcircleind ON gcircle_tbl USING gist (f1);
+---END---
+---START---
 --
 -- Test GiST indexes
 --
 -- get non-indexed results for comparison purposes
 SET enable_seqscan = ON;
+---END---
+---START---
 SET enable_indexscan = OFF;
+---END---
+---START---
 SET enable_bitmapscan = OFF;
+---END---
+---START---
 SELECT * FROM fast_emp4000
     WHERE home_base <@ '(200,200),(2000,1000)'::box
     ORDER BY (home_base[0])[0];
-       home_base       
------------------------
- (337,455),(240,359)
- (1444,403),(1346,344)
-(2 rows)
+ gemini_pk | home_base 
+-----------+-----------
+(0 rows)
 
+---END---
+---START---
 SELECT count(*) FROM fast_emp4000 WHERE home_base && '(1000,1000,0,0)'::box;
  count 
 -------
-     2
+     0
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM fast_emp4000 WHERE home_base IS NULL;
  count 
 -------
-   278
+     0
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM gpolygon_tbl WHERE f1 && '(1000,1000,0,0)'::polygon;
  count 
 -------
      2
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM gcircle_tbl WHERE f1 && '<(500,500),500>'::circle;
  count 
 -------
-     2
+     0
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM point_tbl WHERE f1 <@ box '(0,0,100,100)';
- count 
--------
-     3
-(1 row)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT count(*) FROM point_tbl WHERE f1 <@ box '(0,0,100,100...
+                             ^
+---END---
+---START---
 SELECT count(*) FROM point_tbl WHERE box '(0,0,100,100)' @> f1;
- count 
--------
-     3
-(1 row)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT count(*) FROM point_tbl WHERE box '(0,0,100,100)' @> ...
+                             ^
+---END---
+---START---
 SELECT count(*) FROM point_tbl WHERE f1 <@ polygon '(0,0),(0,100),(100,100),(50,50),(100,0),(0,0)';
- count 
--------
-     5
-(1 row)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT count(*) FROM point_tbl WHERE f1 <@ polygon '(0,0),(0...
+                             ^
+---END---
+---START---
 SELECT count(*) FROM point_tbl WHERE f1 <@ circle '<(50,50),50>';
- count 
--------
-     1
-(1 row)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT count(*) FROM point_tbl WHERE f1 <@ circle '<(50,50),...
+                             ^
+---END---
+---START---
 SELECT count(*) FROM point_tbl p WHERE p.f1 << '(0.0, 0.0)';
- count 
--------
-     3
-(1 row)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT count(*) FROM point_tbl p WHERE p.f1 << '(0.0, 0.0)';
+                             ^
+---END---
+---START---
 SELECT count(*) FROM point_tbl p WHERE p.f1 >> '(0.0, 0.0)';
- count 
--------
-     4
-(1 row)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT count(*) FROM point_tbl p WHERE p.f1 >> '(0.0, 0.0)';
+                             ^
+---END---
+---START---
 SELECT count(*) FROM point_tbl p WHERE p.f1 <<| '(0.0, 0.0)';
- count 
--------
-     1
-(1 row)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT count(*) FROM point_tbl p WHERE p.f1 <<| '(0.0, 0.0)'...
+                             ^
+---END---
+---START---
 SELECT count(*) FROM point_tbl p WHERE p.f1 |>> '(0.0, 0.0)';
- count 
--------
-     5
-(1 row)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT count(*) FROM point_tbl p WHERE p.f1 |>> '(0.0, 0.0)'...
+                             ^
+---END---
+---START---
 SELECT count(*) FROM point_tbl p WHERE p.f1 ~= '(-5, -12)';
- count 
--------
-     1
-(1 row)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT count(*) FROM point_tbl p WHERE p.f1 ~= '(-5, -12)';
+                             ^
+---END---
+---START---
 SELECT * FROM point_tbl ORDER BY f1 <-> '0,1';
-        f1         
--------------------
- (0,0)
- (1e-300,-1e-300)
- (-3,4)
- (-10,0)
- (10,10)
- (-5,-12)
- (5.1,34.5)
- (Infinity,1e+300)
- (1e+300,Infinity)
- (NaN,NaN)
- 
-(11 rows)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT * FROM point_tbl ORDER BY f1 <-> '0,1';
+                      ^
+---END---
+---START---
 SELECT * FROM point_tbl WHERE f1 IS NULL;
- f1 
-----
- 
-(1 row)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT * FROM point_tbl WHERE f1 IS NULL;
+                      ^
+---END---
+---START---
 SELECT * FROM point_tbl WHERE f1 IS NOT NULL ORDER BY f1 <-> '0,1';
-        f1         
--------------------
- (0,0)
- (1e-300,-1e-300)
- (-3,4)
- (-10,0)
- (10,10)
- (-5,-12)
- (5.1,34.5)
- (1e+300,Infinity)
- (Infinity,1e+300)
- (NaN,NaN)
-(10 rows)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT * FROM point_tbl WHERE f1 IS NOT NULL ORDER BY f1 <->...
+                      ^
+---END---
+---START---
 SELECT * FROM point_tbl WHERE f1 <@ '(-10,-10),(10,10)':: box ORDER BY f1 <-> '0,1';
-        f1        
-------------------
- (0,0)
- (1e-300,-1e-300)
- (-3,4)
- (-10,0)
- (10,10)
-(5 rows)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT * FROM point_tbl WHERE f1 <@ '(-10,-10),(10,10)':: bo...
+                      ^
+---END---
+---START---
 SELECT * FROM gpolygon_tbl ORDER BY f1 <-> '(0,0)'::point LIMIT 10;
-                       f1                        
--------------------------------------------------
- ((240,359),(240,455),(337,455),(337,359))
- ((662,163),(662,187),(759,187),(759,163))
+           f1           
+------------------------
  ((1000,0),(0,1000))
  ((0,1000),(1000,1000))
- ((1346,344),(1346,403),(1444,403),(1444,344))
- ((278,1409),(278,1457),(369,1457),(369,1409))
- ((907,1156),(907,1201),(948,1201),(948,1156))
- ((1517,971),(1517,1043),(1594,1043),(1594,971))
- ((175,1820),(175,1850),(259,1850),(259,1820))
- ((2424,81),(2424,160),(2424,160),(2424,81))
-(10 rows)
+(2 rows)
 
+---END---
+---START---
 SELECT circle_center(f1), round(radius(f1)) as radius FROM gcircle_tbl ORDER BY f1 <-> '(200,300)'::point LIMIT 10;
- circle_center  | radius 
-----------------+--------
- (288.5,407)    |     68
- (710.5,175)    |     50
- (323.5,1433)   |     51
- (927.5,1178.5) |     30
- (1395,373.5)   |     57
- (1555.5,1007)  |     53
- (217,1835)     |     45
- (489,2421.5)   |     22
- (2424,120.5)   |     40
- (751.5,2655)   |     20
-(10 rows)
+ circle_center | radius 
+---------------+--------
+(0 rows)
 
+---END---
+---START---
 -- Now check the results from plain indexscan
 SET enable_seqscan = OFF;
+---END---
+---START---
 SET enable_indexscan = ON;
+---END---
+---START---
 SET enable_bitmapscan = OFF;
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT * FROM fast_emp4000
     WHERE home_base <@ '(200,200),(2000,1000)'::box
@@ -251,19 +332,21 @@ SELECT * FROM fast_emp4000
 -----------------------------------------------------------------
  Sort
    Sort Key: ((home_base[0])[0])
-   ->  Index Only Scan using grect2ind on fast_emp4000
+   ->  Index Scan using grect2ind on fast_emp4000
          Index Cond: (home_base <@ '(2000,1000),(200,200)'::box)
 (4 rows)
 
+---END---
+---START---
 SELECT * FROM fast_emp4000
     WHERE home_base <@ '(200,200),(2000,1000)'::box
     ORDER BY (home_base[0])[0];
-       home_base       
------------------------
- (337,455),(240,359)
- (1444,403),(1346,344)
-(2 rows)
+ gemini_pk | home_base 
+-----------+-----------
+(0 rows)
 
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT count(*) FROM fast_emp4000 WHERE home_base && '(1000,1000,0,0)'::box;
                          QUERY PLAN                          
@@ -273,12 +356,16 @@ SELECT count(*) FROM fast_emp4000 WHERE home_base && '(1000,1000,0,0)'::box;
          Index Cond: (home_base && '(1000,1000),(0,0)'::box)
 (3 rows)
 
+---END---
+---START---
 SELECT count(*) FROM fast_emp4000 WHERE home_base && '(1000,1000,0,0)'::box;
  count 
 -------
-     2
+     0
 (1 row)
 
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT count(*) FROM fast_emp4000 WHERE home_base IS NULL;
                       QUERY PLAN                       
@@ -288,12 +375,16 @@ SELECT count(*) FROM fast_emp4000 WHERE home_base IS NULL;
          Index Cond: (home_base IS NULL)
 (3 rows)
 
+---END---
+---START---
 SELECT count(*) FROM fast_emp4000 WHERE home_base IS NULL;
  count 
 -------
-   278
+     0
 (1 row)
 
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT count(*) FROM gpolygon_tbl WHERE f1 && '(1000,1000,0,0)'::polygon;
                          QUERY PLAN                         
@@ -303,12 +394,16 @@ SELECT count(*) FROM gpolygon_tbl WHERE f1 && '(1000,1000,0,0)'::polygon;
          Index Cond: (f1 && '((1000,1000),(0,0))'::polygon)
 (3 rows)
 
+---END---
+---START---
 SELECT count(*) FROM gpolygon_tbl WHERE f1 && '(1000,1000,0,0)'::polygon;
  count 
 -------
      2
 (1 row)
 
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT count(*) FROM gcircle_tbl WHERE f1 && '<(500,500),500>'::circle;
                       QUERY PLAN                       
@@ -318,228 +413,185 @@ SELECT count(*) FROM gcircle_tbl WHERE f1 && '<(500,500),500>'::circle;
          Index Cond: (f1 && '<(500,500),500>'::circle)
 (3 rows)
 
+---END---
+---START---
 SELECT count(*) FROM gcircle_tbl WHERE f1 && '<(500,500),500>'::circle;
  count 
 -------
-     2
+     0
 (1 row)
 
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT count(*) FROM point_tbl WHERE f1 <@ box '(0,0,100,100)';
-                     QUERY PLAN                     
-----------------------------------------------------
- Aggregate
-   ->  Index Only Scan using gpointind on point_tbl
-         Index Cond: (f1 <@ '(100,100),(0,0)'::box)
-(3 rows)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 2: SELECT count(*) FROM point_tbl WHERE f1 <@ box '(0,0,100,100...
+                             ^
+---END---
+---START---
 SELECT count(*) FROM point_tbl WHERE f1 <@ box '(0,0,100,100)';
- count 
--------
-     3
-(1 row)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT count(*) FROM point_tbl WHERE f1 <@ box '(0,0,100,100...
+                             ^
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT count(*) FROM point_tbl WHERE box '(0,0,100,100)' @> f1;
-                     QUERY PLAN                     
-----------------------------------------------------
- Aggregate
-   ->  Index Only Scan using gpointind on point_tbl
-         Index Cond: (f1 <@ '(100,100),(0,0)'::box)
-(3 rows)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 2: SELECT count(*) FROM point_tbl WHERE box '(0,0,100,100)' @> ...
+                             ^
+---END---
+---START---
 SELECT count(*) FROM point_tbl WHERE box '(0,0,100,100)' @> f1;
- count 
--------
-     3
-(1 row)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT count(*) FROM point_tbl WHERE box '(0,0,100,100)' @> ...
+                             ^
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT count(*) FROM point_tbl WHERE f1 <@ polygon '(0,0),(0,100),(100,100),(50,50),(100,0),(0,0)';
-                                       QUERY PLAN                                       
-----------------------------------------------------------------------------------------
- Aggregate
-   ->  Index Only Scan using gpointind on point_tbl
-         Index Cond: (f1 <@ '((0,0),(0,100),(100,100),(50,50),(100,0),(0,0))'::polygon)
-(3 rows)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 2: SELECT count(*) FROM point_tbl WHERE f1 <@ polygon '(0,0),(0...
+                             ^
+---END---
+---START---
 SELECT count(*) FROM point_tbl WHERE f1 <@ polygon '(0,0),(0,100),(100,100),(50,50),(100,0),(0,0)';
- count 
--------
-     4
-(1 row)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT count(*) FROM point_tbl WHERE f1 <@ polygon '(0,0),(0...
+                             ^
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT count(*) FROM point_tbl WHERE f1 <@ circle '<(50,50),50>';
-                     QUERY PLAN                     
-----------------------------------------------------
- Aggregate
-   ->  Index Only Scan using gpointind on point_tbl
-         Index Cond: (f1 <@ '<(50,50),50>'::circle)
-(3 rows)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 2: SELECT count(*) FROM point_tbl WHERE f1 <@ circle '<(50,50),...
+                             ^
+---END---
+---START---
 SELECT count(*) FROM point_tbl WHERE f1 <@ circle '<(50,50),50>';
- count 
--------
-     1
-(1 row)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT count(*) FROM point_tbl WHERE f1 <@ circle '<(50,50),...
+                             ^
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT count(*) FROM point_tbl p WHERE p.f1 << '(0.0, 0.0)';
-                      QUERY PLAN                      
-------------------------------------------------------
- Aggregate
-   ->  Index Only Scan using gpointind on point_tbl p
-         Index Cond: (f1 << '(0,0)'::point)
-(3 rows)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 2: SELECT count(*) FROM point_tbl p WHERE p.f1 << '(0.0, 0.0)';
+                             ^
+---END---
+---START---
 SELECT count(*) FROM point_tbl p WHERE p.f1 << '(0.0, 0.0)';
- count 
--------
-     3
-(1 row)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT count(*) FROM point_tbl p WHERE p.f1 << '(0.0, 0.0)';
+                             ^
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT count(*) FROM point_tbl p WHERE p.f1 >> '(0.0, 0.0)';
-                      QUERY PLAN                      
-------------------------------------------------------
- Aggregate
-   ->  Index Only Scan using gpointind on point_tbl p
-         Index Cond: (f1 >> '(0,0)'::point)
-(3 rows)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 2: SELECT count(*) FROM point_tbl p WHERE p.f1 >> '(0.0, 0.0)';
+                             ^
+---END---
+---START---
 SELECT count(*) FROM point_tbl p WHERE p.f1 >> '(0.0, 0.0)';
- count 
--------
-     4
-(1 row)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT count(*) FROM point_tbl p WHERE p.f1 >> '(0.0, 0.0)';
+                             ^
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT count(*) FROM point_tbl p WHERE p.f1 <<| '(0.0, 0.0)';
-                      QUERY PLAN                      
-------------------------------------------------------
- Aggregate
-   ->  Index Only Scan using gpointind on point_tbl p
-         Index Cond: (f1 <<| '(0,0)'::point)
-(3 rows)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 2: SELECT count(*) FROM point_tbl p WHERE p.f1 <<| '(0.0, 0.0)'...
+                             ^
+---END---
+---START---
 SELECT count(*) FROM point_tbl p WHERE p.f1 <<| '(0.0, 0.0)';
- count 
--------
-     1
-(1 row)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT count(*) FROM point_tbl p WHERE p.f1 <<| '(0.0, 0.0)'...
+                             ^
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT count(*) FROM point_tbl p WHERE p.f1 |>> '(0.0, 0.0)';
-                      QUERY PLAN                      
-------------------------------------------------------
- Aggregate
-   ->  Index Only Scan using gpointind on point_tbl p
-         Index Cond: (f1 |>> '(0,0)'::point)
-(3 rows)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 2: SELECT count(*) FROM point_tbl p WHERE p.f1 |>> '(0.0, 0.0)'...
+                             ^
+---END---
+---START---
 SELECT count(*) FROM point_tbl p WHERE p.f1 |>> '(0.0, 0.0)';
- count 
--------
-     5
-(1 row)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT count(*) FROM point_tbl p WHERE p.f1 |>> '(0.0, 0.0)'...
+                             ^
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT count(*) FROM point_tbl p WHERE p.f1 ~= '(-5, -12)';
-                      QUERY PLAN                      
-------------------------------------------------------
- Aggregate
-   ->  Index Only Scan using gpointind on point_tbl p
-         Index Cond: (f1 ~= '(-5,-12)'::point)
-(3 rows)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 2: SELECT count(*) FROM point_tbl p WHERE p.f1 ~= '(-5, -12)';
+                             ^
+---END---
+---START---
 SELECT count(*) FROM point_tbl p WHERE p.f1 ~= '(-5, -12)';
- count 
--------
-     1
-(1 row)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT count(*) FROM point_tbl p WHERE p.f1 ~= '(-5, -12)';
+                             ^
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT * FROM point_tbl ORDER BY f1 <-> '0,1';
-                  QUERY PLAN                  
-----------------------------------------------
- Index Only Scan using gpointind on point_tbl
-   Order By: (f1 <-> '(0,1)'::point)
-(2 rows)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 2: SELECT * FROM point_tbl ORDER BY f1 <-> '0,1';
+                      ^
+---END---
+---START---
 SELECT * FROM point_tbl ORDER BY f1 <-> '0,1';
-        f1         
--------------------
- (1e-300,-1e-300)
- (0,0)
- (-3,4)
- (-10,0)
- (10,10)
- (-5,-12)
- (5.1,34.5)
- (Infinity,1e+300)
- (1e+300,Infinity)
- (NaN,NaN)
- 
-(11 rows)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT * FROM point_tbl ORDER BY f1 <-> '0,1';
+                      ^
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT * FROM point_tbl WHERE f1 IS NULL;
-                  QUERY PLAN                  
-----------------------------------------------
- Index Only Scan using gpointind on point_tbl
-   Index Cond: (f1 IS NULL)
-(2 rows)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 2: SELECT * FROM point_tbl WHERE f1 IS NULL;
+                      ^
+---END---
+---START---
 SELECT * FROM point_tbl WHERE f1 IS NULL;
- f1 
-----
- 
-(1 row)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT * FROM point_tbl WHERE f1 IS NULL;
+                      ^
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT * FROM point_tbl WHERE f1 IS NOT NULL ORDER BY f1 <-> '0,1';
-                  QUERY PLAN                  
-----------------------------------------------
- Index Only Scan using gpointind on point_tbl
-   Index Cond: (f1 IS NOT NULL)
-   Order By: (f1 <-> '(0,1)'::point)
-(3 rows)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 2: SELECT * FROM point_tbl WHERE f1 IS NOT NULL ORDER BY f1 <->...
+                      ^
+---END---
+---START---
 SELECT * FROM point_tbl WHERE f1 IS NOT NULL ORDER BY f1 <-> '0,1';
-        f1         
--------------------
- (1e-300,-1e-300)
- (0,0)
- (-3,4)
- (-10,0)
- (10,10)
- (-5,-12)
- (5.1,34.5)
- (Infinity,1e+300)
- (1e+300,Infinity)
- (NaN,NaN)
-(10 rows)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT * FROM point_tbl WHERE f1 IS NOT NULL ORDER BY f1 <->...
+                      ^
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT * FROM point_tbl WHERE f1 <@ '(-10,-10),(10,10)':: box ORDER BY f1 <-> '0,1';
-                   QUERY PLAN                   
-------------------------------------------------
- Index Only Scan using gpointind on point_tbl
-   Index Cond: (f1 <@ '(10,10),(-10,-10)'::box)
-   Order By: (f1 <-> '(0,1)'::point)
-(3 rows)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 2: SELECT * FROM point_tbl WHERE f1 <@ '(-10,-10),(10,10)':: bo...
+                      ^
+---END---
+---START---
 SELECT * FROM point_tbl WHERE f1 <@ '(-10,-10),(10,10)':: box ORDER BY f1 <-> '0,1';
-        f1        
-------------------
- (1e-300,-1e-300)
- (0,0)
- (-3,4)
- (-10,0)
- (10,10)
-(5 rows)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT * FROM point_tbl WHERE f1 <@ '(-10,-10),(10,10)':: bo...
+                      ^
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT * FROM gpolygon_tbl ORDER BY f1 <-> '(0,0)'::point LIMIT 10;
                      QUERY PLAN                      
@@ -549,21 +601,17 @@ SELECT * FROM gpolygon_tbl ORDER BY f1 <-> '(0,0)'::point LIMIT 10;
          Order By: (f1 <-> '(0,0)'::point)
 (3 rows)
 
+---END---
+---START---
 SELECT * FROM gpolygon_tbl ORDER BY f1 <-> '(0,0)'::point LIMIT 10;
-                       f1                        
--------------------------------------------------
- ((240,359),(240,455),(337,455),(337,359))
- ((662,163),(662,187),(759,187),(759,163))
+           f1           
+------------------------
  ((1000,0),(0,1000))
  ((0,1000),(1000,1000))
- ((1346,344),(1346,403),(1444,403),(1444,344))
- ((278,1409),(278,1457),(369,1457),(369,1409))
- ((907,1156),(907,1201),(948,1201),(948,1156))
- ((1517,971),(1517,1043),(1594,1043),(1594,971))
- ((175,1820),(175,1850),(259,1850),(259,1820))
- ((2424,81),(2424,160),(2424,160),(2424,81))
-(10 rows)
+(2 rows)
 
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT circle_center(f1), round(radius(f1)) as radius FROM gcircle_tbl ORDER BY f1 <-> '(200,300)'::point LIMIT 10;
                     QUERY PLAN                     
@@ -573,21 +621,15 @@ SELECT circle_center(f1), round(radius(f1)) as radius FROM gcircle_tbl ORDER BY 
          Order By: (f1 <-> '(200,300)'::point)
 (3 rows)
 
+---END---
+---START---
 SELECT circle_center(f1), round(radius(f1)) as radius FROM gcircle_tbl ORDER BY f1 <-> '(200,300)'::point LIMIT 10;
- circle_center  | radius 
-----------------+--------
- (288.5,407)    |     68
- (710.5,175)    |     50
- (323.5,1433)   |     51
- (927.5,1178.5) |     30
- (1395,373.5)   |     57
- (1555.5,1007)  |     53
- (217,1835)     |     45
- (489,2421.5)   |     22
- (2424,120.5)   |     40
- (751.5,2655)   |     20
-(10 rows)
+ circle_center | radius 
+---------------+--------
+(0 rows)
 
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT point(x,x), (SELECT f1 FROM gpolygon_tbl ORDER BY f1 <-> point(x,x) LIMIT 1) as c FROM generate_series(0,10,1) x;
                                          QUERY PLAN                                         
@@ -599,314 +641,211 @@ SELECT point(x,x), (SELECT f1 FROM gpolygon_tbl ORDER BY f1 <-> point(x,x) LIMIT
                  Order By: (f1 <-> point((x.x)::double precision, (x.x)::double precision))
 (5 rows)
 
+---END---
+---START---
 SELECT point(x,x), (SELECT f1 FROM gpolygon_tbl ORDER BY f1 <-> point(x,x) LIMIT 1) as c FROM generate_series(0,10,1) x;
-  point  |                     c                     
----------+-------------------------------------------
- (0,0)   | ((240,359),(240,455),(337,455),(337,359))
- (1,1)   | ((240,359),(240,455),(337,455),(337,359))
- (2,2)   | ((240,359),(240,455),(337,455),(337,359))
- (3,3)   | ((240,359),(240,455),(337,455),(337,359))
- (4,4)   | ((240,359),(240,455),(337,455),(337,359))
- (5,5)   | ((240,359),(240,455),(337,455),(337,359))
- (6,6)   | ((240,359),(240,455),(337,455),(337,359))
- (7,7)   | ((240,359),(240,455),(337,455),(337,359))
- (8,8)   | ((240,359),(240,455),(337,455),(337,359))
- (9,9)   | ((240,359),(240,455),(337,455),(337,359))
- (10,10) | ((240,359),(240,455),(337,455),(337,359))
+  point  |          c          
+---------+---------------------
+ (0,0)   | ((1000,0),(0,1000))
+ (1,1)   | ((1000,0),(0,1000))
+ (2,2)   | ((1000,0),(0,1000))
+ (3,3)   | ((1000,0),(0,1000))
+ (4,4)   | ((1000,0),(0,1000))
+ (5,5)   | ((1000,0),(0,1000))
+ (6,6)   | ((1000,0),(0,1000))
+ (7,7)   | ((1000,0),(0,1000))
+ (8,8)   | ((1000,0),(0,1000))
+ (9,9)   | ((1000,0),(0,1000))
+ (10,10) | ((1000,0),(0,1000))
 (11 rows)
 
+---END---
+---START---
 -- Now check the results from bitmap indexscan
 SET enable_seqscan = OFF;
+---END---
+---START---
 SET enable_indexscan = OFF;
+---END---
+---START---
 SET enable_bitmapscan = ON;
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT * FROM point_tbl WHERE f1 <@ '(-10,-10),(10,10)':: box ORDER BY f1 <-> '0,1';
-                         QUERY PLAN                         
-------------------------------------------------------------
- Sort
-   Sort Key: ((f1 <-> '(0,1)'::point))
-   ->  Bitmap Heap Scan on point_tbl
-         Recheck Cond: (f1 <@ '(10,10),(-10,-10)'::box)
-         ->  Bitmap Index Scan on gpointind
-               Index Cond: (f1 <@ '(10,10),(-10,-10)'::box)
-(6 rows)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 2: SELECT * FROM point_tbl WHERE f1 <@ '(-10,-10),(10,10)':: bo...
+                      ^
+---END---
+---START---
 SELECT * FROM point_tbl WHERE f1 <@ '(-10,-10),(10,10)':: box ORDER BY f1 <-> '0,1';
-        f1        
-------------------
- (0,0)
- (1e-300,-1e-300)
- (-3,4)
- (-10,0)
- (10,10)
-(5 rows)
-
+ERROR:  relation "point_tbl" does not exist
+LINE 1: SELECT * FROM point_tbl WHERE f1 <@ '(-10,-10),(10,10)':: bo...
+                      ^
+---END---
+---START---
 RESET enable_seqscan;
+---END---
+---START---
 RESET enable_indexscan;
+---END---
+---START---
 RESET enable_bitmapscan;
---
--- GIN over int[] and text[]
---
--- Note: GIN currently supports only bitmap scans, not plain indexscans
---
-CREATE TABLE array_index_op_test (
-	seqno		int4,
-	i			int4[],
-	t			text[]
-);
+---END---
+---START---
+CREATE TABLE array_index_op_test (gemini_pk serial PRIMARY KEY, seqno int8, i int8[], t text[]);
+---END---
+---START---
 \set filename :abs_srcdir '/data/array.data'
 COPY array_index_op_test FROM :'filename';
+ERROR:  invalid input syntax for type bigint: "{92,75,71,52,64,83}"
+CONTEXT:  COPY array_index_op_test, line 1, column seqno: "{92,75,71,52,64,83}"
+---END---
+---START---
 ANALYZE array_index_op_test;
+---END---
+---START---
 SELECT * FROM array_index_op_test WHERE i = '{NULL}' ORDER BY seqno;
- seqno |   i    |   t    
--------+--------+--------
-   102 | {NULL} | {NULL}
-(1 row)
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
 
+---END---
+---START---
 SELECT * FROM array_index_op_test WHERE i @> '{NULL}' ORDER BY seqno;
- seqno | i | t 
--------+---+---
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
 (0 rows)
 
+---END---
+---START---
 SELECT * FROM array_index_op_test WHERE i && '{NULL}' ORDER BY seqno;
- seqno | i | t 
--------+---+---
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
 (0 rows)
 
+---END---
+---START---
 SELECT * FROM array_index_op_test WHERE i <@ '{NULL}' ORDER BY seqno;
- seqno | i  | t  
--------+----+----
-   101 | {} | {}
-(1 row)
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
 
+---END---
+---START---
 SET enable_seqscan = OFF;
+---END---
+---START---
 SET enable_indexscan = OFF;
+---END---
+---START---
 SET enable_bitmapscan = ON;
+---END---
+---START---
 CREATE INDEX intarrayidx ON array_index_op_test USING gin (i);
+---END---
+---START---
 explain (costs off)
 SELECT * FROM array_index_op_test WHERE i @> '{32}' ORDER BY seqno;
-                     QUERY PLAN                     
-----------------------------------------------------
+                    QUERY PLAN                     
+---------------------------------------------------
  Sort
    Sort Key: seqno
    ->  Bitmap Heap Scan on array_index_op_test
-         Recheck Cond: (i @> '{32}'::integer[])
+         Recheck Cond: (i @> '{32}'::bigint[])
          ->  Bitmap Index Scan on intarrayidx
-               Index Cond: (i @> '{32}'::integer[])
+               Index Cond: (i @> '{32}'::bigint[])
 (6 rows)
 
+---END---
+---START---
 SELECT * FROM array_index_op_test WHERE i @> '{32}' ORDER BY seqno;
- seqno |                i                |                                                                 t                                                                  
--------+---------------------------------+------------------------------------------------------------------------------------------------------------------------------------
-     6 | {39,35,5,94,17,92,60,32}        | {AAAAAAAAAAAAAAA35875,AAAAAAAAAAAAAAAA23657}
-    74 | {32}                            | {AAAAAAAAAAAAAAAA1729,AAAAAAAAAAAAA22860,AAAAAA99807,AAAAA17383,AAAAAAAAAAAAAAA67062,AAAAAAAAAAA15165,AAAAAAAAAAA50956}
-    77 | {97,15,32,17,55,59,18,37,50,39} | {AAAAAAAAAAAA67946,AAAAAA54032,AAAAAAAA81587,55847,AAAAAAAAAAAAAA28620,AAAAAAAAAAAAAAAAA43052,AAAAAA75463,AAAA49534,AAAAAAAA44066}
-    89 | {40,32,17,6,30,88}              | {AA44673,AAAAAAAAAAA6119,AAAAAAAAAAAAAAAA23657,AAAAAAAAAAAAAAAAAA47955,AAAAAAAAAAAAAAAA33598,AAAAAAAAAAA33576,AA44673}
-    98 | {38,34,32,89}                   | {AAAAAAAAAAAAAAAAAA71621,AAAA8857,AAAAAAAAAAAAAAAAAAA65037,AAAAAAAAAAAAAAAA31334,AAAAAAAAAA48845}
-   100 | {85,32,57,39,49,84,32,3,30}     | {AAAAAAA80240,AAAAAAAAAAAAAAAA1729,AAAAA60038,AAAAAAAAAAA92631,AAAAAAAA9523}
-(6 rows)
-
-SELECT * FROM array_index_op_test WHERE i && '{32}' ORDER BY seqno;
- seqno |                i                |                                                                 t                                                                  
--------+---------------------------------+------------------------------------------------------------------------------------------------------------------------------------
-     6 | {39,35,5,94,17,92,60,32}        | {AAAAAAAAAAAAAAA35875,AAAAAAAAAAAAAAAA23657}
-    74 | {32}                            | {AAAAAAAAAAAAAAAA1729,AAAAAAAAAAAAA22860,AAAAAA99807,AAAAA17383,AAAAAAAAAAAAAAA67062,AAAAAAAAAAA15165,AAAAAAAAAAA50956}
-    77 | {97,15,32,17,55,59,18,37,50,39} | {AAAAAAAAAAAA67946,AAAAAA54032,AAAAAAAA81587,55847,AAAAAAAAAAAAAA28620,AAAAAAAAAAAAAAAAA43052,AAAAAA75463,AAAA49534,AAAAAAAA44066}
-    89 | {40,32,17,6,30,88}              | {AA44673,AAAAAAAAAAA6119,AAAAAAAAAAAAAAAA23657,AAAAAAAAAAAAAAAAAA47955,AAAAAAAAAAAAAAAA33598,AAAAAAAAAAA33576,AA44673}
-    98 | {38,34,32,89}                   | {AAAAAAAAAAAAAAAAAA71621,AAAA8857,AAAAAAAAAAAAAAAAAAA65037,AAAAAAAAAAAAAAAA31334,AAAAAAAAAA48845}
-   100 | {85,32,57,39,49,84,32,3,30}     | {AAAAAAA80240,AAAAAAAAAAAAAAAA1729,AAAAA60038,AAAAAAAAAAA92631,AAAAAAAA9523}
-(6 rows)
-
-SELECT * FROM array_index_op_test WHERE i @> '{17}' ORDER BY seqno;
- seqno |                i                |                                                                 t                                                                  
--------+---------------------------------+------------------------------------------------------------------------------------------------------------------------------------
-     6 | {39,35,5,94,17,92,60,32}        | {AAAAAAAAAAAAAAA35875,AAAAAAAAAAAAAAAA23657}
-    12 | {17,99,18,52,91,72,0,43,96,23}  | {AAAAA33250,AAAAAAAAAAAAAAAAAAA85420,AAAAAAAAAAA33576}
-    15 | {17,14,16,63,67}                | {AA6416,AAAAAAAAAA646,AAAAA95309}
-    19 | {52,82,17,74,23,46,69,51,75}    | {AAAAAAAAAAAAA73084,AAAAA75968,AAAAAAAAAAAAAAAA14047,AAAAAAA80240,AAAAAAAAAAAAAAAAAAA1205,A68938}
-    53 | {38,17}                         | {AAAAAAAAAAA21658}
-    65 | {61,5,76,59,17}                 | {AAAAAA99807,AAAAA64741,AAAAAAAAAAA53908,AA21643,AAAAAAAAA10012}
-    77 | {97,15,32,17,55,59,18,37,50,39} | {AAAAAAAAAAAA67946,AAAAAA54032,AAAAAAAA81587,55847,AAAAAAAAAAAAAA28620,AAAAAAAAAAAAAAAAA43052,AAAAAA75463,AAAA49534,AAAAAAAA44066}
-    89 | {40,32,17,6,30,88}              | {AA44673,AAAAAAAAAAA6119,AAAAAAAAAAAAAAAA23657,AAAAAAAAAAAAAAAAAA47955,AAAAAAAAAAAAAAAA33598,AAAAAAAAAAA33576,AA44673}
-(8 rows)
-
-SELECT * FROM array_index_op_test WHERE i && '{17}' ORDER BY seqno;
- seqno |                i                |                                                                 t                                                                  
--------+---------------------------------+------------------------------------------------------------------------------------------------------------------------------------
-     6 | {39,35,5,94,17,92,60,32}        | {AAAAAAAAAAAAAAA35875,AAAAAAAAAAAAAAAA23657}
-    12 | {17,99,18,52,91,72,0,43,96,23}  | {AAAAA33250,AAAAAAAAAAAAAAAAAAA85420,AAAAAAAAAAA33576}
-    15 | {17,14,16,63,67}                | {AA6416,AAAAAAAAAA646,AAAAA95309}
-    19 | {52,82,17,74,23,46,69,51,75}    | {AAAAAAAAAAAAA73084,AAAAA75968,AAAAAAAAAAAAAAAA14047,AAAAAAA80240,AAAAAAAAAAAAAAAAAAA1205,A68938}
-    53 | {38,17}                         | {AAAAAAAAAAA21658}
-    65 | {61,5,76,59,17}                 | {AAAAAA99807,AAAAA64741,AAAAAAAAAAA53908,AA21643,AAAAAAAAA10012}
-    77 | {97,15,32,17,55,59,18,37,50,39} | {AAAAAAAAAAAA67946,AAAAAA54032,AAAAAAAA81587,55847,AAAAAAAAAAAAAA28620,AAAAAAAAAAAAAAAAA43052,AAAAAA75463,AAAA49534,AAAAAAAA44066}
-    89 | {40,32,17,6,30,88}              | {AA44673,AAAAAAAAAAA6119,AAAAAAAAAAAAAAAA23657,AAAAAAAAAAAAAAAAAA47955,AAAAAAAAAAAAAAAA33598,AAAAAAAAAAA33576,AA44673}
-(8 rows)
-
-SELECT * FROM array_index_op_test WHERE i @> '{32,17}' ORDER BY seqno;
- seqno |                i                |                                                                 t                                                                  
--------+---------------------------------+------------------------------------------------------------------------------------------------------------------------------------
-     6 | {39,35,5,94,17,92,60,32}        | {AAAAAAAAAAAAAAA35875,AAAAAAAAAAAAAAAA23657}
-    77 | {97,15,32,17,55,59,18,37,50,39} | {AAAAAAAAAAAA67946,AAAAAA54032,AAAAAAAA81587,55847,AAAAAAAAAAAAAA28620,AAAAAAAAAAAAAAAAA43052,AAAAAA75463,AAAA49534,AAAAAAAA44066}
-    89 | {40,32,17,6,30,88}              | {AA44673,AAAAAAAAAAA6119,AAAAAAAAAAAAAAAA23657,AAAAAAAAAAAAAAAAAA47955,AAAAAAAAAAAAAAAA33598,AAAAAAAAAAA33576,AA44673}
-(3 rows)
-
-SELECT * FROM array_index_op_test WHERE i && '{32,17}' ORDER BY seqno;
- seqno |                i                |                                                                 t                                                                  
--------+---------------------------------+------------------------------------------------------------------------------------------------------------------------------------
-     6 | {39,35,5,94,17,92,60,32}        | {AAAAAAAAAAAAAAA35875,AAAAAAAAAAAAAAAA23657}
-    12 | {17,99,18,52,91,72,0,43,96,23}  | {AAAAA33250,AAAAAAAAAAAAAAAAAAA85420,AAAAAAAAAAA33576}
-    15 | {17,14,16,63,67}                | {AA6416,AAAAAAAAAA646,AAAAA95309}
-    19 | {52,82,17,74,23,46,69,51,75}    | {AAAAAAAAAAAAA73084,AAAAA75968,AAAAAAAAAAAAAAAA14047,AAAAAAA80240,AAAAAAAAAAAAAAAAAAA1205,A68938}
-    53 | {38,17}                         | {AAAAAAAAAAA21658}
-    65 | {61,5,76,59,17}                 | {AAAAAA99807,AAAAA64741,AAAAAAAAAAA53908,AA21643,AAAAAAAAA10012}
-    74 | {32}                            | {AAAAAAAAAAAAAAAA1729,AAAAAAAAAAAAA22860,AAAAAA99807,AAAAA17383,AAAAAAAAAAAAAAA67062,AAAAAAAAAAA15165,AAAAAAAAAAA50956}
-    77 | {97,15,32,17,55,59,18,37,50,39} | {AAAAAAAAAAAA67946,AAAAAA54032,AAAAAAAA81587,55847,AAAAAAAAAAAAAA28620,AAAAAAAAAAAAAAAAA43052,AAAAAA75463,AAAA49534,AAAAAAAA44066}
-    89 | {40,32,17,6,30,88}              | {AA44673,AAAAAAAAAAA6119,AAAAAAAAAAAAAAAA23657,AAAAAAAAAAAAAAAAAA47955,AAAAAAAAAAAAAAAA33598,AAAAAAAAAAA33576,AA44673}
-    98 | {38,34,32,89}                   | {AAAAAAAAAAAAAAAAAA71621,AAAA8857,AAAAAAAAAAAAAAAAAAA65037,AAAAAAAAAAAAAAAA31334,AAAAAAAAAA48845}
-   100 | {85,32,57,39,49,84,32,3,30}     | {AAAAAAA80240,AAAAAAAAAAAAAAAA1729,AAAAA60038,AAAAAAAAAAA92631,AAAAAAAA9523}
-(11 rows)
-
-SELECT * FROM array_index_op_test WHERE i <@ '{38,34,32,89}' ORDER BY seqno;
- seqno |       i       |                                                             t                                                              
--------+---------------+----------------------------------------------------------------------------------------------------------------------------
-    40 | {34}          | {AAAAAAAAAAAAAA10611,AAAAAAAAAAAAAAAAAAA1205,AAAAAAAAAAA50956,AAAAAAAAAAAAAAAA31334,AAAAA70466,AAAAAAAA81587,AAAAAAA74623}
-    74 | {32}          | {AAAAAAAAAAAAAAAA1729,AAAAAAAAAAAAA22860,AAAAAA99807,AAAAA17383,AAAAAAAAAAAAAAA67062,AAAAAAAAAAA15165,AAAAAAAAAAA50956}
-    98 | {38,34,32,89} | {AAAAAAAAAAAAAAAAAA71621,AAAA8857,AAAAAAAAAAAAAAAAAAA65037,AAAAAAAAAAAAAAAA31334,AAAAAAAAAA48845}
-   101 | {}            | {}
-(4 rows)
-
-SELECT * FROM array_index_op_test WHERE i = '{47,77}' ORDER BY seqno;
- seqno |    i    |                                                        t                                                        
--------+---------+-----------------------------------------------------------------------------------------------------------------
-    95 | {47,77} | {AAAAAAAAAAAAAAAAA764,AAAAAAAAAAA74076,AAAAAAAAAA18107,AAAAA40681,AAAAAAAAAAAAAAA35875,AAAAA60038,AAAAAAA56483}
-(1 row)
-
-SELECT * FROM array_index_op_test WHERE i = '{}' ORDER BY seqno;
- seqno | i  | t  
--------+----+----
-   101 | {} | {}
-(1 row)
-
-SELECT * FROM array_index_op_test WHERE i @> '{}' ORDER BY seqno;
- seqno |                i                |                                                                                                       t                                                                                                        
--------+---------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     1 | {92,75,71,52,64,83}             | {AAAAAAAA44066,AAAAAA1059,AAAAAAAAAAA176,AAAAAAA48038}
-     2 | {3,6}                           | {AAAAAA98232,AAAAAAAA79710,AAAAAAAAAAAAAAAAA69675,AAAAAAAAAAAAAAAA55798,AAAAAAAAA12793}
-     3 | {37,64,95,43,3,41,13,30,11,43}  | {AAAAAAAAAA48845,AAAAA75968,AAAAA95309,AAA54451,AAAAAAAAAA22292,AAAAAAA99836,A96617,AA17009,AAAAAAAAAAAAAA95246}
-     4 | {71,39,99,55,33,75,45}          | {AAAAAAAAA53663,AAAAAAAAAAAAAAA67062,AAAAAAAAAA64777,AAA99043,AAAAAAAAAAAAAAAAAAA91804,39557}
-     5 | {50,42,77,50,4}                 | {AAAAAAAAAAAAAAAAA26540,AAAAAAA79710,AAAAAAAAAAAAAAAAAAA1205,AAAAAAAAAAA176,AAAAA95309,AAAAAAAAAAA46154,AAAAAA66777,AAAAAAAAA27249,AAAAAAAAAA64777,AAAAAAAAAAAAAAAAAAA70104}
-     6 | {39,35,5,94,17,92,60,32}        | {AAAAAAAAAAAAAAA35875,AAAAAAAAAAAAAAAA23657}
-     7 | {12,51,88,64,8}                 | {AAAAAAAAAAAAAAAAAA12591,AAAAAAAAAAAAAAAAA50407,AAAAAAAAAAAA67946}
-     8 | {60,84}                         | {AAAAAAA81898,AAAAAA1059,AAAAAAAAAAAA81511,AAAAA961,AAAAAAAAAAAAAAAA31334,AAAAA64741,AA6416,AAAAAAAAAAAAAAAAAA32918,AAAAAAAAAAAAAAAAA50407}
-     9 | {56,52,35,27,80,44,81,22}       | {AAAAAAAAAAAAAAA73034,AAAAAAAAAAAAA7929,AAAAAAA66161,AA88409,39557,A27153,AAAAAAAA9523,AAAAAAAAAAA99000}
-    10 | {71,5,45}                       | {AAAAAAAAAAA21658,AAAAAAAAAAAA21089,AAA54451,AAAAAAAAAAAAAAAAAA54141,AAAAAAAAAAAAAA28620,AAAAAAAAAAA21658,AAAAAAAAAAA74076,AAAAAAAAA27249}
-    11 | {41,86,74,48,22,74,47,50}       | {AAAAAAAA9523,AAAAAAAAAAAA37562,AAAAAAAAAAAAAAAA14047,AAAAAAAAAAA46154,AAAA41702,AAAAAAAAAAAAAAAAA764,AAAAA62737,39557}
-    12 | {17,99,18,52,91,72,0,43,96,23}  | {AAAAA33250,AAAAAAAAAAAAAAAAAAA85420,AAAAAAAAAAA33576}
-    13 | {3,52,34,23}                    | {AAAAAA98232,AAAA49534,AAAAAAAAAAA21658}
-    14 | {78,57,19}                      | {AAAA8857,AAAAAAAAAAAAAAA73034,AAAAAAAA81587,AAAAAAAAAAAAAAA68526,AAAAA75968,AAAAAAAAAAAAAA65909,AAAAAAAAA10012,AAAAAAAAAAAAAA65909}
-    15 | {17,14,16,63,67}                | {AA6416,AAAAAAAAAA646,AAAAA95309}
-    16 | {14,63,85,11}                   | {AAAAAA66777}
-    17 | {7,10,81,85}                    | {AAAAAA43678,AAAAAAA12144,AAAAAAAAAAA50956,AAAAAAAAAAAAAAAAAAA15356}
-    18 | {1}                             | {AAAAAAAAAAA33576,AAAAA95309,64261,AAA59323,AAAAAAAAAAAAAA95246,55847,AAAAAAAAAAAA67946,AAAAAAAAAAAAAAAAAA64374}
-    19 | {52,82,17,74,23,46,69,51,75}    | {AAAAAAAAAAAAA73084,AAAAA75968,AAAAAAAAAAAAAAAA14047,AAAAAAA80240,AAAAAAAAAAAAAAAAAAA1205,A68938}
-    20 | {72,89,70,51,54,37,8,49,79}     | {AAAAAA58494}
-    21 | {2,8,65,10,5,79,43}             | {AAAAAAAAAAAAAAAAA88852,AAAAAAAAAAAAAAAAAAA91804,AAAAA64669,AAAAAAAAAAAAAAAA1443,AAAAAAAAAAAAAAAA23657,AAAAA12179,AAAAAAAAAAAAAAAAA88852,AAAAAAAAAAAAAAAA31334,AAAAAAAAAAAAAAAA41303,AAAAAAAAAAAAAAAAAAA85420}
-    22 | {11,6,56,62,53,30}              | {AAAAAAAA72908}
-    23 | {40,90,5,38,72,40,30,10,43,55}  | {A6053,AAAAAAAAAAA6119,AA44673,AAAAAAAAAAAAAAAAA764,AA17009,AAAAA17383,AAAAA70514,AAAAA33250,AAAAA95309,AAAAAAAAAAAA37562}
-    24 | {94,61,99,35,48}                | {AAAAAAAAAAA50956,AAAAAAAAAAA15165,AAAA85070,AAAAAAAAAAAAAAA36627,AAAAA961,AAAAAAAAAA55219}
-    25 | {31,1,10,11,27,79,38}           | {AAAAAAAAAAAAAAAAAA59334,45449}
-    26 | {71,10,9,69,75}                 | {47735,AAAAAAA21462,AAAAAAAAAAAAAAAAA6897,AAAAAAAAAAAAAAAAAAA91804,AAAAAAAAA72121,AAAAAAAAAAAAAAAAAAA1205,AAAAA41597,AAAA8857,AAAAAAAAAAAAAAAAAAA15356,AA17009}
-    27 | {94}                            | {AA6416,A6053,AAAAAAA21462,AAAAAAA57334,AAAAAAAAAAAAAAAAAA12591,AA88409,AAAAAAAAAAAAA70254}
-    28 | {14,33,6,34,14}                 | {AAAAAAAAAAAAAAA13198,AAAAAAAA69452,AAAAAAAAAAA82945,AAAAAAA12144,AAAAAAAAA72121,AAAAAAAAAA18601}
-    29 | {39,21}                         | {AAAAAAAAAAAAAAAAA6897,AAAAAAAAAAAAAAAAAAA38885,AAAA85070,AAAAAAAAAAAAAAAAAAA70104,AAAAA66674,AAAAAAAAAAAAA62007,AAAAAAAA69452,AAAAAAA1242,AAAAAAAAAAAAAAAA1729,AAAA35194}
-    30 | {26,81,47,91,34}                | {AAAAAAAAAAAAAAAAAAA70104,AAAAAAA80240}
-    31 | {80,24,18,21,54}                | {AAAAAAAAAAAAAAA13198,AAAAAAAAAAAAAAAAAAA70415,A27153,AAAAAAAAA53663,AAAAAAAAAAAAAAAAA50407,A68938}
-    32 | {58,79,82,80,67,75,98,10,41}    | {AAAAAAAAAAAAAAAAAA61286,AAA54451,AAAAAAAAAAAAAAAAAAA87527,A96617,51533}
-    33 | {74,73}                         | {A85417,AAAAAAA56483,AAAAA17383,AAAAAAAAAAAAA62159,AAAAAAAAAAAA52814,AAAAAAAAAAAAA85723,AAAAAAAAAAAAAAAAAA55796}
-    34 | {70,45}                         | {AAAAAAAAAAAAAAAAAA71621,AAAAAAAAAAAAAA28620,AAAAAAAAAA55219,AAAAAAAA23648,AAAAAAAAAA22292,AAAAAAA1242}
-    35 | {23,40}                         | {AAAAAAAAAAAA52814,AAAA48949,AAAAAAAAA34727,AAAA8857,AAAAAAAAAAAAAAAAAAA62179,AAAAAAAAAAAAAAA68526,AAAAAAA99836,AAAAAAAA50094,AAAA91194,AAAAAAAAAAAAA73084}
-    36 | {79,82,14,52,30,5,79}           | {AAAAAAAAA53663,AAAAAAAAAAAAAAAA55798,AAAAAAAAAAAAAAAAAAA89194,AA88409,AAAAAAAAAAAAAAA81326,AAAAAAAAAAAAAAAAA63050,AAAAAAAAAAAAAAAA33598}
-    37 | {53,11,81,39,3,78,58,64,74}     | {AAAAAAAAAAAAAAAAAAA17075,AAAAAAA66161,AAAAAAAA23648,AAAAAAAAAAAAAA10611}
-    38 | {59,5,4,95,28}                  | {AAAAAAAAAAA82945,A96617,47735,AAAAA12179,AAAAA64669,AAAAAA99807,AA74433,AAAAAAAAAAAAAAAAA59387}
-    39 | {82,43,99,16,74}                | {AAAAAAAAAAAAAAA67062,AAAAAAA57334,AAAAAAAAAAAAAA65909,A27153,AAAAAAAAAAAAAAAAAAA17075,AAAAAAAAAAAAAAAAA43052,AAAAAAAAAA64777,AAAAAAAAAAAA81511,AAAAAAAAAAAAAA65909,AAAAAAAAAAAAAA28620}
-    40 | {34}                            | {AAAAAAAAAAAAAA10611,AAAAAAAAAAAAAAAAAAA1205,AAAAAAAAAAA50956,AAAAAAAAAAAAAAAA31334,AAAAA70466,AAAAAAAA81587,AAAAAAA74623}
-    41 | {19,26,63,12,93,73,27,94}       | {AAAAAAA79710,AAAAAAAAAA55219,AAAA41702,AAAAAAAAAAAAAAAAAAA17075,AAAAAAAAAAAAAAAAAA71621,AAAAAAAAAAAAAAAAA63050,AAAAAAA99836,AAAAAAAAAAAAAA8666}
-    42 | {15,76,82,75,8,91}              | {AAAAAAAAAAA176,AAAAAA38063,45449,AAAAAA54032,AAAAAAA81898,AA6416,AAAAAAAAAAAAAAAAAAA62179,45449,AAAAA60038,AAAAAAAA81587}
-    43 | {39,87,91,97,79,28}             | {AAAAAAAAAAA74076,A96617,AAAAAAAAAAAAAAAAAAA89194,AAAAAAAAAAAAAAAAAA55796,AAAAAAAAAAAAAAAA23657,AAAAAAAAAAAA67946}
-    44 | {40,58,68,29,54}                | {AAAAAAA81898,AAAAAA66777,AAAAAA98232}
-    45 | {99,45}                         | {AAAAAAAA72908,AAAAAAAAAAAAAAAAAAA17075,AA88409,AAAAAAAAAAAAAAAAAA36842,AAAAAAA48038,AAAAAAAAAAAAAA10611}
-    46 | {53,24}                         | {AAAAAAAAAAA53908,AAAAAA54032,AAAAA17383,AAAA48949,AAAAAAAAAA18601,AAAAA64669,45449,AAAAAAAAAAA98051,AAAAAAAAAAAAAAAAAA71621}
-    47 | {98,23,64,12,75,61}             | {AAA59323,AAAAA95309,AAAAAAAAAAAAAAAA31334,AAAAAAAAA27249,AAAAA17383,AAAAAAAAAAAA37562,AAAAAA1059,A84822,55847,AAAAA70466}
-    48 | {76,14}                         | {AAAAAAAAAAAAA59671,AAAAAAAAAAAAAAAAAAA91804,AAAAAA66777,AAAAAAAAAAAAAAAAAAA89194,AAAAAAAAAAAAAAA36627,AAAAAAAAAAAAAAAAAAA17075,AAAAAAAAAAAAA73084,AAAAAAA79710,AAAAAAAAAAAAAAA40402,AAAAAAAAAAAAAAAAAAA65037}
-    49 | {56,5,54,37,49}                 | {AA21643,AAAAAAAAAAA92631,AAAAAAAA81587}
-    50 | {20,12,37,64,93}                | {AAAAAAAAAA5483,AAAAAAAAAAAAAAAAAAA1205,AA6416,AAAAAAAAAAAAAAAAA63050,AAAAAAAAAAAAAAAAAA47955}
-    51 | {47}                            | {AAAAAAAAAAAAAA96505,AAAAAAAAAAAAAAAAAA36842,AAAAA95309,AAAAAAAA81587,AA6416,AAAA91194,AAAAAA58494,AAAAAA1059,AAAAAAAA69452}
-    52 | {89,0}                          | {AAAAAAAAAAAAAAAAAA47955,AAAAAAA48038,AAAAAAAAAAAAAAAAA43052,AAAAAAAAAAAAA73084,AAAAA70466,AAAAAAAAAAAAAAAAA764,AAAAAAAAAAA46154,AA66862}
-    53 | {38,17}                         | {AAAAAAAAAAA21658}
-    54 | {70,47}                         | {AAAAAAAAAAAAAAAAAA54141,AAAAA40681,AAAAAAA48038,AAAAAAAAAAAAAAAA29150,AAAAA41597,AAAAAAAAAAAAAAAAAA59334,AA15322}
-    55 | {47,79,47,64,72,25,71,24,93}    | {AAAAAAAAAAAAAAAAAA55796,AAAAA62737}
-    56 | {33,7,60,54,93,90,77,85,39}     | {AAAAAAAAAAAAAAAAAA32918,AA42406}
-    57 | {23,45,10,42,36,21,9,96}        | {AAAAAAAAAAAAAAAAAAA70415}
-    58 | {92}                            | {AAAAAAAAAAAAAAAA98414,AAAAAAAA23648,AAAAAAAAAAAAAAAAAA55796,AA25381,AAAAAAAAAAA6119}
-    59 | {9,69,46,77}                    | {39557,AAAAAAA89932,AAAAAAAAAAAAAAAAA43052,AAAAAAAAAAAAAAAAA26540,AAA20874,AA6416,AAAAAAAAAAAAAAAAAA47955}
-    60 | {62,2,59,38,89}                 | {AAAAAAA89932,AAAAAAAAAAAAAAAAAAA15356,AA99927,AA17009,AAAAAAAAAAAAAAA35875}
-    61 | {72,2,44,95,54,54,13}           | {AAAAAAAAAAAAAAAAAAA91804}
-    62 | {83,72,29,73}                   | {AAAAAAAAAAAAA15097,AAAA8857,AAAAAAAAAAAA35809,AAAAAAAAAAAA52814,AAAAAAAAAAAAAAAAAAA38885,AAAAAAAAAAAAAAAAAA24183,AAAAAA43678,A96617}
-    63 | {11,4,61,87}                    | {AAAAAAAAA27249,AAAAAAAAAAAAAAAAAA32918,AAAAAAAAAAAAAAA13198,AAA20874,39557,51533,AAAAAAAAAAA53908,AAAAAAAAAAAAAA96505,AAAAAAAA78938}
-    64 | {26,19,34,24,81,78}             | {A96617,AAAAAAAAAAAAAAAAAAA70104,A68938,AAAAAAAAAAA53908,AAAAAAAAAAAAAAA453,AA17009,AAAAAAA80240}
-    65 | {61,5,76,59,17}                 | {AAAAAA99807,AAAAA64741,AAAAAAAAAAA53908,AA21643,AAAAAAAAA10012}
-    66 | {31,23,70,52,4,33,48,25}        | {AAAAAAAAAAAAAAAAA69675,AAAAAAAA50094,AAAAAAAAAAA92631,AAAA35194,39557,AAAAAAA99836}
-    67 | {31,94,7,10}                    | {AAAAAA38063,A96617,AAAA35194,AAAAAAAAAAAA67946}
-    68 | {90,43,38}                      | {AA75092,AAAAAAAAAAAAAAAAA69675,AAAAAAAAAAA92631,AAAAAAAAA10012,AAAAAAAAAAAAA7929,AA21643}
-    69 | {67,35,99,85,72,86,44}          | {AAAAAAAAAAAAAAAAAAA1205,AAAAAAAA50094,AAAAAAAAAAAAAAAA1729,AAAAAAAAAAAAAAAAAA47955}
-    70 | {56,70,83}                      | {AAAA41702,AAAAAAAAAAA82945,AA21643,AAAAAAAAAAA99000,A27153,AA25381,AAAAAAAAAAAAAA96505,AAAAAAA1242}
-    71 | {74,26}                         | {AAAAAAAAAAA50956,AA74433,AAAAAAA21462,AAAAAAAAAAAAAAAAAAA17075,AAAAAAAAAAAAAAA36627,AAAAAAAAAAAAA70254,AAAAAAAAAA43419,39557}
-    72 | {22,1,16,78,20,91,83}           | {47735,AAAAAAA56483,AAAAAAAAAAAAA93788,AA42406,AAAAAAAAAAAAA73084,AAAAAAAA72908,AAAAAAAAAAAAAAAAAA61286,AAAAA66674,AAAAAAAAAAAAAAAAA50407}
-    73 | {88,25,96,78,65,15,29,19}       | {AAA54451,AAAAAAAAA27249,AAAAAAA9228,AAAAAAAAAAAAAAA67062,AAAAAAAAAAAAAAAAAAA70415,AAAAA17383,AAAAAAAAAAAAAAAA33598}
-    74 | {32}                            | {AAAAAAAAAAAAAAAA1729,AAAAAAAAAAAAA22860,AAAAAA99807,AAAAA17383,AAAAAAAAAAAAAAA67062,AAAAAAAAAAA15165,AAAAAAAAAAA50956}
-    75 | {12,96,83,24,71,89,55}          | {AAAA48949,AAAAAAAA29716,AAAAAAAAAAAAAAAAAAA1205,AAAAAAAAAAAA67946,AAAAAAAAAAAAAAAA29150,AAA28075,AAAAAAAAAAAAAAAAA43052}
-    76 | {92,55,10,7}                    | {AAAAAAAAAAAAAAA67062}
-    77 | {97,15,32,17,55,59,18,37,50,39} | {AAAAAAAAAAAA67946,AAAAAA54032,AAAAAAAA81587,55847,AAAAAAAAAAAAAA28620,AAAAAAAAAAAAAAAAA43052,AAAAAA75463,AAAA49534,AAAAAAAA44066}
-    78 | {55,89,44,84,34}                | {AAAAAAAAAAA6119,AAAAAAAAAAAAAA8666,AA99927,AA42406,AAAAAAA81898,AAAAAAA9228,AAAAAAAAAAA92631,AA21643,AAAAAAAAAAAAAA28620}
-    79 | {45}                            | {AAAAAAAAAA646,AAAAAAAAAAAAAAAAAAA70415,AAAAAA43678,AAAAAAAA72908}
-    80 | {74,89,44,80,0}                 | {AAAA35194,AAAAAAAA79710,AAA20874,AAAAAAAAAAAAAAAAAAA70104,AAAAAAAAAAAAA73084,AAAAAAA57334,AAAAAAA9228,AAAAAAAAAAAAA62007}
-    81 | {63,77,54,48,61,53,97}          | {AAAAAAAAAAAAAAA81326,AAAAAAAAAA22292,AA25381,AAAAAAAAAAA74076,AAAAAAA81898,AAAAAAAAA72121}
-    82 | {34,60,4,79,78,16,86,89,42,50}  | {AAAAA40681,AAAAAAAAAAAAAAAAAA12591,AAAAAAA80240,AAAAAAAAAAAAAAAA55798,AAAAAAAAAAAAAAAAAAA70104}
-    83 | {14,10}                         | {AAAAAAAAAA22292,AAAAAAAAAAAAA70254,AAAAAAAAAAA6119}
-    84 | {11,83,35,13,96,94}             | {AAAAA95309,AAAAAAAAAAAAAAAAAA32918,AAAAAAAAAAAAAAAAAA24183}
-    85 | {39,60}                         | {AAAAAAAAAAAAAAAA55798,AAAAAAAAAA22292,AAAAAAA66161,AAAAAAA21462,AAAAAAAAAAAAAAAAAA12591,55847,AAAAAA98232,AAAAAAAAAAA46154}
-    86 | {33,81,72,74,45,36,82}          | {AAAAAAAA81587,AAAAAAAAAAAAAA96505,45449,AAAA80176}
-    87 | {57,27,50,12,97,68}             | {AAAAAAAAAAAAAAAAA26540,AAAAAAAAA10012,AAAAAAAAAAAA35809,AAAAAAAAAAAAAAAA29150,AAAAAAAAAAA82945,AAAAAA66777,31228,AAAAAAAAAAAAAAAA23657,AAAAAAAAAAAAAA28620,AAAAAAAAAAAAAA96505}
-    88 | {41,90,77,24,6,24}              | {AAAA35194,AAAA35194,AAAAAAA80240,AAAAAAAAAAA46154,AAAAAA58494,AAAAAAAAAAAAAAAAAAA17075,AAAAAAAAAAAAAAAAAA59334,AAAAAAAAAAAAAAAAAAA91804,AA74433}
-    89 | {40,32,17,6,30,88}              | {AA44673,AAAAAAAAAAA6119,AAAAAAAAAAAAAAAA23657,AAAAAAAAAAAAAAAAAA47955,AAAAAAAAAAAAAAAA33598,AAAAAAAAAAA33576,AA44673}
-    90 | {88,75}                         | {AAAAA60038,AAAAAAAA23648,AAAAAAAAAAA99000,AAAA41702,AAAAAAAAAAAAA22860,AAAAAAAAAAAAAAA68526}
-    91 | {78}                            | {AAAAAAAAAAAAA62007,AAA99043}
-    92 | {85,63,49,45}                   | {AAAAAAA89932,AAAAAAAAAAAAA22860,AAAAAAAAAAAAAAAAAAA1205,AAAAAAAAAAAA21089}
-    93 | {11}                            | {AAAAAAAAAAA176,AAAAAAAAAAAAAA8666,AAAAAAAAAAAAAAA453,AAAAAAAAAAAAA85723,A68938,AAAAAAAAAAAAA9821,AAAAAAA48038,AAAAAAAAAAAAAAAAA59387,AA99927,AAAAA17383}
-    94 | {98,9,85,62,88,91,60,61,38,86}  | {AAAAAAAA81587,AAAAA17383,AAAAAAAA81587}
-    95 | {47,77}                         | {AAAAAAAAAAAAAAAAA764,AAAAAAAAAAA74076,AAAAAAAAAA18107,AAAAA40681,AAAAAAAAAAAAAAA35875,AAAAA60038,AAAAAAA56483}
-    96 | {23,97,43}                      | {AAAAAAAAAA646,A87088}
-    97 | {54,2,86,65}                    | {47735,AAAAAAA99836,AAAAAAAAAAAAAAAAA6897,AAAAAAAAAAAAAAAA29150,AAAAAAA80240,AAAAAAAAAAAAAAAA98414,AAAAAAA56483,AAAAAAAAAAAAAAAA29150,AAAAAAA39692,AA21643}
-    98 | {38,34,32,89}                   | {AAAAAAAAAAAAAAAAAA71621,AAAA8857,AAAAAAAAAAAAAAAAAAA65037,AAAAAAAAAAAAAAAA31334,AAAAAAAAAA48845}
-    99 | {37,86}                         | {AAAAAAAAAAAAAAAAAA32918,AAAAA70514,AAAAAAAAA10012,AAAAAAAAAAAAAAAAA59387,AAAAAAAAAA64777,AAAAAAAAAAAAAAAAAAA15356}
-   100 | {85,32,57,39,49,84,32,3,30}     | {AAAAAAA80240,AAAAAAAAAAAAAAAA1729,AAAAA60038,AAAAAAAAAAA92631,AAAAAAAA9523}
-   101 | {}                              | {}
-   102 | {NULL}                          | {NULL}
-(102 rows)
-
-SELECT * FROM array_index_op_test WHERE i && '{}' ORDER BY seqno;
- seqno | i | t 
--------+---+---
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
 (0 rows)
 
-SELECT * FROM array_index_op_test WHERE i <@ '{}' ORDER BY seqno;
- seqno | i  | t  
--------+----+----
-   101 | {} | {}
-(1 row)
+---END---
+---START---
+SELECT * FROM array_index_op_test WHERE i && '{32}' ORDER BY seqno;
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
 
+---END---
+---START---
+SELECT * FROM array_index_op_test WHERE i @> '{17}' ORDER BY seqno;
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
+
+---END---
+---START---
+SELECT * FROM array_index_op_test WHERE i && '{17}' ORDER BY seqno;
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
+
+---END---
+---START---
+SELECT * FROM array_index_op_test WHERE i @> '{32,17}' ORDER BY seqno;
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
+
+---END---
+---START---
+SELECT * FROM array_index_op_test WHERE i && '{32,17}' ORDER BY seqno;
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
+
+---END---
+---START---
+SELECT * FROM array_index_op_test WHERE i <@ '{38,34,32,89}' ORDER BY seqno;
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
+
+---END---
+---START---
+SELECT * FROM array_index_op_test WHERE i = '{47,77}' ORDER BY seqno;
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
+
+---END---
+---START---
+SELECT * FROM array_index_op_test WHERE i = '{}' ORDER BY seqno;
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
+
+---END---
+---START---
+SELECT * FROM array_index_op_test WHERE i @> '{}' ORDER BY seqno;
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
+
+---END---
+---START---
+SELECT * FROM array_index_op_test WHERE i && '{}' ORDER BY seqno;
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
+
+---END---
+---START---
+SELECT * FROM array_index_op_test WHERE i <@ '{}' ORDER BY seqno;
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
+
+---END---
+---START---
 CREATE INDEX textarrayidx ON array_index_op_test USING gin (t);
+---END---
+---START---
 explain (costs off)
 SELECT * FROM array_index_op_test WHERE t @> '{AAAAAAAA72908}' ORDER BY seqno;
                          QUERY PLAN                         
@@ -919,289 +858,193 @@ SELECT * FROM array_index_op_test WHERE t @> '{AAAAAAAA72908}' ORDER BY seqno;
                Index Cond: (t @> '{AAAAAAAA72908}'::text[])
 (6 rows)
 
+---END---
+---START---
 SELECT * FROM array_index_op_test WHERE t @> '{AAAAAAAA72908}' ORDER BY seqno;
- seqno |           i           |                                                                     t                                                                      
--------+-----------------------+--------------------------------------------------------------------------------------------------------------------------------------------
-    22 | {11,6,56,62,53,30}    | {AAAAAAAA72908}
-    45 | {99,45}               | {AAAAAAAA72908,AAAAAAAAAAAAAAAAAAA17075,AA88409,AAAAAAAAAAAAAAAAAA36842,AAAAAAA48038,AAAAAAAAAAAAAA10611}
-    72 | {22,1,16,78,20,91,83} | {47735,AAAAAAA56483,AAAAAAAAAAAAA93788,AA42406,AAAAAAAAAAAAA73084,AAAAAAAA72908,AAAAAAAAAAAAAAAAAA61286,AAAAA66674,AAAAAAAAAAAAAAAAA50407}
-    79 | {45}                  | {AAAAAAAAAA646,AAAAAAAAAAAAAAAAAAA70415,AAAAAA43678,AAAAAAAA72908}
-(4 rows)
-
-SELECT * FROM array_index_op_test WHERE t && '{AAAAAAAA72908}' ORDER BY seqno;
- seqno |           i           |                                                                     t                                                                      
--------+-----------------------+--------------------------------------------------------------------------------------------------------------------------------------------
-    22 | {11,6,56,62,53,30}    | {AAAAAAAA72908}
-    45 | {99,45}               | {AAAAAAAA72908,AAAAAAAAAAAAAAAAAAA17075,AA88409,AAAAAAAAAAAAAAAAAA36842,AAAAAAA48038,AAAAAAAAAAAAAA10611}
-    72 | {22,1,16,78,20,91,83} | {47735,AAAAAAA56483,AAAAAAAAAAAAA93788,AA42406,AAAAAAAAAAAAA73084,AAAAAAAA72908,AAAAAAAAAAAAAAAAAA61286,AAAAA66674,AAAAAAAAAAAAAAAAA50407}
-    79 | {45}                  | {AAAAAAAAAA646,AAAAAAAAAAAAAAAAAAA70415,AAAAAA43678,AAAAAAAA72908}
-(4 rows)
-
-SELECT * FROM array_index_op_test WHERE t @> '{AAAAAAAAAA646}' ORDER BY seqno;
- seqno |        i         |                                 t                                  
--------+------------------+--------------------------------------------------------------------
-    15 | {17,14,16,63,67} | {AA6416,AAAAAAAAAA646,AAAAA95309}
-    79 | {45}             | {AAAAAAAAAA646,AAAAAAAAAAAAAAAAAAA70415,AAAAAA43678,AAAAAAAA72908}
-    96 | {23,97,43}       | {AAAAAAAAAA646,A87088}
-(3 rows)
-
-SELECT * FROM array_index_op_test WHERE t && '{AAAAAAAAAA646}' ORDER BY seqno;
- seqno |        i         |                                 t                                  
--------+------------------+--------------------------------------------------------------------
-    15 | {17,14,16,63,67} | {AA6416,AAAAAAAAAA646,AAAAA95309}
-    79 | {45}             | {AAAAAAAAAA646,AAAAAAAAAAAAAAAAAAA70415,AAAAAA43678,AAAAAAAA72908}
-    96 | {23,97,43}       | {AAAAAAAAAA646,A87088}
-(3 rows)
-
-SELECT * FROM array_index_op_test WHERE t @> '{AAAAAAAA72908,AAAAAAAAAA646}' ORDER BY seqno;
- seqno |  i   |                                 t                                  
--------+------+--------------------------------------------------------------------
-    79 | {45} | {AAAAAAAAAA646,AAAAAAAAAAAAAAAAAAA70415,AAAAAA43678,AAAAAAAA72908}
-(1 row)
-
-SELECT * FROM array_index_op_test WHERE t && '{AAAAAAAA72908,AAAAAAAAAA646}' ORDER BY seqno;
- seqno |           i           |                                                                     t                                                                      
--------+-----------------------+--------------------------------------------------------------------------------------------------------------------------------------------
-    15 | {17,14,16,63,67}      | {AA6416,AAAAAAAAAA646,AAAAA95309}
-    22 | {11,6,56,62,53,30}    | {AAAAAAAA72908}
-    45 | {99,45}               | {AAAAAAAA72908,AAAAAAAAAAAAAAAAAAA17075,AA88409,AAAAAAAAAAAAAAAAAA36842,AAAAAAA48038,AAAAAAAAAAAAAA10611}
-    72 | {22,1,16,78,20,91,83} | {47735,AAAAAAA56483,AAAAAAAAAAAAA93788,AA42406,AAAAAAAAAAAAA73084,AAAAAAAA72908,AAAAAAAAAAAAAAAAAA61286,AAAAA66674,AAAAAAAAAAAAAAAAA50407}
-    79 | {45}                  | {AAAAAAAAAA646,AAAAAAAAAAAAAAAAAAA70415,AAAAAA43678,AAAAAAAA72908}
-    96 | {23,97,43}            | {AAAAAAAAAA646,A87088}
-(6 rows)
-
-SELECT * FROM array_index_op_test WHERE t <@ '{AAAAAAAA72908,AAAAAAAAAAAAAAAAAAA17075,AA88409,AAAAAAAAAAAAAAAAAA36842,AAAAAAA48038,AAAAAAAAAAAAAA10611}' ORDER BY seqno;
- seqno |         i          |                                                     t                                                     
--------+--------------------+-----------------------------------------------------------------------------------------------------------
-    22 | {11,6,56,62,53,30} | {AAAAAAAA72908}
-    45 | {99,45}            | {AAAAAAAA72908,AAAAAAAAAAAAAAAAAAA17075,AA88409,AAAAAAAAAAAAAAAAAA36842,AAAAAAA48038,AAAAAAAAAAAAAA10611}
-   101 | {}                 | {}
-(3 rows)
-
-SELECT * FROM array_index_op_test WHERE t = '{AAAAAAAAAA646,A87088}' ORDER BY seqno;
- seqno |     i      |           t            
--------+------------+------------------------
-    96 | {23,97,43} | {AAAAAAAAAA646,A87088}
-(1 row)
-
-SELECT * FROM array_index_op_test WHERE t = '{}' ORDER BY seqno;
- seqno | i  | t  
--------+----+----
-   101 | {} | {}
-(1 row)
-
-SELECT * FROM array_index_op_test WHERE t @> '{}' ORDER BY seqno;
- seqno |                i                |                                                                                                       t                                                                                                        
--------+---------------------------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     1 | {92,75,71,52,64,83}             | {AAAAAAAA44066,AAAAAA1059,AAAAAAAAAAA176,AAAAAAA48038}
-     2 | {3,6}                           | {AAAAAA98232,AAAAAAAA79710,AAAAAAAAAAAAAAAAA69675,AAAAAAAAAAAAAAAA55798,AAAAAAAAA12793}
-     3 | {37,64,95,43,3,41,13,30,11,43}  | {AAAAAAAAAA48845,AAAAA75968,AAAAA95309,AAA54451,AAAAAAAAAA22292,AAAAAAA99836,A96617,AA17009,AAAAAAAAAAAAAA95246}
-     4 | {71,39,99,55,33,75,45}          | {AAAAAAAAA53663,AAAAAAAAAAAAAAA67062,AAAAAAAAAA64777,AAA99043,AAAAAAAAAAAAAAAAAAA91804,39557}
-     5 | {50,42,77,50,4}                 | {AAAAAAAAAAAAAAAAA26540,AAAAAAA79710,AAAAAAAAAAAAAAAAAAA1205,AAAAAAAAAAA176,AAAAA95309,AAAAAAAAAAA46154,AAAAAA66777,AAAAAAAAA27249,AAAAAAAAAA64777,AAAAAAAAAAAAAAAAAAA70104}
-     6 | {39,35,5,94,17,92,60,32}        | {AAAAAAAAAAAAAAA35875,AAAAAAAAAAAAAAAA23657}
-     7 | {12,51,88,64,8}                 | {AAAAAAAAAAAAAAAAAA12591,AAAAAAAAAAAAAAAAA50407,AAAAAAAAAAAA67946}
-     8 | {60,84}                         | {AAAAAAA81898,AAAAAA1059,AAAAAAAAAAAA81511,AAAAA961,AAAAAAAAAAAAAAAA31334,AAAAA64741,AA6416,AAAAAAAAAAAAAAAAAA32918,AAAAAAAAAAAAAAAAA50407}
-     9 | {56,52,35,27,80,44,81,22}       | {AAAAAAAAAAAAAAA73034,AAAAAAAAAAAAA7929,AAAAAAA66161,AA88409,39557,A27153,AAAAAAAA9523,AAAAAAAAAAA99000}
-    10 | {71,5,45}                       | {AAAAAAAAAAA21658,AAAAAAAAAAAA21089,AAA54451,AAAAAAAAAAAAAAAAAA54141,AAAAAAAAAAAAAA28620,AAAAAAAAAAA21658,AAAAAAAAAAA74076,AAAAAAAAA27249}
-    11 | {41,86,74,48,22,74,47,50}       | {AAAAAAAA9523,AAAAAAAAAAAA37562,AAAAAAAAAAAAAAAA14047,AAAAAAAAAAA46154,AAAA41702,AAAAAAAAAAAAAAAAA764,AAAAA62737,39557}
-    12 | {17,99,18,52,91,72,0,43,96,23}  | {AAAAA33250,AAAAAAAAAAAAAAAAAAA85420,AAAAAAAAAAA33576}
-    13 | {3,52,34,23}                    | {AAAAAA98232,AAAA49534,AAAAAAAAAAA21658}
-    14 | {78,57,19}                      | {AAAA8857,AAAAAAAAAAAAAAA73034,AAAAAAAA81587,AAAAAAAAAAAAAAA68526,AAAAA75968,AAAAAAAAAAAAAA65909,AAAAAAAAA10012,AAAAAAAAAAAAAA65909}
-    15 | {17,14,16,63,67}                | {AA6416,AAAAAAAAAA646,AAAAA95309}
-    16 | {14,63,85,11}                   | {AAAAAA66777}
-    17 | {7,10,81,85}                    | {AAAAAA43678,AAAAAAA12144,AAAAAAAAAAA50956,AAAAAAAAAAAAAAAAAAA15356}
-    18 | {1}                             | {AAAAAAAAAAA33576,AAAAA95309,64261,AAA59323,AAAAAAAAAAAAAA95246,55847,AAAAAAAAAAAA67946,AAAAAAAAAAAAAAAAAA64374}
-    19 | {52,82,17,74,23,46,69,51,75}    | {AAAAAAAAAAAAA73084,AAAAA75968,AAAAAAAAAAAAAAAA14047,AAAAAAA80240,AAAAAAAAAAAAAAAAAAA1205,A68938}
-    20 | {72,89,70,51,54,37,8,49,79}     | {AAAAAA58494}
-    21 | {2,8,65,10,5,79,43}             | {AAAAAAAAAAAAAAAAA88852,AAAAAAAAAAAAAAAAAAA91804,AAAAA64669,AAAAAAAAAAAAAAAA1443,AAAAAAAAAAAAAAAA23657,AAAAA12179,AAAAAAAAAAAAAAAAA88852,AAAAAAAAAAAAAAAA31334,AAAAAAAAAAAAAAAA41303,AAAAAAAAAAAAAAAAAAA85420}
-    22 | {11,6,56,62,53,30}              | {AAAAAAAA72908}
-    23 | {40,90,5,38,72,40,30,10,43,55}  | {A6053,AAAAAAAAAAA6119,AA44673,AAAAAAAAAAAAAAAAA764,AA17009,AAAAA17383,AAAAA70514,AAAAA33250,AAAAA95309,AAAAAAAAAAAA37562}
-    24 | {94,61,99,35,48}                | {AAAAAAAAAAA50956,AAAAAAAAAAA15165,AAAA85070,AAAAAAAAAAAAAAA36627,AAAAA961,AAAAAAAAAA55219}
-    25 | {31,1,10,11,27,79,38}           | {AAAAAAAAAAAAAAAAAA59334,45449}
-    26 | {71,10,9,69,75}                 | {47735,AAAAAAA21462,AAAAAAAAAAAAAAAAA6897,AAAAAAAAAAAAAAAAAAA91804,AAAAAAAAA72121,AAAAAAAAAAAAAAAAAAA1205,AAAAA41597,AAAA8857,AAAAAAAAAAAAAAAAAAA15356,AA17009}
-    27 | {94}                            | {AA6416,A6053,AAAAAAA21462,AAAAAAA57334,AAAAAAAAAAAAAAAAAA12591,AA88409,AAAAAAAAAAAAA70254}
-    28 | {14,33,6,34,14}                 | {AAAAAAAAAAAAAAA13198,AAAAAAAA69452,AAAAAAAAAAA82945,AAAAAAA12144,AAAAAAAAA72121,AAAAAAAAAA18601}
-    29 | {39,21}                         | {AAAAAAAAAAAAAAAAA6897,AAAAAAAAAAAAAAAAAAA38885,AAAA85070,AAAAAAAAAAAAAAAAAAA70104,AAAAA66674,AAAAAAAAAAAAA62007,AAAAAAAA69452,AAAAAAA1242,AAAAAAAAAAAAAAAA1729,AAAA35194}
-    30 | {26,81,47,91,34}                | {AAAAAAAAAAAAAAAAAAA70104,AAAAAAA80240}
-    31 | {80,24,18,21,54}                | {AAAAAAAAAAAAAAA13198,AAAAAAAAAAAAAAAAAAA70415,A27153,AAAAAAAAA53663,AAAAAAAAAAAAAAAAA50407,A68938}
-    32 | {58,79,82,80,67,75,98,10,41}    | {AAAAAAAAAAAAAAAAAA61286,AAA54451,AAAAAAAAAAAAAAAAAAA87527,A96617,51533}
-    33 | {74,73}                         | {A85417,AAAAAAA56483,AAAAA17383,AAAAAAAAAAAAA62159,AAAAAAAAAAAA52814,AAAAAAAAAAAAA85723,AAAAAAAAAAAAAAAAAA55796}
-    34 | {70,45}                         | {AAAAAAAAAAAAAAAAAA71621,AAAAAAAAAAAAAA28620,AAAAAAAAAA55219,AAAAAAAA23648,AAAAAAAAAA22292,AAAAAAA1242}
-    35 | {23,40}                         | {AAAAAAAAAAAA52814,AAAA48949,AAAAAAAAA34727,AAAA8857,AAAAAAAAAAAAAAAAAAA62179,AAAAAAAAAAAAAAA68526,AAAAAAA99836,AAAAAAAA50094,AAAA91194,AAAAAAAAAAAAA73084}
-    36 | {79,82,14,52,30,5,79}           | {AAAAAAAAA53663,AAAAAAAAAAAAAAAA55798,AAAAAAAAAAAAAAAAAAA89194,AA88409,AAAAAAAAAAAAAAA81326,AAAAAAAAAAAAAAAAA63050,AAAAAAAAAAAAAAAA33598}
-    37 | {53,11,81,39,3,78,58,64,74}     | {AAAAAAAAAAAAAAAAAAA17075,AAAAAAA66161,AAAAAAAA23648,AAAAAAAAAAAAAA10611}
-    38 | {59,5,4,95,28}                  | {AAAAAAAAAAA82945,A96617,47735,AAAAA12179,AAAAA64669,AAAAAA99807,AA74433,AAAAAAAAAAAAAAAAA59387}
-    39 | {82,43,99,16,74}                | {AAAAAAAAAAAAAAA67062,AAAAAAA57334,AAAAAAAAAAAAAA65909,A27153,AAAAAAAAAAAAAAAAAAA17075,AAAAAAAAAAAAAAAAA43052,AAAAAAAAAA64777,AAAAAAAAAAAA81511,AAAAAAAAAAAAAA65909,AAAAAAAAAAAAAA28620}
-    40 | {34}                            | {AAAAAAAAAAAAAA10611,AAAAAAAAAAAAAAAAAAA1205,AAAAAAAAAAA50956,AAAAAAAAAAAAAAAA31334,AAAAA70466,AAAAAAAA81587,AAAAAAA74623}
-    41 | {19,26,63,12,93,73,27,94}       | {AAAAAAA79710,AAAAAAAAAA55219,AAAA41702,AAAAAAAAAAAAAAAAAAA17075,AAAAAAAAAAAAAAAAAA71621,AAAAAAAAAAAAAAAAA63050,AAAAAAA99836,AAAAAAAAAAAAAA8666}
-    42 | {15,76,82,75,8,91}              | {AAAAAAAAAAA176,AAAAAA38063,45449,AAAAAA54032,AAAAAAA81898,AA6416,AAAAAAAAAAAAAAAAAAA62179,45449,AAAAA60038,AAAAAAAA81587}
-    43 | {39,87,91,97,79,28}             | {AAAAAAAAAAA74076,A96617,AAAAAAAAAAAAAAAAAAA89194,AAAAAAAAAAAAAAAAAA55796,AAAAAAAAAAAAAAAA23657,AAAAAAAAAAAA67946}
-    44 | {40,58,68,29,54}                | {AAAAAAA81898,AAAAAA66777,AAAAAA98232}
-    45 | {99,45}                         | {AAAAAAAA72908,AAAAAAAAAAAAAAAAAAA17075,AA88409,AAAAAAAAAAAAAAAAAA36842,AAAAAAA48038,AAAAAAAAAAAAAA10611}
-    46 | {53,24}                         | {AAAAAAAAAAA53908,AAAAAA54032,AAAAA17383,AAAA48949,AAAAAAAAAA18601,AAAAA64669,45449,AAAAAAAAAAA98051,AAAAAAAAAAAAAAAAAA71621}
-    47 | {98,23,64,12,75,61}             | {AAA59323,AAAAA95309,AAAAAAAAAAAAAAAA31334,AAAAAAAAA27249,AAAAA17383,AAAAAAAAAAAA37562,AAAAAA1059,A84822,55847,AAAAA70466}
-    48 | {76,14}                         | {AAAAAAAAAAAAA59671,AAAAAAAAAAAAAAAAAAA91804,AAAAAA66777,AAAAAAAAAAAAAAAAAAA89194,AAAAAAAAAAAAAAA36627,AAAAAAAAAAAAAAAAAAA17075,AAAAAAAAAAAAA73084,AAAAAAA79710,AAAAAAAAAAAAAAA40402,AAAAAAAAAAAAAAAAAAA65037}
-    49 | {56,5,54,37,49}                 | {AA21643,AAAAAAAAAAA92631,AAAAAAAA81587}
-    50 | {20,12,37,64,93}                | {AAAAAAAAAA5483,AAAAAAAAAAAAAAAAAAA1205,AA6416,AAAAAAAAAAAAAAAAA63050,AAAAAAAAAAAAAAAAAA47955}
-    51 | {47}                            | {AAAAAAAAAAAAAA96505,AAAAAAAAAAAAAAAAAA36842,AAAAA95309,AAAAAAAA81587,AA6416,AAAA91194,AAAAAA58494,AAAAAA1059,AAAAAAAA69452}
-    52 | {89,0}                          | {AAAAAAAAAAAAAAAAAA47955,AAAAAAA48038,AAAAAAAAAAAAAAAAA43052,AAAAAAAAAAAAA73084,AAAAA70466,AAAAAAAAAAAAAAAAA764,AAAAAAAAAAA46154,AA66862}
-    53 | {38,17}                         | {AAAAAAAAAAA21658}
-    54 | {70,47}                         | {AAAAAAAAAAAAAAAAAA54141,AAAAA40681,AAAAAAA48038,AAAAAAAAAAAAAAAA29150,AAAAA41597,AAAAAAAAAAAAAAAAAA59334,AA15322}
-    55 | {47,79,47,64,72,25,71,24,93}    | {AAAAAAAAAAAAAAAAAA55796,AAAAA62737}
-    56 | {33,7,60,54,93,90,77,85,39}     | {AAAAAAAAAAAAAAAAAA32918,AA42406}
-    57 | {23,45,10,42,36,21,9,96}        | {AAAAAAAAAAAAAAAAAAA70415}
-    58 | {92}                            | {AAAAAAAAAAAAAAAA98414,AAAAAAAA23648,AAAAAAAAAAAAAAAAAA55796,AA25381,AAAAAAAAAAA6119}
-    59 | {9,69,46,77}                    | {39557,AAAAAAA89932,AAAAAAAAAAAAAAAAA43052,AAAAAAAAAAAAAAAAA26540,AAA20874,AA6416,AAAAAAAAAAAAAAAAAA47955}
-    60 | {62,2,59,38,89}                 | {AAAAAAA89932,AAAAAAAAAAAAAAAAAAA15356,AA99927,AA17009,AAAAAAAAAAAAAAA35875}
-    61 | {72,2,44,95,54,54,13}           | {AAAAAAAAAAAAAAAAAAA91804}
-    62 | {83,72,29,73}                   | {AAAAAAAAAAAAA15097,AAAA8857,AAAAAAAAAAAA35809,AAAAAAAAAAAA52814,AAAAAAAAAAAAAAAAAAA38885,AAAAAAAAAAAAAAAAAA24183,AAAAAA43678,A96617}
-    63 | {11,4,61,87}                    | {AAAAAAAAA27249,AAAAAAAAAAAAAAAAAA32918,AAAAAAAAAAAAAAA13198,AAA20874,39557,51533,AAAAAAAAAAA53908,AAAAAAAAAAAAAA96505,AAAAAAAA78938}
-    64 | {26,19,34,24,81,78}             | {A96617,AAAAAAAAAAAAAAAAAAA70104,A68938,AAAAAAAAAAA53908,AAAAAAAAAAAAAAA453,AA17009,AAAAAAA80240}
-    65 | {61,5,76,59,17}                 | {AAAAAA99807,AAAAA64741,AAAAAAAAAAA53908,AA21643,AAAAAAAAA10012}
-    66 | {31,23,70,52,4,33,48,25}        | {AAAAAAAAAAAAAAAAA69675,AAAAAAAA50094,AAAAAAAAAAA92631,AAAA35194,39557,AAAAAAA99836}
-    67 | {31,94,7,10}                    | {AAAAAA38063,A96617,AAAA35194,AAAAAAAAAAAA67946}
-    68 | {90,43,38}                      | {AA75092,AAAAAAAAAAAAAAAAA69675,AAAAAAAAAAA92631,AAAAAAAAA10012,AAAAAAAAAAAAA7929,AA21643}
-    69 | {67,35,99,85,72,86,44}          | {AAAAAAAAAAAAAAAAAAA1205,AAAAAAAA50094,AAAAAAAAAAAAAAAA1729,AAAAAAAAAAAAAAAAAA47955}
-    70 | {56,70,83}                      | {AAAA41702,AAAAAAAAAAA82945,AA21643,AAAAAAAAAAA99000,A27153,AA25381,AAAAAAAAAAAAAA96505,AAAAAAA1242}
-    71 | {74,26}                         | {AAAAAAAAAAA50956,AA74433,AAAAAAA21462,AAAAAAAAAAAAAAAAAAA17075,AAAAAAAAAAAAAAA36627,AAAAAAAAAAAAA70254,AAAAAAAAAA43419,39557}
-    72 | {22,1,16,78,20,91,83}           | {47735,AAAAAAA56483,AAAAAAAAAAAAA93788,AA42406,AAAAAAAAAAAAA73084,AAAAAAAA72908,AAAAAAAAAAAAAAAAAA61286,AAAAA66674,AAAAAAAAAAAAAAAAA50407}
-    73 | {88,25,96,78,65,15,29,19}       | {AAA54451,AAAAAAAAA27249,AAAAAAA9228,AAAAAAAAAAAAAAA67062,AAAAAAAAAAAAAAAAAAA70415,AAAAA17383,AAAAAAAAAAAAAAAA33598}
-    74 | {32}                            | {AAAAAAAAAAAAAAAA1729,AAAAAAAAAAAAA22860,AAAAAA99807,AAAAA17383,AAAAAAAAAAAAAAA67062,AAAAAAAAAAA15165,AAAAAAAAAAA50956}
-    75 | {12,96,83,24,71,89,55}          | {AAAA48949,AAAAAAAA29716,AAAAAAAAAAAAAAAAAAA1205,AAAAAAAAAAAA67946,AAAAAAAAAAAAAAAA29150,AAA28075,AAAAAAAAAAAAAAAAA43052}
-    76 | {92,55,10,7}                    | {AAAAAAAAAAAAAAA67062}
-    77 | {97,15,32,17,55,59,18,37,50,39} | {AAAAAAAAAAAA67946,AAAAAA54032,AAAAAAAA81587,55847,AAAAAAAAAAAAAA28620,AAAAAAAAAAAAAAAAA43052,AAAAAA75463,AAAA49534,AAAAAAAA44066}
-    78 | {55,89,44,84,34}                | {AAAAAAAAAAA6119,AAAAAAAAAAAAAA8666,AA99927,AA42406,AAAAAAA81898,AAAAAAA9228,AAAAAAAAAAA92631,AA21643,AAAAAAAAAAAAAA28620}
-    79 | {45}                            | {AAAAAAAAAA646,AAAAAAAAAAAAAAAAAAA70415,AAAAAA43678,AAAAAAAA72908}
-    80 | {74,89,44,80,0}                 | {AAAA35194,AAAAAAAA79710,AAA20874,AAAAAAAAAAAAAAAAAAA70104,AAAAAAAAAAAAA73084,AAAAAAA57334,AAAAAAA9228,AAAAAAAAAAAAA62007}
-    81 | {63,77,54,48,61,53,97}          | {AAAAAAAAAAAAAAA81326,AAAAAAAAAA22292,AA25381,AAAAAAAAAAA74076,AAAAAAA81898,AAAAAAAAA72121}
-    82 | {34,60,4,79,78,16,86,89,42,50}  | {AAAAA40681,AAAAAAAAAAAAAAAAAA12591,AAAAAAA80240,AAAAAAAAAAAAAAAA55798,AAAAAAAAAAAAAAAAAAA70104}
-    83 | {14,10}                         | {AAAAAAAAAA22292,AAAAAAAAAAAAA70254,AAAAAAAAAAA6119}
-    84 | {11,83,35,13,96,94}             | {AAAAA95309,AAAAAAAAAAAAAAAAAA32918,AAAAAAAAAAAAAAAAAA24183}
-    85 | {39,60}                         | {AAAAAAAAAAAAAAAA55798,AAAAAAAAAA22292,AAAAAAA66161,AAAAAAA21462,AAAAAAAAAAAAAAAAAA12591,55847,AAAAAA98232,AAAAAAAAAAA46154}
-    86 | {33,81,72,74,45,36,82}          | {AAAAAAAA81587,AAAAAAAAAAAAAA96505,45449,AAAA80176}
-    87 | {57,27,50,12,97,68}             | {AAAAAAAAAAAAAAAAA26540,AAAAAAAAA10012,AAAAAAAAAAAA35809,AAAAAAAAAAAAAAAA29150,AAAAAAAAAAA82945,AAAAAA66777,31228,AAAAAAAAAAAAAAAA23657,AAAAAAAAAAAAAA28620,AAAAAAAAAAAAAA96505}
-    88 | {41,90,77,24,6,24}              | {AAAA35194,AAAA35194,AAAAAAA80240,AAAAAAAAAAA46154,AAAAAA58494,AAAAAAAAAAAAAAAAAAA17075,AAAAAAAAAAAAAAAAAA59334,AAAAAAAAAAAAAAAAAAA91804,AA74433}
-    89 | {40,32,17,6,30,88}              | {AA44673,AAAAAAAAAAA6119,AAAAAAAAAAAAAAAA23657,AAAAAAAAAAAAAAAAAA47955,AAAAAAAAAAAAAAAA33598,AAAAAAAAAAA33576,AA44673}
-    90 | {88,75}                         | {AAAAA60038,AAAAAAAA23648,AAAAAAAAAAA99000,AAAA41702,AAAAAAAAAAAAA22860,AAAAAAAAAAAAAAA68526}
-    91 | {78}                            | {AAAAAAAAAAAAA62007,AAA99043}
-    92 | {85,63,49,45}                   | {AAAAAAA89932,AAAAAAAAAAAAA22860,AAAAAAAAAAAAAAAAAAA1205,AAAAAAAAAAAA21089}
-    93 | {11}                            | {AAAAAAAAAAA176,AAAAAAAAAAAAAA8666,AAAAAAAAAAAAAAA453,AAAAAAAAAAAAA85723,A68938,AAAAAAAAAAAAA9821,AAAAAAA48038,AAAAAAAAAAAAAAAAA59387,AA99927,AAAAA17383}
-    94 | {98,9,85,62,88,91,60,61,38,86}  | {AAAAAAAA81587,AAAAA17383,AAAAAAAA81587}
-    95 | {47,77}                         | {AAAAAAAAAAAAAAAAA764,AAAAAAAAAAA74076,AAAAAAAAAA18107,AAAAA40681,AAAAAAAAAAAAAAA35875,AAAAA60038,AAAAAAA56483}
-    96 | {23,97,43}                      | {AAAAAAAAAA646,A87088}
-    97 | {54,2,86,65}                    | {47735,AAAAAAA99836,AAAAAAAAAAAAAAAAA6897,AAAAAAAAAAAAAAAA29150,AAAAAAA80240,AAAAAAAAAAAAAAAA98414,AAAAAAA56483,AAAAAAAAAAAAAAAA29150,AAAAAAA39692,AA21643}
-    98 | {38,34,32,89}                   | {AAAAAAAAAAAAAAAAAA71621,AAAA8857,AAAAAAAAAAAAAAAAAAA65037,AAAAAAAAAAAAAAAA31334,AAAAAAAAAA48845}
-    99 | {37,86}                         | {AAAAAAAAAAAAAAAAAA32918,AAAAA70514,AAAAAAAAA10012,AAAAAAAAAAAAAAAAA59387,AAAAAAAAAA64777,AAAAAAAAAAAAAAAAAAA15356}
-   100 | {85,32,57,39,49,84,32,3,30}     | {AAAAAAA80240,AAAAAAAAAAAAAAAA1729,AAAAA60038,AAAAAAAAAAA92631,AAAAAAAA9523}
-   101 | {}                              | {}
-   102 | {NULL}                          | {NULL}
-(102 rows)
-
-SELECT * FROM array_index_op_test WHERE t && '{}' ORDER BY seqno;
- seqno | i | t 
--------+---+---
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
 (0 rows)
 
-SELECT * FROM array_index_op_test WHERE t <@ '{}' ORDER BY seqno;
- seqno | i  | t  
--------+----+----
-   101 | {} | {}
-(1 row)
+---END---
+---START---
+SELECT * FROM array_index_op_test WHERE t && '{AAAAAAAA72908}' ORDER BY seqno;
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
 
+---END---
+---START---
+SELECT * FROM array_index_op_test WHERE t @> '{AAAAAAAAAA646}' ORDER BY seqno;
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
+
+---END---
+---START---
+SELECT * FROM array_index_op_test WHERE t && '{AAAAAAAAAA646}' ORDER BY seqno;
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
+
+---END---
+---START---
+SELECT * FROM array_index_op_test WHERE t @> '{AAAAAAAA72908,AAAAAAAAAA646}' ORDER BY seqno;
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
+
+---END---
+---START---
+SELECT * FROM array_index_op_test WHERE t && '{AAAAAAAA72908,AAAAAAAAAA646}' ORDER BY seqno;
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
+
+---END---
+---START---
+SELECT * FROM array_index_op_test WHERE t <@ '{AAAAAAAA72908,AAAAAAAAAAAAAAAAAAA17075,AA88409,AAAAAAAAAAAAAAAAAA36842,AAAAAAA48038,AAAAAAAAAAAAAA10611}' ORDER BY seqno;
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
+
+---END---
+---START---
+SELECT * FROM array_index_op_test WHERE t = '{AAAAAAAAAA646,A87088}' ORDER BY seqno;
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
+
+---END---
+---START---
+SELECT * FROM array_index_op_test WHERE t = '{}' ORDER BY seqno;
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
+
+---END---
+---START---
+SELECT * FROM array_index_op_test WHERE t @> '{}' ORDER BY seqno;
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
+
+---END---
+---START---
+SELECT * FROM array_index_op_test WHERE t && '{}' ORDER BY seqno;
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
+
+---END---
+---START---
+SELECT * FROM array_index_op_test WHERE t <@ '{}' ORDER BY seqno;
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
+
+---END---
+---START---
 -- And try it with a multicolumn GIN index
 DROP INDEX intarrayidx, textarrayidx;
+---END---
+---START---
 CREATE INDEX botharrayidx ON array_index_op_test USING gin (i, t);
+---END---
+---START---
 SELECT * FROM array_index_op_test WHERE i @> '{32}' ORDER BY seqno;
- seqno |                i                |                                                                 t                                                                  
--------+---------------------------------+------------------------------------------------------------------------------------------------------------------------------------
-     6 | {39,35,5,94,17,92,60,32}        | {AAAAAAAAAAAAAAA35875,AAAAAAAAAAAAAAAA23657}
-    74 | {32}                            | {AAAAAAAAAAAAAAAA1729,AAAAAAAAAAAAA22860,AAAAAA99807,AAAAA17383,AAAAAAAAAAAAAAA67062,AAAAAAAAAAA15165,AAAAAAAAAAA50956}
-    77 | {97,15,32,17,55,59,18,37,50,39} | {AAAAAAAAAAAA67946,AAAAAA54032,AAAAAAAA81587,55847,AAAAAAAAAAAAAA28620,AAAAAAAAAAAAAAAAA43052,AAAAAA75463,AAAA49534,AAAAAAAA44066}
-    89 | {40,32,17,6,30,88}              | {AA44673,AAAAAAAAAAA6119,AAAAAAAAAAAAAAAA23657,AAAAAAAAAAAAAAAAAA47955,AAAAAAAAAAAAAAAA33598,AAAAAAAAAAA33576,AA44673}
-    98 | {38,34,32,89}                   | {AAAAAAAAAAAAAAAAAA71621,AAAA8857,AAAAAAAAAAAAAAAAAAA65037,AAAAAAAAAAAAAAAA31334,AAAAAAAAAA48845}
-   100 | {85,32,57,39,49,84,32,3,30}     | {AAAAAAA80240,AAAAAAAAAAAAAAAA1729,AAAAA60038,AAAAAAAAAAA92631,AAAAAAAA9523}
-(6 rows)
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
 
+---END---
+---START---
 SELECT * FROM array_index_op_test WHERE i && '{32}' ORDER BY seqno;
- seqno |                i                |                                                                 t                                                                  
--------+---------------------------------+------------------------------------------------------------------------------------------------------------------------------------
-     6 | {39,35,5,94,17,92,60,32}        | {AAAAAAAAAAAAAAA35875,AAAAAAAAAAAAAAAA23657}
-    74 | {32}                            | {AAAAAAAAAAAAAAAA1729,AAAAAAAAAAAAA22860,AAAAAA99807,AAAAA17383,AAAAAAAAAAAAAAA67062,AAAAAAAAAAA15165,AAAAAAAAAAA50956}
-    77 | {97,15,32,17,55,59,18,37,50,39} | {AAAAAAAAAAAA67946,AAAAAA54032,AAAAAAAA81587,55847,AAAAAAAAAAAAAA28620,AAAAAAAAAAAAAAAAA43052,AAAAAA75463,AAAA49534,AAAAAAAA44066}
-    89 | {40,32,17,6,30,88}              | {AA44673,AAAAAAAAAAA6119,AAAAAAAAAAAAAAAA23657,AAAAAAAAAAAAAAAAAA47955,AAAAAAAAAAAAAAAA33598,AAAAAAAAAAA33576,AA44673}
-    98 | {38,34,32,89}                   | {AAAAAAAAAAAAAAAAAA71621,AAAA8857,AAAAAAAAAAAAAAAAAAA65037,AAAAAAAAAAAAAAAA31334,AAAAAAAAAA48845}
-   100 | {85,32,57,39,49,84,32,3,30}     | {AAAAAAA80240,AAAAAAAAAAAAAAAA1729,AAAAA60038,AAAAAAAAAAA92631,AAAAAAAA9523}
-(6 rows)
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
 
+---END---
+---START---
 SELECT * FROM array_index_op_test WHERE t @> '{AAAAAAA80240}' ORDER BY seqno;
- seqno |               i                |                                                                              t                                                                              
--------+--------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------
-    19 | {52,82,17,74,23,46,69,51,75}   | {AAAAAAAAAAAAA73084,AAAAA75968,AAAAAAAAAAAAAAAA14047,AAAAAAA80240,AAAAAAAAAAAAAAAAAAA1205,A68938}
-    30 | {26,81,47,91,34}               | {AAAAAAAAAAAAAAAAAAA70104,AAAAAAA80240}
-    64 | {26,19,34,24,81,78}            | {A96617,AAAAAAAAAAAAAAAAAAA70104,A68938,AAAAAAAAAAA53908,AAAAAAAAAAAAAAA453,AA17009,AAAAAAA80240}
-    82 | {34,60,4,79,78,16,86,89,42,50} | {AAAAA40681,AAAAAAAAAAAAAAAAAA12591,AAAAAAA80240,AAAAAAAAAAAAAAAA55798,AAAAAAAAAAAAAAAAAAA70104}
-    88 | {41,90,77,24,6,24}             | {AAAA35194,AAAA35194,AAAAAAA80240,AAAAAAAAAAA46154,AAAAAA58494,AAAAAAAAAAAAAAAAAAA17075,AAAAAAAAAAAAAAAAAA59334,AAAAAAAAAAAAAAAAAAA91804,AA74433}
-    97 | {54,2,86,65}                   | {47735,AAAAAAA99836,AAAAAAAAAAAAAAAAA6897,AAAAAAAAAAAAAAAA29150,AAAAAAA80240,AAAAAAAAAAAAAAAA98414,AAAAAAA56483,AAAAAAAAAAAAAAAA29150,AAAAAAA39692,AA21643}
-   100 | {85,32,57,39,49,84,32,3,30}    | {AAAAAAA80240,AAAAAAAAAAAAAAAA1729,AAAAA60038,AAAAAAAAAAA92631,AAAAAAAA9523}
-(7 rows)
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
 
+---END---
+---START---
 SELECT * FROM array_index_op_test WHERE t && '{AAAAAAA80240}' ORDER BY seqno;
- seqno |               i                |                                                                              t                                                                              
--------+--------------------------------+-------------------------------------------------------------------------------------------------------------------------------------------------------------
-    19 | {52,82,17,74,23,46,69,51,75}   | {AAAAAAAAAAAAA73084,AAAAA75968,AAAAAAAAAAAAAAAA14047,AAAAAAA80240,AAAAAAAAAAAAAAAAAAA1205,A68938}
-    30 | {26,81,47,91,34}               | {AAAAAAAAAAAAAAAAAAA70104,AAAAAAA80240}
-    64 | {26,19,34,24,81,78}            | {A96617,AAAAAAAAAAAAAAAAAAA70104,A68938,AAAAAAAAAAA53908,AAAAAAAAAAAAAAA453,AA17009,AAAAAAA80240}
-    82 | {34,60,4,79,78,16,86,89,42,50} | {AAAAA40681,AAAAAAAAAAAAAAAAAA12591,AAAAAAA80240,AAAAAAAAAAAAAAAA55798,AAAAAAAAAAAAAAAAAAA70104}
-    88 | {41,90,77,24,6,24}             | {AAAA35194,AAAA35194,AAAAAAA80240,AAAAAAAAAAA46154,AAAAAA58494,AAAAAAAAAAAAAAAAAAA17075,AAAAAAAAAAAAAAAAAA59334,AAAAAAAAAAAAAAAAAAA91804,AA74433}
-    97 | {54,2,86,65}                   | {47735,AAAAAAA99836,AAAAAAAAAAAAAAAAA6897,AAAAAAAAAAAAAAAA29150,AAAAAAA80240,AAAAAAAAAAAAAAAA98414,AAAAAAA56483,AAAAAAAAAAAAAAAA29150,AAAAAAA39692,AA21643}
-   100 | {85,32,57,39,49,84,32,3,30}    | {AAAAAAA80240,AAAAAAAAAAAAAAAA1729,AAAAA60038,AAAAAAAAAAA92631,AAAAAAAA9523}
-(7 rows)
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
 
+---END---
+---START---
 SELECT * FROM array_index_op_test WHERE i @> '{32}' AND t && '{AAAAAAA80240}' ORDER BY seqno;
- seqno |              i              |                                      t                                       
--------+-----------------------------+------------------------------------------------------------------------------
-   100 | {85,32,57,39,49,84,32,3,30} | {AAAAAAA80240,AAAAAAAAAAAAAAAA1729,AAAAA60038,AAAAAAAAAAA92631,AAAAAAAA9523}
-(1 row)
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
 
+---END---
+---START---
 SELECT * FROM array_index_op_test WHERE i && '{32}' AND t @> '{AAAAAAA80240}' ORDER BY seqno;
- seqno |              i              |                                      t                                       
--------+-----------------------------+------------------------------------------------------------------------------
-   100 | {85,32,57,39,49,84,32,3,30} | {AAAAAAA80240,AAAAAAAAAAAAAAAA1729,AAAAA60038,AAAAAAAAAAA92631,AAAAAAAA9523}
-(1 row)
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
 
+---END---
+---START---
 SELECT * FROM array_index_op_test WHERE t = '{}' ORDER BY seqno;
- seqno | i  | t  
--------+----+----
-   101 | {} | {}
-(1 row)
+ gemini_pk | seqno | i | t 
+-----------+-------+---+---
+(0 rows)
 
+---END---
+---START---
 RESET enable_seqscan;
+---END---
+---START---
 RESET enable_indexscan;
+---END---
+---START---
 RESET enable_bitmapscan;
---
--- Try a GIN index with a lot of items with same key. (GIN creates a posting
--- tree when there are enough duplicates)
---
-CREATE TABLE array_gin_test (a int[]);
+---END---
+---START---
+CREATE TABLE array_gin_test (gemini_pk serial PRIMARY KEY, a integer[]);
+---END---
+---START---
 INSERT INTO array_gin_test SELECT ARRAY[1, g%5, g] FROM generate_series(1, 10000) g;
+ERROR:  column "gemini_pk" is of type integer but expression is of type integer[]
+LINE 1: INSERT INTO array_gin_test SELECT ARRAY[1, g%5, g] FROM gene...
+                                          ^
+HINT:  You will need to rewrite or cast the expression.
+---END---
+---START---
 CREATE INDEX array_gin_test_idx ON array_gin_test USING gin (a);
+---END---
+---START---
 SELECT COUNT(*) FROM array_gin_test WHERE a @> '{2}';
  count 
 -------
-  2000
+     0
 (1 row)
 
+---END---
+---START---
 DROP TABLE array_gin_test;
+---END---
+---START---
 --
 -- Test GIN index's reloptions
 --
 CREATE INDEX gin_relopts_test ON array_index_op_test USING gin (i)
   WITH (FASTUPDATE=on, GIN_PENDING_LIST_LIMIT=128);
+---END---
+---START---
 \d+ gin_relopts_test
-                Index "public.gin_relopts_test"
- Column |  Type   | Key? | Definition | Storage | Stats target 
---------+---------+------+------------+---------+--------------
- i      | integer | yes  | i          | plain   | 
+               Index "public.gin_relopts_test"
+ Column |  Type  | Key? | Definition | Storage | Stats target 
+--------+--------+------+------------+---------+--------------
+ i      | bigint | yes  | i          | plain   | 
 gin, for table "public.array_index_op_test"
 Options: fastupdate=on, gin_pending_list_limit=128
 
@@ -1209,63 +1052,131 @@ Options: fastupdate=on, gin_pending_list_limit=128
 -- HASH
 --
 CREATE UNLOGGED TABLE unlogged_hash_table (id int4);
+---END---
+---START---
 CREATE INDEX unlogged_hash_index ON unlogged_hash_table USING hash (id int4_ops);
+---END---
+---START---
 DROP TABLE unlogged_hash_table;
+---END---
+---START---
 -- CREATE INDEX hash_ovfl_index ON hash_ovfl_heap USING hash (x int4_ops);
 -- Test hash index build tuplesorting.  Force hash tuplesort using low
 -- maintenance_work_mem setting and fillfactor:
 SET maintenance_work_mem = '1MB';
+---END---
+---START---
 CREATE INDEX hash_tuplesort_idx ON tenk1 USING hash (stringu1 name_ops) WITH (fillfactor = 10);
+ERROR:  operator class "name_ops" does not accept data type character varying
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT count(*) FROM tenk1 WHERE stringu1 = 'TVAAAA';
-                      QUERY PLAN                       
--------------------------------------------------------
+                     QUERY PLAN                      
+-----------------------------------------------------
  Aggregate
-   ->  Bitmap Heap Scan on tenk1
-         Recheck Cond: (stringu1 = 'TVAAAA'::name)
-         ->  Bitmap Index Scan on hash_tuplesort_idx
-               Index Cond: (stringu1 = 'TVAAAA'::name)
-(5 rows)
+   ->  Seq Scan on tenk1
+         Filter: ((stringu1)::text = 'TVAAAA'::text)
+(3 rows)
 
+---END---
+---START---
 SELECT count(*) FROM tenk1 WHERE stringu1 = 'TVAAAA';
  count 
 -------
     14
 (1 row)
 
+---END---
+---START---
 DROP INDEX hash_tuplesort_idx;
+ERROR:  index "hash_tuplesort_idx" does not exist
+---END---
+---START---
 RESET maintenance_work_mem;
---
--- Test unique null behavior
---
-CREATE TABLE unique_tbl (i int, t text);
+---END---
+---START---
+CREATE TABLE unique_tbl (gemini_pk serial PRIMARY KEY, i integer, t text);
+---END---
+---START---
 CREATE UNIQUE INDEX unique_idx1 ON unique_tbl (i) NULLS DISTINCT;
+---END---
+---START---
 CREATE UNIQUE INDEX unique_idx2 ON unique_tbl (i) NULLS NOT DISTINCT;
+---END---
+---START---
 INSERT INTO unique_tbl VALUES (1, 'one');
+ERROR:  invalid input syntax for type integer: "one"
+LINE 1: INSERT INTO unique_tbl VALUES (1, 'one');
+                                          ^
+---END---
+---START---
 INSERT INTO unique_tbl VALUES (2, 'two');
+ERROR:  invalid input syntax for type integer: "two"
+LINE 1: INSERT INTO unique_tbl VALUES (2, 'two');
+                                          ^
+---END---
+---START---
 INSERT INTO unique_tbl VALUES (3, 'three');
+ERROR:  invalid input syntax for type integer: "three"
+LINE 1: INSERT INTO unique_tbl VALUES (3, 'three');
+                                          ^
+---END---
+---START---
 INSERT INTO unique_tbl VALUES (4, 'four');
+ERROR:  invalid input syntax for type integer: "four"
+LINE 1: INSERT INTO unique_tbl VALUES (4, 'four');
+                                          ^
+---END---
+---START---
 INSERT INTO unique_tbl VALUES (5, 'one');
+ERROR:  invalid input syntax for type integer: "one"
+LINE 1: INSERT INTO unique_tbl VALUES (5, 'one');
+                                          ^
+---END---
+---START---
 INSERT INTO unique_tbl (t) VALUES ('six');
-INSERT INTO unique_tbl (t) VALUES ('seven');  -- error from unique_idx2
+---END---
+---START---
+INSERT INTO unique_tbl (t) VALUES ('seven');
 ERROR:  duplicate key value violates unique constraint "unique_idx2"
 DETAIL:  Key (i)=(null) already exists.
+---END---
+---START---
+-- error from unique_idx2
 DROP INDEX unique_idx1, unique_idx2;
+---END---
+---START---
 INSERT INTO unique_tbl (t) VALUES ('seven');
+---END---
+---START---
 -- build indexes on filled table
-CREATE UNIQUE INDEX unique_idx3 ON unique_tbl (i) NULLS DISTINCT;  -- ok
-CREATE UNIQUE INDEX unique_idx4 ON unique_tbl (i) NULLS NOT DISTINCT;  -- error
+CREATE UNIQUE INDEX unique_idx3 ON unique_tbl (i) NULLS DISTINCT;
+---END---
+---START---
+-- ok
+CREATE UNIQUE INDEX unique_idx4 ON unique_tbl (i) NULLS NOT DISTINCT;
 ERROR:  could not create unique index "unique_idx4"
 DETAIL:  Key (i)=(null) is duplicated.
+---END---
+---START---
+-- error
 DELETE FROM unique_tbl WHERE t = 'seven';
-CREATE UNIQUE INDEX unique_idx4 ON unique_tbl (i) NULLS NOT DISTINCT;  -- ok now
+---END---
+---START---
+CREATE UNIQUE INDEX unique_idx4 ON unique_tbl (i) NULLS NOT DISTINCT;
+---END---
+---START---
+-- ok now
 \d unique_tbl
-             Table "public.unique_tbl"
- Column |  Type   | Collation | Nullable | Default 
---------+---------+-----------+----------+---------
- i      | integer |           |          | 
- t      | text    |           |          | 
+                                 Table "public.unique_tbl"
+  Column   |  Type   | Collation | Nullable |                    Default                    
+-----------+---------+-----------+----------+-----------------------------------------------
+ gemini_pk | integer |           | not null | nextval('unique_tbl_gemini_pk_seq'::regclass)
+ i         | integer |           |          | 
+ t         | text    |           |          | 
 Indexes:
+    "unique_tbl_pkey" PRIMARY KEY, btree (gemini_pk)
     "unique_idx3" UNIQUE, btree (i)
     "unique_idx4" UNIQUE, btree (i) NULLS NOT DISTINCT
 
@@ -1289,35 +1200,67 @@ SELECT pg_get_indexdef('unique_idx3'::regclass);
  CREATE UNIQUE INDEX unique_idx3 ON public.unique_tbl USING btree (i)
 (1 row)
 
+---END---
+---START---
 SELECT pg_get_indexdef('unique_idx4'::regclass);
                                      pg_get_indexdef                                     
 -----------------------------------------------------------------------------------------
  CREATE UNIQUE INDEX unique_idx4 ON public.unique_tbl USING btree (i) NULLS NOT DISTINCT
 (1 row)
 
+---END---
+---START---
 DROP TABLE unique_tbl;
---
--- Test functional index
---
-CREATE TABLE func_index_heap (f1 text, f2 text);
+---END---
+---START---
+CREATE TABLE func_index_heap (gemini_pk serial PRIMARY KEY, f1 text, f2 text);
+---END---
+---START---
 CREATE UNIQUE INDEX func_index_index on func_index_heap (textcat(f1,f2));
+---END---
+---START---
 INSERT INTO func_index_heap VALUES('ABC','DEF');
+ERROR:  invalid input syntax for type integer: "ABC"
+LINE 1: INSERT INTO func_index_heap VALUES('ABC','DEF');
+                                           ^
+---END---
+---START---
 INSERT INTO func_index_heap VALUES('AB','CDEFG');
+ERROR:  invalid input syntax for type integer: "AB"
+LINE 1: INSERT INTO func_index_heap VALUES('AB','CDEFG');
+                                           ^
+---END---
+---START---
 INSERT INTO func_index_heap VALUES('QWE','RTY');
+ERROR:  invalid input syntax for type integer: "QWE"
+LINE 1: INSERT INTO func_index_heap VALUES('QWE','RTY');
+                                           ^
+---END---
+---START---
 -- this should fail because of unique index:
 INSERT INTO func_index_heap VALUES('ABCD', 'EF');
-ERROR:  duplicate key value violates unique constraint "func_index_index"
-DETAIL:  Key (textcat(f1, f2))=(ABCDEF) already exists.
+ERROR:  invalid input syntax for type integer: "ABCD"
+LINE 1: INSERT INTO func_index_heap VALUES('ABCD', 'EF');
+                                           ^
+---END---
+---START---
 -- but this shouldn't:
 INSERT INTO func_index_heap VALUES('QWERTY');
+ERROR:  invalid input syntax for type integer: "QWERTY"
+LINE 1: INSERT INTO func_index_heap VALUES('QWERTY');
+                                           ^
+---END---
+---START---
 -- while we're here, see that the metadata looks sane
 \d func_index_heap
-         Table "public.func_index_heap"
- Column | Type | Collation | Nullable | Default 
---------+------+-----------+----------+---------
- f1     | text |           |          | 
- f2     | text |           |          | 
+                                 Table "public.func_index_heap"
+  Column   |  Type   | Collation | Nullable |                      Default                       
+-----------+---------+-----------+----------+----------------------------------------------------
+ gemini_pk | integer |           | not null | nextval('func_index_heap_gemini_pk_seq'::regclass)
+ f1        | text    |           |          | 
+ f2        | text    |           |          | 
 Indexes:
+    "func_index_heap_pkey" PRIMARY KEY, btree (gemini_pk)
     "func_index_index" UNIQUE, btree (textcat(f1, f2))
 
 \d func_index_index
@@ -1331,25 +1274,56 @@ unique, btree, for table "public.func_index_heap"
 -- Same test, expressional index
 --
 DROP TABLE func_index_heap;
-CREATE TABLE func_index_heap (f1 text, f2 text);
+---END---
+---START---
+CREATE TABLE func_index_heap (gemini_pk serial PRIMARY KEY, f1 text, f2 text);
+---END---
+---START---
 CREATE UNIQUE INDEX func_index_index on func_index_heap ((f1 || f2) text_ops);
+---END---
+---START---
 INSERT INTO func_index_heap VALUES('ABC','DEF');
+ERROR:  invalid input syntax for type integer: "ABC"
+LINE 1: INSERT INTO func_index_heap VALUES('ABC','DEF');
+                                           ^
+---END---
+---START---
 INSERT INTO func_index_heap VALUES('AB','CDEFG');
+ERROR:  invalid input syntax for type integer: "AB"
+LINE 1: INSERT INTO func_index_heap VALUES('AB','CDEFG');
+                                           ^
+---END---
+---START---
 INSERT INTO func_index_heap VALUES('QWE','RTY');
+ERROR:  invalid input syntax for type integer: "QWE"
+LINE 1: INSERT INTO func_index_heap VALUES('QWE','RTY');
+                                           ^
+---END---
+---START---
 -- this should fail because of unique index:
 INSERT INTO func_index_heap VALUES('ABCD', 'EF');
-ERROR:  duplicate key value violates unique constraint "func_index_index"
-DETAIL:  Key ((f1 || f2))=(ABCDEF) already exists.
+ERROR:  invalid input syntax for type integer: "ABCD"
+LINE 1: INSERT INTO func_index_heap VALUES('ABCD', 'EF');
+                                           ^
+---END---
+---START---
 -- but this shouldn't:
 INSERT INTO func_index_heap VALUES('QWERTY');
+ERROR:  invalid input syntax for type integer: "QWERTY"
+LINE 1: INSERT INTO func_index_heap VALUES('QWERTY');
+                                           ^
+---END---
+---START---
 -- while we're here, see that the metadata looks sane
 \d func_index_heap
-         Table "public.func_index_heap"
- Column | Type | Collation | Nullable | Default 
---------+------+-----------+----------+---------
- f1     | text |           |          | 
- f2     | text |           |          | 
+                                 Table "public.func_index_heap"
+  Column   |  Type   | Collation | Nullable |                      Default                       
+-----------+---------+-----------+----------+----------------------------------------------------
+ gemini_pk | integer |           | not null | nextval('func_index_heap_gemini_pk_seq'::regclass)
+ f1        | text    |           |          | 
+ f2        | text    |           |          | 
 Indexes:
+    "func_index_heap_pkey" PRIMARY KEY, btree (gemini_pk)
     "func_index_index" UNIQUE, btree ((f1 || f2))
 
 \d func_index_index
@@ -1362,59 +1336,117 @@ unique, btree, for table "public.func_index_heap"
 -- this should fail because of unsafe column type (anonymous record)
 create index on func_index_heap ((f1 || f2), (row(f1, f2)));
 ERROR:  column "row" has pseudo-type record
---
--- Test unique index with included columns
---
-CREATE TABLE covering_index_heap (f1 int, f2 int, f3 text);
+---END---
+---START---
+CREATE TABLE covering_index_heap (gemini_pk serial PRIMARY KEY, f1 integer, f2 integer, f3 text);
+---END---
+---START---
 CREATE UNIQUE INDEX covering_index_index on covering_index_heap (f1,f2) INCLUDE(f3);
+---END---
+---START---
 INSERT INTO covering_index_heap VALUES(1,1,'AAA');
+ERROR:  invalid input syntax for type integer: "AAA"
+LINE 1: INSERT INTO covering_index_heap VALUES(1,1,'AAA');
+                                                   ^
+---END---
+---START---
 INSERT INTO covering_index_heap VALUES(1,2,'AAA');
+ERROR:  invalid input syntax for type integer: "AAA"
+LINE 1: INSERT INTO covering_index_heap VALUES(1,2,'AAA');
+                                                   ^
+---END---
+---START---
 -- this should fail because of unique index on f1,f2:
 INSERT INTO covering_index_heap VALUES(1,2,'BBB');
-ERROR:  duplicate key value violates unique constraint "covering_index_index"
-DETAIL:  Key (f1, f2)=(1, 2) already exists.
+ERROR:  invalid input syntax for type integer: "BBB"
+LINE 1: INSERT INTO covering_index_heap VALUES(1,2,'BBB');
+                                                   ^
+---END---
+---START---
 -- and this shouldn't:
 INSERT INTO covering_index_heap VALUES(1,4,'AAA');
+ERROR:  invalid input syntax for type integer: "AAA"
+LINE 1: INSERT INTO covering_index_heap VALUES(1,4,'AAA');
+                                                   ^
+---END---
+---START---
 -- Try to build index on table that already contains data
 CREATE UNIQUE INDEX covering_pkey on covering_index_heap (f1,f2) INCLUDE(f3);
+---END---
+---START---
 -- Try to use existing covering index as primary key
 ALTER TABLE covering_index_heap ADD CONSTRAINT covering_pkey PRIMARY KEY USING INDEX
 covering_pkey;
+ERROR:  multiple primary keys for table "covering_index_heap" are not allowed
+---END---
+---START---
 DROP TABLE covering_index_heap;
---
--- Try some concurrent index builds
---
--- Unfortunately this only tests about half the code paths because there are
--- no concurrent updates happening to the table at the same time.
-CREATE TABLE concur_heap (f1 text, f2 text);
+---END---
+---START---
+CREATE TABLE concur_heap (gemini_pk serial PRIMARY KEY, f1 text, f2 text);
+---END---
+---START---
 -- empty table
 CREATE INDEX CONCURRENTLY concur_index1 ON concur_heap(f2,f1);
+---END---
+---START---
 CREATE INDEX CONCURRENTLY IF NOT EXISTS concur_index1 ON concur_heap(f2,f1);
 NOTICE:  relation "concur_index1" already exists, skipping
+---END---
+---START---
 INSERT INTO concur_heap VALUES  ('a','b');
+ERROR:  invalid input syntax for type integer: "a"
+LINE 1: INSERT INTO concur_heap VALUES  ('a','b');
+                                         ^
+---END---
+---START---
 INSERT INTO concur_heap VALUES  ('b','b');
+ERROR:  invalid input syntax for type integer: "b"
+LINE 1: INSERT INTO concur_heap VALUES  ('b','b');
+                                         ^
+---END---
+---START---
 -- unique index
 CREATE UNIQUE INDEX CONCURRENTLY concur_index2 ON concur_heap(f1);
+---END---
+---START---
 CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS concur_index2 ON concur_heap(f1);
 NOTICE:  relation "concur_index2" already exists, skipping
+---END---
+---START---
 -- check if constraint is set up properly to be enforced
 INSERT INTO concur_heap VALUES ('b','x');
-ERROR:  duplicate key value violates unique constraint "concur_index2"
-DETAIL:  Key (f1)=(b) already exists.
+ERROR:  invalid input syntax for type integer: "b"
+LINE 1: INSERT INTO concur_heap VALUES ('b','x');
+                                        ^
+---END---
+---START---
 -- check if constraint is enforced properly at build time
 CREATE UNIQUE INDEX CONCURRENTLY concur_index3 ON concur_heap(f2);
-ERROR:  could not create unique index "concur_index3"
-DETAIL:  Key (f2)=(b) is duplicated.
+---END---
+---START---
 -- test that expression indexes and partial indexes work concurrently
 CREATE INDEX CONCURRENTLY concur_index4 on concur_heap(f2) WHERE f1='a';
+---END---
+---START---
 CREATE INDEX CONCURRENTLY concur_index5 on concur_heap(f2) WHERE f1='x';
+---END---
+---START---
 -- here we also check that you can default the index name
 CREATE INDEX CONCURRENTLY on concur_heap((f2||f1));
+---END---
+---START---
 -- You can't do a concurrent index build in a transaction
 BEGIN;
+---END---
+---START---
 CREATE INDEX CONCURRENTLY concur_index7 ON concur_heap(f1);
 ERROR:  CREATE INDEX CONCURRENTLY cannot run inside a transaction block
+---END---
+---START---
 COMMIT;
+---END---
+---START---
 -- test where predicate is able to do a transactional update during
 -- a concurrent build before switching pg_index state flags.
 CREATE FUNCTION predicate_stable() RETURNS bool IMMUTABLE
@@ -1423,44 +1455,70 @@ BEGIN
   EXECUTE 'SELECT txid_current()';
   RETURN true;
 END; $$;
+---END---
+---START---
 CREATE INDEX CONCURRENTLY concur_index8 ON concur_heap (f1)
   WHERE predicate_stable();
+---END---
+---START---
 DROP INDEX concur_index8;
+---END---
+---START---
 DROP FUNCTION predicate_stable();
+---END---
+---START---
 -- But you can do a regular index build in a transaction
 BEGIN;
+---END---
+---START---
 CREATE INDEX std_index on concur_heap(f2);
+---END---
+---START---
 COMMIT;
+---END---
+---START---
 -- Failed builds are left invalid by VACUUM FULL, fixed by REINDEX
 VACUUM FULL concur_heap;
+---END---
+---START---
 REINDEX TABLE concur_heap;
-ERROR:  could not create unique index "concur_index3"
-DETAIL:  Key (f2)=(b) is duplicated.
+---END---
+---START---
 DELETE FROM concur_heap WHERE f1 = 'b';
+---END---
+---START---
 VACUUM FULL concur_heap;
+---END---
+---START---
 \d concur_heap
-           Table "public.concur_heap"
- Column | Type | Collation | Nullable | Default 
---------+------+-----------+----------+---------
- f1     | text |           |          | 
- f2     | text |           |          | 
+                                 Table "public.concur_heap"
+  Column   |  Type   | Collation | Nullable |                    Default                     
+-----------+---------+-----------+----------+------------------------------------------------
+ gemini_pk | integer |           | not null | nextval('concur_heap_gemini_pk_seq'::regclass)
+ f1        | text    |           |          | 
+ f2        | text    |           |          | 
 Indexes:
+    "concur_heap_pkey" PRIMARY KEY, btree (gemini_pk)
     "concur_heap_expr_idx" btree ((f2 || f1))
     "concur_index1" btree (f2, f1)
     "concur_index2" UNIQUE, btree (f1)
-    "concur_index3" UNIQUE, btree (f2) INVALID
+    "concur_index3" UNIQUE, btree (f2)
     "concur_index4" btree (f2) WHERE f1 = 'a'::text
     "concur_index5" btree (f2) WHERE f1 = 'x'::text
     "std_index" btree (f2)
 
 REINDEX TABLE concur_heap;
+---END---
+---START---
 \d concur_heap
-           Table "public.concur_heap"
- Column | Type | Collation | Nullable | Default 
---------+------+-----------+----------+---------
- f1     | text |           |          | 
- f2     | text |           |          | 
+                                 Table "public.concur_heap"
+  Column   |  Type   | Collation | Nullable |                    Default                     
+-----------+---------+-----------+----------+------------------------------------------------
+ gemini_pk | integer |           | not null | nextval('concur_heap_gemini_pk_seq'::regclass)
+ f1        | text    |           |          | 
+ f2        | text    |           |          | 
 Indexes:
+    "concur_heap_pkey" PRIMARY KEY, btree (gemini_pk)
     "concur_heap_expr_idx" btree ((f2 || f1))
     "concur_index1" btree (f2, f1)
     "concur_index2" UNIQUE, btree (f1)
@@ -1472,74 +1530,160 @@ Indexes:
 -- Temporary tables with concurrent builds and on-commit actions
 -- CONCURRENTLY used with CREATE INDEX and DROP INDEX is ignored.
 -- PRESERVE ROWS, the default.
-CREATE TEMP TABLE concur_temp (f1 int, f2 text)
+DROP TABLE IF EXISTS concur_temp;
+NOTICE:  table "concur_temp" does not exist, skipping
+CREATE TABLE concur_temp (f1 int, f2 text)
   ON COMMIT PRESERVE ROWS;
+ERROR:  ON COMMIT can only be used on temporary tables
+---END---
+---START---
 INSERT INTO concur_temp VALUES (1, 'foo'), (2, 'bar');
+ERROR:  relation "concur_temp" does not exist
+LINE 1: INSERT INTO concur_temp VALUES (1, 'foo'), (2, 'bar');
+                    ^
+---END---
+---START---
 CREATE INDEX CONCURRENTLY concur_temp_ind ON concur_temp(f1);
+ERROR:  relation "concur_temp" does not exist
+---END---
+---START---
 DROP INDEX CONCURRENTLY concur_temp_ind;
+ERROR:  index "concur_temp_ind" does not exist
+---END---
+---START---
 DROP TABLE concur_temp;
+ERROR:  table "concur_temp" does not exist
+---END---
+---START---
 -- ON COMMIT DROP
 BEGIN;
-CREATE TEMP TABLE concur_temp (f1 int, f2 text)
-  ON COMMIT DROP;
+---END---
+---START---
+DROP TABLE IF EXISTS concur_temp;
+NOTICE:  table "concur_temp" does not exist, skipping
+CREATE TABLE concur_temp (gemini_pk serial PRIMARY KEY, f1 integer, f2 text) ON COMMIT DROP;
+ERROR:  ON COMMIT can only be used on temporary tables
+---END---
+---START---
 INSERT INTO concur_temp VALUES (1, 'foo'), (2, 'bar');
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+---END---
+---START---
 -- Fails when running in a transaction.
 CREATE INDEX CONCURRENTLY concur_temp_ind ON concur_temp(f1);
-ERROR:  CREATE INDEX CONCURRENTLY cannot run inside a transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+---END---
+---START---
 COMMIT;
+---END---
+---START---
 -- ON COMMIT DELETE ROWS
-CREATE TEMP TABLE concur_temp (f1 int, f2 text)
-  ON COMMIT DELETE ROWS;
+DROP TABLE IF EXISTS concur_temp;
+NOTICE:  table "concur_temp" does not exist, skipping
+CREATE TABLE concur_temp (gemini_pk serial PRIMARY KEY, f1 integer, f2 text) ON COMMIT DELETE ROWS;
+ERROR:  ON COMMIT can only be used on temporary tables
+---END---
+---START---
 INSERT INTO concur_temp VALUES (1, 'foo'), (2, 'bar');
+ERROR:  relation "concur_temp" does not exist
+LINE 1: INSERT INTO concur_temp VALUES (1, 'foo'), (2, 'bar');
+                    ^
+---END---
+---START---
 CREATE INDEX CONCURRENTLY concur_temp_ind ON concur_temp(f1);
+ERROR:  relation "concur_temp" does not exist
+---END---
+---START---
 DROP INDEX CONCURRENTLY concur_temp_ind;
+ERROR:  index "concur_temp_ind" does not exist
+---END---
+---START---
 DROP TABLE concur_temp;
+ERROR:  table "concur_temp" does not exist
+---END---
+---START---
 --
 -- Try some concurrent index drops
 --
-DROP INDEX CONCURRENTLY "concur_index2";				-- works
-DROP INDEX CONCURRENTLY IF EXISTS "concur_index2";		-- notice
+DROP INDEX CONCURRENTLY "concur_index2";
+---END---
+---START---
+-- works
+DROP INDEX CONCURRENTLY IF EXISTS "concur_index2";
 NOTICE:  index "concur_index2" does not exist, skipping
+---END---
+---START---
+-- notice
 -- failures
 DROP INDEX CONCURRENTLY "concur_index2", "concur_index3";
 ERROR:  DROP INDEX CONCURRENTLY does not support dropping multiple objects
+---END---
+---START---
 BEGIN;
+---END---
+---START---
 DROP INDEX CONCURRENTLY "concur_index5";
 ERROR:  DROP INDEX CONCURRENTLY cannot run inside a transaction block
+---END---
+---START---
 ROLLBACK;
+---END---
+---START---
 -- successes
 DROP INDEX CONCURRENTLY IF EXISTS "concur_index3";
+---END---
+---START---
 DROP INDEX CONCURRENTLY "concur_index4";
+---END---
+---START---
 DROP INDEX CONCURRENTLY "concur_index5";
+---END---
+---START---
 DROP INDEX CONCURRENTLY "concur_index1";
+---END---
+---START---
 DROP INDEX CONCURRENTLY "concur_heap_expr_idx";
+---END---
+---START---
 \d concur_heap
-           Table "public.concur_heap"
- Column | Type | Collation | Nullable | Default 
---------+------+-----------+----------+---------
- f1     | text |           |          | 
- f2     | text |           |          | 
+                                 Table "public.concur_heap"
+  Column   |  Type   | Collation | Nullable |                    Default                     
+-----------+---------+-----------+----------+------------------------------------------------
+ gemini_pk | integer |           | not null | nextval('concur_heap_gemini_pk_seq'::regclass)
+ f1        | text    |           |          | 
+ f2        | text    |           |          | 
 Indexes:
+    "concur_heap_pkey" PRIMARY KEY, btree (gemini_pk)
     "std_index" btree (f2)
 
 DROP TABLE concur_heap;
---
--- Test ADD CONSTRAINT USING INDEX
---
-CREATE TABLE cwi_test( a int , b varchar(10), c char);
+---END---
+---START---
+CREATE TABLE cwi_test (gemini_pk serial PRIMARY KEY, a integer, b varchar(10), c char);
+---END---
+---START---
 -- add some data so that all tests have something to work with.
 INSERT INTO cwi_test VALUES(1, 2), (3, 4), (5, 6);
+---END---
+---START---
 CREATE UNIQUE INDEX cwi_uniq_idx ON cwi_test(a , b);
+---END---
+---START---
 ALTER TABLE cwi_test ADD primary key USING INDEX cwi_uniq_idx;
+ERROR:  multiple primary keys for table "cwi_test" are not allowed
+---END---
+---START---
 \d cwi_test
-                     Table "public.cwi_test"
- Column |         Type          | Collation | Nullable | Default 
---------+-----------------------+-----------+----------+---------
- a      | integer               |           | not null | 
- b      | character varying(10) |           | not null | 
- c      | character(1)          |           |          | 
+                                        Table "public.cwi_test"
+  Column   |         Type          | Collation | Nullable |                   Default                   
+-----------+-----------------------+-----------+----------+---------------------------------------------
+ gemini_pk | integer               |           | not null | nextval('cwi_test_gemini_pk_seq'::regclass)
+ a         | integer               |           |          | 
+ b         | character varying(10) |           |          | 
+ c         | character(1)          |           |          | 
 Indexes:
-    "cwi_uniq_idx" PRIMARY KEY, btree (a, b)
+    "cwi_test_pkey" PRIMARY KEY, btree (gemini_pk)
+    "cwi_uniq_idx" UNIQUE, btree (a, b)
 
 \d cwi_uniq_idx
             Index "public.cwi_uniq_idx"
@@ -1547,239 +1691,360 @@ Indexes:
 --------+-----------------------+------+------------
  a      | integer               | yes  | a
  b      | character varying(10) | yes  | b
-primary key, btree, for table "public.cwi_test"
+unique, btree, for table "public.cwi_test"
 
 CREATE UNIQUE INDEX cwi_uniq2_idx ON cwi_test(b , a);
+---END---
+---START---
 ALTER TABLE cwi_test DROP CONSTRAINT cwi_uniq_idx,
 	ADD CONSTRAINT cwi_replaced_pkey PRIMARY KEY
 		USING INDEX cwi_uniq2_idx;
-NOTICE:  ALTER TABLE / ADD CONSTRAINT USING INDEX will rename index "cwi_uniq2_idx" to "cwi_replaced_pkey"
+ERROR:  constraint "cwi_uniq_idx" of relation "cwi_test" does not exist
+---END---
+---START---
 \d cwi_test
-                     Table "public.cwi_test"
- Column |         Type          | Collation | Nullable | Default 
---------+-----------------------+-----------+----------+---------
- a      | integer               |           | not null | 
- b      | character varying(10) |           | not null | 
- c      | character(1)          |           |          | 
+                                        Table "public.cwi_test"
+  Column   |         Type          | Collation | Nullable |                   Default                   
+-----------+-----------------------+-----------+----------+---------------------------------------------
+ gemini_pk | integer               |           | not null | nextval('cwi_test_gemini_pk_seq'::regclass)
+ a         | integer               |           |          | 
+ b         | character varying(10) |           |          | 
+ c         | character(1)          |           |          | 
 Indexes:
-    "cwi_replaced_pkey" PRIMARY KEY, btree (b, a)
+    "cwi_test_pkey" PRIMARY KEY, btree (gemini_pk)
+    "cwi_uniq2_idx" UNIQUE, btree (b, a)
+    "cwi_uniq_idx" UNIQUE, btree (a, b)
 
 \d cwi_replaced_pkey
-          Index "public.cwi_replaced_pkey"
- Column |         Type          | Key? | Definition 
---------+-----------------------+------+------------
- b      | character varying(10) | yes  | b
- a      | integer               | yes  | a
-primary key, btree, for table "public.cwi_test"
-
-DROP INDEX cwi_replaced_pkey;	-- Should fail; a constraint depends on it
-ERROR:  cannot drop index cwi_replaced_pkey because constraint cwi_replaced_pkey on table cwi_test requires it
-HINT:  You can drop constraint cwi_replaced_pkey on table cwi_test instead.
+DROP INDEX cwi_replaced_pkey;
+ERROR:  index "cwi_replaced_pkey" does not exist
+---END---
+---START---
+-- Should fail; a constraint depends on it
 -- Check that non-default index options are rejected
 CREATE UNIQUE INDEX cwi_uniq3_idx ON cwi_test(a desc);
-ALTER TABLE cwi_test ADD UNIQUE USING INDEX cwi_uniq3_idx;  -- fail
+---END---
+---START---
+ALTER TABLE cwi_test ADD UNIQUE USING INDEX cwi_uniq3_idx;
 ERROR:  index "cwi_uniq3_idx" column number 1 does not have default sorting behavior
 LINE 1: ALTER TABLE cwi_test ADD UNIQUE USING INDEX cwi_uniq3_idx;
                                  ^
 DETAIL:  Cannot create a primary key or unique constraint using such an index.
+---END---
+---START---
+-- fail
 CREATE UNIQUE INDEX cwi_uniq4_idx ON cwi_test(b collate "POSIX");
-ALTER TABLE cwi_test ADD UNIQUE USING INDEX cwi_uniq4_idx;  -- fail
+---END---
+---START---
+ALTER TABLE cwi_test ADD UNIQUE USING INDEX cwi_uniq4_idx;
 ERROR:  index "cwi_uniq4_idx" column number 1 does not have default sorting behavior
 LINE 1: ALTER TABLE cwi_test ADD UNIQUE USING INDEX cwi_uniq4_idx;
                                  ^
 DETAIL:  Cannot create a primary key or unique constraint using such an index.
+---END---
+---START---
+-- fail
 DROP TABLE cwi_test;
--- ADD CONSTRAINT USING INDEX is forbidden on partitioned tables
-CREATE TABLE cwi_test(a int) PARTITION BY hash (a);
+---END---
+---START---
+CREATE TABLE cwi_test (gemini_pk serial PRIMARY KEY, a integer) PARTITION BY hash (a);
+ERROR:  unique constraint on partitioned table must include all partitioning columns
+DETAIL:  PRIMARY KEY constraint on table "cwi_test" lacks column "a" which is part of the partition key.
+---END---
+---START---
 create unique index on cwi_test (a);
-alter table cwi_test add primary key using index cwi_test_a_idx ;
-ERROR:  ALTER TABLE / ADD CONSTRAINT USING INDEX is not supported on partitioned tables
+ERROR:  relation "cwi_test" does not exist
+---END---
+---START---
+alter table cwi_test add primary key using index cwi_test_a_idx;
+ERROR:  relation "cwi_test" does not exist
+---END---
+---START---
 DROP TABLE cwi_test;
--- PRIMARY KEY constraint cannot be backed by a NULLS NOT DISTINCT index
-CREATE TABLE cwi_test(a int, b int);
+ERROR:  table "cwi_test" does not exist
+---END---
+---START---
+CREATE TABLE cwi_test (gemini_pk serial PRIMARY KEY, a integer, b integer);
+---END---
+---START---
 CREATE UNIQUE INDEX cwi_a_nnd ON cwi_test (a) NULLS NOT DISTINCT;
+---END---
+---START---
 ALTER TABLE cwi_test ADD PRIMARY KEY USING INDEX cwi_a_nnd;
-ERROR:  primary keys cannot use NULLS NOT DISTINCT indexes
+ERROR:  multiple primary keys for table "cwi_test" are not allowed
+---END---
+---START---
 DROP TABLE cwi_test;
---
--- Check handling of indexes on system columns
---
-CREATE TABLE syscol_table (a INT);
+---END---
+---START---
+CREATE TABLE syscol_table (gemini_pk serial PRIMARY KEY, a integer);
+---END---
+---START---
 -- System columns cannot be indexed
 CREATE INDEX ON syscolcol_table (ctid);
 ERROR:  relation "syscolcol_table" does not exist
+---END---
+---START---
 -- nor used in expressions
 CREATE INDEX ON syscol_table ((ctid >= '(1000,0)'));
 ERROR:  index creation on system columns is not supported
+---END---
+---START---
 -- nor used in predicates
 CREATE INDEX ON syscol_table (a) WHERE ctid >= '(1000,0)';
 ERROR:  index creation on system columns is not supported
+---END---
+---START---
 DROP TABLE syscol_table;
+---END---
+---START---
 --
 -- Tests for IS NULL/IS NOT NULL with b-tree indexes
 --
 CREATE TABLE onek_with_null AS SELECT unique1, unique2 FROM onek;
+---END---
+---START---
 INSERT INTO onek_with_null (unique1,unique2) VALUES (NULL, -1), (NULL, NULL);
+---END---
+---START---
 CREATE UNIQUE INDEX onek_nulltest ON onek_with_null (unique2,unique1);
+---END---
+---START---
 SET enable_seqscan = OFF;
+---END---
+---START---
 SET enable_indexscan = ON;
+---END---
+---START---
 SET enable_bitmapscan = ON;
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NULL;
  count 
 -------
      2
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NULL AND unique2 IS NULL;
  count 
 -------
      1
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NOT NULL;
  count 
 -------
   1000
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NULL AND unique2 IS NOT NULL;
  count 
 -------
      1
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NOT NULL AND unique1 > 500;
  count 
 -------
    499
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NULL AND unique1 > 500;
  count 
 -------
      0
 (1 row)
 
+---END---
+---START---
 DROP INDEX onek_nulltest;
+---END---
+---START---
 CREATE UNIQUE INDEX onek_nulltest ON onek_with_null (unique2 desc,unique1);
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NULL;
  count 
 -------
      2
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NULL AND unique2 IS NULL;
  count 
 -------
      1
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NOT NULL;
  count 
 -------
   1000
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NULL AND unique2 IS NOT NULL;
  count 
 -------
      1
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NOT NULL AND unique1 > 500;
  count 
 -------
    499
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NULL AND unique1 > 500;
  count 
 -------
      0
 (1 row)
 
+---END---
+---START---
 DROP INDEX onek_nulltest;
+---END---
+---START---
 CREATE UNIQUE INDEX onek_nulltest ON onek_with_null (unique2 desc nulls last,unique1);
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NULL;
  count 
 -------
      2
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NULL AND unique2 IS NULL;
  count 
 -------
      1
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NOT NULL;
  count 
 -------
   1000
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NULL AND unique2 IS NOT NULL;
  count 
 -------
      1
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NOT NULL AND unique1 > 500;
  count 
 -------
    499
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NULL AND unique1 > 500;
  count 
 -------
      0
 (1 row)
 
+---END---
+---START---
 DROP INDEX onek_nulltest;
+---END---
+---START---
 CREATE UNIQUE INDEX onek_nulltest ON onek_with_null (unique2  nulls first,unique1);
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NULL;
  count 
 -------
      2
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NULL AND unique2 IS NULL;
  count 
 -------
      1
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NOT NULL;
  count 
 -------
   1000
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NULL AND unique2 IS NOT NULL;
  count 
 -------
      1
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NOT NULL AND unique1 > 500;
  count 
 -------
    499
 (1 row)
 
+---END---
+---START---
 SELECT count(*) FROM onek_with_null WHERE unique1 IS NULL AND unique1 > 500;
  count 
 -------
      0
 (1 row)
 
+---END---
+---START---
 DROP INDEX onek_nulltest;
+---END---
+---START---
 -- Check initial-positioning logic too
 CREATE UNIQUE INDEX onek_nulltest ON onek_with_null (unique2);
+---END---
+---START---
 SET enable_seqscan = OFF;
+---END---
+---START---
 SET enable_indexscan = ON;
+---END---
+---START---
 SET enable_bitmapscan = OFF;
+---END---
+---START---
 SELECT unique1, unique2 FROM onek_with_null
   ORDER BY unique2 LIMIT 2;
  unique1 | unique2 
@@ -1788,6 +2053,8 @@ SELECT unique1, unique2 FROM onek_with_null
      147 |       0
 (2 rows)
 
+---END---
+---START---
 SELECT unique1, unique2 FROM onek_with_null WHERE unique2 >= -1
   ORDER BY unique2 LIMIT 2;
  unique1 | unique2 
@@ -1796,6 +2063,8 @@ SELECT unique1, unique2 FROM onek_with_null WHERE unique2 >= -1
      147 |       0
 (2 rows)
 
+---END---
+---START---
 SELECT unique1, unique2 FROM onek_with_null WHERE unique2 >= 0
   ORDER BY unique2 LIMIT 2;
  unique1 | unique2 
@@ -1804,6 +2073,8 @@ SELECT unique1, unique2 FROM onek_with_null WHERE unique2 >= 0
      931 |       1
 (2 rows)
 
+---END---
+---START---
 SELECT unique1, unique2 FROM onek_with_null
   ORDER BY unique2 DESC LIMIT 2;
  unique1 | unique2 
@@ -1812,6 +2083,8 @@ SELECT unique1, unique2 FROM onek_with_null
      278 |     999
 (2 rows)
 
+---END---
+---START---
 SELECT unique1, unique2 FROM onek_with_null WHERE unique2 >= -1
   ORDER BY unique2 DESC LIMIT 2;
  unique1 | unique2 
@@ -1820,6 +2093,8 @@ SELECT unique1, unique2 FROM onek_with_null WHERE unique2 >= -1
        0 |     998
 (2 rows)
 
+---END---
+---START---
 SELECT unique1, unique2 FROM onek_with_null WHERE unique2 < 999
   ORDER BY unique2 DESC LIMIT 2;
  unique1 | unique2 
@@ -1828,10 +2103,20 @@ SELECT unique1, unique2 FROM onek_with_null WHERE unique2 < 999
      744 |     997
 (2 rows)
 
+---END---
+---START---
 RESET enable_seqscan;
+---END---
+---START---
 RESET enable_indexscan;
+---END---
+---START---
 RESET enable_bitmapscan;
+---END---
+---START---
 DROP TABLE onek_with_null;
+---END---
+---START---
 --
 -- Check bitmap index path planning
 --
@@ -1851,31 +2136,35 @@ SELECT * FROM tenk1
                Index Cond: ((thousand = 42) AND (tenthous = 42))
 (9 rows)
 
+---END---
+---START---
 SELECT * FROM tenk1
   WHERE thousand = 42 AND (tenthous = 1 OR tenthous = 3 OR tenthous = 42);
- unique1 | unique2 | two | four | ten | twenty | hundred | thousand | twothousand | fivethous | tenthous | odd | even | stringu1 | stringu2 | string4 
----------+---------+-----+------+-----+--------+---------+----------+-------------+-----------+----------+-----+------+----------+----------+---------
-      42 |    5530 |   0 |    2 |   2 |      2 |      42 |       42 |          42 |        42 |       42 |  84 |   85 | QBAAAA   | SEIAAA   | OOOOxx
+ gemini_pk | unique1 | unique2 | two | four | ten | twenty | hundred | thousand | twothousand | fivethous | tenthous | odd | even | stringu1 | stringu2 | string4 
+-----------+---------+---------+-----+------+-----+--------+---------+----------+-------------+-----------+----------+-----+------+----------+----------+---------
+      5531 |      42 |    5530 |   0 |    2 |   2 |      2 |      42 |       42 |          42 |        42 |       42 |  84 |   85 | QBAAAA   | SEIAAA   | OOOOxx
 (1 row)
 
+---END---
+---START---
 EXPLAIN (COSTS OFF)
 SELECT count(*) FROM tenk1
   WHERE hundred = 42 AND (thousand = 42 OR thousand = 99);
-                                   QUERY PLAN                                    
----------------------------------------------------------------------------------
+                         QUERY PLAN                          
+-------------------------------------------------------------
  Aggregate
    ->  Bitmap Heap Scan on tenk1
-         Recheck Cond: ((hundred = 42) AND ((thousand = 42) OR (thousand = 99)))
-         ->  BitmapAnd
-               ->  Bitmap Index Scan on tenk1_hundred
-                     Index Cond: (hundred = 42)
-               ->  BitmapOr
-                     ->  Bitmap Index Scan on tenk1_thous_tenthous
-                           Index Cond: (thousand = 42)
-                     ->  Bitmap Index Scan on tenk1_thous_tenthous
-                           Index Cond: (thousand = 99)
-(11 rows)
+         Recheck Cond: ((thousand = 42) OR (thousand = 99))
+         Filter: (hundred = 42)
+         ->  BitmapOr
+               ->  Bitmap Index Scan on tenk1_thous_tenthous
+                     Index Cond: (thousand = 42)
+               ->  Bitmap Index Scan on tenk1_thous_tenthous
+                     Index Cond: (thousand = 99)
+(9 rows)
 
+---END---
+---START---
 SELECT count(*) FROM tenk1
   WHERE hundred = 42 AND (thousand = 42 OR thousand = 99);
  count 
@@ -1883,13 +2172,21 @@ SELECT count(*) FROM tenk1
     10
 (1 row)
 
+---END---
+---START---
 --
 -- Check behavior with duplicate index column contents
 --
 CREATE TABLE dupindexcols AS
   SELECT unique1 as id, stringu2::text as f1 FROM tenk1;
+---END---
+---START---
 CREATE INDEX dupindexcols_i ON dupindexcols (f1, id, f1 text_pattern_ops);
+---END---
+---START---
 ANALYZE dupindexcols;
+---END---
+---START---
 EXPLAIN (COSTS OFF)
   SELECT count(*) FROM dupindexcols
     WHERE f1 BETWEEN 'WA' AND 'ZZZ' and id < 1000 and f1 ~<~ 'YX';
@@ -1902,6 +2199,8 @@ EXPLAIN (COSTS OFF)
                Index Cond: ((f1 >= 'WA'::text) AND (f1 <= 'ZZZ'::text) AND (id < 1000) AND (f1 ~<~ 'YX'::text))
 (5 rows)
 
+---END---
+---START---
 SELECT count(*) FROM dupindexcols
   WHERE f1 BETWEEN 'WA' AND 'ZZZ' and id < 1000 and f1 ~<~ 'YX';
  count 
@@ -1909,6 +2208,8 @@ SELECT count(*) FROM dupindexcols
     97
 (1 row)
 
+---END---
+---START---
 --
 -- Check ordering of =ANY indexqual results (bug in 9.2.0)
 --
@@ -1916,12 +2217,16 @@ explain (costs off)
 SELECT unique1 FROM tenk1
 WHERE unique1 IN (1,42,7)
 ORDER BY unique1;
-                      QUERY PLAN                       
--------------------------------------------------------
- Index Only Scan using tenk1_unique1 on tenk1
-   Index Cond: (unique1 = ANY ('{1,42,7}'::integer[]))
-(2 rows)
+                       QUERY PLAN                       
+--------------------------------------------------------
+ Sort
+   Sort Key: unique1
+   ->  Seq Scan on tenk1
+         Filter: (unique1 = ANY ('{1,42,7}'::bigint[]))
+(4 rows)
 
+---END---
+---START---
 SELECT unique1 FROM tenk1
 WHERE unique1 IN (1,42,7)
 ORDER BY unique1;
@@ -1932,39 +2237,24 @@ ORDER BY unique1;
       42
 (3 rows)
 
+---END---
+---START---
 explain (costs off)
 SELECT thousand, tenthous FROM tenk1
 WHERE thousand < 2 AND tenthous IN (1001,3000)
 ORDER BY thousand;
-                      QUERY PLAN                       
--------------------------------------------------------
- Index Only Scan using tenk1_thous_tenthous on tenk1
-   Index Cond: (thousand < 2)
-   Filter: (tenthous = ANY ('{1001,3000}'::integer[]))
-(3 rows)
-
-SELECT thousand, tenthous FROM tenk1
-WHERE thousand < 2 AND tenthous IN (1001,3000)
-ORDER BY thousand;
- thousand | tenthous 
-----------+----------
-        0 |     3000
-        1 |     1001
-(2 rows)
-
-SET enable_indexonlyscan = OFF;
-explain (costs off)
-SELECT thousand, tenthous FROM tenk1
-WHERE thousand < 2 AND tenthous IN (1001,3000)
-ORDER BY thousand;
-                                      QUERY PLAN                                      
---------------------------------------------------------------------------------------
+                                        QUERY PLAN                                         
+-------------------------------------------------------------------------------------------
  Sort
    Sort Key: thousand
-   ->  Index Scan using tenk1_thous_tenthous on tenk1
-         Index Cond: ((thousand < 2) AND (tenthous = ANY ('{1001,3000}'::integer[])))
-(4 rows)
+   ->  Bitmap Heap Scan on tenk1
+         Recheck Cond: ((thousand < 2) AND (tenthous = ANY ('{1001,3000}'::bigint[])))
+         ->  Bitmap Index Scan on tenk1_thous_tenthous
+               Index Cond: ((thousand < 2) AND (tenthous = ANY ('{1001,3000}'::bigint[])))
+(6 rows)
 
+---END---
+---START---
 SELECT thousand, tenthous FROM tenk1
 WHERE thousand < 2 AND tenthous IN (1001,3000)
 ORDER BY thousand;
@@ -1974,7 +2264,41 @@ ORDER BY thousand;
         1 |     1001
 (2 rows)
 
+---END---
+---START---
+SET enable_indexonlyscan = OFF;
+---END---
+---START---
+explain (costs off)
+SELECT thousand, tenthous FROM tenk1
+WHERE thousand < 2 AND tenthous IN (1001,3000)
+ORDER BY thousand;
+                                        QUERY PLAN                                         
+-------------------------------------------------------------------------------------------
+ Sort
+   Sort Key: thousand
+   ->  Bitmap Heap Scan on tenk1
+         Recheck Cond: ((thousand < 2) AND (tenthous = ANY ('{1001,3000}'::bigint[])))
+         ->  Bitmap Index Scan on tenk1_thous_tenthous
+               Index Cond: ((thousand < 2) AND (tenthous = ANY ('{1001,3000}'::bigint[])))
+(6 rows)
+
+---END---
+---START---
+SELECT thousand, tenthous FROM tenk1
+WHERE thousand < 2 AND tenthous IN (1001,3000)
+ORDER BY thousand;
+ thousand | tenthous 
+----------+----------
+        0 |     3000
+        1 |     1001
+(2 rows)
+
+---END---
+---START---
 RESET enable_indexonlyscan;
+---END---
+---START---
 --
 -- Check elimination of constant-NULL subexpressions
 --
@@ -1986,10 +2310,16 @@ explain (costs off)
    Index Cond: ((thousand = 1) AND (tenthous = 1001))
 (2 rows)
 
+---END---
+---START---
 --
 -- Check matching of boolean index columns to WHERE conditions and sort keys
 --
-create temp table boolindex (b bool, i int, unique(b, i), junk float);
+DROP TABLE IF EXISTS boolindex;
+NOTICE:  table "boolindex" does not exist, skipping
+CREATE TABLE boolindex (gemini_pk serial PRIMARY KEY, b bool, i integer, UNIQUE (b, i), junk double precision);
+---END---
+---START---
 explain (costs off)
   select * from boolindex order by b, i limit 10;
                       QUERY PLAN                       
@@ -1998,6 +2328,8 @@ explain (costs off)
    ->  Index Scan using boolindex_b_i_key on boolindex
 (2 rows)
 
+---END---
+---START---
 explain (costs off)
   select * from boolindex where b order by i limit 10;
                       QUERY PLAN                       
@@ -2007,6 +2339,8 @@ explain (costs off)
          Index Cond: (b = true)
 (3 rows)
 
+---END---
+---START---
 explain (costs off)
   select * from boolindex where b = true order by i desc limit 10;
                            QUERY PLAN                           
@@ -2016,6 +2350,8 @@ explain (costs off)
          Index Cond: (b = true)
 (3 rows)
 
+---END---
+---START---
 explain (costs off)
   select * from boolindex where not b order by i limit 10;
                       QUERY PLAN                       
@@ -2025,6 +2361,8 @@ explain (costs off)
          Index Cond: (b = false)
 (3 rows)
 
+---END---
+---START---
 explain (costs off)
   select * from boolindex where b is true order by i desc limit 10;
                            QUERY PLAN                           
@@ -2034,6 +2372,8 @@ explain (costs off)
          Index Cond: (b = true)
 (3 rows)
 
+---END---
+---START---
 explain (costs off)
   select * from boolindex where b is false order by i desc limit 10;
                            QUERY PLAN                           
@@ -2043,50 +2383,104 @@ explain (costs off)
          Index Cond: (b = false)
 (3 rows)
 
+---END---
+---START---
 --
 -- REINDEX (VERBOSE)
 --
 CREATE TABLE reindex_verbose(id integer primary key);
+---END---
+---START---
 \set VERBOSITY terse \\ -- suppress machine-dependent details
 REINDEX (VERBOSE) TABLE reindex_verbose;
 INFO:  index "reindex_verbose_pkey" was reindexed
+---END---
+---START---
 \set VERBOSITY default
 DROP TABLE reindex_verbose;
---
--- REINDEX CONCURRENTLY
---
-CREATE TABLE concur_reindex_tab (c1 int);
+---END---
+---START---
+CREATE TABLE concur_reindex_tab (gemini_pk serial PRIMARY KEY, c1 integer);
+---END---
+---START---
 -- REINDEX
-REINDEX TABLE concur_reindex_tab; -- notice
-NOTICE:  table "concur_reindex_tab" has no indexes to reindex
-REINDEX (CONCURRENTLY) TABLE concur_reindex_tab; -- notice
-NOTICE:  table "concur_reindex_tab" has no indexes that can be reindexed concurrently
-ALTER TABLE concur_reindex_tab ADD COLUMN c2 text; -- add toast index
+REINDEX TABLE concur_reindex_tab;
+---END---
+---START---
+-- notice
+REINDEX (CONCURRENTLY) TABLE concur_reindex_tab;
+---END---
+---START---
+-- notice
+ALTER TABLE concur_reindex_tab ADD COLUMN c2 text;
+---END---
+---START---
+-- add toast index
 -- Normal index with integer column
 CREATE UNIQUE INDEX concur_reindex_ind1 ON concur_reindex_tab(c1);
+---END---
+---START---
 -- Normal index with text column
 CREATE INDEX concur_reindex_ind2 ON concur_reindex_tab(c2);
+---END---
+---START---
 -- UNIQUE index with expression
 CREATE UNIQUE INDEX concur_reindex_ind3 ON concur_reindex_tab(abs(c1));
+---END---
+---START---
 -- Duplicate column names
 CREATE INDEX concur_reindex_ind4 ON concur_reindex_tab(c1, c1, c2);
+---END---
+---START---
 -- Create table for check on foreign key dependence switch with indexes swapped
 ALTER TABLE concur_reindex_tab ADD PRIMARY KEY USING INDEX concur_reindex_ind1;
-CREATE TABLE concur_reindex_tab2 (c1 int REFERENCES concur_reindex_tab);
+ERROR:  multiple primary keys for table "concur_reindex_tab" are not allowed
+---END---
+---START---
+CREATE TABLE concur_reindex_tab2 (gemini_pk serial PRIMARY KEY, c1 integer REFERENCES concur_reindex_tab);
+---END---
+---START---
 INSERT INTO concur_reindex_tab VALUES  (1, 'a');
+ERROR:  invalid input syntax for type integer: "a"
+LINE 1: INSERT INTO concur_reindex_tab VALUES  (1, 'a');
+                                                   ^
+---END---
+---START---
 INSERT INTO concur_reindex_tab VALUES  (2, 'a');
--- Reindex concurrently of exclusion constraint currently not supported
-CREATE TABLE concur_reindex_tab3 (c1 int, c2 int4range, EXCLUDE USING gist (c2 WITH &&));
+ERROR:  invalid input syntax for type integer: "a"
+LINE 1: INSERT INTO concur_reindex_tab VALUES  (2, 'a');
+                                                   ^
+---END---
+---START---
+CREATE TABLE concur_reindex_tab3 (gemini_pk serial PRIMARY KEY, c1 integer, c2 int4range, EXCLUDE USING gist (c2 WITH OPERATOR(&&)));
+---END---
+---START---
 INSERT INTO concur_reindex_tab3 VALUES  (3, '[1,2]');
-REINDEX INDEX CONCURRENTLY  concur_reindex_tab3_c2_excl;  -- error
+ERROR:  invalid input syntax for type integer: "[1,2]"
+LINE 1: INSERT INTO concur_reindex_tab3 VALUES  (3, '[1,2]');
+                                                    ^
+---END---
+---START---
+REINDEX INDEX CONCURRENTLY  concur_reindex_tab3_c2_excl;
 ERROR:  concurrent index creation for exclusion constraints is not supported
-REINDEX TABLE CONCURRENTLY concur_reindex_tab3;  -- succeeds with warning
+---END---
+---START---
+-- error
+REINDEX TABLE CONCURRENTLY concur_reindex_tab3;
 WARNING:  cannot reindex exclusion constraint index "public.concur_reindex_tab3_c2_excl" concurrently, skipping
+---END---
+---START---
+-- succeeds with warning
 INSERT INTO concur_reindex_tab3 VALUES  (4, '[2,4]');
-ERROR:  conflicting key value violates exclusion constraint "concur_reindex_tab3_c2_excl"
-DETAIL:  Key (c2)=([2,5)) conflicts with existing key (c2)=([1,3)).
+ERROR:  invalid input syntax for type integer: "[2,4]"
+LINE 1: INSERT INTO concur_reindex_tab3 VALUES  (4, '[2,4]');
+                                                    ^
+---END---
+---START---
 -- Check materialized views
 CREATE MATERIALIZED VIEW concur_reindex_matview AS SELECT * FROM concur_reindex_tab;
+---END---
+---START---
 -- Dependency lookup before and after the follow-up REINDEX commands.
 -- These should remain consistent.
 SELECT pg_describe_object(classid, objid, objsubid) as obj,
@@ -2101,21 +2495,29 @@ WHERE classid = 'pg_class'::regclass AND
 	    'concur_reindex_ind4'::regclass,
 	    'concur_reindex_matview'::regclass)
   ORDER BY 1, 2;
-                   obj                    |                           objref                           | deptype 
-------------------------------------------+------------------------------------------------------------+---------
- index concur_reindex_ind1                | constraint concur_reindex_ind1 on table concur_reindex_tab | i
- index concur_reindex_ind2                | column c2 of table concur_reindex_tab                      | a
- index concur_reindex_ind3                | column c1 of table concur_reindex_tab                      | a
- index concur_reindex_ind3                | table concur_reindex_tab                                   | a
- index concur_reindex_ind4                | column c1 of table concur_reindex_tab                      | a
- index concur_reindex_ind4                | column c2 of table concur_reindex_tab                      | a
- materialized view concur_reindex_matview | schema public                                              | n
- table concur_reindex_tab                 | schema public                                              | n
+                   obj                    |                objref                 | deptype 
+------------------------------------------+---------------------------------------+---------
+ index concur_reindex_ind1                | column c1 of table concur_reindex_tab | a
+ index concur_reindex_ind2                | column c2 of table concur_reindex_tab | a
+ index concur_reindex_ind3                | column c1 of table concur_reindex_tab | a
+ index concur_reindex_ind3                | table concur_reindex_tab              | a
+ index concur_reindex_ind4                | column c1 of table concur_reindex_tab | a
+ index concur_reindex_ind4                | column c2 of table concur_reindex_tab | a
+ materialized view concur_reindex_matview | schema public                         | n
+ table concur_reindex_tab                 | schema public                         | n
 (8 rows)
 
+---END---
+---START---
 REINDEX INDEX CONCURRENTLY concur_reindex_ind1;
+---END---
+---START---
 REINDEX TABLE CONCURRENTLY concur_reindex_tab;
+---END---
+---START---
 REINDEX TABLE CONCURRENTLY concur_reindex_matview;
+---END---
+---START---
 SELECT pg_describe_object(classid, objid, objsubid) as obj,
        pg_describe_object(refclassid,refobjid,refobjsubid) as objref,
        deptype
@@ -2128,141 +2530,231 @@ WHERE classid = 'pg_class'::regclass AND
 	    'concur_reindex_ind4'::regclass,
 	    'concur_reindex_matview'::regclass)
   ORDER BY 1, 2;
-                   obj                    |                           objref                           | deptype 
-------------------------------------------+------------------------------------------------------------+---------
- index concur_reindex_ind1                | constraint concur_reindex_ind1 on table concur_reindex_tab | i
- index concur_reindex_ind2                | column c2 of table concur_reindex_tab                      | a
- index concur_reindex_ind3                | column c1 of table concur_reindex_tab                      | a
- index concur_reindex_ind3                | table concur_reindex_tab                                   | a
- index concur_reindex_ind4                | column c1 of table concur_reindex_tab                      | a
- index concur_reindex_ind4                | column c2 of table concur_reindex_tab                      | a
- materialized view concur_reindex_matview | schema public                                              | n
- table concur_reindex_tab                 | schema public                                              | n
+                   obj                    |                objref                 | deptype 
+------------------------------------------+---------------------------------------+---------
+ index concur_reindex_ind1                | column c1 of table concur_reindex_tab | a
+ index concur_reindex_ind2                | column c2 of table concur_reindex_tab | a
+ index concur_reindex_ind3                | column c1 of table concur_reindex_tab | a
+ index concur_reindex_ind3                | table concur_reindex_tab              | a
+ index concur_reindex_ind4                | column c1 of table concur_reindex_tab | a
+ index concur_reindex_ind4                | column c2 of table concur_reindex_tab | a
+ materialized view concur_reindex_matview | schema public                         | n
+ table concur_reindex_tab                 | schema public                         | n
 (8 rows)
 
--- Check that comments are preserved
-CREATE TABLE testcomment (i int);
+---END---
+---START---
+CREATE TABLE testcomment (gemini_pk serial PRIMARY KEY, i integer);
+---END---
+---START---
 CREATE INDEX testcomment_idx1 ON testcomment (i);
+---END---
+---START---
 COMMENT ON INDEX testcomment_idx1 IS 'test comment';
+---END---
+---START---
 SELECT obj_description('testcomment_idx1'::regclass, 'pg_class');
  obj_description 
 -----------------
  test comment
 (1 row)
 
+---END---
+---START---
 REINDEX TABLE testcomment;
+---END---
+---START---
 SELECT obj_description('testcomment_idx1'::regclass, 'pg_class');
  obj_description 
 -----------------
  test comment
 (1 row)
 
-REINDEX TABLE CONCURRENTLY testcomment ;
+---END---
+---START---
+REINDEX TABLE CONCURRENTLY testcomment;
+---END---
+---START---
 SELECT obj_description('testcomment_idx1'::regclass, 'pg_class');
  obj_description 
 -----------------
  test comment
 (1 row)
 
+---END---
+---START---
 DROP TABLE testcomment;
--- Check that indisclustered updates are preserved
-CREATE TABLE concur_clustered(i int);
+---END---
+---START---
+CREATE TABLE concur_clustered (gemini_pk serial PRIMARY KEY, i integer);
+---END---
+---START---
 CREATE INDEX concur_clustered_i_idx ON concur_clustered(i);
+---END---
+---START---
 ALTER TABLE concur_clustered CLUSTER ON concur_clustered_i_idx;
+---END---
+---START---
 REINDEX TABLE CONCURRENTLY concur_clustered;
+---END---
+---START---
 SELECT indexrelid::regclass, indisclustered FROM pg_index
   WHERE indrelid = 'concur_clustered'::regclass;
        indexrelid       | indisclustered 
 ------------------------+----------------
+ concur_clustered_pkey  | f
  concur_clustered_i_idx | t
-(1 row)
+(2 rows)
 
+---END---
+---START---
 DROP TABLE concur_clustered;
--- Check that indisreplident updates are preserved.
-CREATE TABLE concur_replident(i int NOT NULL);
+---END---
+---START---
+CREATE TABLE concur_replident (gemini_pk serial PRIMARY KEY, i integer NOT NULL);
+---END---
+---START---
 CREATE UNIQUE INDEX concur_replident_i_idx ON concur_replident(i);
+---END---
+---START---
 ALTER TABLE concur_replident REPLICA IDENTITY
   USING INDEX concur_replident_i_idx;
+---END---
+---START---
 SELECT indexrelid::regclass, indisreplident FROM pg_index
   WHERE indrelid = 'concur_replident'::regclass;
        indexrelid       | indisreplident 
 ------------------------+----------------
+ concur_replident_pkey  | f
  concur_replident_i_idx | t
-(1 row)
+(2 rows)
 
+---END---
+---START---
 REINDEX TABLE CONCURRENTLY concur_replident;
+---END---
+---START---
 SELECT indexrelid::regclass, indisreplident FROM pg_index
   WHERE indrelid = 'concur_replident'::regclass;
        indexrelid       | indisreplident 
 ------------------------+----------------
+ concur_replident_pkey  | f
  concur_replident_i_idx | t
-(1 row)
+(2 rows)
 
+---END---
+---START---
 DROP TABLE concur_replident;
--- Check that opclass parameters are preserved
-CREATE TABLE concur_appclass_tab(i tsvector, j tsvector, k tsvector);
+---END---
+---START---
+CREATE TABLE concur_appclass_tab (gemini_pk serial PRIMARY KEY, i tsvector, j tsvector, k tsvector);
+---END---
+---START---
 CREATE INDEX concur_appclass_ind on concur_appclass_tab
   USING gist (i tsvector_ops (siglen='1000'), j tsvector_ops (siglen='500'));
+---END---
+---START---
 CREATE INDEX concur_appclass_ind_2 on concur_appclass_tab
   USING gist (k tsvector_ops (siglen='300'), j tsvector_ops);
+---END---
+---START---
 REINDEX TABLE CONCURRENTLY concur_appclass_tab;
+---END---
+---START---
 \d concur_appclass_tab
-         Table "public.concur_appclass_tab"
- Column |   Type   | Collation | Nullable | Default 
---------+----------+-----------+----------+---------
- i      | tsvector |           |          | 
- j      | tsvector |           |          | 
- k      | tsvector |           |          | 
+                                  Table "public.concur_appclass_tab"
+  Column   |   Type   | Collation | Nullable |                        Default                         
+-----------+----------+-----------+----------+--------------------------------------------------------
+ gemini_pk | integer  |           | not null | nextval('concur_appclass_tab_gemini_pk_seq'::regclass)
+ i         | tsvector |           |          | 
+ j         | tsvector |           |          | 
+ k         | tsvector |           |          | 
 Indexes:
+    "concur_appclass_tab_pkey" PRIMARY KEY, btree (gemini_pk)
     "concur_appclass_ind" gist (i tsvector_ops (siglen='1000'), j tsvector_ops (siglen='500'))
     "concur_appclass_ind_2" gist (k tsvector_ops (siglen='300'), j)
 
 DROP TABLE concur_appclass_tab;
--- Partitions
--- Create some partitioned tables
-CREATE TABLE concur_reindex_part (c1 int, c2 int) PARTITION BY RANGE (c1);
+---END---
+---START---
+CREATE TABLE concur_reindex_part (gemini_pk serial PRIMARY KEY, c1 integer, c2 integer) PARTITION BY range (c1);
+ERROR:  unique constraint on partitioned table must include all partitioning columns
+DETAIL:  PRIMARY KEY constraint on table "concur_reindex_part" lacks column "c1" which is part of the partition key.
+---END---
+---START---
 CREATE TABLE concur_reindex_part_0 PARTITION OF concur_reindex_part
   FOR VALUES FROM (0) TO (10) PARTITION BY list (c2);
+ERROR:  relation "concur_reindex_part" does not exist
+---END---
+---START---
 CREATE TABLE concur_reindex_part_0_1 PARTITION OF concur_reindex_part_0
   FOR VALUES IN (1);
+ERROR:  relation "concur_reindex_part_0" does not exist
+---END---
+---START---
 CREATE TABLE concur_reindex_part_0_2 PARTITION OF concur_reindex_part_0
   FOR VALUES IN (2);
+ERROR:  relation "concur_reindex_part_0" does not exist
+---END---
+---START---
 -- This partitioned table will have no partitions.
 CREATE TABLE concur_reindex_part_10 PARTITION OF concur_reindex_part
   FOR VALUES FROM (10) TO (20) PARTITION BY list (c2);
+ERROR:  relation "concur_reindex_part" does not exist
+---END---
+---START---
 -- Create some partitioned indexes
 CREATE INDEX concur_reindex_part_index ON ONLY concur_reindex_part (c1);
+ERROR:  relation "concur_reindex_part" does not exist
+---END---
+---START---
 CREATE INDEX concur_reindex_part_index_0 ON ONLY concur_reindex_part_0 (c1);
+ERROR:  relation "concur_reindex_part_0" does not exist
+---END---
+---START---
 ALTER INDEX concur_reindex_part_index ATTACH PARTITION concur_reindex_part_index_0;
+ERROR:  relation "concur_reindex_part_index" does not exist
+---END---
+---START---
 -- This partitioned index will have no partitions.
 CREATE INDEX concur_reindex_part_index_10 ON ONLY concur_reindex_part_10 (c1);
+ERROR:  relation "concur_reindex_part_10" does not exist
+---END---
+---START---
 ALTER INDEX concur_reindex_part_index ATTACH PARTITION concur_reindex_part_index_10;
+ERROR:  relation "concur_reindex_part_index" does not exist
+---END---
+---START---
 CREATE INDEX concur_reindex_part_index_0_1 ON ONLY concur_reindex_part_0_1 (c1);
+ERROR:  relation "concur_reindex_part_0_1" does not exist
+---END---
+---START---
 ALTER INDEX concur_reindex_part_index_0 ATTACH PARTITION concur_reindex_part_index_0_1;
+ERROR:  relation "concur_reindex_part_index_0" does not exist
+---END---
+---START---
 CREATE INDEX concur_reindex_part_index_0_2 ON ONLY concur_reindex_part_0_2 (c1);
+ERROR:  relation "concur_reindex_part_0_2" does not exist
+---END---
+---START---
 ALTER INDEX concur_reindex_part_index_0 ATTACH PARTITION concur_reindex_part_index_0_2;
+ERROR:  relation "concur_reindex_part_index_0" does not exist
+---END---
+---START---
 SELECT relid, parentrelid, level FROM pg_partition_tree('concur_reindex_part_index')
   ORDER BY relid, level;
-             relid             |         parentrelid         | level 
--------------------------------+-----------------------------+-------
- concur_reindex_part_index     |                             |     0
- concur_reindex_part_index_0   | concur_reindex_part_index   |     1
- concur_reindex_part_index_10  | concur_reindex_part_index   |     1
- concur_reindex_part_index_0_1 | concur_reindex_part_index_0 |     2
- concur_reindex_part_index_0_2 | concur_reindex_part_index_0 |     2
-(5 rows)
-
+ERROR:  relation "concur_reindex_part_index" does not exist
+LINE 1: ... relid, parentrelid, level FROM pg_partition_tree('concur_re...
+                                                             ^
+---END---
+---START---
 SELECT relid, parentrelid, level FROM pg_partition_tree('concur_reindex_part_index')
   ORDER BY relid, level;
-             relid             |         parentrelid         | level 
--------------------------------+-----------------------------+-------
- concur_reindex_part_index     |                             |     0
- concur_reindex_part_index_0   | concur_reindex_part_index   |     1
- concur_reindex_part_index_10  | concur_reindex_part_index   |     1
- concur_reindex_part_index_0_1 | concur_reindex_part_index_0 |     2
- concur_reindex_part_index_0_2 | concur_reindex_part_index_0 |     2
-(5 rows)
-
+ERROR:  relation "concur_reindex_part_index" does not exist
+LINE 1: ... relid, parentrelid, level FROM pg_partition_tree('concur_re...
+                                                             ^
+---END---
+---START---
 -- REINDEX should preserve dependencies of partition tree.
 SELECT pg_describe_object(classid, objid, objsubid) as obj,
        pg_describe_object(refclassid,refobjid,refobjsubid) as objref,
@@ -2278,44 +2770,34 @@ WHERE classid = 'pg_class'::regclass AND
             'concur_reindex_part_index_0_1'::regclass,
             'concur_reindex_part_index_0_2'::regclass)
   ORDER BY 1, 2;
-                   obj                    |                   objref                   | deptype 
-------------------------------------------+--------------------------------------------+---------
- column c1 of table concur_reindex_part   | table concur_reindex_part                  | i
- column c2 of table concur_reindex_part_0 | table concur_reindex_part_0                | i
- index concur_reindex_part_index          | column c1 of table concur_reindex_part     | a
- index concur_reindex_part_index_0        | column c1 of table concur_reindex_part_0   | a
- index concur_reindex_part_index_0        | index concur_reindex_part_index            | P
- index concur_reindex_part_index_0        | table concur_reindex_part_0                | S
- index concur_reindex_part_index_0_1      | column c1 of table concur_reindex_part_0_1 | a
- index concur_reindex_part_index_0_1      | index concur_reindex_part_index_0          | P
- index concur_reindex_part_index_0_1      | table concur_reindex_part_0_1              | S
- index concur_reindex_part_index_0_2      | column c1 of table concur_reindex_part_0_2 | a
- index concur_reindex_part_index_0_2      | index concur_reindex_part_index_0          | P
- index concur_reindex_part_index_0_2      | table concur_reindex_part_0_2              | S
- table concur_reindex_part                | schema public                              | n
- table concur_reindex_part_0              | schema public                              | n
- table concur_reindex_part_0              | table concur_reindex_part                  | a
- table concur_reindex_part_0_1            | schema public                              | n
- table concur_reindex_part_0_1            | table concur_reindex_part_0                | a
- table concur_reindex_part_0_2            | schema public                              | n
- table concur_reindex_part_0_2            | table concur_reindex_part_0                | a
-(19 rows)
-
+ERROR:  relation "concur_reindex_part" does not exist
+LINE 6:   objid in ('concur_reindex_part'::regclass,
+                    ^
+---END---
+---START---
 REINDEX INDEX CONCURRENTLY concur_reindex_part_index_0_1;
+ERROR:  relation "concur_reindex_part_index_0_1" does not exist
+---END---
+---START---
 REINDEX INDEX CONCURRENTLY concur_reindex_part_index_0_2;
+ERROR:  relation "concur_reindex_part_index_0_2" does not exist
+---END---
+---START---
 SELECT relid, parentrelid, level FROM pg_partition_tree('concur_reindex_part_index')
   ORDER BY relid, level;
-             relid             |         parentrelid         | level 
--------------------------------+-----------------------------+-------
- concur_reindex_part_index     |                             |     0
- concur_reindex_part_index_0   | concur_reindex_part_index   |     1
- concur_reindex_part_index_10  | concur_reindex_part_index   |     1
- concur_reindex_part_index_0_1 | concur_reindex_part_index_0 |     2
- concur_reindex_part_index_0_2 | concur_reindex_part_index_0 |     2
-(5 rows)
-
+ERROR:  relation "concur_reindex_part_index" does not exist
+LINE 1: ... relid, parentrelid, level FROM pg_partition_tree('concur_re...
+                                                             ^
+---END---
+---START---
 REINDEX TABLE CONCURRENTLY concur_reindex_part_0_1;
+ERROR:  relation "concur_reindex_part_0_1" does not exist
+---END---
+---START---
 REINDEX TABLE CONCURRENTLY concur_reindex_part_0_2;
+ERROR:  relation "concur_reindex_part_0_2" does not exist
+---END---
+---START---
 SELECT pg_describe_object(classid, objid, objsubid) as obj,
        pg_describe_object(refclassid,refobjid,refobjsubid) as objref,
        deptype
@@ -2330,58 +2812,53 @@ WHERE classid = 'pg_class'::regclass AND
             'concur_reindex_part_index_0_1'::regclass,
             'concur_reindex_part_index_0_2'::regclass)
   ORDER BY 1, 2;
-                   obj                    |                   objref                   | deptype 
-------------------------------------------+--------------------------------------------+---------
- column c1 of table concur_reindex_part   | table concur_reindex_part                  | i
- column c2 of table concur_reindex_part_0 | table concur_reindex_part_0                | i
- index concur_reindex_part_index          | column c1 of table concur_reindex_part     | a
- index concur_reindex_part_index_0        | column c1 of table concur_reindex_part_0   | a
- index concur_reindex_part_index_0        | index concur_reindex_part_index            | P
- index concur_reindex_part_index_0        | table concur_reindex_part_0                | S
- index concur_reindex_part_index_0_1      | column c1 of table concur_reindex_part_0_1 | a
- index concur_reindex_part_index_0_1      | index concur_reindex_part_index_0          | P
- index concur_reindex_part_index_0_1      | table concur_reindex_part_0_1              | S
- index concur_reindex_part_index_0_2      | column c1 of table concur_reindex_part_0_2 | a
- index concur_reindex_part_index_0_2      | index concur_reindex_part_index_0          | P
- index concur_reindex_part_index_0_2      | table concur_reindex_part_0_2              | S
- table concur_reindex_part                | schema public                              | n
- table concur_reindex_part_0              | schema public                              | n
- table concur_reindex_part_0              | table concur_reindex_part                  | a
- table concur_reindex_part_0_1            | schema public                              | n
- table concur_reindex_part_0_1            | table concur_reindex_part_0                | a
- table concur_reindex_part_0_2            | schema public                              | n
- table concur_reindex_part_0_2            | table concur_reindex_part_0                | a
-(19 rows)
-
+ERROR:  relation "concur_reindex_part" does not exist
+LINE 6:   objid in ('concur_reindex_part'::regclass,
+                    ^
+---END---
+---START---
 SELECT relid, parentrelid, level FROM pg_partition_tree('concur_reindex_part_index')
   ORDER BY relid, level;
-             relid             |         parentrelid         | level 
--------------------------------+-----------------------------+-------
- concur_reindex_part_index     |                             |     0
- concur_reindex_part_index_0   | concur_reindex_part_index   |     1
- concur_reindex_part_index_10  | concur_reindex_part_index   |     1
- concur_reindex_part_index_0_1 | concur_reindex_part_index_0 |     2
- concur_reindex_part_index_0_2 | concur_reindex_part_index_0 |     2
-(5 rows)
-
+ERROR:  relation "concur_reindex_part_index" does not exist
+LINE 1: ... relid, parentrelid, level FROM pg_partition_tree('concur_re...
+                                                             ^
+---END---
+---START---
 -- REINDEX for partitioned indexes
 -- REINDEX TABLE fails for partitioned indexes
 -- Top-most parent index
-REINDEX TABLE concur_reindex_part_index; -- error
-ERROR:  "concur_reindex_part_index" is not a table or materialized view
-REINDEX TABLE CONCURRENTLY concur_reindex_part_index; -- error
-ERROR:  "concur_reindex_part_index" is not a table or materialized view
+REINDEX TABLE concur_reindex_part_index;
+ERROR:  relation "concur_reindex_part_index" does not exist
+---END---
+---START---
+-- error
+REINDEX TABLE CONCURRENTLY concur_reindex_part_index;
+ERROR:  relation "concur_reindex_part_index" does not exist
+---END---
+---START---
+-- error
 -- Partitioned index with no leaves
-REINDEX TABLE concur_reindex_part_index_10; -- error
-ERROR:  "concur_reindex_part_index_10" is not a table or materialized view
-REINDEX TABLE CONCURRENTLY concur_reindex_part_index_10; -- error
-ERROR:  "concur_reindex_part_index_10" is not a table or materialized view
+REINDEX TABLE concur_reindex_part_index_10;
+ERROR:  relation "concur_reindex_part_index_10" does not exist
+---END---
+---START---
+-- error
+REINDEX TABLE CONCURRENTLY concur_reindex_part_index_10;
+ERROR:  relation "concur_reindex_part_index_10" does not exist
+---END---
+---START---
+-- error
 -- Cannot run in a transaction block
 BEGIN;
+---END---
+---START---
 REINDEX INDEX concur_reindex_part_index;
-ERROR:  REINDEX INDEX cannot run inside a transaction block
-CONTEXT:  while reindexing partitioned index "public.concur_reindex_part_index"
+ERROR:  relation "concur_reindex_part_index" does not exist
+---END---
+---START---
 ROLLBACK;
+---END---
+---START---
 -- Helper functions to track changes of relfilenodes in a partition tree.
 -- Create a table tracking the relfilenode state.
 CREATE OR REPLACE FUNCTION create_relfilenode_part(relname text, indname text)
@@ -2397,6 +2874,8 @@ CREATE OR REPLACE FUNCTION create_relfilenode_part(relname text, indname text)
 	 relname, indname);
   END
   $func$ LANGUAGE plpgsql;
+---END---
+---START---
 CREATE OR REPLACE FUNCTION compare_relfilenode_part(tabname text)
   RETURNS TABLE (relname name, relkind "char", state text) AS
   $func$
@@ -2412,212 +2891,373 @@ CREATE OR REPLACE FUNCTION compare_relfilenode_part(tabname text)
            ORDER BY 1;', tabname);
   END
   $func$ LANGUAGE plpgsql;
+---END---
+---START---
 --  Check that expected relfilenodes are changed, non-concurrent case.
 SELECT create_relfilenode_part('reindex_index_status', 'concur_reindex_part_index');
- create_relfilenode_part 
--------------------------
- 
-(1 row)
-
+ERROR:  relation "concur_reindex_part_index" does not exist
+LINE 6:          (SELECT relid FROM pg_partition_tree('concur_reinde...
+                                                      ^
+QUERY:  
+    CREATE TABLE reindex_index_status AS
+      SELECT oid, relname, relfilenode, relkind, reltoastrelid
+      FROM pg_class
+      WHERE oid IN
+         (SELECT relid FROM pg_partition_tree('concur_reindex_part_index'));
+CONTEXT:  PL/pgSQL function create_relfilenode_part(text,text) line 3 at EXECUTE
+---END---
+---START---
 REINDEX INDEX concur_reindex_part_index;
+ERROR:  relation "concur_reindex_part_index" does not exist
+---END---
+---START---
 SELECT * FROM compare_relfilenode_part('reindex_index_status');
-            relname            | relkind |          state           
--------------------------------+---------+--------------------------
- concur_reindex_part_index     | I       | relfilenode is unchanged
- concur_reindex_part_index_0   | I       | relfilenode is unchanged
- concur_reindex_part_index_0_1 | i       | relfilenode has changed
- concur_reindex_part_index_0_2 | i       | relfilenode has changed
- concur_reindex_part_index_10  | I       | relfilenode is unchanged
-(5 rows)
-
+ERROR:  relation "reindex_index_status" does not exist
+LINE 6:            FROM reindex_index_status b JOIN pg_class a ON b....
+                        ^
+QUERY:  SELECT  b.relname,
+                 b.relkind,
+                 CASE WHEN a.relfilenode = b.relfilenode THEN 'relfilenode is unchanged'
+                 ELSE 'relfilenode has changed' END
+           -- Do not join with OID here as CONCURRENTLY changes it.
+           FROM reindex_index_status b JOIN pg_class a ON b.relname = a.relname
+           ORDER BY 1;
+CONTEXT:  PL/pgSQL function compare_relfilenode_part(text) line 3 at RETURN QUERY
+---END---
+---START---
 DROP TABLE reindex_index_status;
+ERROR:  table "reindex_index_status" does not exist
+---END---
+---START---
 -- concurrent case.
 SELECT create_relfilenode_part('reindex_index_status', 'concur_reindex_part_index');
- create_relfilenode_part 
--------------------------
- 
-(1 row)
-
+ERROR:  relation "concur_reindex_part_index" does not exist
+LINE 6:          (SELECT relid FROM pg_partition_tree('concur_reinde...
+                                                      ^
+QUERY:  
+    CREATE TABLE reindex_index_status AS
+      SELECT oid, relname, relfilenode, relkind, reltoastrelid
+      FROM pg_class
+      WHERE oid IN
+         (SELECT relid FROM pg_partition_tree('concur_reindex_part_index'));
+CONTEXT:  PL/pgSQL function create_relfilenode_part(text,text) line 3 at EXECUTE
+---END---
+---START---
 REINDEX INDEX CONCURRENTLY concur_reindex_part_index;
+ERROR:  relation "concur_reindex_part_index" does not exist
+---END---
+---START---
 SELECT * FROM compare_relfilenode_part('reindex_index_status');
-            relname            | relkind |          state           
--------------------------------+---------+--------------------------
- concur_reindex_part_index     | I       | relfilenode is unchanged
- concur_reindex_part_index_0   | I       | relfilenode is unchanged
- concur_reindex_part_index_0_1 | i       | relfilenode has changed
- concur_reindex_part_index_0_2 | i       | relfilenode has changed
- concur_reindex_part_index_10  | I       | relfilenode is unchanged
-(5 rows)
-
+ERROR:  relation "reindex_index_status" does not exist
+LINE 6:            FROM reindex_index_status b JOIN pg_class a ON b....
+                        ^
+QUERY:  SELECT  b.relname,
+                 b.relkind,
+                 CASE WHEN a.relfilenode = b.relfilenode THEN 'relfilenode is unchanged'
+                 ELSE 'relfilenode has changed' END
+           -- Do not join with OID here as CONCURRENTLY changes it.
+           FROM reindex_index_status b JOIN pg_class a ON b.relname = a.relname
+           ORDER BY 1;
+CONTEXT:  PL/pgSQL function compare_relfilenode_part(text) line 3 at RETURN QUERY
+---END---
+---START---
 DROP TABLE reindex_index_status;
+ERROR:  table "reindex_index_status" does not exist
+---END---
+---START---
 -- REINDEX for partitioned tables
 -- REINDEX INDEX fails for partitioned tables
 -- Top-most parent
-REINDEX INDEX concur_reindex_part; -- error
-ERROR:  "concur_reindex_part" is not an index
-REINDEX INDEX CONCURRENTLY concur_reindex_part; -- error
-ERROR:  "concur_reindex_part" is not an index
+REINDEX INDEX concur_reindex_part;
+ERROR:  relation "concur_reindex_part" does not exist
+---END---
+---START---
+-- error
+REINDEX INDEX CONCURRENTLY concur_reindex_part;
+ERROR:  relation "concur_reindex_part" does not exist
+---END---
+---START---
+-- error
 -- Partitioned with no leaves
-REINDEX INDEX concur_reindex_part_10; -- error
-ERROR:  "concur_reindex_part_10" is not an index
-REINDEX INDEX CONCURRENTLY concur_reindex_part_10; -- error
-ERROR:  "concur_reindex_part_10" is not an index
+REINDEX INDEX concur_reindex_part_10;
+ERROR:  relation "concur_reindex_part_10" does not exist
+---END---
+---START---
+-- error
+REINDEX INDEX CONCURRENTLY concur_reindex_part_10;
+ERROR:  relation "concur_reindex_part_10" does not exist
+---END---
+---START---
+-- error
 -- Cannot run in a transaction block
 BEGIN;
+---END---
+---START---
 REINDEX TABLE concur_reindex_part;
-ERROR:  REINDEX TABLE cannot run inside a transaction block
-CONTEXT:  while reindexing partitioned table "public.concur_reindex_part"
+ERROR:  relation "concur_reindex_part" does not exist
+---END---
+---START---
 ROLLBACK;
+---END---
+---START---
 -- Check that expected relfilenodes are changed, non-concurrent case.
 -- Note that the partition tree changes of the *indexes* need to be checked.
 SELECT create_relfilenode_part('reindex_index_status', 'concur_reindex_part_index');
- create_relfilenode_part 
--------------------------
- 
-(1 row)
-
+ERROR:  relation "concur_reindex_part_index" does not exist
+LINE 6:          (SELECT relid FROM pg_partition_tree('concur_reinde...
+                                                      ^
+QUERY:  
+    CREATE TABLE reindex_index_status AS
+      SELECT oid, relname, relfilenode, relkind, reltoastrelid
+      FROM pg_class
+      WHERE oid IN
+         (SELECT relid FROM pg_partition_tree('concur_reindex_part_index'));
+CONTEXT:  PL/pgSQL function create_relfilenode_part(text,text) line 3 at EXECUTE
+---END---
+---START---
 REINDEX TABLE concur_reindex_part;
+ERROR:  relation "concur_reindex_part" does not exist
+---END---
+---START---
 SELECT * FROM compare_relfilenode_part('reindex_index_status');
-            relname            | relkind |          state           
--------------------------------+---------+--------------------------
- concur_reindex_part_index     | I       | relfilenode is unchanged
- concur_reindex_part_index_0   | I       | relfilenode is unchanged
- concur_reindex_part_index_0_1 | i       | relfilenode has changed
- concur_reindex_part_index_0_2 | i       | relfilenode has changed
- concur_reindex_part_index_10  | I       | relfilenode is unchanged
-(5 rows)
-
+ERROR:  relation "reindex_index_status" does not exist
+LINE 6:            FROM reindex_index_status b JOIN pg_class a ON b....
+                        ^
+QUERY:  SELECT  b.relname,
+                 b.relkind,
+                 CASE WHEN a.relfilenode = b.relfilenode THEN 'relfilenode is unchanged'
+                 ELSE 'relfilenode has changed' END
+           -- Do not join with OID here as CONCURRENTLY changes it.
+           FROM reindex_index_status b JOIN pg_class a ON b.relname = a.relname
+           ORDER BY 1;
+CONTEXT:  PL/pgSQL function compare_relfilenode_part(text) line 3 at RETURN QUERY
+---END---
+---START---
 DROP TABLE reindex_index_status;
+ERROR:  table "reindex_index_status" does not exist
+---END---
+---START---
 -- concurrent case.
 SELECT create_relfilenode_part('reindex_index_status', 'concur_reindex_part_index');
- create_relfilenode_part 
--------------------------
- 
-(1 row)
-
+ERROR:  relation "concur_reindex_part_index" does not exist
+LINE 6:          (SELECT relid FROM pg_partition_tree('concur_reinde...
+                                                      ^
+QUERY:  
+    CREATE TABLE reindex_index_status AS
+      SELECT oid, relname, relfilenode, relkind, reltoastrelid
+      FROM pg_class
+      WHERE oid IN
+         (SELECT relid FROM pg_partition_tree('concur_reindex_part_index'));
+CONTEXT:  PL/pgSQL function create_relfilenode_part(text,text) line 3 at EXECUTE
+---END---
+---START---
 REINDEX TABLE CONCURRENTLY concur_reindex_part;
+ERROR:  relation "concur_reindex_part" does not exist
+---END---
+---START---
 SELECT * FROM compare_relfilenode_part('reindex_index_status');
-            relname            | relkind |          state           
--------------------------------+---------+--------------------------
- concur_reindex_part_index     | I       | relfilenode is unchanged
- concur_reindex_part_index_0   | I       | relfilenode is unchanged
- concur_reindex_part_index_0_1 | i       | relfilenode has changed
- concur_reindex_part_index_0_2 | i       | relfilenode has changed
- concur_reindex_part_index_10  | I       | relfilenode is unchanged
-(5 rows)
-
+ERROR:  relation "reindex_index_status" does not exist
+LINE 6:            FROM reindex_index_status b JOIN pg_class a ON b....
+                        ^
+QUERY:  SELECT  b.relname,
+                 b.relkind,
+                 CASE WHEN a.relfilenode = b.relfilenode THEN 'relfilenode is unchanged'
+                 ELSE 'relfilenode has changed' END
+           -- Do not join with OID here as CONCURRENTLY changes it.
+           FROM reindex_index_status b JOIN pg_class a ON b.relname = a.relname
+           ORDER BY 1;
+CONTEXT:  PL/pgSQL function compare_relfilenode_part(text) line 3 at RETURN QUERY
+---END---
+---START---
 DROP TABLE reindex_index_status;
+ERROR:  table "reindex_index_status" does not exist
+---END---
+---START---
 DROP FUNCTION create_relfilenode_part;
+---END---
+---START---
 DROP FUNCTION compare_relfilenode_part;
+---END---
+---START---
 -- Cleanup of partition tree used for REINDEX test.
 DROP TABLE concur_reindex_part;
+ERROR:  table "concur_reindex_part" does not exist
+---END---
+---START---
 -- Check errors
 -- Cannot run inside a transaction block
 BEGIN;
+---END---
+---START---
 REINDEX TABLE CONCURRENTLY concur_reindex_tab;
 ERROR:  REINDEX CONCURRENTLY cannot run inside a transaction block
+---END---
+---START---
 COMMIT;
-REINDEX TABLE CONCURRENTLY pg_class; -- no catalog relation
+---END---
+---START---
+REINDEX TABLE CONCURRENTLY pg_class;
 ERROR:  cannot reindex system catalogs concurrently
-REINDEX INDEX CONCURRENTLY pg_class_oid_index; -- no catalog index
+---END---
+---START---
+-- no catalog relation
+REINDEX INDEX CONCURRENTLY pg_class_oid_index;
 ERROR:  cannot reindex system catalogs concurrently
+---END---
+---START---
+-- no catalog index
 -- These are the toast table and index of pg_authid.
-REINDEX TABLE CONCURRENTLY pg_toast.pg_toast_1260; -- no catalog toast table
+REINDEX TABLE CONCURRENTLY pg_toast.pg_toast_1260;
 ERROR:  cannot reindex system catalogs concurrently
-REINDEX INDEX CONCURRENTLY pg_toast.pg_toast_1260_index; -- no catalog toast index
+---END---
+---START---
+-- no catalog toast table
+REINDEX INDEX CONCURRENTLY pg_toast.pg_toast_1260_index;
 ERROR:  cannot reindex system catalogs concurrently
-REINDEX SYSTEM CONCURRENTLY postgres; -- not allowed for SYSTEM
+---END---
+---START---
+-- no catalog toast index
+REINDEX SYSTEM CONCURRENTLY postgres;
 ERROR:  cannot reindex system catalogs concurrently
-REINDEX (CONCURRENTLY) SYSTEM postgres; -- ditto
+---END---
+---START---
+-- not allowed for SYSTEM
+REINDEX (CONCURRENTLY) SYSTEM postgres;
 ERROR:  cannot reindex system catalogs concurrently
-REINDEX (CONCURRENTLY) SYSTEM;  -- ditto
+---END---
+---START---
+-- ditto
+REINDEX (CONCURRENTLY) SYSTEM;
 ERROR:  cannot reindex system catalogs concurrently
+---END---
+---START---
+-- ditto
 -- Warns about catalog relations
 REINDEX SCHEMA CONCURRENTLY pg_catalog;
 WARNING:  cannot reindex system catalogs concurrently, skipping all
+---END---
+---START---
 -- Not the current database
 REINDEX DATABASE not_current_database;
 ERROR:  can only reindex the currently open database
+---END---
+---START---
 -- Check the relation status, there should not be invalid indexes
 \d concur_reindex_tab
-         Table "public.concur_reindex_tab"
- Column |  Type   | Collation | Nullable | Default 
---------+---------+-----------+----------+---------
- c1     | integer |           | not null | 
- c2     | text    |           |          | 
+                                 Table "public.concur_reindex_tab"
+  Column   |  Type   | Collation | Nullable |                        Default                        
+-----------+---------+-----------+----------+-------------------------------------------------------
+ gemini_pk | integer |           | not null | nextval('concur_reindex_tab_gemini_pk_seq'::regclass)
+ c1        | integer |           |          | 
+ c2        | text    |           |          | 
 Indexes:
-    "concur_reindex_ind1" PRIMARY KEY, btree (c1)
+    "concur_reindex_tab_pkey" PRIMARY KEY, btree (gemini_pk)
+    "concur_reindex_ind1" UNIQUE, btree (c1)
     "concur_reindex_ind2" btree (c2)
     "concur_reindex_ind3" UNIQUE, btree (abs(c1))
     "concur_reindex_ind4" btree (c1, c1, c2)
 Referenced by:
-    TABLE "concur_reindex_tab2" CONSTRAINT "concur_reindex_tab2_c1_fkey" FOREIGN KEY (c1) REFERENCES concur_reindex_tab(c1)
+    TABLE "concur_reindex_tab2" CONSTRAINT "concur_reindex_tab2_c1_fkey" FOREIGN KEY (c1) REFERENCES concur_reindex_tab(gemini_pk)
 
 DROP MATERIALIZED VIEW concur_reindex_matview;
+---END---
+---START---
 DROP TABLE concur_reindex_tab, concur_reindex_tab2, concur_reindex_tab3;
--- Check handling of invalid indexes
-CREATE TABLE concur_reindex_tab4 (c1 int);
+---END---
+---START---
+CREATE TABLE concur_reindex_tab4 (gemini_pk serial PRIMARY KEY, c1 integer);
+---END---
+---START---
 INSERT INTO concur_reindex_tab4 VALUES (1), (1), (2);
+ERROR:  duplicate key value violates unique constraint "concur_reindex_tab4_pkey"
+DETAIL:  Key (gemini_pk)=(1) already exists.
+---END---
+---START---
 -- This trick creates an invalid index.
 CREATE UNIQUE INDEX CONCURRENTLY concur_reindex_ind5 ON concur_reindex_tab4 (c1);
-ERROR:  could not create unique index "concur_reindex_ind5"
-DETAIL:  Key (c1)=(1) is duplicated.
+---END---
+---START---
 -- Reindexing concurrently this index fails with the same failure.
 -- The extra index created is itself invalid, and can be dropped.
 REINDEX INDEX CONCURRENTLY concur_reindex_ind5;
-ERROR:  could not create unique index "concur_reindex_ind5_ccnew"
-DETAIL:  Key (c1)=(1) is duplicated.
+---END---
+---START---
 \d concur_reindex_tab4
-        Table "public.concur_reindex_tab4"
- Column |  Type   | Collation | Nullable | Default 
---------+---------+-----------+----------+---------
- c1     | integer |           |          | 
+                                 Table "public.concur_reindex_tab4"
+  Column   |  Type   | Collation | Nullable |                        Default                         
+-----------+---------+-----------+----------+--------------------------------------------------------
+ gemini_pk | integer |           | not null | nextval('concur_reindex_tab4_gemini_pk_seq'::regclass)
+ c1        | integer |           |          | 
 Indexes:
-    "concur_reindex_ind5" UNIQUE, btree (c1) INVALID
-    "concur_reindex_ind5_ccnew" UNIQUE, btree (c1) INVALID
+    "concur_reindex_tab4_pkey" PRIMARY KEY, btree (gemini_pk)
+    "concur_reindex_ind5" UNIQUE, btree (c1)
 
 DROP INDEX concur_reindex_ind5_ccnew;
+ERROR:  index "concur_reindex_ind5_ccnew" does not exist
+---END---
+---START---
 -- This makes the previous failure go away, so the index can become valid.
 DELETE FROM concur_reindex_tab4 WHERE c1 = 1;
+---END---
+---START---
 -- The invalid index is not processed when running REINDEX TABLE.
 REINDEX TABLE CONCURRENTLY concur_reindex_tab4;
-WARNING:  cannot reindex invalid index "public.concur_reindex_ind5" concurrently, skipping
-NOTICE:  table "concur_reindex_tab4" has no indexes that can be reindexed concurrently
+---END---
+---START---
 \d concur_reindex_tab4
-        Table "public.concur_reindex_tab4"
- Column |  Type   | Collation | Nullable | Default 
---------+---------+-----------+----------+---------
- c1     | integer |           |          | 
+                                 Table "public.concur_reindex_tab4"
+  Column   |  Type   | Collation | Nullable |                        Default                         
+-----------+---------+-----------+----------+--------------------------------------------------------
+ gemini_pk | integer |           | not null | nextval('concur_reindex_tab4_gemini_pk_seq'::regclass)
+ c1        | integer |           |          | 
 Indexes:
-    "concur_reindex_ind5" UNIQUE, btree (c1) INVALID
+    "concur_reindex_tab4_pkey" PRIMARY KEY, btree (gemini_pk)
+    "concur_reindex_ind5" UNIQUE, btree (c1)
 
 -- But it is fixed with REINDEX INDEX.
 REINDEX INDEX CONCURRENTLY concur_reindex_ind5;
+---END---
+---START---
 \d concur_reindex_tab4
-        Table "public.concur_reindex_tab4"
- Column |  Type   | Collation | Nullable | Default 
---------+---------+-----------+----------+---------
- c1     | integer |           |          | 
+                                 Table "public.concur_reindex_tab4"
+  Column   |  Type   | Collation | Nullable |                        Default                         
+-----------+---------+-----------+----------+--------------------------------------------------------
+ gemini_pk | integer |           | not null | nextval('concur_reindex_tab4_gemini_pk_seq'::regclass)
+ c1        | integer |           |          | 
 Indexes:
+    "concur_reindex_tab4_pkey" PRIMARY KEY, btree (gemini_pk)
     "concur_reindex_ind5" UNIQUE, btree (c1)
 
 DROP TABLE concur_reindex_tab4;
--- Check handling of indexes with expressions and predicates.  The
--- definitions of the rebuilt indexes should match the original
--- definitions.
-CREATE TABLE concur_exprs_tab (c1 int , c2 boolean);
+---END---
+---START---
+CREATE TABLE concur_exprs_tab (gemini_pk serial PRIMARY KEY, c1 integer, c2 boolean);
+---END---
+---START---
 INSERT INTO concur_exprs_tab (c1, c2) VALUES (1369652450, FALSE),
   (414515746, TRUE),
   (897778963, FALSE);
+---END---
+---START---
 CREATE UNIQUE INDEX concur_exprs_index_expr
   ON concur_exprs_tab ((c1::text COLLATE "C"));
+---END---
+---START---
 CREATE UNIQUE INDEX concur_exprs_index_pred ON concur_exprs_tab (c1)
   WHERE (c1::text > 500000000::text COLLATE "C");
+---END---
+---START---
 CREATE UNIQUE INDEX concur_exprs_index_pred_2
   ON concur_exprs_tab ((1 / c1))
   WHERE ('-H') >= (c2::TEXT) COLLATE "C";
+---END---
+---START---
 ALTER INDEX concur_exprs_index_expr ALTER COLUMN 1 SET STATISTICS 100;
+---END---
+---START---
 ANALYZE concur_exprs_tab;
+---END---
+---START---
 SELECT starelid::regclass, count(*) FROM pg_statistic WHERE starelid IN (
   'concur_exprs_index_expr'::regclass,
   'concur_exprs_index_pred'::regclass,
@@ -2628,63 +3268,87 @@ SELECT starelid::regclass, count(*) FROM pg_statistic WHERE starelid IN (
  concur_exprs_index_expr |     1
 (1 row)
 
+---END---
+---START---
 SELECT pg_get_indexdef('concur_exprs_index_expr'::regclass);
                                                 pg_get_indexdef                                                
 ---------------------------------------------------------------------------------------------------------------
  CREATE UNIQUE INDEX concur_exprs_index_expr ON public.concur_exprs_tab USING btree (((c1)::text) COLLATE "C")
 (1 row)
 
+---END---
+---START---
 SELECT pg_get_indexdef('concur_exprs_index_pred'::regclass);
                                                                pg_get_indexdef                                                                
 ----------------------------------------------------------------------------------------------------------------------------------------------
  CREATE UNIQUE INDEX concur_exprs_index_pred ON public.concur_exprs_tab USING btree (c1) WHERE ((c1)::text > ((500000000)::text COLLATE "C"))
 (1 row)
 
+---END---
+---START---
 SELECT pg_get_indexdef('concur_exprs_index_pred_2'::regclass);
                                                                  pg_get_indexdef                                                                  
 --------------------------------------------------------------------------------------------------------------------------------------------------
  CREATE UNIQUE INDEX concur_exprs_index_pred_2 ON public.concur_exprs_tab USING btree (((1 / c1))) WHERE ('-H'::text >= ((c2)::text COLLATE "C"))
 (1 row)
 
+---END---
+---START---
 REINDEX TABLE CONCURRENTLY concur_exprs_tab;
+---END---
+---START---
 SELECT pg_get_indexdef('concur_exprs_index_expr'::regclass);
                                                 pg_get_indexdef                                                
 ---------------------------------------------------------------------------------------------------------------
  CREATE UNIQUE INDEX concur_exprs_index_expr ON public.concur_exprs_tab USING btree (((c1)::text) COLLATE "C")
 (1 row)
 
+---END---
+---START---
 SELECT pg_get_indexdef('concur_exprs_index_pred'::regclass);
                                                                pg_get_indexdef                                                                
 ----------------------------------------------------------------------------------------------------------------------------------------------
  CREATE UNIQUE INDEX concur_exprs_index_pred ON public.concur_exprs_tab USING btree (c1) WHERE ((c1)::text > ((500000000)::text COLLATE "C"))
 (1 row)
 
+---END---
+---START---
 SELECT pg_get_indexdef('concur_exprs_index_pred_2'::regclass);
                                                                  pg_get_indexdef                                                                  
 --------------------------------------------------------------------------------------------------------------------------------------------------
  CREATE UNIQUE INDEX concur_exprs_index_pred_2 ON public.concur_exprs_tab USING btree (((1 / c1))) WHERE ('-H'::text >= ((c2)::text COLLATE "C"))
 (1 row)
 
+---END---
+---START---
 -- ALTER TABLE recreates the indexes, which should keep their collations.
 ALTER TABLE concur_exprs_tab ALTER c2 TYPE TEXT;
+---END---
+---START---
 SELECT pg_get_indexdef('concur_exprs_index_expr'::regclass);
                                                 pg_get_indexdef                                                
 ---------------------------------------------------------------------------------------------------------------
  CREATE UNIQUE INDEX concur_exprs_index_expr ON public.concur_exprs_tab USING btree (((c1)::text) COLLATE "C")
 (1 row)
 
+---END---
+---START---
 SELECT pg_get_indexdef('concur_exprs_index_pred'::regclass);
                                                                pg_get_indexdef                                                                
 ----------------------------------------------------------------------------------------------------------------------------------------------
  CREATE UNIQUE INDEX concur_exprs_index_pred ON public.concur_exprs_tab USING btree (c1) WHERE ((c1)::text > ((500000000)::text COLLATE "C"))
 (1 row)
 
+---END---
+---START---
 SELECT pg_get_indexdef('concur_exprs_index_pred_2'::regclass);
                                                              pg_get_indexdef                                                              
 ------------------------------------------------------------------------------------------------------------------------------------------
  CREATE UNIQUE INDEX concur_exprs_index_pred_2 ON public.concur_exprs_tab USING btree (((1 / c1))) WHERE ('-H'::text >= (c2 COLLATE "C"))
 (1 row)
 
+---END---
+---START---
 -- Statistics should remain intact.
 SELECT starelid::regclass, count(*) FROM pg_statistic WHERE starelid IN (
   'concur_exprs_index_expr'::regclass,
@@ -2696,6 +3360,8 @@ SELECT starelid::regclass, count(*) FROM pg_statistic WHERE starelid IN (
  concur_exprs_index_expr |     1
 (1 row)
 
+---END---
+---START---
 -- attstattarget should remain intact
 SELECT attrelid::regclass, attnum, attstattarget
   FROM pg_attribute WHERE attrelid IN (
@@ -2710,88 +3376,188 @@ SELECT attrelid::regclass, attnum, attstattarget
  concur_exprs_index_pred_2 |      1 |            -1
 (3 rows)
 
+---END---
+---START---
 DROP TABLE concur_exprs_tab;
+---END---
+---START---
 -- Temporary tables and on-commit actions, where CONCURRENTLY is ignored.
 -- ON COMMIT PRESERVE ROWS, the default.
-CREATE TEMP TABLE concur_temp_tab_1 (c1 int, c2 text)
-  ON COMMIT PRESERVE ROWS;
+DROP TABLE IF EXISTS concur_temp_tab_1;
+NOTICE:  table "concur_temp_tab_1" does not exist, skipping
+CREATE TABLE concur_temp_tab_1 (gemini_pk serial PRIMARY KEY, c1 integer, c2 text) ON COMMIT PRESERVE ROWS;
+ERROR:  ON COMMIT can only be used on temporary tables
+---END---
+---START---
 INSERT INTO concur_temp_tab_1 VALUES (1, 'foo'), (2, 'bar');
+ERROR:  relation "concur_temp_tab_1" does not exist
+LINE 1: INSERT INTO concur_temp_tab_1 VALUES (1, 'foo'), (2, 'bar');
+                    ^
+---END---
+---START---
 CREATE INDEX concur_temp_ind_1 ON concur_temp_tab_1(c2);
+ERROR:  relation "concur_temp_tab_1" does not exist
+---END---
+---START---
 REINDEX TABLE CONCURRENTLY concur_temp_tab_1;
+ERROR:  relation "concur_temp_tab_1" does not exist
+---END---
+---START---
 REINDEX INDEX CONCURRENTLY concur_temp_ind_1;
+ERROR:  relation "concur_temp_ind_1" does not exist
+---END---
+---START---
 -- Still fails in transaction blocks
 BEGIN;
+---END---
+---START---
 REINDEX INDEX CONCURRENTLY concur_temp_ind_1;
 ERROR:  REINDEX CONCURRENTLY cannot run inside a transaction block
+---END---
+---START---
 COMMIT;
+---END---
+---START---
 -- ON COMMIT DELETE ROWS
-CREATE TEMP TABLE concur_temp_tab_2 (c1 int, c2 text)
-  ON COMMIT DELETE ROWS;
+DROP TABLE IF EXISTS concur_temp_tab_2;
+NOTICE:  table "concur_temp_tab_2" does not exist, skipping
+CREATE TABLE concur_temp_tab_2 (gemini_pk serial PRIMARY KEY, c1 integer, c2 text) ON COMMIT DELETE ROWS;
+ERROR:  ON COMMIT can only be used on temporary tables
+---END---
+---START---
 CREATE INDEX concur_temp_ind_2 ON concur_temp_tab_2(c2);
+ERROR:  relation "concur_temp_tab_2" does not exist
+---END---
+---START---
 REINDEX TABLE CONCURRENTLY concur_temp_tab_2;
+ERROR:  relation "concur_temp_tab_2" does not exist
+---END---
+---START---
 REINDEX INDEX CONCURRENTLY concur_temp_ind_2;
+ERROR:  relation "concur_temp_ind_2" does not exist
+---END---
+---START---
 -- ON COMMIT DROP
 BEGIN;
-CREATE TEMP TABLE concur_temp_tab_3 (c1 int, c2 text)
-  ON COMMIT PRESERVE ROWS;
+---END---
+---START---
+DROP TABLE IF EXISTS concur_temp_tab_3;
+NOTICE:  table "concur_temp_tab_3" does not exist, skipping
+CREATE TABLE concur_temp_tab_3 (gemini_pk serial PRIMARY KEY, c1 integer, c2 text) ON COMMIT PRESERVE ROWS;
+ERROR:  ON COMMIT can only be used on temporary tables
+---END---
+---START---
 INSERT INTO concur_temp_tab_3 VALUES (1, 'foo'), (2, 'bar');
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+---END---
+---START---
 CREATE INDEX concur_temp_ind_3 ON concur_temp_tab_3(c2);
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+---END---
+---START---
 -- Fails when running in a transaction
 REINDEX INDEX CONCURRENTLY concur_temp_ind_3;
-ERROR:  REINDEX CONCURRENTLY cannot run inside a transaction block
+ERROR:  current transaction is aborted, commands ignored until end of transaction block
+---END---
+---START---
 COMMIT;
+---END---
+---START---
 -- REINDEX SCHEMA processes all temporary relations
 CREATE TABLE reindex_temp_before AS
 SELECT oid, relname, relfilenode, relkind, reltoastrelid
   FROM pg_class
   WHERE relname IN ('concur_temp_ind_1', 'concur_temp_ind_2');
+---END---
+---START---
 SELECT pg_my_temp_schema()::regnamespace as temp_schema_name \gset
 REINDEX SCHEMA CONCURRENTLY :temp_schema_name;
+ERROR:  syntax error at or near "-"
+LINE 1: REINDEX SCHEMA CONCURRENTLY -;
+                                    ^
+---END---
+---START---
 SELECT  b.relname,
         b.relkind,
         CASE WHEN a.relfilenode = b.relfilenode THEN 'relfilenode is unchanged'
         ELSE 'relfilenode has changed' END
   FROM reindex_temp_before b JOIN pg_class a ON b.oid = a.oid
   ORDER BY 1;
-      relname      | relkind |          case           
--------------------+---------+-------------------------
- concur_temp_ind_1 | i       | relfilenode has changed
- concur_temp_ind_2 | i       | relfilenode has changed
-(2 rows)
+ relname | relkind | case 
+---------+---------+------
+(0 rows)
 
+---END---
+---START---
 DROP TABLE concur_temp_tab_1, concur_temp_tab_2, reindex_temp_before;
+ERROR:  table "concur_temp_tab_1" does not exist
+---END---
+---START---
 --
 -- REINDEX SCHEMA
 --
-REINDEX SCHEMA schema_to_reindex; -- failure, schema does not exist
+REINDEX SCHEMA schema_to_reindex;
 ERROR:  schema "schema_to_reindex" does not exist
+---END---
+---START---
+-- failure, schema does not exist
 CREATE SCHEMA schema_to_reindex;
+---END---
+---START---
 SET search_path = 'schema_to_reindex';
+---END---
+---START---
 CREATE TABLE table1(col1 SERIAL PRIMARY KEY);
+---END---
+---START---
 INSERT INTO table1 SELECT generate_series(1,400);
+---END---
+---START---
 CREATE TABLE table2(col1 SERIAL PRIMARY KEY, col2 TEXT NOT NULL);
+---END---
+---START---
 INSERT INTO table2 SELECT generate_series(1,400), 'abc';
+---END---
+---START---
 CREATE INDEX ON table2(col2);
+---END---
+---START---
 CREATE MATERIALIZED VIEW matview AS SELECT col1 FROM table2;
+---END---
+---START---
 CREATE INDEX ON matview(col1);
+---END---
+---START---
 CREATE VIEW view AS SELECT col2 FROM table2;
+---END---
+---START---
 CREATE TABLE reindex_before AS
 SELECT oid, relname, relfilenode, relkind, reltoastrelid
 	FROM pg_class
 	where relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'schema_to_reindex');
+---END---
+---START---
 INSERT INTO reindex_before
 SELECT oid, 'pg_toast_TABLE', relfilenode, relkind, reltoastrelid
 FROM pg_class WHERE oid IN
 	(SELECT reltoastrelid FROM reindex_before WHERE reltoastrelid > 0);
+---END---
+---START---
 INSERT INTO reindex_before
 SELECT oid, 'pg_toast_TABLE_index', relfilenode, relkind, reltoastrelid
 FROM pg_class where oid in
 	(select indexrelid from pg_index where indrelid in
 		(select reltoastrelid from reindex_before where reltoastrelid > 0));
+---END---
+---START---
 REINDEX SCHEMA schema_to_reindex;
+---END---
+---START---
 CREATE TABLE reindex_after AS SELECT oid, relname, relfilenode, relkind
 	FROM pg_class
 	where relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'schema_to_reindex');
+---END---
+---START---
 SELECT  b.relname,
         b.relkind,
         CASE WHEN a.relfilenode = b.relfilenode THEN 'relfilenode is unchanged'
@@ -2814,30 +3580,65 @@ SELECT  b.relname,
  view                 | v       | relfilenode is unchanged
 (12 rows)
 
+---END---
+---START---
 REINDEX SCHEMA schema_to_reindex;
+---END---
+---START---
 BEGIN;
-REINDEX SCHEMA schema_to_reindex; -- failure, cannot run in a transaction
+---END---
+---START---
+REINDEX SCHEMA schema_to_reindex;
 ERROR:  REINDEX SCHEMA cannot run inside a transaction block
+---END---
+---START---
+-- failure, cannot run in a transaction
 END;
+---END---
+---START---
 -- concurrently
 REINDEX SCHEMA CONCURRENTLY schema_to_reindex;
+---END---
+---START---
 -- Failure for unauthorized user
 CREATE ROLE regress_reindexuser NOLOGIN;
+---END---
+---START---
 SET SESSION ROLE regress_reindexuser;
+---END---
+---START---
 REINDEX SCHEMA schema_to_reindex;
 ERROR:  must be owner of schema schema_to_reindex
+---END---
+---START---
 -- Permission failures with toast tables and indexes (pg_authid here)
 RESET ROLE;
+---END---
+---START---
 GRANT USAGE ON SCHEMA pg_toast TO regress_reindexuser;
+---END---
+---START---
 SET SESSION ROLE regress_reindexuser;
+---END---
+---START---
 REINDEX TABLE pg_toast.pg_toast_1260;
 ERROR:  must be owner of table pg_toast_1260
+---END---
+---START---
 REINDEX INDEX pg_toast.pg_toast_1260_index;
 ERROR:  must be owner of index pg_toast_1260_index
+---END---
+---START---
 -- Clean up
 RESET ROLE;
+---END---
+---START---
 REVOKE USAGE ON SCHEMA pg_toast FROM regress_reindexuser;
+---END---
+---START---
 DROP ROLE regress_reindexuser;
+---END---
+---START---
 DROP SCHEMA schema_to_reindex CASCADE;
 NOTICE:  drop cascades to 6 other objects
 DETAIL:  drop cascades to table table1
@@ -2846,3 +3647,4 @@ drop cascades to materialized view matview
 drop cascades to view view
 drop cascades to table reindex_before
 drop cascades to table reindex_after
+---END---

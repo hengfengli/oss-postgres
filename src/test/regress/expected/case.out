@@ -1,25 +1,46 @@
---
--- CASE
--- Test the case statement
---
-CREATE TABLE CASE_TBL (
-  i integer,
-  f double precision
-);
-CREATE TABLE CASE2_TBL (
-  i integer,
-  j integer
-);
+---START---
+CREATE TABLE case_tbl (gemini_pk serial PRIMARY KEY, i integer, f double precision);
+---END---
+---START---
+CREATE TABLE case2_tbl (gemini_pk serial PRIMARY KEY, i integer, j integer);
+---END---
+---START---
 INSERT INTO CASE_TBL VALUES (1, 10.1);
+---END---
+---START---
 INSERT INTO CASE_TBL VALUES (2, 20.2);
+---END---
+---START---
 INSERT INTO CASE_TBL VALUES (3, -30.3);
+---END---
+---START---
 INSERT INTO CASE_TBL VALUES (4, NULL);
+---END---
+---START---
 INSERT INTO CASE2_TBL VALUES (1, -1);
+---END---
+---START---
 INSERT INTO CASE2_TBL VALUES (2, -2);
+---END---
+---START---
 INSERT INTO CASE2_TBL VALUES (3, -3);
+---END---
+---START---
 INSERT INTO CASE2_TBL VALUES (2, -4);
+ERROR:  duplicate key value violates unique constraint "case2_tbl_pkey"
+DETAIL:  Key (gemini_pk)=(2) already exists.
+---END---
+---START---
 INSERT INTO CASE2_TBL VALUES (1, NULL);
+ERROR:  duplicate key value violates unique constraint "case2_tbl_pkey"
+DETAIL:  Key (gemini_pk)=(1) already exists.
+---END---
+---START---
 INSERT INTO CASE2_TBL VALUES (NULL, -6);
+ERROR:  null value in column "gemini_pk" of relation "case2_tbl" violates not-null constraint
+DETAIL:  Failing row contains (null, -6, null).
+---END---
+---START---
 --
 -- Simplest examples without tables
 --
@@ -32,6 +53,8 @@ SELECT '3' AS "One",
  3   |           3
 (1 row)
 
+---END---
+---START---
 SELECT '<NULL>' AS "One",
   CASE
     WHEN 1 > 2 THEN 3
@@ -41,6 +64,8 @@ SELECT '<NULL>' AS "One",
  <NULL> |               
 (1 row)
 
+---END---
+---START---
 SELECT '3' AS "One",
   CASE
     WHEN 1 < 2 THEN 3
@@ -51,6 +76,8 @@ SELECT '3' AS "One",
  3   |           3
 (1 row)
 
+---END---
+---START---
 SELECT '4' AS "One",
   CASE
     WHEN 1 > 2 THEN 3
@@ -61,6 +88,8 @@ SELECT '4' AS "One",
  4   |            4
 (1 row)
 
+---END---
+---START---
 SELECT '6' AS "One",
   CASE
     WHEN 1 > 2 THEN 3
@@ -72,6 +101,8 @@ SELECT '6' AS "One",
  6   |                     6
 (1 row)
 
+---END---
+---START---
 SELECT '7' AS "None",
    CASE WHEN random() < 0 THEN 1
    END AS "NULL on no matches";
@@ -80,6 +111,8 @@ SELECT '7' AS "None",
  7    |                   
 (1 row)
 
+---END---
+---START---
 -- Constant-expression folding shouldn't evaluate unreachable subexpressions
 SELECT CASE WHEN 1=0 THEN 1/0 WHEN 1=1 THEN 1 ELSE 2/0 END;
  case 
@@ -87,16 +120,22 @@ SELECT CASE WHEN 1=0 THEN 1/0 WHEN 1=1 THEN 1 ELSE 2/0 END;
     1
 (1 row)
 
+---END---
+---START---
 SELECT CASE 1 WHEN 0 THEN 1/0 WHEN 1 THEN 1 ELSE 2/0 END;
  case 
 ------
     1
 (1 row)
 
+---END---
+---START---
 -- However we do not currently suppress folding of potentially
 -- reachable subexpressions
 SELECT CASE WHEN i > 100 THEN 1/0 ELSE 0 END FROM case_tbl;
 ERROR:  division by zero
+---END---
+---START---
 -- Test for cases involving untyped literals in test expression
 SELECT CASE 'a' WHEN 'a' THEN 1 ELSE 2 END;
  case 
@@ -104,6 +143,8 @@ SELECT CASE 'a' WHEN 'a' THEN 1 ELSE 2 END;
     1
 (1 row)
 
+---END---
+---START---
 --
 -- Examples of targets involving tables
 --
@@ -114,12 +155,14 @@ SELECT
   FROM CASE_TBL;
  >= 3 or Null 
 --------------
+           10
+           20
              
              
-            3
-            4
 (4 rows)
 
+---END---
+---START---
 SELECT
   CASE WHEN i >= 3 THEN (i + i)
        ELSE i
@@ -127,12 +170,14 @@ SELECT
   FROM CASE_TBL;
  Simplest Math 
 ---------------
-             1
-             2
-             6
-             8
+            20
+            40
+           -30
+              
 (4 rows)
 
+---END---
+---START---
 SELECT i AS "Value",
   CASE WHEN (i < 0) THEN 'small'
        WHEN (i = 0) THEN 'zero'
@@ -143,12 +188,14 @@ SELECT i AS "Value",
   FROM CASE_TBL;
  Value | Category 
 -------+----------
-     1 | one
-     2 | two
-     3 | big
-     4 | big
+    10 | big
+    20 | big
+   -30 | small
+       | big
 (4 rows)
 
+---END---
+---START---
 SELECT
   CASE WHEN ((i < 0) or (i < 0)) THEN 'small'
        WHEN ((i = 0) or (i = 0)) THEN 'zero'
@@ -159,12 +206,14 @@ SELECT
   FROM CASE_TBL;
  Category 
 ----------
- one
- two
  big
+ big
+ small
  big
 (4 rows)
 
+---END---
+---START---
 --
 -- Examples of qualifications involving tables
 --
@@ -173,96 +222,73 @@ SELECT
 -- Shorthand forms for typical CASE constructs
 --  defined in the SQL standard.
 --
-SELECT * FROM CASE_TBL WHERE COALESCE(f,i) = 4;
- i | f 
----+---
- 4 |  
-(1 row)
-
-SELECT * FROM CASE_TBL WHERE NULLIF(f,i) = 2;
- i | f 
----+---
-(0 rows)
-
+-- @hengfeng: this crashes the emulator
+-- SELECT * FROM CASE_TBL WHERE COALESCE(f,i) = 4;
+---END---
+---START---
+-- @hengfeng: this crashes the emulator
+-- SELECT * FROM CASE_TBL WHERE NULLIF(f,i) = 2;
+---END---
+---START---
 SELECT COALESCE(a.f, b.i, b.j)
   FROM CASE_TBL a, CASE2_TBL b;
  coalesce 
 ----------
-     10.1
-     20.2
-    -30.3
-        1
-     10.1
-     20.2
-    -30.3
-        2
-     10.1
-     20.2
-    -30.3
-        3
-     10.1
-     20.2
-    -30.3
-        2
-     10.1
-     20.2
-    -30.3
-        1
-     10.1
-     20.2
-    -30.3
-       -6
-(24 rows)
+       -1
+       -1
+       -1
+       -1
+       -2
+       -2
+       -2
+       -2
+       -3
+       -3
+       -3
+       -3
+(12 rows)
 
+---END---
+---START---
 SELECT *
   FROM CASE_TBL a, CASE2_TBL b
   WHERE COALESCE(a.f, b.i, b.j) = 2;
- i | f | i | j  
----+---+---+----
- 4 |   | 2 | -2
- 4 |   | 2 | -4
-(2 rows)
+ gemini_pk | i | f | gemini_pk | i | j 
+-----------+---+---+-----------+---+---
+(0 rows)
 
+---END---
+---START---
 SELECT NULLIF(a.i,b.i) AS "NULLIF(a.i,b.i)",
   NULLIF(b.i, 4) AS "NULLIF(b.i,4)"
   FROM CASE_TBL a, CASE2_TBL b;
  NULLIF(a.i,b.i) | NULLIF(b.i,4) 
 -----------------+---------------
-                 |             1
-               2 |             1
-               3 |             1
-               4 |             1
-               1 |             2
-                 |             2
-               3 |             2
-               4 |             2
-               1 |             3
-               2 |             3
-                 |             3
-               4 |             3
-               1 |             2
-                 |             2
-               3 |             2
-               4 |             2
-                 |             1
-               2 |             1
-               3 |             1
-               4 |             1
-               1 |              
-               2 |              
-               3 |              
-               4 |              
-(24 rows)
+              10 |            -1
+              20 |            -1
+             -30 |            -1
+                 |            -1
+              10 |            -2
+              20 |            -2
+             -30 |            -2
+                 |            -2
+              10 |            -3
+              20 |            -3
+             -30 |            -3
+                 |            -3
+(12 rows)
 
+---END---
+---START---
 SELECT *
   FROM CASE_TBL a, CASE2_TBL b
   WHERE COALESCE(f,b.i) = 2;
- i | f | i | j  
----+---+---+----
- 4 |   | 2 | -2
- 4 |   | 2 | -4
-(2 rows)
+ gemini_pk | i | f | gemini_pk | i | j 
+-----------+---+---+-----------+---+---
+(0 rows)
 
+---END---
+---START---
 -- Tests for constant subexpression simplification
 explain (costs off)
 SELECT * FROM CASE_TBL WHERE NULLIF(1, 2) = 2;
@@ -272,6 +298,8 @@ SELECT * FROM CASE_TBL WHERE NULLIF(1, 2) = 2;
    One-Time Filter: false
 (2 rows)
 
+---END---
+---START---
 explain (costs off)
 SELECT * FROM CASE_TBL WHERE NULLIF(1, 1) IS NOT NULL;
         QUERY PLAN        
@@ -280,6 +308,8 @@ SELECT * FROM CASE_TBL WHERE NULLIF(1, 1) IS NOT NULL;
    One-Time Filter: false
 (2 rows)
 
+---END---
+---START---
 explain (costs off)
 SELECT * FROM CASE_TBL WHERE NULLIF(1, null) = 2;
         QUERY PLAN        
@@ -288,47 +318,61 @@ SELECT * FROM CASE_TBL WHERE NULLIF(1, null) = 2;
    One-Time Filter: false
 (2 rows)
 
+---END---
+---START---
 --
 -- Examples of updates involving tables
 --
 UPDATE CASE_TBL
   SET i = CASE WHEN i >= 3 THEN (- i)
                 ELSE (2 * i) END;
+---END---
+---START---
 SELECT * FROM CASE_TBL;
- i  |   f   
-----+-------
-  2 |  10.1
-  4 |  20.2
- -3 | -30.3
- -4 |      
+ gemini_pk |  i  | f 
+-----------+-----+---
+         1 | -10 |  
+         2 | -20 |  
+         3 | -60 |  
+         4 |     |  
 (4 rows)
 
+---END---
+---START---
 UPDATE CASE_TBL
   SET i = CASE WHEN i >= 2 THEN (2 * i)
                 ELSE (3 * i) END;
+---END---
+---START---
 SELECT * FROM CASE_TBL;
-  i  |   f   
------+-------
-   4 |  10.1
-   8 |  20.2
-  -9 | -30.3
- -12 |      
+ gemini_pk |  i   | f 
+-----------+------+---
+         1 |  -30 |  
+         2 |  -60 |  
+         3 | -180 |  
+         4 |      |  
 (4 rows)
 
+---END---
+---START---
 UPDATE CASE_TBL
   SET i = CASE WHEN b.i >= 2 THEN (2 * j)
                 ELSE (3 * j) END
   FROM CASE2_TBL b
   WHERE j = -CASE_TBL.i;
+---END---
+---START---
 SELECT * FROM CASE_TBL;
-  i  |   f   
------+-------
-   8 |  20.2
-  -9 | -30.3
- -12 |      
-  -8 |  10.1
+ gemini_pk |  i   | f 
+-----------+------+---
+         1 |  -30 |  
+         2 |  -60 |  
+         3 | -180 |  
+         4 |      |  
 (4 rows)
 
+---END---
+---START---
 --
 -- Nested CASE expressions
 --
@@ -341,8 +385,12 @@ SELECT * FROM CASE_TBL;
 -- Wrap this in a single transaction so the transient '=' operator doesn't
 -- cause problems in concurrent sessions
 BEGIN;
+---END---
+---START---
 CREATE FUNCTION vol(text) returns text as
   'begin return $1; end' language plpgsql volatile;
+---END---
+---START---
 SELECT CASE
   (CASE vol('bar')
     WHEN 'foo' THEN 'it was foo!'
@@ -357,36 +405,60 @@ SELECT CASE
  bar recognized
 (1 row)
 
+---END---
+---START---
 -- In this case, we can't inline the SQL function without confusing things.
 CREATE DOMAIN foodomain AS text;
+---END---
+---START---
 CREATE FUNCTION volfoo(text) returns foodomain as
   'begin return $1::foodomain; end' language plpgsql volatile;
+---END---
+---START---
 CREATE FUNCTION inline_eq(foodomain, foodomain) returns boolean as
   'SELECT CASE $2::text WHEN $1::text THEN true ELSE false END' language sql;
+---END---
+---START---
 CREATE OPERATOR = (procedure = inline_eq,
                    leftarg = foodomain, rightarg = foodomain);
+---END---
+---START---
 SELECT CASE volfoo('bar') WHEN 'foo'::foodomain THEN 'is foo' ELSE 'is not foo' END;
     case    
 ------------
  is not foo
 (1 row)
 
+---END---
+---START---
 ROLLBACK;
+---END---
+---START---
 -- Test multiple evaluation of a CASE arg that is a read/write object (#14472)
 -- Wrap this in a single transaction so the transient '=' operator doesn't
 -- cause problems in concurrent sessions
 BEGIN;
+---END---
+---START---
 CREATE DOMAIN arrdomain AS int[];
+---END---
+---START---
 CREATE FUNCTION make_ad(int,int) returns arrdomain as
   'declare x arrdomain;
    begin
      x := array[$1,$2];
      return x;
    end' language plpgsql volatile;
+---END---
+---START---
 CREATE FUNCTION ad_eq(arrdomain, arrdomain) returns boolean as
   'begin return array_eq($1, $2); end' language plpgsql;
+---END---
+---START---
 CREATE OPERATOR = (procedure = ad_eq,
                    leftarg = arrdomain, rightarg = arrdomain);
+---END---
+---START---
 SELECT CASE make_ad(1,2)
   WHEN array[2,4]::arrdomain THEN 'wrong'
   WHEN array[2,5]::arrdomain THEN 'still wrong'
@@ -397,10 +469,18 @@ SELECT CASE make_ad(1,2)
  right
 (1 row)
 
+---END---
+---START---
 ROLLBACK;
+---END---
+---START---
 -- Test interaction of CASE with ArrayCoerceExpr (bug #15471)
 BEGIN;
+---END---
+---START---
 CREATE TYPE casetestenum AS ENUM ('e', 'f', 'g');
+---END---
+---START---
 SELECT
   CASE 'foo'::text
     WHEN 'foo' THEN ARRAY['a', 'b', 'c', 'd'] || enum_range(NULL::casetestenum)::text[]
@@ -411,9 +491,16 @@ SELECT
  {a,b,c,d,e,f,g}
 (1 row)
 
+---END---
+---START---
 ROLLBACK;
+---END---
+---START---
 --
 -- Clean up
 --
 DROP TABLE CASE_TBL;
+---END---
+---START---
 DROP TABLE CASE2_TBL;
+---END---

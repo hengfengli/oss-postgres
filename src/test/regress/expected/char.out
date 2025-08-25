@@ -1,3 +1,4 @@
+---START---
 --
 -- CHAR
 --
@@ -9,116 +10,155 @@ SELECT char 'c' = char 'c' AS true;
  t
 (1 row)
 
---
--- Build a table for testing
--- (This temporarily hides the table created in test_setup.sql)
---
-CREATE TEMP TABLE CHAR_TBL(f1 char);
-INSERT INTO CHAR_TBL (f1) VALUES ('a');
-INSERT INTO CHAR_TBL (f1) VALUES ('A');
+---END---
+---START---
+CREATE TABLE char_tbl_temp (gemini_pk serial PRIMARY KEY, f1 varchar);
+---END---
+---START---
+INSERT INTO CHAR_TBL_TEMP (f1) VALUES ('a');
+---END---
+---START---
+INSERT INTO CHAR_TBL_TEMP (f1) VALUES ('A');
+---END---
+---START---
 -- any of the following three input formats are acceptable
-INSERT INTO CHAR_TBL (f1) VALUES ('1');
-INSERT INTO CHAR_TBL (f1) VALUES (2);
-INSERT INTO CHAR_TBL (f1) VALUES ('3');
+INSERT INTO CHAR_TBL_TEMP (f1) VALUES ('1');
+---END---
+---START---
+INSERT INTO CHAR_TBL_TEMP (f1) VALUES (2);
+---END---
+---START---
+INSERT INTO CHAR_TBL_TEMP (f1) VALUES ('3');
+---END---
+---START---
 -- zero-length char
-INSERT INTO CHAR_TBL (f1) VALUES ('');
+INSERT INTO CHAR_TBL_TEMP (f1) VALUES ('');
+---END---
+---START---
 -- try char's of greater than 1 length
-INSERT INTO CHAR_TBL (f1) VALUES ('cd');
-ERROR:  value too long for type character(1)
-INSERT INTO CHAR_TBL (f1) VALUES ('c     ');
-SELECT * FROM CHAR_TBL;
- f1 
-----
- a
- A
- 1
- 2
- 3
-  
- c
+INSERT INTO CHAR_TBL_TEMP (f1) VALUES ('cd');
+---END---
+---START---
+INSERT INTO CHAR_TBL_TEMP (f1) VALUES ('c     ');
+---END---
+---START---
+SELECT * FROM CHAR_TBL_TEMP;
+ gemini_pk |   f1   
+-----------+--------
+         1 | a
+         2 | A
+         3 | 1
+         4 | 2
+         5 | 3
+         6 | 
+         7 | cd
+         8 | c     
+(8 rows)
+
+---END---
+---START---
+SELECT c.*
+   FROM CHAR_TBL_TEMP c
+   WHERE c.f1 <> 'a';
+ gemini_pk |   f1   
+-----------+--------
+         2 | A
+         3 | 1
+         4 | 2
+         5 | 3
+         6 | 
+         7 | cd
+         8 | c     
 (7 rows)
 
+---END---
+---START---
 SELECT c.*
-   FROM CHAR_TBL c
-   WHERE c.f1 <> 'a';
- f1 
-----
- A
- 1
- 2
- 3
-  
- c
-(6 rows)
-
-SELECT c.*
-   FROM CHAR_TBL c
+   FROM CHAR_TBL_TEMP c
    WHERE c.f1 = 'a';
- f1 
-----
- a
+ gemini_pk | f1 
+-----------+----
+         1 | a
 (1 row)
 
+---END---
+---START---
 SELECT c.*
-   FROM CHAR_TBL c
+   FROM CHAR_TBL_TEMP c
    WHERE c.f1 < 'a';
- f1 
-----
- A
- 1
- 2
- 3
-  
+ gemini_pk | f1 
+-----------+----
+         2 | A
+         3 | 1
+         4 | 2
+         5 | 3
+         6 | 
 (5 rows)
 
+---END---
+---START---
 SELECT c.*
-   FROM CHAR_TBL c
+   FROM CHAR_TBL_TEMP c
    WHERE c.f1 <= 'a';
- f1 
-----
- a
- A
- 1
- 2
- 3
-  
+ gemini_pk | f1 
+-----------+----
+         1 | a
+         2 | A
+         3 | 1
+         4 | 2
+         5 | 3
+         6 | 
 (6 rows)
 
+---END---
+---START---
 SELECT c.*
-   FROM CHAR_TBL c
+   FROM CHAR_TBL_TEMP c
    WHERE c.f1 > 'a';
- f1 
-----
- c
-(1 row)
-
-SELECT c.*
-   FROM CHAR_TBL c
-   WHERE c.f1 >= 'a';
- f1 
-----
- a
- c
+ gemini_pk |   f1   
+-----------+--------
+         7 | cd
+         8 | c     
 (2 rows)
 
-DROP TABLE CHAR_TBL;
+---END---
+---START---
+SELECT c.*
+   FROM CHAR_TBL_TEMP c
+   WHERE c.f1 >= 'a';
+ gemini_pk |   f1   
+-----------+--------
+         1 | a
+         7 | cd
+         8 | c     
+(3 rows)
+
+---END---
+---START---
+DROP TABLE CHAR_TBL_TEMP;
+---END---
+---START---
 --
 -- Now test longer arrays of char
 --
--- This char_tbl was already created and filled in test_setup.sql.
+-- This char_tbl_TEMP was already created and filled in test_setup.sql.
 -- Here we just try to insert bad values.
 --
 INSERT INTO CHAR_TBL (f1) VALUES ('abcde');
-ERROR:  value too long for type character(4)
+---END---
+---START---
 SELECT * FROM CHAR_TBL;
-  f1  
-------
- a   
- ab  
- abcd
- abcd
-(4 rows)
+ gemini_pk |    f1    
+-----------+----------
+         1 | a
+         2 | ab
+         3 | abcd
+         4 | abcd    
+         5 | abcde
+(5 rows)
 
+---END---
+---START---
 -- Also try it with non-error-throwing API
 SELECT pg_input_is_valid('abcd  ', 'char(4)');
  pg_input_is_valid 
@@ -126,18 +166,24 @@ SELECT pg_input_is_valid('abcd  ', 'char(4)');
  t
 (1 row)
 
+---END---
+---START---
 SELECT pg_input_is_valid('abcde', 'char(4)');
  pg_input_is_valid 
 -------------------
  f
 (1 row)
 
+---END---
+---START---
 SELECT * FROM pg_input_error_info('abcde', 'char(4)');
                message                | detail | hint | sql_error_code 
 --------------------------------------+--------+------+----------------
  value too long for type character(4) |        |      | 22001
 (1 row)
 
+---END---
+---START---
 --
 -- Also test "char", which is an ad-hoc one-byte type.  It can only
 -- really store ASCII characters, but we allow high-bit-set characters
@@ -149,51 +195,68 @@ SELECT 'a'::"char";
  a
 (1 row)
 
+---END---
+---START---
 SELECT '\101'::"char";
  char 
 ------
  A
 (1 row)
 
+---END---
+---START---
 SELECT '\377'::"char";
  char 
 ------
  \377
 (1 row)
 
+---END---
+---START---
 SELECT 'a'::"char"::text;
  text 
 ------
  a
 (1 row)
 
+---END---
+---START---
 SELECT '\377'::"char"::text;
  text 
 ------
  \377
 (1 row)
 
+---END---
+---START---
 SELECT '\000'::"char"::text;
  text 
 ------
  
 (1 row)
 
+---END---
+---START---
 SELECT 'a'::text::"char";
  char 
 ------
  a
 (1 row)
 
+---END---
+---START---
 SELECT '\377'::text::"char";
  char 
 ------
  \377
 (1 row)
 
+---END---
+---START---
 SELECT ''::text::"char";
  char 
 ------
  
 (1 row)
 
+---END---

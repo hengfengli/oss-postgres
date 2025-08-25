@@ -1,3 +1,4 @@
+---START---
 --
 -- Test assorted system views
 --
@@ -13,12 +14,16 @@ select count(*) >= 0 as ok from pg_available_extension_versions;
  t
 (1 row)
 
+---END---
+---START---
 select count(*) >= 0 as ok from pg_available_extensions;
  ok 
 ----
  t
 (1 row)
 
+---END---
+---START---
 -- The entire output of pg_backend_memory_contexts is not stable,
 -- we test only the existence and basic condition of TopMemoryContext.
 select name, ident, parent, level, total_bytes >= free_bytes
@@ -28,6 +33,8 @@ select name, ident, parent, level, total_bytes >= free_bytes
  TopMemoryContext |       |        |     0 | t
 (1 row)
 
+---END---
+---START---
 -- At introduction, pg_config had 23 entries; it may grow
 select count(*) > 20 as ok from pg_config;
  ok 
@@ -35,6 +42,8 @@ select count(*) > 20 as ok from pg_config;
  t
 (1 row)
 
+---END---
+---START---
 -- We expect no cursors in this test; see also portals.sql
 select count(*) = 0 as ok from pg_cursors;
  ok 
@@ -42,12 +51,16 @@ select count(*) = 0 as ok from pg_cursors;
  t
 (1 row)
 
+---END---
+---START---
 select count(*) >= 0 as ok from pg_file_settings;
  ok 
 ----
  t
 (1 row)
 
+---END---
+---START---
 -- There will surely be at least one rule, with no errors.
 select count(*) > 0 as ok, count(*) FILTER (WHERE error IS NOT NULL) = 0 AS no_err
   from pg_hba_file_rules;
@@ -56,6 +69,8 @@ select count(*) > 0 as ok, count(*) FILTER (WHERE error IS NOT NULL) = 0 AS no_e
  t  | t
 (1 row)
 
+---END---
+---START---
 -- There may be no rules, and there should be no errors.
 select count(*) >= 0 as ok, count(*) FILTER (WHERE error IS NOT NULL) = 0 AS no_err
   from pg_ident_file_mappings;
@@ -64,6 +79,8 @@ select count(*) >= 0 as ok, count(*) FILTER (WHERE error IS NOT NULL) = 0 AS no_
  t  | t
 (1 row)
 
+---END---
+---START---
 -- There will surely be at least one active lock
 select count(*) > 0 as ok from pg_locks;
  ok 
@@ -71,6 +88,8 @@ select count(*) > 0 as ok from pg_locks;
  t
 (1 row)
 
+---END---
+---START---
 -- We expect no prepared statements in this test; see also prepare.sql
 select count(*) = 0 as ok from pg_prepared_statements;
  ok 
@@ -78,6 +97,8 @@ select count(*) = 0 as ok from pg_prepared_statements;
  t
 (1 row)
 
+---END---
+---START---
 -- See also prepared_xacts.sql
 select count(*) >= 0 as ok from pg_prepared_xacts;
  ok 
@@ -85,6 +106,8 @@ select count(*) >= 0 as ok from pg_prepared_xacts;
  t
 (1 row)
 
+---END---
+---START---
 -- There will surely be at least one SLRU cache
 select count(*) > 0 as ok from pg_stat_slru;
  ok 
@@ -92,6 +115,8 @@ select count(*) > 0 as ok from pg_stat_slru;
  t
 (1 row)
 
+---END---
+---START---
 -- There must be only one record
 select count(*) = 1 as ok from pg_stat_wal;
  ok 
@@ -99,6 +124,8 @@ select count(*) = 1 as ok from pg_stat_wal;
  t
 (1 row)
 
+---END---
+---START---
 -- We expect no walreceiver running in this test
 select count(*) = 0 as ok from pg_stat_wal_receiver;
  ok 
@@ -106,6 +133,8 @@ select count(*) = 0 as ok from pg_stat_wal_receiver;
  t
 (1 row)
 
+---END---
+---START---
 -- This is to record the prevailing planner enable_foo settings during
 -- a regression test run.
 select name, setting from pg_settings where name like 'enable%';
@@ -134,6 +163,8 @@ select name, setting from pg_settings where name like 'enable%';
  enable_tidscan                 | on
 (21 rows)
 
+---END---
+---START---
 -- Test that the pg_timezone_names and pg_timezone_abbrevs views are
 -- more-or-less working.  We can't test their contents in any great detail
 -- without the outputs changing anytime IANA updates the underlying data,
@@ -146,24 +177,35 @@ select count(distinct utc_offset) >= 24 as ok from pg_timezone_names;
  t
 (1 row)
 
+---END---
+---START---
 select count(distinct utc_offset) >= 24 as ok from pg_timezone_abbrevs;
  ok 
 ----
  t
 (1 row)
 
+---END---
+---START---
 -- Let's check the non-default timezone abbreviation sets, too
 set timezone_abbreviations = 'Australia';
+---END---
+---START---
 select count(distinct utc_offset) >= 24 as ok from pg_timezone_abbrevs;
  ok 
 ----
  t
 (1 row)
 
+---END---
+---START---
 set timezone_abbreviations = 'India';
+---END---
+---START---
 select count(distinct utc_offset) >= 24 as ok from pg_timezone_abbrevs;
  ok 
 ----
  t
 (1 row)
 
+---END---
