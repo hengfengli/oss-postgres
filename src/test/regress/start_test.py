@@ -77,7 +77,7 @@ def main():
     testcases_string = " ".join(testcases)
     execute_cmd(f"./pg_regress --bindir=/usr/bin --host=127.0.0.1 --port=5432 --user=root --dbname=test-database --use-existing {testcases_string}")
     # 7. compare results (json format) to get a score
-    #execute_cmd(f"python compare_results.py expected/ results/"
+    execute_cmd(f"python compare_results.py expected/ results/")
     # 8. stop pg_adapter & emulator container
     execute_cmd(f"docker stop {container_id}")
 
