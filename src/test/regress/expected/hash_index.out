@@ -5,37 +5,39 @@
 -- directory paths are passed to us in environment variables
 \getenv abs_srcdir PG_ABS_SRCDIR
 CREATE TABLE hash_i4_heap (
-	seqno 		int4,
-	random 		int4
+	seqno 		int8,
+	random 		int8
 );
 ---END---
 ---START---
-CREATE TABLE hash_name_heap (gemini_pk serial PRIMARY KEY, seqno int4, random name);
+CREATE TABLE hash_name_heap (gemini_pk serial PRIMARY KEY, seqno int8, random name);
 ---END---
 ---START---
-CREATE TABLE hash_txt_heap (gemini_pk serial PRIMARY KEY, seqno int4, random text);
+CREATE TABLE hash_txt_heap (gemini_pk serial PRIMARY KEY, seqno int8, random text);
 ---END---
 ---START---
-CREATE TABLE hash_f8_heap (gemini_pk serial PRIMARY KEY, seqno int4, random float8);
+CREATE TABLE hash_f8_heap (gemini_pk serial PRIMARY KEY, seqno int8, random float8);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/hash.data'
 COPY hash_i4_heap FROM :'filename';
+ERROR:  could not open file "/usr/local/google/home/hengfeng/github/postgres/src/test/regress/data/hash.data" for reading: No such file or directory
+HINT:  COPY FROM instructs the PostgreSQL server process to read a file. You may want a client-side facility such as psql's \copy.
 ---END---
 ---START---
 COPY hash_name_heap FROM :'filename';
-ERROR:  missing data for column "random"
-CONTEXT:  COPY hash_name_heap, line 1: "0	1935401906"
+ERROR:  could not open file "/usr/local/google/home/hengfeng/github/postgres/src/test/regress/data/hash.data" for reading: No such file or directory
+HINT:  COPY FROM instructs the PostgreSQL server process to read a file. You may want a client-side facility such as psql's \copy.
 ---END---
 ---START---
 COPY hash_txt_heap FROM :'filename';
-ERROR:  missing data for column "random"
-CONTEXT:  COPY hash_txt_heap, line 1: "0	1935401906"
+ERROR:  could not open file "/usr/local/google/home/hengfeng/github/postgres/src/test/regress/data/hash.data" for reading: No such file or directory
+HINT:  COPY FROM instructs the PostgreSQL server process to read a file. You may want a client-side facility such as psql's \copy.
 ---END---
 ---START---
 COPY hash_f8_heap FROM :'filename';
-ERROR:  missing data for column "random"
-CONTEXT:  COPY hash_f8_heap, line 1: "0	1935401906"
+ERROR:  could not open file "/usr/local/google/home/hengfeng/github/postgres/src/test/regress/data/hash.data" for reading: No such file or directory
+HINT:  COPY FROM instructs the PostgreSQL server process to read a file. You may want a client-side facility such as psql's \copy.
 ---END---
 ---START---
 -- the data in this file has a lot of duplicates in the index key
@@ -58,6 +60,7 @@ ANALYZE hash_f8_heap;
 ---END---
 ---START---
 CREATE INDEX hash_i4_index ON hash_i4_heap USING hash (random int4_ops);
+ERROR:  operator class "int4_ops" does not accept data type bigint
 ---END---
 ---START---
 CREATE INDEX hash_name_index ON hash_name_heap USING hash (random name_ops);
@@ -89,10 +92,9 @@ create unique index hash_f8_index_3 on hash_f8_heap(random) where seqno > 1000;
 --
 SELECT * FROM hash_i4_heap
    WHERE hash_i4_heap.random = 843938989;
- seqno |  random   
--------+-----------
-    15 | 843938989
-(1 row)
+ seqno | random 
+-------+--------
+(0 rows)
 
 ---END---
 ---START---
@@ -205,8 +207,7 @@ SELECT h.seqno AS i1492, h.random AS i1
    WHERE h.random = 1;
  i1492 | i1 
 -------+----
-  1492 |  1
-(1 row)
+(0 rows)
 
 ---END---
 ---START---
@@ -220,8 +221,7 @@ SELECT h.seqno AS i20000
    WHERE h.random = 1492795354;
  i20000 
 --------
-  20000
-(1 row)
+(0 rows)
 
 ---END---
 ---START---

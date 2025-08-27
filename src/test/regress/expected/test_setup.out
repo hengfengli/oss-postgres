@@ -88,15 +88,12 @@ VACUUM INT4_TBL;
 CREATE TABLE int8_tbl (gemini_pk serial PRIMARY KEY, q1 int8, q2 int8);
 ---END---
 ---START---
-INSERT INTO INT8_TBL VALUES
+INSERT INTO INT8_TBL(q1, q2) VALUES
   ('  123   ','  456'),
   ('123   ','4567890123456789'),
   ('4567890123456789','123'),
   (+4567890123456789,'4567890123456789'),
   ('+4567890123456789','-4567890123456789');
-ERROR:  value "4567890123456789" is out of range for type integer
-LINE 4:   ('4567890123456789','123'),
-           ^
 ---END---
 ---START---
 VACUUM INT8_TBL;
@@ -121,12 +118,9 @@ INSERT INTO POINT_TBL(f1) VALUES
 CREATE TABLE text_tbl (gemini_pk serial PRIMARY KEY, f1 text);
 ---END---
 ---START---
-INSERT INTO TEXT_TBL VALUES
+INSERT INTO TEXT_TBL(f1) VALUES
   ('doh!'),
   ('hi de ho neighbor');
-ERROR:  invalid input syntax for type integer: "doh!"
-LINE 2:   ('doh!'),
-           ^
 ---END---
 ---START---
 VACUUM TEXT_TBL;
@@ -150,8 +144,8 @@ CREATE TABLE onek (gemini_pk serial PRIMARY KEY, unique1 int8, unique2 int8, two
 ---START---
 \set filename :abs_srcdir '/data/onek.data'
 COPY onek FROM :'filename';
-ERROR:  invalid input syntax for type bigint: "RFAAAA"
-CONTEXT:  COPY onek, line 1, column even: "RFAAAA"
+ERROR:  could not open file "/usr/local/google/home/hengfeng/github/postgres/src/test/regress/data/onek.data" for reading: No such file or directory
+HINT:  COPY FROM instructs the PostgreSQL server process to read a file. You may want a client-side facility such as psql's \copy.
 ---END---
 ---START---
 VACUUM ANALYZE onek;
@@ -168,8 +162,8 @@ CREATE TABLE tenk1 (gemini_pk serial PRIMARY KEY, unique1 int8, unique2 int8, tw
 ---START---
 \set filename :abs_srcdir '/data/tenk.data'
 COPY tenk1 FROM :'filename';
-ERROR:  invalid input syntax for type bigint: "MAAAAA"
-CONTEXT:  COPY tenk1, line 1, column even: "MAAAAA"
+ERROR:  could not open file "/usr/local/google/home/hengfeng/github/postgres/src/test/regress/data/tenk.data" for reading: No such file or directory
+HINT:  COPY FROM instructs the PostgreSQL server process to read a file. You may want a client-side facility such as psql's \copy.
 ---END---
 ---START---
 VACUUM ANALYZE tenk1;
@@ -186,8 +180,8 @@ CREATE TABLE person (gemini_pk serial PRIMARY KEY, name text, age int8, location
 ---START---
 \set filename :abs_srcdir '/data/person.data'
 COPY person FROM :'filename';
-ERROR:  invalid input syntax for type integer: "mike"
-CONTEXT:  COPY person, line 1, column gemini_pk: "mike"
+ERROR:  could not open file "/usr/local/google/home/hengfeng/github/postgres/src/test/regress/data/person.data" for reading: No such file or directory
+HINT:  COPY FROM instructs the PostgreSQL server process to read a file. You may want a client-side facility such as psql's \copy.
 ---END---
 ---START---
 VACUUM ANALYZE person;
@@ -199,8 +193,8 @@ NOTICE:  merging column "gemini_pk" with inherited definition
 ---START---
 \set filename :abs_srcdir '/data/emp.data'
 COPY emp FROM :'filename';
-ERROR:  invalid input syntax for type integer: "sharon"
-CONTEXT:  COPY emp, line 1, column gemini_pk: "sharon"
+ERROR:  could not open file "/usr/local/google/home/hengfeng/github/postgres/src/test/regress/data/emp.data" for reading: No such file or directory
+HINT:  COPY FROM instructs the PostgreSQL server process to read a file. You may want a client-side facility such as psql's \copy.
 ---END---
 ---START---
 VACUUM ANALYZE emp;
@@ -212,8 +206,8 @@ NOTICE:  merging column "gemini_pk" with inherited definition
 ---START---
 \set filename :abs_srcdir '/data/student.data'
 COPY student FROM :'filename';
-ERROR:  invalid input syntax for type integer: "fred"
-CONTEXT:  COPY student, line 1, column gemini_pk: "fred"
+ERROR:  could not open file "/usr/local/google/home/hengfeng/github/postgres/src/test/regress/data/student.data" for reading: No such file or directory
+HINT:  COPY FROM instructs the PostgreSQL server process to read a file. You may want a client-side facility such as psql's \copy.
 ---END---
 ---START---
 VACUUM ANALYZE student;
@@ -229,8 +223,8 @@ NOTICE:  merging column "gemini_pk" with inherited definition
 ---START---
 \set filename :abs_srcdir '/data/stud_emp.data'
 COPY stud_emp FROM :'filename';
-ERROR:  invalid input syntax for type integer: "jeff"
-CONTEXT:  COPY stud_emp, line 1, column gemini_pk: "jeff"
+ERROR:  could not open file "/usr/local/google/home/hengfeng/github/postgres/src/test/regress/data/stud_emp.data" for reading: No such file or directory
+HINT:  COPY FROM instructs the PostgreSQL server process to read a file. You may want a client-side facility such as psql's \copy.
 ---END---
 ---START---
 VACUUM ANALYZE stud_emp;
@@ -241,8 +235,8 @@ CREATE TABLE road (gemini_pk serial PRIMARY KEY, name text, thepath path);
 ---START---
 \set filename :abs_srcdir '/data/streets.data'
 COPY road FROM :'filename';
-ERROR:  invalid input syntax for type integer: "A                             St  "
-CONTEXT:  COPY road, line 1, column gemini_pk: "A                             St  "
+ERROR:  could not open file "/usr/local/google/home/hengfeng/github/postgres/src/test/regress/data/streets.data" for reading: No such file or directory
+HINT:  COPY FROM instructs the PostgreSQL server process to read a file. You may want a client-side facility such as psql's \copy.
 ---END---
 ---START---
 VACUUM ANALYZE road;
@@ -296,18 +290,21 @@ CREATE FUNCTION binary_coercible(oid, oid)
     RETURNS bool
     AS :'regresslib', 'binary_coercible'
     LANGUAGE C STRICT STABLE PARALLEL SAFE;
+ERROR:  could not access file "/usr/local/pgsql/lib/regress.so": No such file or directory
 ---END---
 ---START---
 CREATE FUNCTION ttdummy ()
     RETURNS trigger
     AS :'regresslib'
     LANGUAGE C;
+ERROR:  could not access file "/usr/local/pgsql/lib/regress.so": No such file or directory
 ---END---
 ---START---
 CREATE FUNCTION get_columns_length(oid[])
     RETURNS int
     AS :'regresslib'
     LANGUAGE C STRICT STABLE PARALLEL SAFE;
+ERROR:  could not access file "/usr/local/pgsql/lib/regress.so": No such file or directory
 ---END---
 ---START---
 -- Use hand-rolled hash functions and operator classes to get predictable
