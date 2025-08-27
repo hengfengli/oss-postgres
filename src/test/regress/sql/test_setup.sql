@@ -91,7 +91,7 @@ VACUUM INT4_TBL;
 CREATE TABLE int8_tbl (gemini_pk serial PRIMARY KEY, q1 int8, q2 int8);
 ---END---
 ---START---
-INSERT INTO INT8_TBL VALUES
+INSERT INTO INT8_TBL(q1, q2) VALUES
   ('  123   ','  456'),
   ('123   ','4567890123456789'),
   ('4567890123456789','123'),
@@ -121,7 +121,7 @@ INSERT INTO POINT_TBL(f1) VALUES
 CREATE TABLE text_tbl (gemini_pk serial PRIMARY KEY, f1 text);
 ---END---
 ---START---
-INSERT INTO TEXT_TBL VALUES
+INSERT INTO TEXT_TBL(f1) VALUES
   ('doh!'),
   ('hi de ho neighbor');
 ---END---

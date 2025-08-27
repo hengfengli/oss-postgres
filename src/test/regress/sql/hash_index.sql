@@ -7,18 +7,18 @@
 \getenv abs_srcdir PG_ABS_SRCDIR
 
 CREATE TABLE hash_i4_heap (
-	seqno 		int4,
-	random 		int4
+	seqno 		int8,
+	random 		int8
 );
 ---END---
 ---START---
-CREATE TABLE hash_name_heap (gemini_pk serial PRIMARY KEY, seqno int4, random name);
+CREATE TABLE hash_name_heap (gemini_pk serial PRIMARY KEY, seqno int8, random name);
 ---END---
 ---START---
-CREATE TABLE hash_txt_heap (gemini_pk serial PRIMARY KEY, seqno int4, random text);
+CREATE TABLE hash_txt_heap (gemini_pk serial PRIMARY KEY, seqno int8, random text);
 ---END---
 ---START---
-CREATE TABLE hash_f8_heap (gemini_pk serial PRIMARY KEY, seqno int4, random float8);
+CREATE TABLE hash_f8_heap (gemini_pk serial PRIMARY KEY, seqno int8, random float8);
 ---END---
 ---START---
 \set filename :abs_srcdir '/data/hash.data'
